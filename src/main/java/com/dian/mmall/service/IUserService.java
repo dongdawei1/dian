@@ -10,7 +10,7 @@ import com.dian.mmall.pojo.User;
  * Created by geely
  */
 public interface IUserService {
-
+   //登陆
     ServerResponse<User> login(String username, String password);
 
     ServerResponse<String> register(User user);

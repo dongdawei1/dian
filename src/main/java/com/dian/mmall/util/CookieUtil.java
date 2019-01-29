@@ -14,10 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class CookieUtil {
 
-    private final static String COOKIE_DOMAIN = ".happymmall.com";
-    private final static String COOKIE_NAME = "mmall_login_token";
+    private final static String COOKIE_DOMAIN = ".dian.com";
+    //种到服务端的cookie名字
+    private final static String COOKIE_NAME = "dian_token";
 
-
+//读取cookie
     public static String readLoginToken(HttpServletRequest request){
         Cookie[] cks = request.getCookies();
         if(cks != null){
@@ -38,7 +39,7 @@ public class CookieUtil {
     //c:A.happymmall.com/test/cc    cookie:domain=A.happymmall.com;path="/test/cc"
     //d:A.happymmall.com/test/dd    cookie:domain=A.happymmall.com;path="/test/dd"
     //e:A.happymmall.com/test       cookie:domain=A.happymmall.com;path="/test"
-
+//写入cookie
     public static void writeLoginToken(HttpServletResponse response, String token){
         Cookie ck = new Cookie(COOKIE_NAME,token);
         ck.setDomain(COOKIE_DOMAIN);
@@ -51,7 +52,7 @@ public class CookieUtil {
         response.addCookie(ck);
     }
 
-
+//退出时把cookie剩余时长设为0
     public static void delLoginToken(HttpServletRequest request, HttpServletResponse response){
         Cookie[] cks = request.getCookies();
         if(cks != null){

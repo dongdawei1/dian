@@ -23,22 +23,26 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private UserMapper userMapper;
 
-
+ //登陆
     @Override
     public ServerResponse<User> login(String username, String password) {
-        int resultCount =0;// userMapper.checkUsername(username);
-        if(resultCount == 0 ){
-            return ServerResponse.createByErrorMessage("用户名不存在");
+        User user1 =userMapper.checkUsername(username);
+       System.out.println(user1);
+        if(user1 ==null){
+            return ServerResponse.createByErrorMessage("用户名或密码错误");
+        }
+   
+       // String md5Password = MD5Util.MD5EncodeUtf8(password);
+        String passwordString=user1.getPassword();
+        System.out.println(passwordString+"   "+password+" ........");
+        if(!passwordString.equals(password)){
+            return ServerResponse.createByErrorMessage("用户名或密码错误");
         }
 
-        String md5Password = MD5Util.MD5EncodeUtf8(password);
-        User user  =   null;// userMapper.selectLogin(username,md5Password);
-        if(user == null){
-            return ServerResponse.createByErrorMessage("密码错误");
-        }
-
-        user.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
-        return ServerResponse.createBySuccess("登录成功",user);
+      //把密码置空在页面上不明文出现
+        user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
+      System.out.println(user1.getPassword());
+      return ServerResponse.createBySuccess("登录成功",user1);
     }
 
 

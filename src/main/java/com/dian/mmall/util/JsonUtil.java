@@ -138,7 +138,7 @@ public class JsonUtil {
         User user = new User();
         user.setId(2);
         user.setEmail("geely@happymmall.com");
-        user.setCreateTime(new Date());
+       user.setCreateTime(DateTimeUtil.dateToStr(new Date()));
         String userJsonPretty = JsonUtil.obj2StringPretty(user);
         log.info("userJson:{}",userJsonPretty);
 

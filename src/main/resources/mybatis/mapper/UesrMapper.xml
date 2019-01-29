@@ -11,6 +11,14 @@
     </select>-->
 
     <select id="getall" resultType="java.util.Map">
-        select * from t_user
+        select * from t_user 
     </select>
+    
+      <select id="checkUsername" resultType="com.dian.mmall.pojo.User" parameterType="string" >
+        select * from t_user
+        where username = #{username}
+  </select>
+    
+    
+    
 </mapper>
