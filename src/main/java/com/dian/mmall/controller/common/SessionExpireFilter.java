@@ -43,7 +43,7 @@ public class SessionExpireFilter implements Filter {
             User user = JsonUtil.string2Obj(userJsonStr,User.class);
             
             if(user != null){
-            	System.out.println(user.getUsername());
+            	System.out.println(user.getUsername()+">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 //如果user不为空，则重置session的时间，即调用expire命令
                 RedisShardedPoolUtil.expire(loginToken, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
             }

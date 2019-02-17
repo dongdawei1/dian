@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class CookieUtil {
 
-    private final static String COOKIE_DOMAIN = ".dian.com";
+    private final static String COOKIE_DOMAIN =".localhost"; //  ".dian.com";
     //种到服务端的cookie名字
     private final static String COOKIE_NAME = "dian_token";
 

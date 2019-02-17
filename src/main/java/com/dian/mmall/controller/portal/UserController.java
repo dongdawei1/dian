@@ -43,7 +43,7 @@ public class UserController {
      */
     @RequestMapping(value = "login",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> login(@RequestParam String username, @RequestParam String password, HttpSession session, HttpServletResponse httpServletResponse){
+    public ServerResponse<User> login(@RequestParam String username, @RequestParam String password,@RequestParam String yangzhengma, HttpSession session, HttpServletResponse httpServletResponse){
        System.out.println(username+password+session);
     	ServerResponse<User> response = iUserService.login(username,password);
         if(response.isSuccess()){
@@ -64,6 +64,7 @@ public class UserController {
     @ResponseBody
     public ServerResponse<User> getUserInfo(HttpServletRequest httpServletRequest){
     	
+    	System.out.print(httpServletRequest.toString());
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
     	if(StringUtils.isEmpty(loginToken)){
     		return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
