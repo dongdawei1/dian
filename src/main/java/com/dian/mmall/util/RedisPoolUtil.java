@@ -63,7 +63,7 @@ public class RedisPoolUtil {
         RedisPool.returnResource(jedis);
         return result;
     }
-
+    
     public static String get(String key){
         Jedis jedis = null;
         String result = null;
@@ -76,6 +76,22 @@ public class RedisPoolUtil {
             return result;
         }
         RedisPool.returnResource(jedis);
+        return result;
+    }
+    
+    //查看key是否存在
+    public static Boolean exists(String key){
+        Jedis jedis = null;
+        Boolean result = false;
+        try {
+            jedis = RedisPool.getJedis();
+            result = jedis.exists(key);
+        } catch (Exception e) {
+            log.error("get key:{} error",key,e);
+            RedisPool.returnBrokenResource(jedis);
+            return result;
+        }
+      
         return result;
     }
 
@@ -98,9 +114,15 @@ public class RedisPoolUtil {
         Jedis jedis = RedisPool.getJedis();
 
         RedisShardedPoolUtil.set("keyTest","value");
-
-        String value = RedisShardedPoolUtil.get("keyTest");
-
+  
+        
+        
+        
+       Boolean value = RedisShardedPoolUtil.exists("keyTest");
+   
+        
+        System.out.println(value+"    ");
+        
         RedisShardedPoolUtil.setEx("keyex","valueex",60*10);
 
         RedisShardedPoolUtil.expire("keyTest",60*20);

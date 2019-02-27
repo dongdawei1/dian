@@ -3,6 +3,7 @@ package com.dian.mmall.controller.portal;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,12 +13,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseCode;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.CheckPicCode;
 import com.dian.mmall.pojo.User;
 import com.dian.mmall.service.IUserService;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.codec.binary.Base64;
+
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -33,7 +45,8 @@ public class UserController {
     @Autowired
     private IUserService iUserService;
 
-
+    
+   
     /**
      * 用户登录
      * @param username
@@ -43,9 +56,23 @@ public class UserController {
      */
     @RequestMapping(value = "login",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> login(@RequestParam String username, @RequestParam String password,@RequestParam String yangzhengma, HttpSession session, HttpServletResponse httpServletResponse){
-       System.out.println(username+password+session);
-    	ServerResponse<User> response = iUserService.login(username,password);
+    public ServerResponse<User> login(@RequestParam String username, @RequestParam String password,@RequestParam String yangzhengma, HttpSession session,
+    		HttpServletResponse httpServletResponse,String uip){
+        
+    	 String getPicCode=RedisShardedPoolUtil.get(uip);
+    	 
+    	 String usernamrString  = username.trim() ;
+    	 String passwordString  = password.trim() ;
+    	 String yangzhengmaString  = yangzhengma.trim() ;
+    	 
+    	if( ! yangzhengmaString.equalsIgnoreCase(getPicCode)) {
+    		
+    		  return ServerResponse.createByErrorMessage("验证码错误或失效");
+    	}
+    	
+    	
+    	
+    	ServerResponse<User> response = iUserService.login(usernamrString,passwordString);
         if(response.isSuccess()){
 
 //            session.setAttribute(Const.CURRENT_USER,response.getData());
@@ -90,7 +117,43 @@ public class UserController {
         return ServerResponse.createBySuccess();
     }
 
-    
+
+    //获取验证码
+	@ResponseBody
+	@RequestMapping(value = "/captcha", method = RequestMethod.POST)
+	public ServerResponse<String>  captcha(HttpServletResponse response , @RequestParam String uip) {
+		String base64PicCodeImage;
+		String getPicCode;
+		try {
+			base64PicCodeImage = CheckPicCode.encodeBase64ImgCode();
+			getPicCode=CheckPicCode.getPicCode();
+			
+			System.out.println(getPicCode);
+			
+			
+			System.out.println(base64PicCodeImage);
+			
+			if(base64PicCodeImage != null  && getPicCode!=null){
+				
+				if( RedisShardedPoolUtil.exists(uip)) {
+			  //根据ip把验证码放到数据库
+					RedisShardedPoolUtil.del(uip);
+					RedisShardedPoolUtil.setEx(uip,getPicCode,8*10);
+				}else {
+					RedisShardedPoolUtil.setEx(uip,getPicCode,8*10);
+				}
+				
+				
+	    		return ServerResponse.createBySuccessMessage(base64PicCodeImage);
+	    	}
+		} catch (IOException e) {
+			return ServerResponse.createByErrorMessage("验证码生成错误");
+		}
+		
+		
+		 return ServerResponse.createByErrorMessage("验证码生成错误");
+
+	}
     
     
     @RequestMapping(value = "register.do",method = RequestMethod.POST)

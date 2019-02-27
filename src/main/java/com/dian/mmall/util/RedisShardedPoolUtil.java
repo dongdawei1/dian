@@ -1,7 +1,9 @@
 package com.dian.mmall.util;
 
+import com.dian.mmall.common.RedisPool;
 import com.dian.mmall.common.RedisShardedPool;
 import lombok.extern.slf4j.Slf4j;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ShardedJedis;
 
 /**
@@ -93,7 +95,22 @@ public class RedisShardedPoolUtil {
         return result;
     }
 
-
+  //查看key是否存在
+    public static Boolean exists(String key){
+    	 ShardedJedis jedis = null;
+        Boolean result = false;
+        try {
+            jedis = RedisShardedPool.getJedis();
+            result = jedis.exists(key);
+        } catch (Exception e) {
+            log.error("get key:{} error",key,e);
+            RedisShardedPool.returnBrokenResource(jedis);
+            return result;
+        }
+      
+        return result;
+    }
+    
     public static String getSet(String key,String value) {
         ShardedJedis jedis = null;
         String result = null;
@@ -123,15 +140,43 @@ public class RedisShardedPoolUtil {
         RedisShardedPool.returnResource(jedis);
         return result;
     }
-
+    
+    public static Long ttl(String key) {
+        ShardedJedis jedis = null;
+        Long result = null;
+        try {
+            jedis = RedisShardedPool.getJedis();
+            result = jedis.ttl(key);
+        } catch (Exception e) {
+            RedisShardedPool.returnBrokenResource(jedis);
+            return result;
+        }
+        RedisShardedPool.returnResource(jedis);
+        return result;
+    }
 
     public static void main(String[] args) {
         ShardedJedis jedis = RedisShardedPool.getJedis();
 
         RedisPoolUtil.set("keyTest","value");
-
+   
+        
+        
         String value = RedisPoolUtil.get("keyTest");
 
+        System.out.println(value +"  d  ");
+        
+      RedisPoolUtil.set("keyTest","   value11111");
+   
+        
+        
+        String value1 = RedisPoolUtil.get("keyTest");
+        RedisPoolUtil.set("keyTest","    value2222");
+        
+        
+        
+        
+        
         RedisPoolUtil.setEx("keyex","valueex",60*10);
 
         RedisPoolUtil.expire("keyTest",60*20);

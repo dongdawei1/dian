@@ -2,7 +2,7 @@ spring:
   datasource:
     username: root
     password:  
-    url: jdbc:mysql://127.0.0.1:3306/atcrowdfunding-v
+    url: jdbc:mysql://127.0.0.1:3306/atcrowdfunding-v?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     driver-class-name: com.mysql.jdbc.Driver
     #配置数据源  阿里  的druid  
     type: com.alibaba.druid.pool.DruidDataSource
