@@ -136,7 +136,7 @@ public class UserController {
 			if(base64PicCodeImage != null  && getPicCode!=null){
 				
 				if( RedisShardedPoolUtil.exists(uip)) {
-			  //根据ip把验证码放到数据库
+			     //根据ip把验证码放到数据库
 					RedisShardedPoolUtil.del(uip);
 					RedisShardedPoolUtil.setEx(uip,getPicCode,8*10);
 				}else {
