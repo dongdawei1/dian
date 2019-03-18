@@ -19,6 +19,15 @@
         where username = #{username}
   </select>
     
+     		
     
+   <!--创建用户返回id  -->
+     <insert id="createUser"  >
+        insert into t_user (
+            username, password, mobilePhone, role, createTime
+        ) values (
+            #{username}, #{password}, #{mobilePhone}, #{role}, #{createTime}
+        )
+    </insert>
     
 </mapper>

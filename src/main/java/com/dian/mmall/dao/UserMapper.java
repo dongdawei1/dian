@@ -26,6 +26,8 @@ public interface UserMapper {
 //    int updateByPrimaryKey(User record);
    //检查有没有此用户名
    User checkUsername(String username);
+   //注册返回id
+ int createUser(User user);
 //
 //    int checkEmail(String email);
 //
@@ -40,4 +42,6 @@ public interface UserMapper {
 //    int checkPassword(@Param(value="password")String password,@Param("userId")Integer userId);
 //
 //    int checkEmailByUserId(@Param(value="email")String email,@Param(value="userId")Integer userId);
+
+  
 }

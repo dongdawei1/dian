@@ -12,7 +12,8 @@ import com.dian.mmall.pojo.User;
 public interface IUserService {
    //登陆
     ServerResponse<User> login(String username, String password);
-
+    //注册完以后登录
+    ServerResponse<User> login(String username);
     ServerResponse<String> register(User user);
 
     ServerResponse<String> checkValid(String str, String type);
@@ -32,4 +33,10 @@ public interface IUserService {
     ServerResponse checkAdminRole(User user);
 //测试mybaits
 	List<Map<String, Object>> getall();
+//注册检查用户名是否可用
+	ServerResponse<User> checkUsername(String username);
+//注册
+	int createUser(User user);
+	//根据用户名查id
+	int selectUserId(User user);
 }

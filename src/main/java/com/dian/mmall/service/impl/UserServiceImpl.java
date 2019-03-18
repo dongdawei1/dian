@@ -41,12 +41,22 @@ public class UserServiceImpl implements IUserService {
 
       //把密码置空在页面上不明文出现
         user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
-      System.out.println(user1.getPassword());
+    
       return ServerResponse.createBySuccess("登录成功",user1);
     }
 
+  //注册完以后登录
+    @Override
+    public ServerResponse<User> login(String username) {
+        User user1 =userMapper.checkUsername(username);
+      //把密码置空在页面上不明文出现
+        user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
+     
+      return ServerResponse.createBySuccess("注册成功跳转Home",user1);
+    }
 
-
+    
+    
     public ServerResponse<String> register(User user){
         ServerResponse validResponse = this.checkValid(user.getUsername(),Const.USERNAME);
         if(!validResponse.isSuccess()){
@@ -167,10 +177,7 @@ public class UserServiceImpl implements IUserService {
         User updateUser = new User();
         updateUser.setId(user.getId());
         updateUser.setEmail(user.getEmail());
-        updateUser.setPhone(user.getPhone());
-        updateUser.setQuestion(user.getQuestion());
-        updateUser.setAnswer(user.getAnswer());
-
+  
         int updateCount =0;// userMapper.updateByPrimaryKeySelective(updateUser);
         if(updateCount > 0){
             return ServerResponse.createBySuccess("更新个人信息成功",updateUser);
@@ -213,6 +220,40 @@ public class UserServiceImpl implements IUserService {
 	public List<Map<String, Object>> getall() {
 		// TODO Auto-generated method stub
 		return userMapper.getall();
+	}
+
+
+//判断用户名是否可用
+	@Override
+	public ServerResponse<User> checkUsername(String username) {
+		 User user1 =userMapper.checkUsername(username);
+	       System.out.println(user1);
+	        if(user1 ==null){
+	            return ServerResponse.createByErrorMessage("可以注册");
+	        }
+	   
+	        user1=null;
+	      return ServerResponse.createBySuccess("用户名被注册，请换一个",user1);
+		
+	}
+
+  //注册后返回id
+
+	@Override
+	public int createUser(User user) {
+		
+		int count= userMapper.createUser(user);
+		System.out.println(count);
+		
+		return selectUserId(user);
+	}
+
+
+//根据用户名查询id
+	@Override
+	public int selectUserId(User user) {
+		
+		return userMapper.checkUsername(user.getUsername()).getId();
 	}
 
 
