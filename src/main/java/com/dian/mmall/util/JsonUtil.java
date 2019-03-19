@@ -29,8 +29,7 @@ public class JsonUtil {
     private static ObjectMapper objectMapper = new ObjectMapper();
     static{
         //对象的所有字段全部列入
-        objectMapper.setSerializationInclusion(Inclusion.ALWAYS);
-
+        objectMapper.setSerializationInclusion(Inclusion.NON_NULL); // NON_NULL忽略null    ALWAYS全部转换
         //取消默认转换timestamps形式
         objectMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS,false);
 
@@ -111,8 +110,6 @@ public class JsonUtil {
             return null;
         }
     }
-
-
 
 
 

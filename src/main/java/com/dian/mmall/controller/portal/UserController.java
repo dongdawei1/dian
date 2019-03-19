@@ -67,7 +67,7 @@ public class UserController {
      */
     @RequestMapping(value = "login",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> login(@RequestBody Map<String, Object> params, HttpSession session,
+    public ServerResponse<String> login(@RequestBody Map<String, Object> params, HttpSession session,
     		HttpServletResponse httpServletResponse){
         
     	
@@ -90,24 +90,28 @@ public class UserController {
     	
     	
     	ServerResponse<User> response = iUserService.login(usernamrString,passwordString);
-        if(response.isSuccess()){
+    	 String userString=null;
+    	if(response.isSuccess()){
 
 //            session.setAttribute(Const.CURRENT_USER,response.getData());
         	
+        	
+        	
           CookieUtil.writeLoginToken(httpServletResponse,session.getId());
-        	   System.out.println(session.getId()+JsonUtil.obj2String(response.getData())+"   "+Const.RedisCacheExtime.REDIS_SESSION_EXTIME+"  "+httpServletResponse);
+          
+         userString=JsonUtil.obj2String(response.getData());
+        	   System.out.println(session.getId()+userString+"   "+Const.RedisCacheExtime.REDIS_SESSION_EXTIME+"  "+httpServletResponse);
          //把用户session当做key存到数据库中，时长是 30分钟
         	   RedisShardedPoolUtil.setEx(session.getId(), JsonUtil.obj2String(response.getData()),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
-        	   logger.info("登陆",response.getData());
         }
-        return response;
+        return ServerResponse.createBySuccess(userString);
     }
     
     
     //用户注册
     @RequestMapping(value = "create",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> create(@RequestBody Map<String,Object> params,
+    public ServerResponse<String> create(@RequestBody Map<String,Object> params,
     		//@RequestParam String username, //@RequestParamString password,
     		HttpSession session, HttpServletResponse httpServletResponse){
       
@@ -115,12 +119,7 @@ public class UserController {
    	 String uuid  =params.get("uuid").toString().trim() ; 
 	 String captcha  =params.get("captcha").toString().trim() ; 
 	 
-	try {
-		Thread.sleep(20000);
-	} catch (InterruptedException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
-	}
+	
 	  
 	 String getPicCode=RedisShardedPoolUtil.get(uuid);
 	 
@@ -157,6 +156,9 @@ public class UserController {
      //检查用户名是否重复
     	ServerResponse<User>  check_name=iUserService.checkUsername(username);
     	//如果返回是空可以注册
+    	
+       String 	userString =null;
+    	
     	if(!check_name.isSuccess()) {
     		logger.info("ss   ",check_name.isSuccess());
     		 SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -185,12 +187,14 @@ public class UserController {
 				return ServerResponse.createByErrorMessage("用户名已被注册,请更换新的用户名"); 
 			}
      		
-     		check_name=iUserService.login(username);
+     	  check_name=iUserService.login(username);
      		
+     	 userString= JsonUtil.obj2String(check_name.getData());
+     	  
            CookieUtil.writeLoginToken(httpServletResponse,session.getId());
          	
           //把用户session当做key存到数据库中，时长是 30分钟
-         	   RedisShardedPoolUtil.setEx(session.getId(), JsonUtil.obj2String(check_name.getData()),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+         	   RedisShardedPoolUtil.setEx(session.getId(),userString,Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
     		
     	}else{
     		
@@ -198,7 +202,7 @@ public class UserController {
     		return ServerResponse.createByErrorMessage("用户名已被注册"); 
     		
         }
-        return check_name;
+        return ServerResponse.createBySuccess(userString);
     }
     
   //获取用户信息
@@ -220,6 +224,10 @@ public class UserController {
     	}
     	return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
     }
+    
+    
+    
+    
     //退出
     @RequestMapping(value = "logout",method = RequestMethod.POST)
     @ResponseBody

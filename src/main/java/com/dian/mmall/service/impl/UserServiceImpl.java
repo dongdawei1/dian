@@ -40,17 +40,18 @@ public class UserServiceImpl implements IUserService {
         }
 
       //把密码置空在页面上不明文出现
-        user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
-    
+        //user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
+       //置为null以后不会系列化，不会传给前端
+        user1.setPassword(null);
       return ServerResponse.createBySuccess("登录成功",user1);
     }
 
   //注册完以后登录
     @Override
     public ServerResponse<User> login(String username) {
-        User user1 =userMapper.checkUsername(username);
+        User user1 =userMapper.selectUsername(username);
       //把密码置空在页面上不明文出现
-        user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
+      //  user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
      
       return ServerResponse.createBySuccess("注册成功跳转Home",user1);
     }

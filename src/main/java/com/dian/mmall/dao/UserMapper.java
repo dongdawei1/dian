@@ -27,7 +27,9 @@ public interface UserMapper {
    //检查有没有此用户名
    User checkUsername(String username);
    //注册返回id
- int createUser(User user);
+   int createUser(User user);
+   //注册以后返回用户名等信息
+   User selectUsername(String username);
 //
 //    int checkEmail(String email);
 //
