@@ -207,9 +207,9 @@ public class UserController {
     
   //获取用户信息
     
-    @RequestMapping(value = "get_user_info",method = RequestMethod.POST)
+    @RequestMapping(value = "get_user_info",method = RequestMethod.GET)
     @ResponseBody
-    public ServerResponse<User> getUserInfo(HttpServletRequest httpServletRequest){
+    public ServerResponse<String> getUserInfo(HttpServletRequest httpServletRequest){
     	 
     	System.out.print(httpServletRequest.toString());
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
@@ -218,9 +218,11 @@ public class UserController {
     	}
     	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
     	User user = JsonUtil.string2Obj(userJsonStr,User.class);
-    	
+       
+   
     	if(user != null){
-    		return ServerResponse.createBySuccess(user);
+    	    System.out.print(JsonUtil.obj2String(user));
+    		return ServerResponse.createBySuccess(JsonUtil.obj2String(user));
     	}
     	return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
     }
