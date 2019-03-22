@@ -22,8 +22,10 @@ public class Permission {
 	private boolean open = true;
 	private boolean checked = false;
 	private String icon;
-	private List<Permission> children = new ArrayList<Permission>();
-	private Integer paixu;
+	//private List<Permission> children = new ArrayList<Permission>();
+	private Integer serialNo; //排序
+	private String	resourceCode;//自己名字
+	private String  parentCode;//父亲名字
 
 	
 }
