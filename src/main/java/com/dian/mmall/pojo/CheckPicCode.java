@@ -23,7 +23,7 @@ public class CheckPicCode {
  
     public static String getCheckCode(){
         //验证码中的字符由数字和大小写字母组成
-        String code = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+        String code = "23456789qwertyuipasdfghjkxcvbnmQWERTYUPASDFGHJKXCVBNM";
         Random r = new Random();
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < 4; i++) {

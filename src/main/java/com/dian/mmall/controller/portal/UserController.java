@@ -71,13 +71,13 @@ public class UserController {
     		HttpServletResponse httpServletResponse){
         
     	
-    	 
+    	
     	 String usernamrString  = params.get("username").toString().trim() ;
     	 String passwordString  = params.get("password").toString().trim() ;
     	 String uuid  =params.get("uuid").toString().trim() ; 
     	 String captcha  =params.get("captcha").toString().trim() ; 
     	 
-    	
+
     	 
     	 String getPicCode=RedisShardedPoolUtil.get(uuid);
     	
@@ -210,7 +210,7 @@ public class UserController {
     @RequestMapping(value = "get_user_info",method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<String> getUserInfo(HttpServletRequest httpServletRequest){
-    	 
+    	
     	System.out.print(httpServletRequest.toString());
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
     	if(StringUtils.isEmpty(loginToken)){
