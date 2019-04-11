@@ -4,22 +4,40 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dian.mmall.common.Result;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.Permission;
+import com.dian.mmall.pojo.Picture;
+import com.dian.mmall.pojo.User;
+import com.dian.mmall.service.IPictureService;
+import com.dian.mmall.service.IUserService;
+import com.dian.mmall.util.CookieUtil;
+import com.dian.mmall.util.JsonUtil;
+import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
 @RequestMapping("/api/uploadDown/")
 public class UploadDownController {
- 
+    
+
+    @Autowired
+    private IPictureService ipics;
+	
     /**
      * 文件上传
      * @param picture
@@ -28,10 +46,18 @@ public class UploadDownController {
      */
     @RequestMapping("upload")   //不写请求方式是 get和post都支持
     @ResponseBody
-    public Result upload(@RequestParam MultipartFile picture, HttpServletRequest request) {
-    
+    public Result upload(@RequestParam MultipartFile picture, HttpServletRequest httpServletRequest) {
+       
+    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+    	if(StringUtils.isEmpty(loginToken)){
+    		return new Result(false, "请登录后重试");
+    	}
+    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
+    	
+    	
         //获取文件在服务器的储存位置
-        String path = request.getSession().getServletContext().getRealPath("/upload");
+        String path = httpServletRequest.getSession().getServletContext().getRealPath("/upload");
         File filePath = new File(path);
         System.out.println("文件的保存路径：" + path);
         if (!filePath.exists() && !filePath.isDirectory()) {
@@ -58,17 +84,79 @@ public class UploadDownController {
  
         //在指定路径下创建一个文件
         File targetFile = new File(path, fileName);
- 
+        Picture picture1=new Picture();
         //将文件保存到服务器指定位置
         try {
-            picture.transferTo(targetFile);
-            System.out.println("上传成功");
+            picture.transferTo(targetFile);       
             //将文件在服务器的存储路径返回
+            picture1.setCreate_time(date);           
+            picture1.setTocken(loginToken);
+            picture1.setUser_id(user.getId());
+            picture1.setUser_name(user.getUsername());
+            picture1.setUse_status(1);        
+            picture1.setPicture_name(originalFileName);
+            picture1.setPicture_url("/upload/" + fileName);
+            
+          int a=  ipics.createPicture(picture1);
+            System.out.println(">>>>>>>>>a"+a);
             return new Result(true,"/upload/" + fileName);
         } catch (IOException e) {
             System.out.println("上传失败");
             e.printStackTrace();
             return new Result(false, "上传失败");
         }
+    }
+    /**
+     * 文件删除  修改数据库字段
+     * @param picture
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "update" ,method = RequestMethod.POST)   //不写请求方式是 get和post都支持
+    @ResponseBody
+    public Result update(@RequestBody Map<String, Object> params, HttpServletRequest httpServletRequest) {
+       
+    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+    	if(StringUtils.isEmpty(loginToken)){
+    		return new Result(false, "请登录后重试");
+    	}
+    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
+    	
+    	Picture picture1=new Picture();          
+       
+    	picture1.setTocken(loginToken);
+        picture1.setUser_id(user.getId());
+        picture1.setUser_name(user.getUsername());
+        picture1.setUse_status(1);  
+        String picture_name=params.get("name").toString().trim();
+        String picture_url=params.get("url").toString().trim();
+       
+        
+        System.out.println(picture_name+" fffff  "+picture_url);
+        if(picture_name!=null && picture_url!=null ) {
+        picture1.setPicture_name(picture_name);
+        picture1.setPicture_url(picture_url);
+        }else {
+        return new Result(true,"删除成功");
+        }
+        
+      Picture  picture2=  ipics.selectPicture(picture1);
+      
+        if(picture2 != null) {
+    	ipics.updatePicture(picture1);
+    	picture1=null;
+    	picture2=null;
+    	return new Result(true,"删除成功");
+    	
+        }
+        picture1=null;
+    	picture2=null;
+    	return new Result(true,"删除成功");
+ 
+     
+ 
+     
+    
     }
 }
