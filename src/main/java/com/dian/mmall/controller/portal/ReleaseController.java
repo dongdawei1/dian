@@ -23,6 +23,7 @@ import com.dian.mmall.dao.CommodityTypeMapper;
 import com.dian.mmall.pojo.User;
 import com.dian.mmall.pojo.commodity.GrainAndOil;
 import com.dian.mmall.service.CommodityTypeService;
+import com.dian.mmall.service.release.GrainAndOilService;
 import com.dian.mmall.service.release.TRolePermissionService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
@@ -39,7 +40,10 @@ public class ReleaseController {
 	    private TRolePermissionService tPermissionService;
 	  @Autowired
 	    private CommodityTypeService commodityTypeService;
-	
+	 
+	  @Autowired
+	   private GrainAndOilService grainAndOilService;
+	  
 	  
 	@RequestMapping(value = "grainAndOil",method = RequestMethod.POST)
     @ResponseBody
@@ -140,16 +144,24 @@ public class ReleaseController {
     	
     	//{result=true, message=验证通过} 返回结果
     	System.out.println(AnnotationDealUtil.validate(grainAndOil).toString());
-    	
-    	System.out.println(grainAndOil.toString());
-		return null;
-		
-		
+    	Map<String, Object> checknullMap=AnnotationDealUtil.validate(grainAndOil);
+    	if((boolean)checknullMap.get("result")==true && ((String)checknullMap.get("message")).equals("验证通过")) {
+    		
+    		//落库
+    		
+    		
+    		
+    		grainAndOilService.caeateGrainAndOil(grainAndOil);
+    		
+    		return ServerResponse.createBySuccess("创建成功");
+    	}else if((boolean)checknullMap.get("result")==false) {
+    		return ServerResponse.createByErrorMessage((String)checknullMap.get("message"));
+    	}else {
+    		return ServerResponse.createByErrorMessage("系统异常稍后重试");
+    	}
 		
 	}
-	
-	
-	
+
 	  public  String checkRoleAndcommodityType(int permissionid ,String commoditytype,long userId) {
 		  int isroleAndtype=0; 
 			//取得是总条数，后期可能会有一个用户多个角色的情况

@@ -1,4 +1,4 @@
-package com.dian.mmall.dao;
+package com.dian.mmall.dao.releaseDao;
 
 import org.apache.ibatis.annotations.Mapper;
 
