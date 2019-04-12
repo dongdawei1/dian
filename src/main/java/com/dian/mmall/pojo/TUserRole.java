@@ -1,5 +1,11 @@
 package com.dian.mmall.pojo;
 
+import java.util.Map;
+
+import com.dian.mmall.util.checknullandmax.IsEmptyAnnotation;
+import com.dian.mmall.util.checknullandmax.MaxSize;
+import com.dian.mmall.util.checknullandmax.MinSize;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +17,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TUserRole {
 	//用户对应的角色
-		private Integer id;
-		private Integer userid;
-		private Integer roleid;
+		private long id;
+		private long userid;
+		private long roleid;
+
+		
 }

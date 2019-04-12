@@ -10,7 +10,7 @@ import com.dian.mmall.pojo.User;
 
 
 @Mapper
-public interface PermissionDao {
+public interface PermissionMapper {
 
 
 	//查询全部菜单

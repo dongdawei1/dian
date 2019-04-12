@@ -59,19 +59,19 @@ public class UploadDownController {
         //获取文件在服务器的储存位置
         String path = httpServletRequest.getSession().getServletContext().getRealPath("/upload");
         File filePath = new File(path);
-        System.out.println("文件的保存路径：" + path);
+        
         if (!filePath.exists() && !filePath.isDirectory()) {
-            System.out.println("目录不存在，创建目录:" + filePath);
+            
             filePath.mkdir();
         }
  
         //获取原始文件名称(包含格式)
         String originalFileName = picture.getOriginalFilename();
-        System.out.println("原始文件名称：" + originalFileName);
+        
  
         //获取文件类型，以最后一个`.`为标识
         String type = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
-        System.out.println("文件类型：" + type);
+        
         //获取文件名称（不包含格式）
         String name = originalFileName.substring(0, originalFileName.lastIndexOf("."));
  
@@ -80,7 +80,7 @@ public class UploadDownController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String date = sdf.format(d);
         String fileName = date + name + "." + type;
-        System.out.println("新文件名称：" + fileName);
+        
  
         //在指定路径下创建一个文件
         File targetFile = new File(path, fileName);
@@ -97,11 +97,11 @@ public class UploadDownController {
             picture1.setPicture_name(originalFileName);
             picture1.setPicture_url("/upload/" + fileName);
             
-          int a=  ipics.createPicture(picture1);
-            System.out.println(">>>>>>>>>a"+a);
+           ipics.createPicture(picture1);
+            
             return new Result(true,"/upload/" + fileName);
         } catch (IOException e) {
-            System.out.println("上传失败");
+           
             e.printStackTrace();
             return new Result(false, "上传失败");
         }

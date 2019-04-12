@@ -12,9 +12,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Shipping {
-    private Integer id;
+    private long id;
 
-    private Integer userId;
+    private long userId;
 
     private String receiverName;
 

@@ -28,7 +28,7 @@ public interface IUserService {
 
     ServerResponse<User> updateInformation(User user);
 
-    ServerResponse<User> getInformation(Integer userId);
+    ServerResponse<User> getInformation(long l);
 
     ServerResponse checkAdminRole(User user);
 //测试mybaits
@@ -36,7 +36,7 @@ public interface IUserService {
 //注册检查用户名是否可用
 	ServerResponse<User> checkUsername(String username);
 //注册
-	int createUser(User user);
+	long createUser(User user);
 	//根据用户名查id
-	int selectUserId(User user);
+	long selectUserId(User user);
 }

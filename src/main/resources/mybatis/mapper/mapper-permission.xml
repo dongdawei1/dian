@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dian.mmall.dao.PermissionDao" >
+<mapper namespace="com.dian.mmall.dao.PermissionMapper" >
     
     <select id="queryPermissionsByUser" resultType="com.dian.mmall.pojo.Permission">
         select

@@ -21,6 +21,7 @@ public class Permission {
 	private Integer pid;
 	private boolean open = true;
 	private boolean checked = false;
+	//图标
 	private String icon;
 	//private List<Permission> children = new ArrayList<Permission>();
 	private Integer serialNo; //排序

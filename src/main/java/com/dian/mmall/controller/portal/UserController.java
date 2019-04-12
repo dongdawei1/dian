@@ -174,7 +174,7 @@ public class UserController {
          	
      		try {
      			//创建用户
-     			int user_id=iUserService.createUser(user);
+     			long user_id=iUserService.createUser(user);
      		
      			TUserRole tUserRole=new TUserRole();
      			tUserRole.setUserid(user_id);     			

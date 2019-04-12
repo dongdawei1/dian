@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.dian.mmall.dao.PermissionDao;
+import com.dian.mmall.dao.PermissionMapper;
 import com.dian.mmall.pojo.Permission;
 import com.dian.mmall.pojo.User;
 import com.dian.mmall.service.PermissionService;
@@ -16,7 +16,7 @@ import com.dian.mmall.service.PermissionService;
 public class PermissionServiceImpl implements PermissionService {
 
 	@Autowired
-	private PermissionDao permissionDao;
+	private PermissionMapper permissionDao;
 
 
 

@@ -188,7 +188,7 @@ public class UserServiceImpl implements IUserService {
 
 
 
-    public ServerResponse<User> getInformation(Integer userId){
+    public ServerResponse<User> getInformation(long userId){
         User user =null;// userMapper.selectByPrimaryKey(userId);
         if(user == null){
             return ServerResponse.createByErrorMessage("找不到当前用户");
@@ -241,7 +241,7 @@ public class UserServiceImpl implements IUserService {
   //注册后返回id
 
 	@Override
-	public int createUser(User user) {
+	public long createUser(User user) {
 		
 		int count= userMapper.createUser(user);
 		System.out.println(count);
@@ -252,10 +252,12 @@ public class UserServiceImpl implements IUserService {
 
 //根据用户名查询id
 	@Override
-	public int selectUserId(User user) {
+	public long selectUserId(User user) {
 		
 		return userMapper.checkUsername(user.getUsername()).getId();
 	}
+
+	
 
 
 

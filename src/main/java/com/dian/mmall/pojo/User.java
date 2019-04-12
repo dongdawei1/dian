@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class User {
  
-	private Integer id;
+	private long id;
 	private String  username;  //用户名
 	 private String password; 
 	 private String mobilePhone; //手机号
