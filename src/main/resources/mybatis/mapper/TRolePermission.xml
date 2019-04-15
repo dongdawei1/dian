@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dian.mmall.dao.TRolePermissionMapper">
+<mapper namespace="com.dian.mmall.dao.releaseDao.TRolePermissionMapper">
   
 
     <select id="isrole" resultType="int">
@@ -17,6 +17,15 @@
                 <!-- 新建用户时需要插入这张表  -->
                 where userid = #{userId}
             )   and permissionid = #{ permissionid }
+    </select>
+ 
+ 
+    <select id="isrelease" resultType="int">
+       
+          select
+              isrelease
+            from t_role_permission
+            where roleid=#{roleid}  and permissionid = #{ permissionid }
     </select>
  
 </mapper>

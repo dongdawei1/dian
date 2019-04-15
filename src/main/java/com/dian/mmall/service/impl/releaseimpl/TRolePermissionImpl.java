@@ -14,5 +14,11 @@ public class TRolePermissionImpl implements TRolePermissionService {
 	public int isrole( long userId, int permissionid ) {
 		return tRolePermissionMapper.isrole(userId,  permissionid );
 	}
+  
+	
+	@Override
+	public int isrelease(int role, int permissionid) {
+		return tRolePermissionMapper.isrelease(role, permissionid);
+	}
 }	
 

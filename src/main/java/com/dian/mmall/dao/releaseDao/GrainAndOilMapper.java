@@ -8,5 +8,7 @@ import com.dian.mmall.pojo.commodity.GrainAndOil;
 public interface GrainAndOilMapper {
 
 	void caeateGrainAndOil(GrainAndOil grainAndOil);
+   //检查发帖总数
+	int checkReleaseCount(long userId);
 
 }
