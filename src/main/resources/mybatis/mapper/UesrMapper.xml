@@ -15,12 +15,12 @@
     </select>
     
     <select id="checkUsername" resultType="com.dian.mmall.pojo.User" parameterType="string" >
-        select id,username, password,city,role from t_user
+        select id,username, password,role,isAuthentication from t_user
         where username = #{username}
     </select>
     
     <select id="selectUsername" resultType="com.dian.mmall.pojo.User" parameterType="string" >
-        select id,username,city,role from t_user
+        select id,username,role,isAuthentication from t_user
         where username = #{username}
     </select>	
     
@@ -29,9 +29,9 @@
    <!--创建用户返回id  -->
      <insert id="createUser"  >
         insert into t_user (
-            username, password, mobilePhone, role, createTime
+            username, password, mobilePhone, role, createTime,isAuthentication
         ) values (
-            #{username}, #{password}, #{mobilePhone}, #{role}, #{createTime}
+            #{username}, #{password}, #{mobilePhone}, #{role}, #{createTime},#{isAuthentication}
         )
     </insert>
     

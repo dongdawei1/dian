@@ -139,7 +139,6 @@ public class UserController {
     	}
     	
     	String username = params.get("name").toString().trim();
-     
     	String mobilePhone = params.get("mobilePhone").toString().trim();
     	String role = params.get("role").toString().trim();
     	
@@ -153,6 +152,9 @@ public class UserController {
     			role.indexOf("8")!=0 && role.indexOf("10")!=0 ) {
     		 return ServerResponse.createByErrorMessage("用户角色错误"); 		
     	}
+    	
+    	
+    	
      //检查用户名是否重复
     	ServerResponse<User>  check_name=iUserService.checkUsername(username);
     	//如果返回是空可以注册
@@ -171,6 +173,7 @@ public class UserController {
      		user.setUsername(username);
      		user.setMobilePhone(mobilePhone);
      		user.setRole(Integer.parseInt(role));
+     		user.setIsAuthentication(2);//是否实名1是2未实名
          	
      		try {
      			//创建用户

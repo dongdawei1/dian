@@ -14,6 +14,9 @@ public interface IUserService {
     ServerResponse<User> login(String username, String password);
     //注册完以后登录
     ServerResponse<User> login(String username);
+    
+    
+    
     ServerResponse<String> register(User user);
 
     ServerResponse<String> checkValid(String str, String type);

@@ -59,21 +59,21 @@ public class UserServiceImpl implements IUserService {
     
     
     public ServerResponse<String> register(User user){
-        ServerResponse validResponse = this.checkValid(user.getUsername(),Const.USERNAME);
-        if(!validResponse.isSuccess()){
-            return validResponse;
-        }
-        validResponse = this.checkValid(user.getEmail(),Const.EMAIL);
-        if(!validResponse.isSuccess()){
-            return validResponse;
-        }
-        user.setRole(Const.Role.ROLE_CUSTOMER);
-        //MD5加密
-        user.setPassword(MD5Util.MD5EncodeUtf8(user.getPassword()));
-        int resultCount =0;// userMapper.insert(user);
-        if(resultCount == 0){
-            return ServerResponse.createByErrorMessage("注册失败");
-        }
+//        ServerResponse validResponse = this.checkValid(user.getUsername(),Const.USERNAME);
+//        if(!validResponse.isSuccess()){
+//            return validResponse;
+//        }
+//        validResponse = this.checkValid(user.getEmail(),Const.EMAIL);
+//        if(!validResponse.isSuccess()){
+//            return validResponse;
+//        }
+//        user.setRole(Const.Role.ROLE_CUSTOMER);
+//        //MD5加密
+//        user.setPassword(MD5Util.MD5EncodeUtf8(user.getPassword()));
+//        int resultCount =0;// userMapper.insert(user);
+//        if(resultCount == 0){
+//            return ServerResponse.createByErrorMessage("注册失败");
+//        }
         return ServerResponse.createBySuccessMessage("注册成功");
     }
 
@@ -177,7 +177,6 @@ public class UserServiceImpl implements IUserService {
         }
         User updateUser = new User();
         updateUser.setId(user.getId());
-        updateUser.setEmail(user.getEmail());
   
         int updateCount =0;// userMapper.updateByPrimaryKeySelective(updateUser);
         if(updateCount > 0){

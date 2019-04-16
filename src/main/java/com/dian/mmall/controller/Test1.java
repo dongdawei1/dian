@@ -22,7 +22,7 @@ public static void main(String[] args) {
 	  for(String s11  : key){
 	  System.out.println( map.get(s11));
 	  }
-	  if(1==1 && 1!=1){
+	  if(1!=2 && 1!=12 && 1!=13){
           System.out.println("yes");
       }
        

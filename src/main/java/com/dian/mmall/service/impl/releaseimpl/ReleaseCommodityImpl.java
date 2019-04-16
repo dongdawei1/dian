@@ -1,7 +1,9 @@
 package com.dian.mmall.service.impl.releaseimpl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +48,9 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	 	
 	     long userId=user.getId();   
 	     int role=user.getRole();
+
 	     
 	 	 int permissionid=0;	
-	 	
 	 	String permissionid_string= params.get("permissionid").toString().trim() ;    
 	 	String commoditytype=params.get("commoditytype").toString().trim() ;  
 	 	
@@ -57,7 +59,20 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	 	
 	 	if(permissionid_string!=null && permissionid_string!="") {
 	    		permissionid=Integer.parseInt(permissionid_string);
-               
+	   	     //检查是否实名
+//	   	     LEASE("店面/窗口出租",14),
+//	   		   RENTALBOOTH("摊位出租转让",15),
+//	   		   JOBWANTED("求职专区",31);
+//	   	   getIsAuthentication()=1已实名，  role=6商铺出租/求职，
+	    		//TODO此处还需要优化
+	    	if(permissionid!=PermissionCode.LEASE.getCode() && permissionid!=PermissionCode.RENTALBOOTH.getCode()
+	    			&& permissionid!=PermissionCode.JOBWANTED.getCode() ) {	
+	   	    	 if(user.getIsAuthentication()!=1) {
+	   	    		 return ServerResponse.createByErrorMessage("发布该项内容需要完善用户信息，请先到用户中心进行信息完善"); 
+	   	    	 }
+	   	    	 
+	   	    	 
+	   	     }
 	    		
 	    		//粮油code需要在PermissionCode中和数据库id保持一致
 	    		if(permissionid ==PermissionCode.GRAINANDOIL.getCode() ) {
@@ -76,9 +91,17 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
   
 	
 	
-	
+//菜单五已经实现 （更新图片）	
 	public ServerResponse<String> releaseGrainAndOil(Integer permissionid,String commoditytype, long userId,Integer role
 			, Map<String, Object> params){
+		System.out.println("___________________________________"+params.get("pictureUrl"));
+		System.out.println(params.get("pictureUrl").getClass());
+		
+		ArrayList<String> list= (ArrayList<String>) params.get("pictureUrl");
+		
+		System.out.println(list.size());
+		
+		
 		ServerResponse<String> checkroleString=checkRoleAndcommodityType(permissionid, commoditytype, userId,role);
 		if(!checkroleString.getMsg().equals("success")) {
 			return checkroleString;
@@ -113,6 +136,7 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	 		
 	 		//落库
 	 		grainAndOilMapper.caeateGrainAndOil(grainAndOil) ;
+	 		//更新图片  TODO
 	 		return ServerResponse.createBySuccess("创建成功");
 	 		
 	 	}else if((boolean)checknullMap.get("result")==false) {
@@ -128,7 +152,7 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	
 	
 	
-	
+	//校验
 	public  ServerResponse<String> checkRoleAndcommodityType(int permissionid ,String commoditytype,long userId,int role) {
 		  int isroleAndtype=0; 
 			//取得是总条数，后期可能会有一个用户多个角色的情况
