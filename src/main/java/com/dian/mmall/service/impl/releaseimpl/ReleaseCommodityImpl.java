@@ -107,8 +107,10 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 		List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) params.get("pictureUrl"),List.class,Picture.class);
 		int list_size=listObj3.size();
 		
+		System.out.println(listObj3.size());
+		
 		//把getUse_status()==1 放到这个集合中
-		List<Picture> listObj4=null;
+		List<Picture> listObj4=new ArrayList<Picture>();
 		
 		int getNum=PictureNum.GRAINANDOIL.getNum();
 		//如果大于5要判断没删除的是否超过总数
@@ -127,6 +129,7 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 		
 		
 
+	
 	
 	
 		
@@ -166,21 +169,15 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	 		grainAndOilMapper.caeateGrainAndOil(grainAndOil) ;
 	 		//更新图片  TODO
 	 		
-	 		
-	 		
-	 		
-	 		
-	 		ArrayList<Picture> arrayList=(ArrayList<Picture>) params.get("pictureUrl");
-	 		
-	 		for(int a=0;a<arrayList.size();a++) {
-	 			Picture picture=arrayList.get(a);
+	 		if(listObj4.size()>0) {
+	 		for(int a=0;a<listObj4.size();a++) {
+	 			Picture picture=listObj4.get(a);
 	 			picture.setTocken(loginToken);
-	 			picture.setId(userId);
-	 			ipics.updatePictureUse(picture);
+	 			picture.setUser_id(userId);
 	 			
+	 			ipics.updatePictureUse(picture);
 	 		}
-	 		
-	 		
+	 		}
 	 		return ServerResponse.createBySuccess("创建成功");
 	 		
 	 	}else if((boolean)checknullMap.get("result")==false) {
@@ -200,7 +197,6 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	public  ServerResponse<String> checkRoleAndcommodityType(int permissionid ,String commoditytype,long userId,int role) {
 		  int isroleAndtype=0; 
 			//取得是总条数，后期可能会有一个用户多个角色的情况
-		
 		
 		 isroleAndtype=tRolePermissionMapper.isrole(userId,permissionid);
 		 if(isroleAndtype<1) {
@@ -225,10 +221,5 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	  }
 	
 	  
-	
-	
-	
-	
-	  //更新图片库
 	
 }
