@@ -1,4 +1,4 @@
-package com.dian.mmall.pojo;
+package com.dian.mmall.pojo.tupian;
 
 import java.util.Date;
 
@@ -21,6 +21,12 @@ public class Picture {
 	private String create_time;
 	private String picture_name;  //图片名称
 	private String picture_url;  //图片名称
+	@Override
+	public String toString() {
+		return "Picture [id=" + id + ", use_status=" + use_status + ", user_name=" + user_name + ", user_id=" + user_id
+				+ ", tocken=" + tocken + ", create_time=" + create_time + ", picture_name=" + picture_name
+				+ ", picture_url=" + picture_url + "]";
+	}
 	
 	
 }

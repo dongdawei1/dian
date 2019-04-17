@@ -2,7 +2,7 @@ package com.dian.mmall.controller.common.interfaceo;
 
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ServerResponse;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;

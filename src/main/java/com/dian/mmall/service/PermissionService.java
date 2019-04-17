@@ -3,7 +3,7 @@ package com.dian.mmall.service;
 import java.util.List;
 
 import com.dian.mmall.pojo.Permission;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.user.User;
 
 
 

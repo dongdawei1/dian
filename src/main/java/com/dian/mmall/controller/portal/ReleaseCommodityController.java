@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dian.mmall.common.ServerResponse;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.ReleaseCommodityService;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
@@ -42,9 +42,7 @@ public class ReleaseCommodityController {
  		return ServerResponse.createByErrorMessage("用户登陆已过期");
  	}	
  	
- 	
- 	
- 	return releaseCommodityService.commodity(user,params);
+ 	return releaseCommodityService.commodity(user,loginToken,params);
  		
 	}
 

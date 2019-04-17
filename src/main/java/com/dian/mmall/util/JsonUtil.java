@@ -1,7 +1,6 @@
 package com.dian.mmall.util;
 
-import com.dian.mmall.pojo.TestPojo;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.user.User;
 import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +11,11 @@ import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.codehaus.jackson.type.JavaType;
 import org.codehaus.jackson.type.TypeReference;
+import org.json.JSONArray;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -110,8 +111,20 @@ public class JsonUtil {
             return null;
         }
     }
+    
+    public static <T> T   list2Obj(T obj,Class<?> collectionClass,Class<?>... elementClasses){
+    	
+    	  String listStr=	obj2StringPretty(obj);
+    	
+    	  
+    	 return string2Obj(listStr,collectionClass,elementClasses);
+    	
+ 
+    }
 
-
+//    List<T> list = new ArrayList<T>(); 
+//    JSONArray jsonArray = JSONArray.fromObject(str);//把String转换为json 
+//    list = JSONArray.toList(jsonArray,t);//这里的t是Class<T> 
 
 
 
@@ -120,17 +133,6 @@ public class JsonUtil {
 
 
     public static void main(String[] args) {
-        TestPojo testPojo = new TestPojo();
-        testPojo.setName("Geely");
-        testPojo.setId(666);
-
-        //{"name":"Geely","id":666}
-        String json = "{\"name\":\"Geely\",\"color\":\"blue\",\"id\":666}";
-        TestPojo testPojoObject = JsonUtil.string2Obj(json,TestPojo.class);
-        String testPojoJson = JsonUtil.obj2String(testPojo);
-        log.info("testPojoJson:{}",testPojoJson);
-
-        log.info("end");
 
         User user = new User();
         user.setId(2);
@@ -138,7 +140,7 @@ public class JsonUtil {
         String userJsonPretty = JsonUtil.obj2StringPretty(user);
         log.info("userJson:{}",userJsonPretty);
 
-
+        log.info("userJson:{}",user.toString());
 //        User u2 = new User();
 //        u2.setId(2);
 //        u2.setEmail("geelyu2@happymmall.com");

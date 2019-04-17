@@ -14,12 +14,12 @@
         select * from t_user 
     </select>
     
-    <select id="checkUsername" resultType="com.dian.mmall.pojo.User" parameterType="string" >
+    <select id="checkUsername" resultType="com.dian.mmall.pojo.user.User" parameterType="string" >
         select id,username, password,role,isAuthentication from t_user
         where username = #{username}
     </select>
     
-    <select id="selectUsername" resultType="com.dian.mmall.pojo.User" parameterType="string" >
+    <select id="selectUsername" resultType="com.dian.mmall.pojo.user.User" parameterType="string" >
         select id,username,role,isAuthentication from t_user
         where username = #{username}
     </select>	

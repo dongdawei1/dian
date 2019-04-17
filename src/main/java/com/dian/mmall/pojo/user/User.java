@@ -1,4 +1,4 @@
-package com.dian.mmall.pojo;
+package com.dian.mmall.pojo.user;
 
 import java.util.Date;
 
@@ -21,6 +21,12 @@ public class User {
 	  private Integer isAuthentication; //是否实名1已实名 2未实名
 	  private String createTime;
 	  private String updateTime;
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", mobilePhone=" + mobilePhone
+				+ ", role=" + role + ", isAuthentication=" + isAuthentication + ", createTime=" + createTime
+				+ ", updateTime=" + updateTime + "]";
+	}
 
 	 
 	

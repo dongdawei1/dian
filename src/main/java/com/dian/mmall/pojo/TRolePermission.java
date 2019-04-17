@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TRolePermission {
+	//角色对应的菜单
 	private Integer id;
 	private Integer permissionid;
 	private Integer roleid;

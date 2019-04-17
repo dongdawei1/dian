@@ -1,4 +1,4 @@
-package com.dian.mmall.pojo;
+package com.dian.mmall.pojo.yanzhengma;
 
 
 import org.apache.commons.codec.binary.Base64;

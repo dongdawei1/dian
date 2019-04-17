@@ -5,7 +5,7 @@ package com.dian.mmall.controller.common;
 import org.apache.commons.lang.StringUtils;
 
 import com.dian.mmall.common.Const;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;

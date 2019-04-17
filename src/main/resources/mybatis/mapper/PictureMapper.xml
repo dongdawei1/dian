@@ -7,7 +7,7 @@
 
 	
   
-    <select id="selectPicture" resultType="com.dian.mmall.pojo.Picture"  >
+    <select id="selectPicture" resultType="com.dian.mmall.pojo.tupian.Picture"  >
         select * from picture
         where use_status = #{use_status} and user_name=#{user_name} and 
         tocken=#{tocken}  and picture_name=#{picture_name} and picture_url=#{picture_url}
@@ -30,5 +30,11 @@
         tocken=#{tocken}  and picture_name=#{picture_name} and picture_url=#{picture_url}
   </update>
     
-    
+     <update id="updatePictureUse"  >
+    update picture
+    set use_status = 3 
+    where use_status =1 and user_id=#{user_id}  and 
+        tocken=#{tocken} 
+         and picture_name=#{picture_name} and picture_url=#{picture_url}
+  </update>
 </mapper>

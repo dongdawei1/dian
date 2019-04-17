@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.dian.mmall.dao.PermissionMapper;
 import com.dian.mmall.pojo.Permission;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.PermissionService;
 
 

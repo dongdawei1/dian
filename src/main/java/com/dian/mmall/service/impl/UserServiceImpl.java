@@ -3,7 +3,7 @@ package com.dian.mmall.service.impl;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.UserMapper;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IUserService;
 import com.dian.mmall.util.MD5Util;
 import com.dian.mmall.util.RedisShardedPoolUtil;

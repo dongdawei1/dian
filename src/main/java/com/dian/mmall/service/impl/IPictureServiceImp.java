@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.UserMapper;
-import com.dian.mmall.pojo.Picture;
+import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.service.IPictureService;
 @Service("iPictureService")
 public class IPictureServiceImp implements IPictureService {
@@ -31,6 +31,12 @@ public class IPictureServiceImp implements IPictureService {
 	@Override
 	public void updatePicture(Picture picture1) {
 		pictureMapper.updatePicture(picture1);
+		
+	}
+
+	@Override
+	public void updatePictureUse(Picture picture) {
+		pictureMapper.updatePictureUse( picture);
 		
 	}
 	  

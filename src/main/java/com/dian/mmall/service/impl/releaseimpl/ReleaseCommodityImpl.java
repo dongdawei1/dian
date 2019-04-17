@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.type.JavaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,16 @@ import com.dian.mmall.dao.CommodityTypeMapper;
 import com.dian.mmall.dao.releaseDao.GrainAndOilMapper;
 import com.dian.mmall.dao.releaseDao.TRolePermissionMapper;
 import com.dian.mmall.enums.PermissionCode;
+import com.dian.mmall.enums.PictureNum;
 import com.dian.mmall.enums.ReleaseCount;
-import com.dian.mmall.pojo.User;
 import com.dian.mmall.pojo.commodity.GrainAndOil;
+import com.dian.mmall.pojo.tupian.Picture;
+import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.service.IPictureService;
 import com.dian.mmall.service.release.ReleaseCommodityService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
+import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
 /**
  * 所有发布商品的接口
@@ -36,8 +41,11 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	@Autowired
 	private CommodityTypeMapper commodityTypeMapper;
 	
+	 @Autowired
+	    private IPictureService ipics;  //图片库更新
+	
 	@Override
-	public ServerResponse<String> commodity(User user, Map<String, Object> params) {
+	public ServerResponse<String> commodity(User user,String loginToken, Map<String, Object> params) {
 		
 
 	 	//检查是否有非法输入
@@ -77,7 +85,7 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	    		//粮油code需要在PermissionCode中和数据库id保持一致
 	    		if(permissionid ==PermissionCode.GRAINANDOIL.getCode() ) {
 	    		return 	releaseGrainAndOil(permissionid,commoditytype, userId,role
-	    					, params);
+	    					, params,loginToken);
 		
 	    		}else {
 	    			//如果不等于所有就不是此菜单
@@ -93,14 +101,34 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	
 //菜单五已经实现 （更新图片）	
 	public ServerResponse<String> releaseGrainAndOil(Integer permissionid,String commoditytype, long userId,Integer role
-			, Map<String, Object> params){
-		System.out.println("___________________________________"+params.get("pictureUrl"));
-		System.out.println(params.get("pictureUrl").getClass());
+			, Map<String, Object> params,String loginToken){
+
 		
-		ArrayList<String> list= (ArrayList<String>) params.get("pictureUrl");
+		List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) params.get("pictureUrl"),List.class,Picture.class);
+		int list_size=listObj3.size();
 		
-		System.out.println(list.size());
+		//把getUse_status()==1 放到这个集合中
+		List<Picture> listObj4=null;
 		
+		int getNum=PictureNum.GRAINANDOIL.getNum();
+		//如果大于5要判断没删除的是否超过总数
+		if(list_size>0) {
+			int count=0;
+			for(int a=0;a<list_size;a++) {
+				if(listObj3.get(a).getUse_status()==1) {
+					listObj4.add(listObj3.get(a));
+					count+=1;
+				}
+				if(count>getNum) {
+					return ServerResponse.createByErrorMessage("图片数量不能超过 "+getNum+"个");
+				}
+				
+			}}
+		
+		
+
+	
+	
 		
 		ServerResponse<String> checkroleString=checkRoleAndcommodityType(permissionid, commoditytype, userId,role);
 		if(!checkroleString.getMsg().equals("success")) {
@@ -137,6 +165,22 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	 		//落库
 	 		grainAndOilMapper.caeateGrainAndOil(grainAndOil) ;
 	 		//更新图片  TODO
+	 		
+	 		
+	 		
+	 		
+	 		
+	 		ArrayList<Picture> arrayList=(ArrayList<Picture>) params.get("pictureUrl");
+	 		
+	 		for(int a=0;a<arrayList.size();a++) {
+	 			Picture picture=arrayList.get(a);
+	 			picture.setTocken(loginToken);
+	 			picture.setId(userId);
+	 			ipics.updatePictureUse(picture);
+	 			
+	 		}
+	 		
+	 		
 	 		return ServerResponse.createBySuccess("创建成功");
 	 		
 	 	}else if((boolean)checknullMap.get("result")==false) {

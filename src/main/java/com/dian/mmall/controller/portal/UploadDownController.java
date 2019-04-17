@@ -22,8 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dian.mmall.common.Result;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.Permission;
-import com.dian.mmall.pojo.Picture;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.tupian.Picture;
+import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IPictureService;
 import com.dian.mmall.service.IUserService;
 import com.dian.mmall.util.CookieUtil;
@@ -129,8 +129,8 @@ public class UploadDownController {
         picture1.setUser_id(user.getId());
         picture1.setUser_name(user.getUsername());
         picture1.setUse_status(1);  
-        String picture_name=params.get("name").toString().trim();
-        String picture_url=params.get("url").toString().trim();
+        String picture_name=params.get("picture_name").toString().trim();
+        String picture_url=params.get("picture_url").toString().trim();
        
         
         System.out.println(picture_name+" fffff  "+picture_url);

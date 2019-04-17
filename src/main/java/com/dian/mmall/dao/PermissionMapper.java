@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import com.dian.mmall.pojo.Permission;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.user.User;
 
 
 @Mapper

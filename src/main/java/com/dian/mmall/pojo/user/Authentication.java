@@ -1,4 +1,4 @@
-package com.dian.mmall.pojo;
+package com.dian.mmall.pojo.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

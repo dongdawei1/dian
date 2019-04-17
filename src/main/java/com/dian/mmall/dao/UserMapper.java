@@ -1,13 +1,13 @@
 package com.dian.mmall.dao;
 
-import com.dian.mmall.pojo.User;
-
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
+import com.dian.mmall.pojo.user.User;
 @Mapper
 public interface UserMapper {
 //测试mybatis

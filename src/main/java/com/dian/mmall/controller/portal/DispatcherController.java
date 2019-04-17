@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.Permission;
-import com.dian.mmall.pojo.User;
+import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IUserService;
 import com.dian.mmall.service.PermissionService;
 import com.dian.mmall.util.CookieUtil;
