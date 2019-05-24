@@ -57,9 +57,12 @@ public class UploadDownController {
     	
     	
         //获取文件在服务器的储存位置
-        String path = httpServletRequest.getSession().getServletContext().getRealPath("/upload");
-        File filePath = new File(path);
-        
+       // String path = httpServletRequest.getSession().getServletContext().getRealPath("/upload");
+    	String path="e:/upload/";
+    	File filePath = new File(path);
+        System.out.println(httpServletRequest.getSession().getServletContext().getRealPath("/upload"));
+        System.out.println(filePath.toPath().toString());
+        System.out.println(filePath.toString());
         if (!filePath.exists() && !filePath.isDirectory()) {
             
             filePath.mkdir();
@@ -95,11 +98,11 @@ public class UploadDownController {
             picture1.setUser_name(user.getUsername());
             picture1.setUse_status(1);        
             picture1.setPicture_name(originalFileName);
-            picture1.setPicture_url("/upload/" + fileName);
+            picture1.setPicture_url(path + fileName);
             
            ipics.createPicture(picture1);
             
-            return new Result(true,"/upload/" + fileName);
+            return new Result(true,path + fileName);
         } catch (IOException e) {
            
             e.printStackTrace();

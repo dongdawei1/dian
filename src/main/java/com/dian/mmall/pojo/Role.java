@@ -15,5 +15,9 @@ public class Role {
 //角色种类，角色表t_role
 	private Integer id;
 	private String name;
+	@Override
+	public String toString() {
+		return "Role [id=" + id + ", name=" + name + "]";
+	}
 
 }

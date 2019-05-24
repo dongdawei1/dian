@@ -24,6 +24,17 @@
     
     
     
+    <!-- 查询总数  isDelete=1 正常    approval_status=2  审批通过-->
+     <select id="getGrainAndOilPageno" resultType="int">
+        select count(*) from shang_grainandoil where isDelete=1  and approval_status=2
+    </select>
     
+      <!-- 查询总数  isDelete=1 正常    approval_status=2  审批通过-->
     
+    <select id="getGrainAndOilList" resultType="com.dian.mmall.pojo.commodity.GrainAndOil">
+        select * from shang_grainandoil where isDelete=1  and approval_status=2
+        limit #{currentPage}, #{pageSize}
+    </select>
+    
+   
 </mapper>

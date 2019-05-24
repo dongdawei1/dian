@@ -47,7 +47,9 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	@Override
 	public ServerResponse<String> commodity(User user,String loginToken, Map<String, Object> params) {
 		
-
+  //上传需要校验，权限，登陆状态，图片总数，非空，发布总数，实名，非法输入，类别
+		
+		
 	 	//检查是否有非法输入
 	 	if(!LegalCheck.LegalCheckFrom(params)) {	
 				return ServerResponse.createByErrorMessage("内容中有非法输入不能包含delete,uptate");
@@ -99,7 +101,7 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
   
 	
 	
-//菜单五已经实现 （更新图片）	
+//菜单五已经实现 	
 	public ServerResponse<String> releaseGrainAndOil(Integer permissionid,String commoditytype, long userId,Integer role
 			, Map<String, Object> params,String loginToken){
 

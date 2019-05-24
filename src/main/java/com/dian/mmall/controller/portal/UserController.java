@@ -17,6 +17,7 @@ import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseCode;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.controller.common.interfaceo.AuthorityInterceptor;
+import com.dian.mmall.pojo.Role;
 import com.dian.mmall.pojo.TUserRole;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.yanzhengma.CheckPicCode;
@@ -42,6 +43,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+
+
+
+/**
+ * 接口测试开始
+ */
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+
+/**
+ * 接口测试结束
+ */
 /**
  * Created by geely
  */
@@ -115,11 +130,10 @@ public class UserController {
     		//@RequestParam String username, //@RequestParamString password,
     		HttpSession session, HttpServletResponse httpServletResponse){
       
-    	
+    
    	 String uuid  =params.get("uuid").toString().trim() ; 
 	 String captcha  =params.get("captcha").toString().trim() ; 
 	 
-	
 	  
 	 String getPicCode=RedisShardedPoolUtil.get(uuid);
 	 
@@ -290,22 +304,7 @@ public class UserController {
         return iUserService.register(user);
     }
 
-
-    @RequestMapping(value = "check_valid.do",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> checkValid(String str,String type){
-        return iUserService.checkValid(str,type);
-    }
-
-
-
-
-    @RequestMapping(value = "forget_get_question.do",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> forgetGetQuestion(String username){
-        return iUserService.selectQuestion(username);
-    }
-
+  
 
     @RequestMapping(value = "forget_check_answer.do",method = RequestMethod.POST)
     @ResponseBody
