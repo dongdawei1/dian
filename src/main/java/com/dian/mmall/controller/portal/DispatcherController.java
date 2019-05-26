@@ -38,7 +38,7 @@ public class DispatcherController {
 	
 	@ResponseBody
 	@RequestMapping(value="/loadData" )
-	public ServerResponse<List<Permission>> loadData(HttpServletRequest httpServletRequest) {
+	public ServerResponse<Object> loadData(HttpServletRequest httpServletRequest) {
 			 
 		List<Permission> permissions = new ArrayList<Permission>();
 		
@@ -50,32 +50,13 @@ public class DispatcherController {
     	User user = JsonUtil.string2Obj(userJsonStr,User.class);
     	
     	if(user != null){
-    		
-    		 
+ 
     		// 获取用户权限信息
-    		List<Permission> ps = permissionService.queryPermissionsByUser(user);
-//    		Map<Integer, Permission> permissionMap = new HashMap<Integer, Permission>();
-//    		for (Permission p : ps) {
-//    			permissionMap.put(p.getId(), p);
-//    		}
-//    		for ( Permission p : ps ) {
-//    			Permission child = p;
-//    			if ( child.getPid() == 0 ) {
-//    				permissions.add(p);
-//    			} else {
-//    				Permission parent = permissionMap.get(child.getPid());
-//    				parent.getChildren().add(child);
-//    			}
-//    		}
-    		
-    		
+    		List<Permission> ps = permissionService.queryPermissionsByUser(user);	
     		return ServerResponse.createBySuccess(ps);
     	}
     	return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
-		
-		
-		
-	
+
 	}
 	
 

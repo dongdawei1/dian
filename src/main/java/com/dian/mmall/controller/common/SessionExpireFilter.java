@@ -33,7 +33,6 @@ public class SessionExpireFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest)servletRequest;
 
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
- System.out.println(loginToken+"tovken");
         if(StringUtils.isNotEmpty(loginToken)){
             //判断logintoken是否为空或者""；
             //如果不为空的话，符合条件，继续拿user信息
@@ -43,7 +42,6 @@ public class SessionExpireFilter implements Filter {
             User user = JsonUtil.string2Obj(userJsonStr,User.class);
             
             if(user != null){
-            	System.out.println(user.getUsername()+">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 //如果user不为空，则重置session的时间，即调用expire命令
                 RedisShardedPoolUtil.expire(loginToken, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
             }

@@ -26,7 +26,7 @@ public class ReleaseCommodityController {
 	private  ReleaseCommodityService  releaseCommodityService;
 	
 	  
-	 //发布 
+	 //发布 商品信息
  @RequestMapping(value = "release",method = RequestMethod.POST)
  @ResponseBody
  public ServerResponse<String> commodity(@RequestBody Map<String, Object> params, HttpServletRequest httpServletRequest){

@@ -5,6 +5,7 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.UserMapper;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IUserService;
+import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.MD5Util;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,8 @@ public class UserServiceImpl implements IUserService {
 
  //登陆
     @Override
-    public ServerResponse<User> login(String username, String password) {
+    public ServerResponse<String> login(String username, String password) {
         User user1 =userMapper.checkUsername(username);
-       System.out.println(user1);
         if(user1 ==null){
             return ServerResponse.createByErrorMessage("用户名或密码错误");
         }
@@ -43,7 +43,7 @@ public class UserServiceImpl implements IUserService {
         //user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
        //置为null以后不会系列化，不会传给前端
         user1.setPassword(null);
-      return ServerResponse.createBySuccess("登录成功",user1);
+      return ServerResponse.createBySuccess(JsonUtil.obj2String(user1));
     }
 
   //注册完以后登录

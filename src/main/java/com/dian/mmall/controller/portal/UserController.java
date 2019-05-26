@@ -84,42 +84,29 @@ public class UserController {
     @ResponseBody
     public ServerResponse<String> login(@RequestBody Map<String, Object> params, HttpSession session,
     		HttpServletResponse httpServletResponse){
-        
-    	
-    	
+       
     	 String usernamrString  = params.get("username").toString().trim() ;
     	 String passwordString  = params.get("password").toString().trim() ;
-    	 String uuid  =params.get("uuid").toString().trim() ; 
     	 String captcha  =params.get("captcha").toString().trim() ; 
-    	 
-
-    	 
-    	 String getPicCode=RedisShardedPoolUtil.get(uuid);
+    	 String getPicCode=RedisShardedPoolUtil.get(params.get("uuid").toString().trim());
     	
     	 
     	if( ! captcha.equalsIgnoreCase(getPicCode)) {
     		
     		  return ServerResponse.createByErrorMessage("验证码错误或失效");
     	}
-    	
-    	
-    	
-    	ServerResponse<User> response = iUserService.login(usernamrString,passwordString);
-    	 String userString=null;
-    	if(response.isSuccess()){
 
-//            session.setAttribute(Const.CURRENT_USER,response.getData());
-        	
-        	
-        	
+    	ServerResponse<String> response = iUserService.login(usernamrString,passwordString);
+    	if(response.isSuccess()){
           CookieUtil.writeLoginToken(httpServletResponse,session.getId());
-          
-         userString=JsonUtil.obj2String(response.getData());
-        	   System.out.println(session.getId()+userString+"   "+Const.RedisCacheExtime.REDIS_SESSION_EXTIME+"  "+httpServletResponse);
+          System.out.println(response.getData().toString()+"rrrrr");
          //把用户session当做key存到数据库中，时长是 30分钟
-        	   RedisShardedPoolUtil.setEx(session.getId(), JsonUtil.obj2String(response.getData()),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+        	   RedisShardedPoolUtil.setEx(session.getId(), response.getData(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+        	   return response;
+    	}else {
+    		return response;
         }
-        return ServerResponse.createBySuccess(userString);
+        
     }
     
     
@@ -162,8 +149,8 @@ public class UserController {
     	   return ServerResponse.createByErrorMessage("用户名或密码有特殊字符");
        }
        //判断用户角色
-    	if(role.indexOf("2")!=0 && role.indexOf("4")!=0 && role.indexOf("6")!=0 &&
-    			role.indexOf("8")!=0 && role.indexOf("10")!=0 ) {
+    	if(role.indexOf("2")!=0 && role.indexOf("3")!=0 && role.indexOf("4")!=0  && role.indexOf("5")!=0  &&  role.indexOf("6")!=0   && role.indexOf("7")!=0 &&
+    			 role.indexOf("8")!=0 && role.indexOf("10")!=0 && role.indexOf("11")!=0 && role.indexOf("12")!=0 ) {
     		 return ServerResponse.createByErrorMessage("用户角色错误"); 		
     	}
     	
@@ -255,8 +242,6 @@ public class UserController {
         CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
         RedisShardedPoolUtil.del(loginToken);
 
-//        session.removeAttribute(Const.CURRENT_USER);
-       
         return ServerResponse.createBySuccess();
     }
 

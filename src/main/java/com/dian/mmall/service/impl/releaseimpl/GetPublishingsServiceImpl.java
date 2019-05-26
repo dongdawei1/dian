@@ -105,7 +105,7 @@ public class GetPublishingsServiceImpl implements GetPublishingsService {
 				//在这里查询 TODO
 				return ServerResponse.createBySuccess(grainAndOil_pagePage);
 			}else {
-				System.out.println("米面测长权限");
+				
 				 return checkroleString;  
 			}
 	     

@@ -11,7 +11,7 @@ import com.dian.mmall.pojo.user.User;
  */
 public interface IUserService {
    //登陆
-    ServerResponse<User> login(String username, String password);
+    ServerResponse<String> login(String username, String password);
     //注册完以后登录
     ServerResponse<User> login(String username);
     

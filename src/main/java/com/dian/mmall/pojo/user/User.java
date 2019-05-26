@@ -19,6 +19,7 @@ public class User {
 	 private String mobilePhone; //手机号
 	  private Integer role; //角色
 	  private Integer isAuthentication; //是否实名1已实名 2未实名
+	  
 	  private String createTime;
 	  private String updateTime;
 	@Override

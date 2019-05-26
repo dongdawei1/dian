@@ -28,7 +28,7 @@ public class GetPublishingsController {
 	@Autowired
 	private  GetPublishingsService getPublishingsService;
 	
-//获取发布接口
+//查询商品接口
     
     @RequestMapping(value = "getGoods",method = RequestMethod.POST)
     @ResponseBody
