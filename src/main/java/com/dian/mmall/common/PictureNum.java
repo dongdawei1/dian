@@ -1,4 +1,4 @@
-package com.dian.mmall.enums;
+package com.dian.mmall.common;
 
 import lombok.Getter;
 

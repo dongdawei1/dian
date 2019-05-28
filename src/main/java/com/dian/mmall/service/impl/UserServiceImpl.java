@@ -1,16 +1,26 @@
 package com.dian.mmall.service.impl;
 
 import com.dian.mmall.common.Const;
+import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.UserMapper;
+import com.dian.mmall.pojo.TUserRole;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IUserService;
+import com.dian.mmall.service.TUserRoleService;
+import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
+import com.dian.mmall.util.LegalCheck;
 import com.dian.mmall.util.MD5Util;
 import com.dian.mmall.util.RedisShardedPoolUtil;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -18,11 +28,15 @@ import java.util.UUID;
 /**
  * Created by geely
  */
+@Slf4j
 @Service("iUserService")
 public class UserServiceImpl implements IUserService {
 //
     @Autowired
     private UserMapper userMapper;
+    
+    @Autowired
+    private TUserRoleService tUserRoleService;
 
  //登陆
     @Override
@@ -225,27 +239,91 @@ public class UserServiceImpl implements IUserService {
 
 //判断用户名是否可用
 	@Override
-	public ServerResponse<User> checkUsername(String username) {
+	public ServerResponse<String> checkUsername(String username) {
 		 User user1 =userMapper.checkUsername(username);
 	       System.out.println(user1);
 	        if(user1 ==null){
-	            return ServerResponse.createByErrorMessage("可以注册");
-	        }
-	   
+	            return ServerResponse.createBySuccessMessage(ResponseMessage.YongHuMingKeYong.getMessage());
+	        }  
 	        user1=null;
-	      return ServerResponse.createBySuccess("用户名被注册，请换一个",user1);
+	      return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingBuKeYong.getMessage());
 		
 	}
 
-  //注册后返回id
+  //用户注册
 
 	@Override
-	public long createUser(User user) {
-		
-		int count= userMapper.createUser(user);
-		System.out.println(count);
-		
-		return selectUserId(user);
+	public ServerResponse<String> createUser(Map<String,Object> params) {
+		String password = params.get("pass").toString().trim();
+    	String checkPass = params.get("checkPass").toString().trim();
+    	if(!password.equals(checkPass)) {
+    		return ServerResponse.createByErrorMessage("两次密码输入不一致");
+    	}
+    	
+    
+    	
+    	//校验是否有特殊字符
+    	ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
+	 	//检查是否有非法输入
+	 	if(serverResponse.getStatus()!=0) {	
+				return serverResponse;			
+			}	
+       //判断用户角色
+		String role = params.get("role").toString().trim();
+	 	serverResponse=LegalCheck.legalCheckRole(role);
+	 	//检查是否有非法输入
+	 	if(serverResponse.getStatus()!=0) {	
+				return serverResponse;			
+			}
+    		
+	 	String username = params.get("name").toString().trim();
+    	String mobilePhone = params.get("mobilePhone").toString().trim();
+       
+    	//检查用户名是否重复
+    	ServerResponse<String>  check_name=checkUsername(username);
+    	//如果返回是空可以注册
+    	if(check_name.getStatus()!=0) {
+    		return check_name;
+    	}
+    	
+    	
+    	
+      // String 	userString =null;
+    	
+    	
+    		SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
+     		
+    		User user=new User();     		
+     		user.setCreateTime(formatter.format(new Date()));
+     		//MD5加密
+     		user.setPassword(MD5Util.MD5EncodeUtf8(password));
+     		user.setUsername(username);
+     		user.setMobilePhone(mobilePhone);
+     		user.setRole(Integer.parseInt(role));
+     		user.setIsAuthentication(2);//是否实名1是2未实名
+         	
+     		
+     		try {
+     			//创建用户
+     			int resultCount=userMapper.createUser(user);
+     			if(resultCount == 0){
+                  return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+              }
+     			//创建用户角色
+     			TUserRole tUserRole=new TUserRole();
+     			tUserRole.setUserid(selectUserId( user));     			
+     			tUserRole.setRoleid(Integer.parseInt(role));
+     			
+     			tUserRoleService.createTUserRole(tUserRole);  	
+			} catch (Exception e) {
+				log.info("createUserError   ",e);
+				return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+			}
+     		
+     		user.setPassword(null);
+     		user.setCreateTime(null);
+     		return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(user));
+     	
 	}
 
 
@@ -254,6 +332,13 @@ public class UserServiceImpl implements IUserService {
 	public long selectUserId(User user) {
 		
 		return userMapper.checkUsername(user.getUsername()).getId();
+	}
+ 
+	//编辑用户基本信息
+	@Override
+	public ServerResponse<String> update_information(long id, Map<String, Object> params) {
+		User user=userMapper.selectByPrimaryKey(id);
+		return null;
 	}
 
 	

@@ -10,13 +10,13 @@ import org.codehaus.jackson.type.JavaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dian.mmall.common.PermissionCode;
+import com.dian.mmall.common.PictureNum;
+import com.dian.mmall.common.ReleaseCount;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.CommodityTypeMapper;
 import com.dian.mmall.dao.releaseDao.GrainAndOilMapper;
 import com.dian.mmall.dao.releaseDao.TRolePermissionMapper;
-import com.dian.mmall.enums.PermissionCode;
-import com.dian.mmall.enums.PictureNum;
-import com.dian.mmall.enums.ReleaseCount;
 import com.dian.mmall.pojo.commodity.GrainAndOil;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.User;
@@ -49,10 +49,10 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 		
   //上传需要校验，权限，登陆状态，图片总数，非空，发布总数，实名，非法输入，类别
 		
-		
+		ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
 	 	//检查是否有非法输入
-	 	if(!LegalCheck.LegalCheckFrom(params)) {	
-				return ServerResponse.createByErrorMessage("内容中有非法输入不能包含delete,uptate");
+	 	if(serverResponse.getStatus()!=0) {	
+				return serverResponse;
 			
 			}	
 	 	

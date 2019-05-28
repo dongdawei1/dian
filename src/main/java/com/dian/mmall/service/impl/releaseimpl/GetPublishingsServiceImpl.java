@@ -9,12 +9,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dian.mmall.common.PermissionCode;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.releaseDao.GrainAndOilMapper;
 import com.dian.mmall.dao.releaseDao.TRolePermissionMapper;
-import com.dian.mmall.enums.PermissionCode;
-import com.dian.mmall.enums.PictureNum;
-import com.dian.mmall.enums.ReleaseCount;
 import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.commodity.GrainAndOil;
 import com.dian.mmall.pojo.tupian.Picture;

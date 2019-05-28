@@ -18,15 +18,16 @@ public interface UserMapper {
 //    int insert(User record);
 //
 //    int insertSelective(User record);
-//
-//    User selectByPrimaryKey(Integer id);
+	
+// 根据id 查询出用户信息
+    User selectByPrimaryKey(long id);
 //
 //    int updateByPrimaryKeySelective(User record);
 //
 //    int updateByPrimaryKey(User record);
    //检查有没有此用户名
    User checkUsername(String username);
-   //注册返回id
+   //成功返回非0
    int createUser(User user);
    //注册以后返回用户名等信息
    User selectUsername(String username);

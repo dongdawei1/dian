@@ -44,22 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 
-
-
-/**
- * 接口测试开始
- */
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-
-
-/**
- * 接口测试结束
- */
-/**
- * Created by geely
- */
 @Controller
 @RequestMapping("/api/user/")
 public class UserController {
@@ -87,10 +71,10 @@ public class UserController {
        
     	 String usernamrString  = params.get("username").toString().trim() ;
     	 String passwordString  = params.get("password").toString().trim() ;
+    	 
+    	 
     	 String captcha  =params.get("captcha").toString().trim() ; 
     	 String getPicCode=RedisShardedPoolUtil.get(params.get("uuid").toString().trim());
-    	
-    	 
     	if( ! captcha.equalsIgnoreCase(getPicCode)) {
     		
     		  return ServerResponse.createByErrorMessage("验证码错误或失效");
@@ -114,99 +98,27 @@ public class UserController {
     @RequestMapping(value = "create",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> create(@RequestBody Map<String,Object> params,
-    		//@RequestParam String username, //@RequestParamString password,
     		HttpSession session, HttpServletResponse httpServletResponse){
       
     
    	 String uuid  =params.get("uuid").toString().trim() ; 
 	 String captcha  =params.get("captcha").toString().trim() ; 
-	 
-	  
 	 String getPicCode=RedisShardedPoolUtil.get(uuid);
-	 
-	 
-	 
-	if( ! captcha.equalsIgnoreCase(getPicCode)) {
-		
+	if( ! captcha.equalsIgnoreCase(getPicCode)) {		
 		  return ServerResponse.createByErrorMessage("验证码错误或失效");
 	}
     	
+	ServerResponse<String> serverResponse= iUserService.createUser(params);
     	
-    	
-    	String password = params.get("pass").toString().trim();
-    	String checkPass = params.get("checkPass").toString().trim();
-    	if(!password.equals(checkPass)) {
-    		return ServerResponse.createByErrorMessage("两次密码输入不一致");
-    	}
-    	
-    	String username = params.get("name").toString().trim();
-    	String mobilePhone = params.get("mobilePhone").toString().trim();
-    	String role = params.get("role").toString().trim();
-    	
-    	//校验是否有特殊字符
-       if(password.toLowerCase().indexOf("delete")>=0 || password.toLowerCase().indexOf("update")>=0 
-    		   || username.toLowerCase().indexOf("delete")>=0 || username.toLowerCase().indexOf("update")>=0 ) {
-    	   return ServerResponse.createByErrorMessage("用户名或密码有特殊字符");
-       }
-       //判断用户角色
-    	if(role.indexOf("2")!=0 && role.indexOf("3")!=0 && role.indexOf("4")!=0  && role.indexOf("5")!=0  &&  role.indexOf("6")!=0   && role.indexOf("7")!=0 &&
-    			 role.indexOf("8")!=0 && role.indexOf("10")!=0 && role.indexOf("11")!=0 && role.indexOf("12")!=0 ) {
-    		 return ServerResponse.createByErrorMessage("用户角色错误"); 		
-    	}
-    	
-    	
-    	
-     //检查用户名是否重复
-    	ServerResponse<User>  check_name=iUserService.checkUsername(username);
-    	//如果返回是空可以注册
-    	
-       String 	userString =null;
-    	
-    	if(!check_name.isSuccess()) {
-    		logger.info("ss   ",check_name.isSuccess());
-    		 SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-     		
-    		   
-     		User user=new User();
-     		
-     		user.setCreateTime(formatter.format(new Date()));
-     		user.setPassword(password);
-     		user.setUsername(username);
-     		user.setMobilePhone(mobilePhone);
-     		user.setRole(Integer.parseInt(role));
-     		user.setIsAuthentication(2);//是否实名1是2未实名
-         	
-     		try {
-     			//创建用户
-     			long user_id=iUserService.createUser(user);
-     		
-     			TUserRole tUserRole=new TUserRole();
-     			tUserRole.setUserid(user_id);     			
-     			tUserRole.setRoleid(Integer.parseInt(role));
-     			
-     			tUserRoleService.createTUserRole(tUserRole);
-     	
-			} catch (Exception e) {
-				logger.info("createUserError   ",e);
-				return ServerResponse.createByErrorMessage("用户名已被注册,请更换新的用户名"); 
-			}
-     		
-     	  check_name=iUserService.login(username);
-     		
-     	 userString= JsonUtil.obj2String(check_name.getData());
-     	  
+ 		if(serverResponse.getStatus()!=0) {
+ 			return serverResponse;
+ 		}
+
            CookieUtil.writeLoginToken(httpServletResponse,session.getId());
          	
           //把用户session当做key存到数据库中，时长是 30分钟
-         	   RedisShardedPoolUtil.setEx(session.getId(),userString,Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
-    		
-    	}else{
-    		
-    		
-    		return ServerResponse.createByErrorMessage("用户名已被注册"); 
-    		
-        }
-        return ServerResponse.createBySuccess(userString);
+         RedisShardedPoolUtil.setEx(session.getId(),serverResponse.getData(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+		return serverResponse;
     }
     
   //获取用户信息
@@ -214,8 +126,7 @@ public class UserController {
     @RequestMapping(value = "get_user_info",method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<String> getUserInfo(HttpServletRequest httpServletRequest){
-    	
-    	System.out.print(httpServletRequest.toString());
+   
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
     	if(StringUtils.isEmpty(loginToken)){
     		return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
@@ -225,7 +136,7 @@ public class UserController {
        
    
     	if(user != null){
-    	    System.out.print(JsonUtil.obj2String(user));
+    	 
     		return ServerResponse.createBySuccess(JsonUtil.obj2String(user));
     	}
     	return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
@@ -282,7 +193,29 @@ public class UserController {
 
 	}
     
-    
+  
+	
+   //修改用户基本信息，如果修改了密码和用户名就强制用户重新登陆，如果只修改手机号不重新登陆
+    @RequestMapping(value = "update_information",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> update_information(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if(StringUtils.isEmpty(loginToken)){
+            return ServerResponse.createByErrorMessage("编辑失败，登陆过期");
+        }
+        String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+        User currentUser = JsonUtil.string2Obj(userJsonStr,User.class);
+
+        if(currentUser == null){
+            return ServerResponse.createByErrorMessage("用户未登录");
+        }
+        
+        return iUserService.update_information(currentUser.getId(),params);
+    }
+	
+	
+	
+	
     @RequestMapping(value = "register.do",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> register(User user){
@@ -324,28 +257,6 @@ public class UserController {
     }
 
 
-    @RequestMapping(value = "update_information.do",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<User> update_information(HttpServletRequest httpServletRequest,User user){
-        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        if(StringUtils.isEmpty(loginToken)){
-            return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
-        }
-        String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-        User currentUser = JsonUtil.string2Obj(userJsonStr,User.class);
-
-        if(currentUser == null){
-            return ServerResponse.createByErrorMessage("用户未登录");
-        }
-        user.setId(currentUser.getId());
-        user.setUsername(currentUser.getUsername());
-        ServerResponse<User> response = iUserService.updateInformation(user);
-        if(response.isSuccess()){
-            response.getData().setUsername(currentUser.getUsername());
-            RedisShardedPoolUtil.setEx(loginToken, JsonUtil.obj2String(response.getData()),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
-        }
-        return response;
-    }
 
     @RequestMapping(value = "get_information.do",method = RequestMethod.POST)
     @ResponseBody

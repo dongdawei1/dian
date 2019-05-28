@@ -15,18 +15,18 @@
     </select>
     
     <select id="checkUsername" resultType="com.dian.mmall.pojo.user.User" parameterType="string" >
-        select id,username, password,role,isAuthentication from t_user
+        select id,username, password,role,isAuthentication,mobilePhone from t_user
         where username = #{username}
     </select>
     
     <select id="selectUsername" resultType="com.dian.mmall.pojo.user.User" parameterType="string" >
-        select id,username,role,isAuthentication from t_user
+        select id,username,role,isAuthentication,mobilePhone from t_user
         where username = #{username}
     </select>	
     
     
     
-   <!--创建用户返回id  -->
+   <!--创建用户成功返回非0  -->
      <insert id="createUser"  >
         insert into t_user (
             username, password, mobilePhone, role, createTime,isAuthentication
@@ -34,5 +34,10 @@
             #{username}, #{password}, #{mobilePhone}, #{role}, #{createTime},#{isAuthentication}
         )
     </insert>
+    
+    <!--根据id查用户  -->    
+      <select id="selectByPrimaryKey" resultType="com.dian.mmall.pojo.user.User">
+        SELECT * FROM employee WHERE id=#{id}
+    </select>
     
 </mapper>

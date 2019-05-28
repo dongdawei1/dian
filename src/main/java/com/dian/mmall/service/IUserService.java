@@ -34,12 +34,16 @@ public interface IUserService {
     ServerResponse<User> getInformation(long l);
 
     ServerResponse checkAdminRole(User user);
-//测试mybaits
+
+    //测试mybaits
 	List<Map<String, Object>> getall();
-//注册检查用户名是否可用
-	ServerResponse<User> checkUsername(String username);
-//注册
-	long createUser(User user);
+
+	//注册检查用户名是否可用
+	ServerResponse<String> checkUsername(String username);
+   //注册
+	ServerResponse<String> createUser(Map<String,Object> params);
 	//根据用户名查id
 	long selectUserId(User user);
+	//编辑用户基本信息
+	ServerResponse<String> update_information(long id, Map<String, Object> params);
 }
