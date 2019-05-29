@@ -21,6 +21,6 @@ public static void main(String[] args) {
 	// map.put("wwwww3", "update");
 	// map.put("wwwww4", "=");
 	 ;
-	 System.out.println(LegalCheck.legalCheckFrom(map).getStatus());
+	 System.out.println("wwww".length());
 }
 }

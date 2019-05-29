@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseCode;
+import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.controller.common.interfaceo.AuthorityInterceptor;
 import com.dian.mmall.pojo.Role;
@@ -57,35 +58,24 @@ public class UserController {
     private TUserRoleService tUserRoleService;
     
    
-    /**
-     * 用户登录
-     * @param username
-     * @param password
-     * @param session
-     * @return
-     */
+    //用户登录
     @RequestMapping(value = "login",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> login(@RequestBody Map<String, Object> params, HttpSession session,
     		HttpServletResponse httpServletResponse){
-       
-    	 String usernamrString  = params.get("username").toString().trim() ;
-    	 String passwordString  = params.get("password").toString().trim() ;
-    	 
-    	 
+ 
     	 String captcha  =params.get("captcha").toString().trim() ; 
     	 String getPicCode=RedisShardedPoolUtil.get(params.get("uuid").toString().trim());
-    	if( ! captcha.equalsIgnoreCase(getPicCode)) {
-    		
-    		  return ServerResponse.createByErrorMessage("验证码错误或失效");
+    	if( ! captcha.equalsIgnoreCase(getPicCode)) {	
+    		  return ServerResponse.createByErrorMessage(ResponseMessage.YanZhengMaCuoWu.getMessage());
     	}
-
-    	ServerResponse<String> response = iUserService.login(usernamrString,passwordString);
-    	if(response.isSuccess()){
+    	ServerResponse<String> response = iUserService.login(params);
+    	System.out.println("ddd  "+response.getMsg());
+    	System.out.println("ddd  "+response.getStatus()+"   ddd  "+ResponseCode.SUCCESS.getCode());
+    	if(response.getStatus()==ResponseCode.SUCCESS.getCode()){
           CookieUtil.writeLoginToken(httpServletResponse,session.getId());
-          System.out.println(response.getData().toString()+"rrrrr");
-         //把用户session当做key存到数据库中，时长是 30分钟
-        	   RedisShardedPoolUtil.setEx(session.getId(), response.getData(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+               //把用户session当做key存到数据库中，时长是 30分钟
+        	   RedisShardedPoolUtil.setEx(session.getId(), response.getMsg(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
         	   return response;
     	}else {
     		return response;
@@ -99,26 +89,23 @@ public class UserController {
     @ResponseBody
     public ServerResponse<String> create(@RequestBody Map<String,Object> params,
     		HttpSession session, HttpServletResponse httpServletResponse){
-      
-    
+         
    	 String uuid  =params.get("uuid").toString().trim() ; 
 	 String captcha  =params.get("captcha").toString().trim() ; 
 	 String getPicCode=RedisShardedPoolUtil.get(uuid);
 	if( ! captcha.equalsIgnoreCase(getPicCode)) {		
-		  return ServerResponse.createByErrorMessage("验证码错误或失效");
+		  return ServerResponse.createByErrorMessage(ResponseMessage.YanZhengMaCuoWu.getMessage());
 	}
     	
 	ServerResponse<String> serverResponse= iUserService.createUser(params);
     	
- 		if(serverResponse.getStatus()!=0) {
+ 		if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
+ 			CookieUtil.writeLoginToken(httpServletResponse,session.getId());
+ 			//把用户session当做key存到数据库中，时长是 30分钟
+ 			RedisShardedPoolUtil.setEx(session.getId(),serverResponse.getMsg(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
  			return serverResponse;
  		}
-
-           CookieUtil.writeLoginToken(httpServletResponse,session.getId());
-         	
-          //把用户session当做key存到数据库中，时长是 30分钟
-         RedisShardedPoolUtil.setEx(session.getId(),serverResponse.getData(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
-		return serverResponse;
+	     	return serverResponse;
     }
     
   //获取用户信息
@@ -129,17 +116,14 @@ public class UserController {
    
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
     	if(StringUtils.isEmpty(loginToken)){
-    		return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
+    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
     	}
     	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
     	User user = JsonUtil.string2Obj(userJsonStr,User.class);
-       
-   
     	if(user != null){
-    	 
     		return ServerResponse.createBySuccess(JsonUtil.obj2String(user));
     	}
-    	return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
+    	return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
     }
     
     
@@ -149,11 +133,15 @@ public class UserController {
     @RequestMapping(value = "logout",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> logout(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse){
-        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
-        RedisShardedPoolUtil.del(loginToken);
-
-        return ServerResponse.createBySuccess();
+        try {
+        	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        	CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
+        	RedisShardedPoolUtil.del(loginToken);
+        	return ServerResponse.createBySuccess();
+			
+		} catch (Exception e) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
+		}
     }
 
 

@@ -38,40 +38,7 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private TUserRoleService tUserRoleService;
 
- //登陆
-    @Override
-    public ServerResponse<String> login(String username, String password) {
-        User user1 =userMapper.checkUsername(username);
-        if(user1 ==null){
-            return ServerResponse.createByErrorMessage("用户名或密码错误");
-        }
-   
-       // String md5Password = MD5Util.MD5EncodeUtf8(password);
-        String passwordString=user1.getPassword();
-        System.out.println(passwordString+"   "+password+" ........");
-        if(!passwordString.equals(password)){
-            return ServerResponse.createByErrorMessage("用户名或密码错误");
-        }
 
-      //把密码置空在页面上不明文出现
-        //user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
-       //置为null以后不会系列化，不会传给前端
-        user1.setPassword(null);
-      return ServerResponse.createBySuccess(JsonUtil.obj2String(user1));
-    }
-
-  //注册完以后登录
-    @Override
-    public ServerResponse<User> login(String username) {
-        User user1 =userMapper.selectUsername(username);
-      //把密码置空在页面上不明文出现
-      //  user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
-     
-      return ServerResponse.createBySuccess("注册成功跳转Home",user1);
-    }
-
-    
-    
     public ServerResponse<String> register(User user){
 //        ServerResponse validResponse = this.checkValid(user.getUsername(),Const.USERNAME);
 //        if(!validResponse.isSuccess()){
@@ -229,13 +196,41 @@ public class UserServiceImpl implements IUserService {
     }
 
 
-
+//测试获取全部用户
 	@Override
 	public List<Map<String, Object>> getall() {
 		// TODO Auto-generated method stub
 		return userMapper.getall();
 	}
 
+	 //登陆
+    @Override
+    public ServerResponse<String> login(Map<String, Object> params) {
+    	  	 
+   	 String usernamrString  = params.get("username").toString().trim() ;
+   	 String passwordString  = params.get("password").toString().trim() ;
+       
+   	 if(usernamrString.length()>7 && passwordString.length()>7 ) {  	     	   
+    	   User user1 =userMapper.checkUsername(usernamrString);
+    	   if(user1 ==null){
+    		   return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingMiMaCouWu.getMessage());
+    	   }   	   
+    	   String md5Password = MD5Util.MD5EncodeUtf8(passwordString);
+    	   String getpassword=user1.getPassword();
+    	   if(!getpassword.equals(md5Password)){
+    		   return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingMiMaCouWu.getMessage());
+    	   }
+    	   
+    	   //把密码置空在页面上不明文出现
+    	   //user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
+    	   //置为null以后不会系列化，不会传给前端
+    	   user1.setPassword(null);
+    	   user1.setMobilePhone(mobilePhone);
+    	   return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(user1));
+       }else {
+    	   return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingMiMaGeShiCouWu.getMessage());   
+       }
+    }
 
 //判断用户名是否可用
 	@Override
@@ -284,12 +279,7 @@ public class UserServiceImpl implements IUserService {
     	//如果返回是空可以注册
     	if(check_name.getStatus()!=0) {
     		return check_name;
-    	}
-    	
-    	
-    	
-      // String 	userString =null;
-    	
+    	}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
     	
     		SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
      		
@@ -298,10 +288,9 @@ public class UserServiceImpl implements IUserService {
      		//MD5加密
      		user.setPassword(MD5Util.MD5EncodeUtf8(password));
      		user.setUsername(username);
-     		user.setMobilePhone(mobilePhone);
+     		user.setMobilePhone(MD5Util.MD5EncodeUtf8(mobilePhone));
      		user.setRole(Integer.parseInt(role));
      		user.setIsAuthentication(2);//是否实名1是2未实名
-         	
      		
      		try {
      			//创建用户
@@ -309,21 +298,22 @@ public class UserServiceImpl implements IUserService {
      			if(resultCount == 0){
                   return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
               }
+     			long user_id=selectUserId( user);
+     			
      			//创建用户角色
      			TUserRole tUserRole=new TUserRole();
-     			tUserRole.setUserid(selectUserId( user));     			
-     			tUserRole.setRoleid(Integer.parseInt(role));
-     			
-     			tUserRoleService.createTUserRole(tUserRole);  	
+     			tUserRole.setUserid(user_id);     			
+     			tUserRole.setRoleid(Integer.parseInt(role)); 
+     			//插入菜单表
+     			tUserRoleService.createTUserRole(tUserRole);  
+     			user.setPassword(null);
+         		user.setId(user_id);
+         		user.setMobilePhone(mobilePhone);
+         		return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(user));
 			} catch (Exception e) {
 				log.info("createUserError   ",e);
-				return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+				return ServerResponse.createByErrorMessage(ResponseMessage.ChuangJianYongHuShiBai.getMessage());
 			}
-     		
-     		user.setPassword(null);
-     		user.setCreateTime(null);
-     		return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(user));
-     	
 	}
 
 

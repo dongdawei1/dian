@@ -22,7 +22,7 @@ public class LegalCheck {
 			  if((s12  instanceof String) && s12!= null){
 				if(((String) s12).toLowerCase().indexOf("delete")>=0 || ((String) s12).toLowerCase().indexOf("update")>=0 || ((String) s12).indexOf("=")>=0
 						|| ((String) s12).toLowerCase().indexOf("or")>=0) {
-					log.info("非法字段------>"+s12);		
+					log.info("非法字段map------>"+s12);		
 				return	ServerResponse.createByErrorMessage(s12+ResponseMessage.ShuRuBuHeFa.getMessage());
 				}    
 		      }		  
@@ -35,9 +35,10 @@ public class LegalCheck {
 			
 			if(role.indexOf("2")!=0 && role.indexOf("3")!=0 && role.indexOf("4")!=0  && role.indexOf("5")!=0  &&  role.indexOf("6")!=0   && role.indexOf("7")!=0 &&
 	    			 role.indexOf("8")!=0 && role.indexOf("10")!=0 && role.indexOf("11")!=0 && role.indexOf("12")!=0 ) {
+				log.info("非法字段role------>"+role);
 				return	ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());		
 	    	}
-			  return ServerResponse.createBySuccessMessage(ResponseMessage.ShuRuHeFa.getMessage());
+			return ServerResponse.createBySuccessMessage(ResponseMessage.ShuRuHeFa.getMessage());
 			
 		}
 	
