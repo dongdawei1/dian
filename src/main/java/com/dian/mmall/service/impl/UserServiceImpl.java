@@ -9,6 +9,7 @@ import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IUserService;
 import com.dian.mmall.service.TUserRoleService;
 import com.dian.mmall.util.CookieUtil;
+import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
 import com.dian.mmall.util.MD5Util;
@@ -19,11 +20,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * Created by geely
@@ -225,7 +232,7 @@ public class UserServiceImpl implements IUserService {
     	   //user1.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
     	   //置为null以后不会系列化，不会传给前端
     	   user1.setPassword(null);
-    	   user1.setMobilePhone(mobilePhone);
+    	   user1.setMobilePhone(EncrypDES.decryptPhone(user1.getMobilePhone()));
     	   return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(user1));
        }else {
     	   return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingMiMaGeShiCouWu.getMessage());   
@@ -287,8 +294,8 @@ public class UserServiceImpl implements IUserService {
      		user.setCreateTime(formatter.format(new Date()));
      		//MD5加密
      		user.setPassword(MD5Util.MD5EncodeUtf8(password));
-     		user.setUsername(username);
-     		user.setMobilePhone(MD5Util.MD5EncodeUtf8(mobilePhone));
+     		user.setUsername(username);    		
+     		user.setMobilePhone(EncrypDES.encryptPhone(mobilePhone));
      		user.setRole(Integer.parseInt(role));
      		user.setIsAuthentication(2);//是否实名1是2未实名
      		

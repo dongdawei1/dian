@@ -9,6 +9,8 @@ import org.apache.ibatis.javassist.expr.NewArray;
 
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.util.LegalCheck;
+import com.dian.mmall.util.MD5Util;
+
 
 public class Test1 {
 public static void main(String[] args) {
@@ -21,6 +23,8 @@ public static void main(String[] args) {
 	// map.put("wwwww3", "update");
 	// map.put("wwwww4", "=");
 	 ;
-	 System.out.println("wwww".length());
+	 //25d55ad283aa400af464c76d713c07ad
+	System.out.println("�A =L�ԩy<���p�".getBytes());
+	
 }
 }
