@@ -259,11 +259,12 @@ public class UserServiceImpl implements IUserService {
 		String password = params.get("pass").toString().trim();
     	String checkPass = params.get("checkPass").toString().trim();
     	if(!password.equals(checkPass)) {
-    		return ServerResponse.createByErrorMessage("两次密码输入不一致");
+    		return ServerResponse.createByErrorMessage(ResponseMessage.MiMaBuYiZhi.getMessage());
     	}
-    	
-    
-    	
+    	//判断长度
+		if(!(password.length()>7 && password.length()<18)) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.MiMaBuHeFa.getMessage());
+		}
     	//校验是否有特殊字符
     	ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
 	 	//检查是否有非法输入
@@ -280,7 +281,12 @@ public class UserServiceImpl implements IUserService {
     		
 	 	String username = params.get("name").toString().trim();
     	String mobilePhone = params.get("mobilePhone").toString().trim();
-       
+        //判断手机号是否合法
+    	serverResponse=LegalCheck.legalCheckMobilePhone(mobilePhone);
+    	if(serverResponse.getStatus()!=0) {	
+			return serverResponse;			
+		}
+    	
     	//检查用户名是否重复
     	ServerResponse<String>  check_name=checkUsername(username);
     	//如果返回是空可以注册
@@ -334,7 +340,7 @@ public class UserServiceImpl implements IUserService {
 	//编辑用户基本信息
 	@Override
 	public ServerResponse<String> update_information(long id, Map<String, Object> params) {	
-		//校验是否有特殊字符
+	    //校验是否有特殊字符
     	ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
 	 	//检查是否有非法输入
 	 	if(serverResponse.getStatus()!=0) {	
@@ -342,6 +348,11 @@ public class UserServiceImpl implements IUserService {
 			}	
 		
 		User user=userMapper.selectByPrimaryKey(id);
+		
+		String newusernamr = params.get("username").toString().trim() ;
+		if(!newusernamr.equals(user.getUsername())) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingBuKeXiuGai.getMessage());   
+		}
 		
 //		 username: '',
 //         mobilePhone: '',
@@ -353,40 +364,63 @@ public class UserServiceImpl implements IUserService {
 		
        //判断原始密码是否正确
 		if(user.getPassword().equals(md5_rowPassword)) {
-			String newusernamr = params.get("username").toString().trim() ;
-			if(md5_rowPassword.length()>7 && newusernamr.length()>7) {
-				User new_User=new User();
-				String newmobilePhone  = params.get("mobilePhone").toString().trim() ;	
-				String newPassword  = params.get("newPassword").toString().trim() ;
-				String checkenewPassword  = params.get("checkenewPassword").toString().trim() ;
-				//如果修改了用户名或者密码就要重新登陆
-				if(!user.getUsername().equals(newusernamr) || !user.getPassword().equals(md5_rowPassword)) {
-					
-					if(!user.getUsername().equals(newusernamr)) {
-						new_User.setUsername(newusernamr);
-					}else {
-						new_User.setUsername(user.getUsername());
-					}
-					
-					if(!user.getPassword().equals(md5_rowPassword)) {
-						new_User.setPassword(md5_rowPassword);
-					}else {
-						new_User.setPassword(user.getPassword());
-					}
-					
-			        if(!user.getMobilePhone())
-					
-					
-					
-					return null;
-				}else {
-					return null;
-				}
-								
-			}else {
-				return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingMiMaGeShiCouWu.getMessage());   
-			}
 			
+			String newmobilePhone  = params.get("mobilePhone").toString().trim() ;	
+			String md5_newmobilePhone=EncrypDES.encryptPhone(newmobilePhone);
+			//判断手机号是否合法
+	    	serverResponse=LegalCheck.legalCheckMobilePhone(newmobilePhone);
+	    	if(serverResponse.getStatus()!=0) {	
+				return serverResponse;			
+			}
+	    	User new_User=new User();
+	    	new_User.setId(user.getId());
+	    	//判断有没有修改手机号
+	    	if(!user.getMobilePhone().equals(md5_newmobilePhone)) {
+	        	new_User.setMobilePhone(md5_newmobilePhone);
+	        }else {
+	        	new_User.setMobilePhone(user.getMobilePhone());
+	        }
+	    	
+	    	
+	    	String newPassword  = params.get("newPassword").toString().trim() ;
+			String checkenewPassword  = params.get("checkenewPassword").toString().trim() ;
+           
+			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
+     		new_User.setUpdateTime(formatter.format(new Date()));
+     		//没有修改密码就进不去
+			if((checkenewPassword!=null && !checkenewPassword.equals("")) || 
+					(newPassword!=null && !newPassword.equals(""))) {
+			  
+				//判断密码两个密码是否一样	
+	    	      if(!newPassword.equals(checkenewPassword)) {
+	    	    	  return ServerResponse.createByErrorMessage(ResponseMessage.MiMaBuYiZhi.getMessage());
+	    	       }
+				//判断长度
+				  if(checkenewPassword.length()>7  && checkenewPassword.length()<18 ) {
+				   //落库
+				   new_User.setPassword(MD5Util.MD5EncodeUtf8(checkenewPassword));
+	    	       
+				 //创建用户
+	     			int resultCount=userMapper.update_information(new_User);
+	     			if(resultCount == 0){
+	     				return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage()); 
+	                 }
+	     			//落库成功重新登陆
+	     			return ServerResponse.createBySuccessMessage(ResponseMessage.BianJiChengGongChongXinDengLu.getMessage());
+				   
+				  }else {
+	    	      return ServerResponse.createByErrorMessage(ResponseMessage.MiMaBuHeFa.getMessage());
+	    	      }
+			}else {
+				//没有修改密码
+				new_User.setPassword(user.getPassword());
+				int resultCount=userMapper.update_information(new_User);
+     			if(resultCount == 0){
+     				return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage()); 
+                 }
+     			//落库成功
+     			return ServerResponse.createBySuccessMessage(ResponseMessage.BianJiChengGong.getMessage());
+			}
 		}else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.YuanShiMiMaCuoWu.getMessage());
 		}

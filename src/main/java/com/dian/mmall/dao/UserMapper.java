@@ -31,6 +31,8 @@ public interface UserMapper {
    int createUser(User user);
    //注册以后返回用户名等信息
    User selectUsername(String username);
+   //修改用户基本信息
+   int update_information(User new_User);
 //
 //    int checkEmail(String email);
 //
@@ -45,6 +47,8 @@ public interface UserMapper {
 //    int checkPassword(@Param(value="password")String password,@Param("userId")Integer userId);
 //
 //    int checkEmailByUserId(@Param(value="email")String email,@Param(value="userId")Integer userId);
+
+
 
   
 }

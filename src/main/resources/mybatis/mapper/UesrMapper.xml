@@ -39,5 +39,9 @@
       <select id="selectByPrimaryKey" resultType="com.dian.mmall.pojo.user.User">
         SELECT * FROM employee WHERE id=#{id}
     </select>
-    
+     <!--修改用户基本信息  -->   
+    <update id="update_information" >
+       update t_user set  password=#{password},
+       mobilePhone=#{mobilePhone},updateTime=#{updateTime} where id=#{id}
+    </update>
 </mapper>

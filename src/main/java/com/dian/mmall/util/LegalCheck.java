@@ -2,6 +2,7 @@ package com.dian.mmall.util;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
@@ -43,14 +44,11 @@ public class LegalCheck {
 		}
 	
 		//判断手机号是否合法
-				public static ServerResponse<String> legalCheckMobilePhone(String mobilePhone){
-					
-					if(role.indexOf("2")!=0 && role.indexOf("3")!=0 && role.indexOf("4")!=0  && role.indexOf("5")!=0  &&  role.indexOf("6")!=0   && role.indexOf("7")!=0 &&
-			    			 role.indexOf("8")!=0 && role.indexOf("10")!=0 && role.indexOf("11")!=0 && role.indexOf("12")!=0 ) {
-						log.info("非法字段role------>"+role);
-						return	ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());		
-			    	}
-					return ServerResponse.createBySuccessMessage(ResponseMessage.ShuRuHeFa.getMessage());
-					
+		public static ServerResponse<String> legalCheckMobilePhone(String mobilePhone){
+			Pattern pattern = Pattern.compile("[0-9]*");	
+			if(mobilePhone.length()==11 && pattern.matcher(mobilePhone).matches()) {
+                    return ServerResponse.createBySuccessMessage(ResponseMessage.ShuRuHeFa.getMessage());	
+					}
+					return	ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());	
 				}
 }

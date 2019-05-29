@@ -15,7 +15,13 @@ public enum ResponseMessage {
    XiTongYiChang("系统异常"),
    YangZhengMaShengChengShiBai("验证码生成错误"),
    DengLuGuoQi("登录过期"),
-   YuanShiMiMaCuoWu("原始密码错误");
+   YuanShiMiMaCuoWu("原始密码错误"),
+   ShouJiHaoBuHeFa("手机号不合法"),
+   YongHuMingBuKeXiuGai("用户名不可修改"),
+   MiMaBuHeFa("密码长度不合法"),
+   	MiMaBuYiZhi("两次密码不一致"),
+   	BianJiChengGong("编辑成功"),
+   	BianJiChengGongChongXinDengLu("编辑成功重新登陆");
 	
    String message;
    ResponseMessage(String message){

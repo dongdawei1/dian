@@ -178,7 +178,7 @@ public class UserController {
    //修改用户基本信息，如果修改了密码和用户名就强制用户重新登陆，如果只修改手机号不重新登陆
     @RequestMapping(value = "update_information",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> update_information(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    public ServerResponse<String> update_information(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,@RequestBody Map<String, Object> params){
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
         if(StringUtils.isEmpty(loginToken)){
             return ServerResponse.createByErrorMessage(ResponseMessage.DengLuGuoQi.getMessage());
@@ -188,7 +188,21 @@ public class UserController {
         if(currentUser == null){
             return ServerResponse.createByErrorMessage(ResponseMessage.DengLuGuoQi.getMessage());
         }
-	     	return iUserService.update_information(currentUser.getId(),params);
+        
+        ServerResponse<String> serverResponse= iUserService.update_information(currentUser.getId(),params);
+         if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
+        	 if(serverResponse.getMsg().equals(ResponseMessage.BianJiChengGongChongXinDengLu.getMessage())) {
+        		//如果修改了密码就要重新登陆 
+             	CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
+             	RedisShardedPoolUtil.del(loginToken);
+             	return serverResponse;
+        	 }
+        	 return serverResponse;
+         }else {
+        	 return serverResponse;
+         }
+    
+    
     }
 	
 	
