@@ -53,10 +53,6 @@ public class UserController {
 
     @Autowired
     private IUserService iUserService;
-  
-    @Autowired
-    private TUserRoleService tUserRoleService;
-    
    
     //用户登录
     @RequestMapping(value = "login",method = RequestMethod.POST)
@@ -70,8 +66,6 @@ public class UserController {
     		  return ServerResponse.createByErrorMessage(ResponseMessage.YanZhengMaCuoWu.getMessage());
     	}
     	ServerResponse<String> response = iUserService.login(params);
-    	System.out.println("ddd  "+response.getMsg());
-    	System.out.println("ddd  "+response.getStatus()+"   ddd  "+ResponseCode.SUCCESS.getCode());
     	if(response.getStatus()==ResponseCode.SUCCESS.getCode()){
           CookieUtil.writeLoginToken(httpServletResponse,session.getId());
                //把用户session当做key存到数据库中，时长是 30分钟
@@ -127,7 +121,7 @@ public class UserController {
     }
     
     
-    
+    //退出
     
     //退出
     @RequestMapping(value = "logout",method = RequestMethod.POST)
@@ -144,7 +138,7 @@ public class UserController {
 		}
     }
 
-
+    //获取验证码
     //获取验证码    @RequestBody Map<String,Object> params
 	@ResponseBody
 	@RequestMapping(value = "captcha", method = RequestMethod.GET)
@@ -173,32 +167,28 @@ public class UserController {
 	    		return ServerResponse.createBySuccessMessage(base64PicCodeImage);
 	    	}
 		} catch (IOException e) {
-			return ServerResponse.createByErrorMessage("验证码生成错误");
+			return ServerResponse.createByErrorMessage(ResponseMessage.YangZhengMaShengChengShiBai.getMessage());
 		}
-		
-		
-		 return ServerResponse.createByErrorMessage("验证码生成错误");
+		 return ServerResponse.createByErrorMessage(ResponseMessage.YangZhengMaShengChengShiBai.getMessage());
 
 	}
     
   
-	
+	//修改用户基本信息
    //修改用户基本信息，如果修改了密码和用户名就强制用户重新登陆，如果只修改手机号不重新登陆
     @RequestMapping(value = "update_information",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> update_information(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
         if(StringUtils.isEmpty(loginToken)){
-            return ServerResponse.createByErrorMessage("编辑失败，登陆过期");
+            return ServerResponse.createByErrorMessage(ResponseMessage.DengLuGuoQi.getMessage());
         }
         String userJsonStr = RedisShardedPoolUtil.get(loginToken);
         User currentUser = JsonUtil.string2Obj(userJsonStr,User.class);
-
         if(currentUser == null){
-            return ServerResponse.createByErrorMessage("用户未登录");
+            return ServerResponse.createByErrorMessage(ResponseMessage.DengLuGuoQi.getMessage());
         }
-        
-        return iUserService.update_information(currentUser.getId(),params);
+	     	return iUserService.update_information(currentUser.getId(),params);
     }
 	
 	

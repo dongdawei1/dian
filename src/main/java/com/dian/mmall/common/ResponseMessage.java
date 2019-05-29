@@ -12,7 +12,10 @@ public enum ResponseMessage {
    YongHuMingMiMaGeShiCouWu("用户名或密码格式错误"),
    YongHuMingMiMaCouWu("用户名或密码错误"),
    HuoQuDengLuXinXiShiBai("用户未登录,无法获取当前用户的信息"),
-   XiTongYiChang("系统异常");
+   XiTongYiChang("系统异常"),
+   YangZhengMaShengChengShiBai("验证码生成错误"),
+   DengLuGuoQi("登录过期"),
+   YuanShiMiMaCuoWu("原始密码错误");
 	
    String message;
    ResponseMessage(String message){

@@ -273,7 +273,7 @@ public class UserServiceImpl implements IUserService {
        //判断用户角色
 		String role = params.get("role").toString().trim();
 	 	serverResponse=LegalCheck.legalCheckRole(role);
-	 	//检查是否有非法输入
+	 	//检查角色是否有非法输入
 	 	if(serverResponse.getStatus()!=0) {	
 				return serverResponse;			
 			}
@@ -333,13 +333,64 @@ public class UserServiceImpl implements IUserService {
  
 	//编辑用户基本信息
 	@Override
-	public ServerResponse<String> update_information(long id, Map<String, Object> params) {
+	public ServerResponse<String> update_information(long id, Map<String, Object> params) {	
+		//校验是否有特殊字符
+    	ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
+	 	//检查是否有非法输入
+	 	if(serverResponse.getStatus()!=0) {	
+				return serverResponse;			
+			}	
+		
 		User user=userMapper.selectByPrimaryKey(id);
-		return null;
+		
+//		 username: '',
+//         mobilePhone: '',
+//         rowPassword: '',
+//         newPassword: '',
+//         checkenewPassword: '',
+		
+		String md5_rowPassword  = MD5Util.MD5EncodeUtf8(params.get("rowPassword").toString().trim()) ;
+		
+       //判断原始密码是否正确
+		if(user.getPassword().equals(md5_rowPassword)) {
+			String newusernamr = params.get("username").toString().trim() ;
+			if(md5_rowPassword.length()>7 && newusernamr.length()>7) {
+				User new_User=new User();
+				String newmobilePhone  = params.get("mobilePhone").toString().trim() ;	
+				String newPassword  = params.get("newPassword").toString().trim() ;
+				String checkenewPassword  = params.get("checkenewPassword").toString().trim() ;
+				//如果修改了用户名或者密码就要重新登陆
+				if(!user.getUsername().equals(newusernamr) || !user.getPassword().equals(md5_rowPassword)) {
+					
+					if(!user.getUsername().equals(newusernamr)) {
+						new_User.setUsername(newusernamr);
+					}else {
+						new_User.setUsername(user.getUsername());
+					}
+					
+					if(!user.getPassword().equals(md5_rowPassword)) {
+						new_User.setPassword(md5_rowPassword);
+					}else {
+						new_User.setPassword(user.getPassword());
+					}
+					
+			        if(!user.getMobilePhone())
+					
+					
+					
+					return null;
+				}else {
+					return null;
+				}
+								
+			}else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingMiMaGeShiCouWu.getMessage());   
+			}
+			
+		}else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.YuanShiMiMaCuoWu.getMessage());
+		}
 	}
-
-	
-
 
 
 }

@@ -24,7 +24,9 @@ public static void main(String[] args) {
 	// map.put("wwwww4", "=");
 	 ;
 	 //25d55ad283aa400af464c76d713c07ad
-	System.out.println("�A =L�ԩy<���p�".getBytes());
+	if(!"ss".equals("ss") || !"ss".equals("ss")) {
+		System.out.println("Test1.main()");
+	}else {System.out.println("Test1.main()333333333");}
 	
 }
 }

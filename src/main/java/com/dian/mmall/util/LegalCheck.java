@@ -42,5 +42,15 @@ public class LegalCheck {
 			
 		}
 	
-	
+		//判断手机号是否合法
+				public static ServerResponse<String> legalCheckMobilePhone(String mobilePhone){
+					
+					if(role.indexOf("2")!=0 && role.indexOf("3")!=0 && role.indexOf("4")!=0  && role.indexOf("5")!=0  &&  role.indexOf("6")!=0   && role.indexOf("7")!=0 &&
+			    			 role.indexOf("8")!=0 && role.indexOf("10")!=0 && role.indexOf("11")!=0 && role.indexOf("12")!=0 ) {
+						log.info("非法字段role------>"+role);
+						return	ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());		
+			    	}
+					return ServerResponse.createBySuccessMessage(ResponseMessage.ShuRuHeFa.getMessage());
+					
+				}
 }
