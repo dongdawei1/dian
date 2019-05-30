@@ -340,28 +340,25 @@ public class UserServiceImpl implements IUserService {
 	//编辑用户基本信息
 	@Override
 	public ServerResponse<String> update_information(long id, Map<String, Object> params) {	
-	    //校验是否有特殊字符
+	    boolean ismobilePhone=false;
+	    
+		
+		//校验是否有特殊字符
     	ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
 	 	//检查是否有非法输入
 	 	if(serverResponse.getStatus()!=0) {	
 				return serverResponse;			
 			}	
 		
-		User user=userMapper.selectByPrimaryKey(id);
+		User user=userMapper.selectUserById(id);
 		
 		String newusernamr = params.get("username").toString().trim() ;
 		if(!newusernamr.equals(user.getUsername())) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingBuKeXiuGai.getMessage());   
 		}
-		
-//		 username: '',
-//         mobilePhone: '',
-//         rowPassword: '',
-//         newPassword: '',
-//         checkenewPassword: '',
-		
+
 		String md5_rowPassword  = MD5Util.MD5EncodeUtf8(params.get("rowPassword").toString().trim()) ;
-		
+		 
        //判断原始密码是否正确
 		if(user.getPassword().equals(md5_rowPassword)) {
 			
@@ -374,6 +371,7 @@ public class UserServiceImpl implements IUserService {
 			}
 	    	User new_User=new User();
 	    	new_User.setId(user.getId());
+	    	new_User.setUsername(newusernamr);
 	    	//判断有没有修改手机号
 	    	if(!user.getMobilePhone().equals(md5_newmobilePhone)) {
 	        	new_User.setMobilePhone(md5_newmobilePhone);
@@ -395,11 +393,11 @@ public class UserServiceImpl implements IUserService {
 	    	      if(!newPassword.equals(checkenewPassword)) {
 	    	    	  return ServerResponse.createByErrorMessage(ResponseMessage.MiMaBuYiZhi.getMessage());
 	    	       }
+	    
 				//判断长度
 				  if(checkenewPassword.length()>7  && checkenewPassword.length()<18 ) {
 				   //落库
 				   new_User.setPassword(MD5Util.MD5EncodeUtf8(checkenewPassword));
-	    	       
 				 //创建用户
 	     			int resultCount=userMapper.update_information(new_User);
 	     			if(resultCount == 0){
@@ -419,7 +417,11 @@ public class UserServiceImpl implements IUserService {
      				return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage()); 
                  }
      			//落库成功
-     			return ServerResponse.createBySuccessMessage(ResponseMessage.BianJiChengGong.getMessage());
+     			new_User.setPassword(null);
+     			new_User.setRole(user.getRole());
+     			new_User.setCreateTime(user.getCreateTime());
+     			new_User.setMobilePhone(newmobilePhone);
+     			return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(new_User));
 			}
 		}else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.YuanShiMiMaCuoWu.getMessage());

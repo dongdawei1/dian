@@ -178,7 +178,7 @@ public class UserController {
    //修改用户基本信息，如果修改了密码和用户名就强制用户重新登陆，如果只修改手机号不重新登陆
     @RequestMapping(value = "update_information",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> update_information(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,@RequestBody Map<String, Object> params){
+    public ServerResponse<String> update_information(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,HttpSession session, @RequestBody Map<String, Object> params){
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
         if(StringUtils.isEmpty(loginToken)){
             return ServerResponse.createByErrorMessage(ResponseMessage.DengLuGuoQi.getMessage());
@@ -197,7 +197,14 @@ public class UserController {
              	RedisShardedPoolUtil.del(loginToken);
              	return serverResponse;
         	 }
-        	 return serverResponse;
+        	 
+        	 CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
+          	RedisShardedPoolUtil.del(loginToken);
+          	
+          	CookieUtil.writeLoginToken(httpServletResponse,session.getId());
+ 			//把用户session当做key存到数据库中，时长是 30分钟
+ 			RedisShardedPoolUtil.setEx(session.getId(),serverResponse.getMsg(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME); 
+        	 return ServerResponse.createBySuccessMessage(ResponseMessage.BianJiChengGong.getMessage());
          }else {
         	 return serverResponse;
          }

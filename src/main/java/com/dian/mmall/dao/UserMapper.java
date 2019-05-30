@@ -20,7 +20,7 @@ public interface UserMapper {
 //    int insertSelective(User record);
 	
 // 根据id 查询出用户信息
-    User selectByPrimaryKey(long id);
+    User selectUserById(long id);
 //
 //    int updateByPrimaryKeySelective(User record);
 //
