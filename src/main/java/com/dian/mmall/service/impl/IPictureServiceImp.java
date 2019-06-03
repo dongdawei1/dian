@@ -12,7 +12,7 @@ import com.dian.mmall.service.IPictureService;
 @Service("iPictureService")
 public class IPictureServiceImp implements IPictureService {
 
-	
+	 
 	  @Autowired
 	    private PictureMapper pictureMapper;
 

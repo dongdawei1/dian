@@ -21,8 +21,9 @@ public enum ResponseMessage {
    MiMaBuHeFa("密码长度不合法"),
    	MiMaBuYiZhi("两次密码不一致"),
    	BianJiChengGong("编辑成功"),
-   	BianJiChengGongChongXinDengLu("编辑成功重新登陆");
-	
+   	BianJiChengGongChongXinDengLu("编辑成功重新登陆"),
+	YongHuLeiXingCuoWu("用户类型错误"),
+	ChengShiBuHeFa("城市不合法");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

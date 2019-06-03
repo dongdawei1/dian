@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dian.mmall.dao.CityMapper">
+    <select id="checkeCity" resultType="int">
+       SELECT COUNT(*)  FROM `city` c  JOIN city a
+			ON c.provinces_id=#{provinces_id}  AND a.`city_id`=#{city_id}  AND a.`provinces_city_id`=#{provinces_id} 
+			JOIN city b  
+			ON b.`district_county_id`=#{district_county_id}
+			AND b.`city_district_county_id`=#{city_id}
+    </select>
+    
+    
+     
+    
+   
+</mapper>
