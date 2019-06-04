@@ -198,7 +198,7 @@ public class UserController {
              	return serverResponse;
         	 }
         	 
-        	 CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
+            CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
           	RedisShardedPoolUtil.del(loginToken);
           	
           	CookieUtil.writeLoginToken(httpServletResponse,session.getId());

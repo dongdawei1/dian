@@ -35,6 +35,7 @@
         )
     </insert>
     
+   
     <!--根据id查用户  -->    
       <select id="selectUserById" resultType="com.dian.mmall.pojo.user.User">
         SELECT * FROM t_user WHERE id=#{id}
@@ -43,5 +44,9 @@
     <update id="update_information" >
        update t_user set  password=#{password},
        mobilePhone=#{mobilePhone},updateTime=#{updateTime} where id=#{id}
+    </update>
+     <!--修改用户实名状态  -->   
+    <update id="update_newRealName" >
+       update t_user set  isAuthentication=1 where id=#{id}
     </update>
 </mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dian.mmall.dao.RealNameMapper">
+  
+    
+    
+   <!--创建用户成功返回非0  -->
+     <insert id="newRealName"  >
+        insert into t_user_realname (
+            userId, provinces_id, city_id, district_county_id,address_detailed,contact,consignee_name, authentication_status,email,createTime,licenseUrl
+        ) values (
+            #{userId}, #{provinces_id}, #{city_id}, #{district_county_id},#{address_detailed},#{contact}, #{consignee_name},#{authentication_status},#{email},#{createTime},#{licenseUrl}
+        )
+    </insert>
+    
+    
+</mapper>

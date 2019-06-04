@@ -14,10 +14,13 @@ import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.CityMapper;
 import com.dian.mmall.dao.RealNameMapper;
+import com.dian.mmall.dao.UserMapper;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.service.IPictureService;
 import com.dian.mmall.service.RealNameService;
+import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
 @Service("realNameService")
@@ -26,10 +29,14 @@ public class RealNameServiceImpl implements RealNameService{
 	private RealNameMapper realNameMapper;
 	@Autowired
 	private CityMapper cityMapper;
+	 @Autowired
+	    private IPictureService ipics;  //图片库更新
 
-
+	 @Autowired
+	  private UserMapper userMapper;
+	 
 	@Override
-	public ServerResponse<String> newRealName(long user_id, Map<String, Object> params) {
+	public ServerResponse<String> newRealName(long user_id,String loginToken, Map<String, Object> params) {
 		String isbusiness_string = params.get("isbusiness").toString().trim() ;
 		if(!isbusiness_string.equals("true") && !isbusiness_string.equals("false") ) {
 		return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuLeiXingCuoWu.getMessage());
@@ -58,7 +65,7 @@ public class RealNameServiceImpl implements RealNameService{
 		    String consignee_name=null; //收/送货人姓名 
 		    String email=null; 
 		 	
-		    try {
+		   // try {
 		 		provinces_id=Integer.valueOf(params_map.get("provinces_id").toString().trim());
 		 		city_id=Integer.valueOf(params_map.get("city_id").toString().trim());
 			    district_county_id=Integer.valueOf(params_map.get("district_county_id").toString().trim());
@@ -120,18 +127,38 @@ public class RealNameServiceImpl implements RealNameService{
 		 			realName.setDistrict_county_id(district_county_id);
 		 			realName.setProvinces_id(provinces_id);
 		 			realName.setAuthentication_status(1);
-		 			 
+		 			int resultCount=  realNameMapper.newRealName(realName);
+	     			if(resultCount == 0){
+	     				return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage()); 
+	                 }
+	     			resultCount= userMapper.update_newRealName(user_id);
+	     			if(resultCount == 0){
+	     				return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage()); 
+	                 }
+	     			if(listObj4.size()>0) {
+	     		 		for(int a=0;a<listObj4.size();a++) {
+	     		 			Picture picture=listObj4.get(a);
+	     		 			picture.setTocken(loginToken);
+	     		 			picture.setUser_id(user_id);
+	     		 			
+	     		 			ipics.updatePictureUse(picture);
+	     		 		}
+	     		 	}
+	     			User currentUser = userMapper.selectUserById(user_id);
+                    currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
+	     			return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
 		 		 }
 		 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-		 	} catch (Exception e) {
-		 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-			}
+//		 	} catch (Exception e) {
+//		 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+//			}
 
 		}else {
 			//找工作和租房实名认证
+			return null;
 		}
 			
-		return	ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
+		
 	}
 
 }

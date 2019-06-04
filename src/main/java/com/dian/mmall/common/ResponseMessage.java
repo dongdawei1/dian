@@ -23,7 +23,10 @@ public enum ResponseMessage {
    	BianJiChengGong("编辑成功"),
    	BianJiChengGongChongXinDengLu("编辑成功重新登陆"),
 	YongHuLeiXingCuoWu("用户类型错误"),
-	ChengShiBuHeFa("城市不合法");
+	ChengShiBuHeFa("城市不合法"),
+	ChengGong("成功"),
+	GengXinYongHuXinXiShiBai("更新用户信息失败"),
+	LuoKuShiBai("落库失败");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

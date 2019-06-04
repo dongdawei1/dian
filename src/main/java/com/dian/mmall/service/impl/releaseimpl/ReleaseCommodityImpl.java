@@ -114,8 +114,8 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 		//把getUse_status()==1 放到这个集合中
 		List<Picture> listObj4=new ArrayList<Picture>();
 		
-		int getNum=PictureNum.ShiMingRenZheng.getNum();
-		//如果大于3要判断没删除的是否超过总数
+		int getNum=PictureNum.GRAINANDOIL.getNum();
+		//如果大于5要判断没删除的是否超过总数
 		if(list_size>0) {
 			int count=0;
 			for(int a=0;a<list_size;a++) {
