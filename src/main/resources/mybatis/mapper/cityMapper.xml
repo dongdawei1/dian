@@ -3,12 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dian.mmall.dao.CityMapper">
-    <select id="checkeCity" resultType="int">
-       SELECT COUNT(*)  FROM `city` c  JOIN city a
-			ON c.provinces_id=#{provinces_id}  AND a.`city_id`=#{city_id}  AND a.`provinces_city_id`=#{provinces_id} 
+    <select id="checkeCity" resultType="String">
+       SELECT  CONCAT(c.`provincesName`,'/',a.`cityName`,'/',b.`districtCountyName`   ) b 
+        FROM `city` c  JOIN city a
+			ON c.provincesId=#{provincesId}  AND a.`cityId`=#{cityId}  AND a.`provincesCityId`=#{provincesId} 
 			JOIN city b  
-			ON b.`district_county_id`=#{district_county_id}
-			AND b.`city_district_county_id`=#{city_id}
+			ON b.`districtCountyId`=#{districtCountyId}
+			AND b.`cityDistrictCountyId`=#{cityId}
     </select>
     
     

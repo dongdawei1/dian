@@ -65,7 +65,22 @@ public class RealNameController {
     }
 	
 	
-    
+    //获取实名信息
+    @RequestMapping(value = "getRealName",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> getRealName(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse){
+    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+    	if(StringUtils.isEmpty(loginToken)){
+    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    	}
+    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
+    	if(user == null){
+    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    	}
+    	return realNameService.getRealName(user.getId());
+    	
+    }
     
     
     

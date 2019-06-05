@@ -9,11 +9,19 @@
    <!--创建用户成功返回非0  -->
      <insert id="newRealName"  >
         insert into t_user_realname (
-            userId, provinces_id, city_id, district_county_id,address_detailed,contact,consignee_name, authentication_status,email,createTime,licenseUrl
+            userId, provincesId, cityId, districtCountyId,addressDetailed,contact,consigneeName, authentiCationStatus,email,createTime,licenseUrl,detailed
         ) values (
-            #{userId}, #{provinces_id}, #{city_id}, #{district_county_id},#{address_detailed},#{contact}, #{consignee_name},#{authentication_status},#{email},#{createTime},#{licenseUrl}
+            #{userId}, #{provincesId}, #{cityId}, #{districtCountyId},#{addressDetailed},#{contact}, #{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed}
         )
     </insert>
+     
+    <select id="getRealName" resultType="com.dian.mmall.pojo.user.RealName">
+        select * from t_user_realname where userId=#{userId}
+    </select>
     
+    
+    <select id="isNewRealName"  resultType="int">
+        select count(*) from t_user_realname where userId=#{userId}
+    </select>
     
 </mapper>

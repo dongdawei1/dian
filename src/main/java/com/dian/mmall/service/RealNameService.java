@@ -8,4 +8,6 @@ public interface RealNameService {
 
 	ServerResponse<String> newRealName(long l,String loginToken, Map<String, Object> params);
 
+	ServerResponse<Object> getRealName(long userId);
+
 }

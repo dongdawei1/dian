@@ -8,5 +8,11 @@ import com.dian.mmall.pojo.user.RealName;
 public interface RealNameMapper {
 
 	int newRealName(RealName realName);
+    
+	
+	RealName getRealName(long userId);
+
+
+	int isNewRealName(long userId);
 
 }

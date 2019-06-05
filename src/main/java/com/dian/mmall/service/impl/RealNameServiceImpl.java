@@ -15,6 +15,7 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.CityMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.UserMapper;
+import com.dian.mmall.pojo.City;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
@@ -34,7 +35,7 @@ public class RealNameServiceImpl implements RealNameService{
 
 	 @Autowired
 	  private UserMapper userMapper;
-	 
+	 //实名认证
 	@Override
 	public ServerResponse<String> newRealName(long user_id,String loginToken, Map<String, Object> params) {
 		String isbusiness_string = params.get("isbusiness").toString().trim() ;
@@ -64,22 +65,22 @@ public class RealNameServiceImpl implements RealNameService{
 			String contact=null;  //收/送货联系方式
 		    String consignee_name=null; //收/送货人姓名 
 		    String email=null; 
-		 	
-		   // try {
+		    String city=null;
+		   try {
 		 		provinces_id=Integer.valueOf(params_map.get("provinces_id").toString().trim());
 		 		city_id=Integer.valueOf(params_map.get("city_id").toString().trim());
 			    district_county_id=Integer.valueOf(params_map.get("district_county_id").toString().trim());
 			   //判断省市区id是否正确
 			    if(provinces_id>10000 &&  city_id>10000 && district_county_id>10000) {
-			    	int count=cityMapper.checkeCity(provinces_id,city_id,district_county_id);
-		 			if( count==0) {
+			    	 city=cityMapper.checkeCity(provinces_id,city_id,district_county_id);
+			    	System.out.println( city);
+			    	 if( city==null) {
 		 				return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		 			}
 		 		}else {
 		 			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		 		}
-			    
-			    
+			    		    
 			    //图片
 				List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) params_map.get("licenseUrl"),List.class,Picture.class);
 				int list_size=listObj3.size();
@@ -114,19 +115,24 @@ public class RealNameServiceImpl implements RealNameService{
 		            
 					RealName realName = new RealName();   		
 					realName.setCreateTime(formatter.format(new Date()));
-					realName.setId(user_id);
+					realName.setUserId(user_id);
 					
 		 			 if(email!=null) {
 		 				realName.setEmail(email); 
-		 			 }
-		 			realName.setAddress_detailed(address_detailed);
+		 					 }
+		 			realName.setAddressDetailed(address_detailed);
 		 			realName.setLicenseUrl(licenseUrl);
 		 			realName.setContact(contact);
-		 			realName.setConsignee_name(consignee_name);
-		 			realName.setCity_id(city_id);
-		 			realName.setDistrict_county_id(district_county_id);
-		 			realName.setProvinces_id(provinces_id);
-		 			realName.setAuthentication_status(1);
+		 			realName.setConsigneeName(consignee_name);
+		 			realName.setCityId(city_id);
+		 			realName.setDistrictCountyId(district_county_id);
+		 			realName.setProvincesId(provinces_id);
+		 			realName.setAuthentiCationStatus(1);
+		 			realName.setDetailed(city);
+		 			//检查id是否已经存在
+		 			if(realNameMapper.isNewRealName(user_id)>0) {
+		 				return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
+		 			}
 		 			int resultCount=  realNameMapper.newRealName(realName);
 	     			if(resultCount == 0){
 	     				return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage()); 
@@ -146,12 +152,13 @@ public class RealNameServiceImpl implements RealNameService{
 	     		 	}
 	     			User currentUser = userMapper.selectUserById(user_id);
                     currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
-	     			return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
+                    currentUser.setPassword(null);
+                    return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
 		 		 }
 		 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-//		 	} catch (Exception e) {
-//		 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-//			}
+		 	} catch (Exception e) {
+		 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+			}
 
 		}else {
 			//找工作和租房实名认证
@@ -159,6 +166,18 @@ public class RealNameServiceImpl implements RealNameService{
 		}
 			
 		
+	}
+
+	
+	//查询实名信息
+	@Override
+	public ServerResponse<Object> getRealName(long id) {
+		RealName realName=realNameMapper.getRealName(id);
+		if(realName!=null) {
+		realName.setLicenseUrl(null);
+		return ServerResponse.createBySuccess(realName);
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
 	}
 
 }

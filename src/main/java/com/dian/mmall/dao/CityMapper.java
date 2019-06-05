@@ -2,9 +2,11 @@ package com.dian.mmall.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+
+import com.dian.mmall.pojo.City;
 @Mapper
 public interface CityMapper {
 	
-	int checkeCity(int provinces_id, int city_id, int district_county_id);
+	String checkeCity(int provincesId, int cityId, int districtCountyId);
 
 }
