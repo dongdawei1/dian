@@ -303,7 +303,7 @@ public class UserServiceImpl implements IUserService {
      		user.setUsername(username);    		
      		user.setMobilePhone(EncrypDES.encryptPhone(mobilePhone));
      		user.setRole(Integer.parseInt(role));
-     		user.setIsAuthentication(2);//是否实名1是2未实名
+     		user.setIsAuthentication(4);//状态审批状态 1 审批中 ，2通过，3审核不通过，4未申请
      		
      		try {
      			//创建用户

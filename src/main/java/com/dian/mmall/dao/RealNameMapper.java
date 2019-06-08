@@ -15,4 +15,7 @@ public interface RealNameMapper {
 
 	int isNewRealName(long userId);
 
+
+	int updateRealName(RealName realName);
+
 }

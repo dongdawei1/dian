@@ -22,16 +22,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer.FromDecim
 
 public class Test1 {
 public static void main(String[] args) {
-String isbusiness_string="false";
-		
-	
-if(!isbusiness_string.equals("true") && !isbusiness_string.equals("false") ) {
-	System.out.println("Test1.main()");
-	//return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuLeiXingCuoWu.getMessage());
-	}
-	boolean isbusiness=Boolean.valueOf(isbusiness_string);
-	
-	System.out.println(isbusiness);
-	
+    int eag=19;
+	if(eag<18 || eag>60) {System.out.println("Test1.main()");}
 }
 }

@@ -9,9 +9,9 @@
    <!--创建用户成功返回非0  -->
      <insert id="newRealName"  >
         insert into t_user_realname (
-            userId, provincesId, cityId, districtCountyId,addressDetailed,contact,consigneeName, authentiCationStatus,email,createTime,licenseUrl,detailed
+            userId, provincesId, cityId, districtCountyId,addressDetailed,contact,consigneeName, authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender
         ) values (
-            #{userId}, #{provincesId}, #{cityId}, #{districtCountyId},#{addressDetailed},#{contact}, #{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed}
+            #{userId}, #{provincesId}, #{cityId}, #{districtCountyId},#{addressDetailed},#{contact}, #{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed},#{eag},#{gender}
         )
     </insert>
      
@@ -23,5 +23,11 @@
     <select id="isNewRealName"  resultType="int">
         select count(*) from t_user_realname where userId=#{userId}
     </select>
-    
+        <!--修改用户实名状态  -->   
+    <update id="updateRealName" >
+       update t_user_realname set  
+       provincesId=#{provincesId},cityId=#{cityId},districtCountyId=#{districtCountyId},addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},
+       authentiCationStatus=#{authentiCationStatus},email=#{email},licenseUrl=#{licenseUrl},detailed=#{detailed},updateTime=#{updateTime},eag=#{eag},gender=#{gender}
+        where id=#{id} 
+    </update>
 </mapper>

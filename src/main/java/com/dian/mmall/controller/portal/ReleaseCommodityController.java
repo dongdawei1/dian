@@ -41,7 +41,9 @@ public class ReleaseCommodityController {
  	if(user == null){
  		return ServerResponse.createByErrorMessage("用户登陆已过期");
  	}	
- 	
+ 	if(user.getIsAuthentication()!=2) {
+ 		return ServerResponse.createByErrorMessage("发布需求需要先进行实名");
+ 	}
  	return releaseCommodityService.commodity(user,loginToken,params);
  		
 	}

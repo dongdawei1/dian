@@ -25,7 +25,18 @@ public class RealName {
 	 private Integer authentiCationStatus;  //状态审批状态 1 审批中 ，2通过，3审核不通过
 	 private String authentiCationFailure; //审核失败原因
 	 private String email;  
+	 private Integer eag;   //求职年龄
+	 private String gender; //性别
 	 private String createTime;
 	 private String updateTime;
+	@Override
+	public String toString() {
+		return "RealName [id=" + id + ", userId=" + userId + ", provincesId=" + provincesId + ", cityId=" + cityId
+				+ ", districtCountyId=" + districtCountyId + ", detailed=" + detailed + ", addressDetailed="
+				+ addressDetailed + ", licenseUrl=" + licenseUrl + ", contact=" + contact + ", consigneeName="
+				+ consigneeName + ", authentiCationStatus=" + authentiCationStatus + ", authentiCationFailure="
+				+ authentiCationFailure + ", email=" + email + ", createTime=" + createTime + ", updateTime="
+				+ updateTime + "]";
+	}
 
 }

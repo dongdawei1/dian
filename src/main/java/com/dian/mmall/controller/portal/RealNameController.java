@@ -64,6 +64,33 @@ public class RealNameController {
     	return serverResponse;
     }
 	
+    
+    //重新用户实名
+    @RequestMapping(value = "updateRealName",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> updateRealName(@RequestBody Map<String, Object> params, HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,HttpSession session){
+    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+    	if(StringUtils.isEmpty(loginToken)){
+    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    	}
+    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
+    	if(user == null){
+    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    	}
+    	ServerResponse<String> serverResponse= realNameService.updateRealName(user.getId(),loginToken,params);
+    	
+    	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
+    		   
+    		    CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
+             	RedisShardedPoolUtil.del(loginToken);
+             	CookieUtil.writeLoginToken(httpServletResponse,session.getId());
+    			//把用户session当做key存到数据库中，时长是 30分钟
+    			RedisShardedPoolUtil.setEx(session.getId(),serverResponse.getMsg(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME); 
+    			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
+    	} 	
+    	return serverResponse;
+    }
 	
     //获取实名信息
     @RequestMapping(value = "getRealName",method = RequestMethod.GET)

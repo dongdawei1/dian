@@ -34,7 +34,7 @@ public class DispatcherController {
 
 	@Autowired
 	private PermissionService permissionService;
-	
+	//根据角色过去菜单
 	
 	@ResponseBody
 	@RequestMapping(value="/loadData" )

@@ -26,7 +26,10 @@ public enum ResponseMessage {
 	ChengShiBuHeFa("城市不合法"),
 	ChengGong("成功"),
 	GengXinYongHuXinXiShiBai("更新用户信息失败"),
-	LuoKuShiBai("落库失败");
+	LuoKuShiBai("落库失败"), 
+	NianLiFanWei("年龄必须在18至60之间"), 
+	XinBieYouWu("请正确输入性别"),
+	YongHuIdYiJingCunZai("用户ID已经存在");
    String message;
    ResponseMessage(String message){
 	   this.message=message;
