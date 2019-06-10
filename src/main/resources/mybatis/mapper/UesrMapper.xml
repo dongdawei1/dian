@@ -19,6 +19,11 @@
         where username = #{username}
     </select>
     
+    <!--根据id查用户  -->    
+      <select id="selectUserById" resultType="com.dian.mmall.pojo.user.User">
+        SELECT * FROM t_user WHERE id=#{id}
+    </select>
+    
     <select id="selectUsername" resultType="com.dian.mmall.pojo.user.User" parameterType="string" >
         select id,username,role,isAuthentication,mobilePhone from t_user
         where username = #{username}
@@ -36,10 +41,6 @@
     </insert>
     
    
-    <!--根据id查用户  -->    
-      <select id="selectUserById" resultType="com.dian.mmall.pojo.user.User">
-        SELECT * FROM t_user WHERE id=#{id}
-    </select>
      <!--修改用户基本信息  -->   
     <update id="update_information" >
        update t_user set  password=#{password},
@@ -47,6 +48,6 @@
     </update>
      <!--修改用户实名状态  -->   
     <update id="update_newRealName" >
-       update t_user set  isAuthentication=1 where id=#{id}
+       update t_user set  isAuthentication=#{isAuthentication} where id=#{id}
     </update>
 </mapper>

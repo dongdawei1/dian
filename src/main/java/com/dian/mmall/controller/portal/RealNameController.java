@@ -49,7 +49,7 @@ public class RealNameController {
     	if(user == null){
     		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
     	}
-    	ServerResponse<String> serverResponse= realNameService.newRealName(user.getId(),loginToken,params);
+    	ServerResponse<String> serverResponse= realNameService.newRealName(user,loginToken,params);
     	
     	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
     		   
@@ -78,7 +78,7 @@ public class RealNameController {
     	if(user == null){
     		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
     	}
-    	ServerResponse<String> serverResponse= realNameService.updateRealName(user.getId(),loginToken,params);
+    	ServerResponse<String> serverResponse= realNameService.updateRealName(user,loginToken,params);
     	
     	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
     		   
@@ -105,7 +105,7 @@ public class RealNameController {
     	if(user == null){
     		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
     	}
-    	return realNameService.getRealName(user.getId());
+    	return realNameService.getRealName(user);
     	
     }
     

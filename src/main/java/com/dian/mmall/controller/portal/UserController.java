@@ -49,7 +49,6 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/api/user/")
 public class UserController {
 	
-	private Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private IUserService iUserService;

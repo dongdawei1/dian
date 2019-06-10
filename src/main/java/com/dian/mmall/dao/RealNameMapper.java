@@ -1,5 +1,7 @@
 package com.dian.mmall.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.dian.mmall.pojo.user.RealName;
@@ -17,5 +19,14 @@ public interface RealNameMapper {
 
 
 	int updateRealName(RealName realName);
+
+    //全部未实名
+	int getRealNamePageno(String userName,String  contact);
+
+
+	List<RealName> getRealNameAll(int pageLength, int pageSize, String userName,String  contact);
+
+    //实名
+	int examineRealName(RealName realName);
 
 }

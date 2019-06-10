@@ -29,7 +29,10 @@ public enum ResponseMessage {
 	LuoKuShiBai("落库失败"), 
 	NianLiFanWei("年龄必须在18至60之间"), 
 	XinBieYouWu("请正确输入性别"),
-	YongHuIdYiJingCunZai("用户ID已经存在");
+	YongHuIdYiJingCunZai("用户ID已经存在"),
+	JueSeBuHeFa("角色不合法"),
+	ShiBaiYuanYinWeiKong("失败原因为空"),
+	YongHuIdBuJingCunZai("用户ID不存在");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

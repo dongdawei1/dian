@@ -14,6 +14,8 @@ public class RealName {
 	//实名信息  ,
 	private long id;
 	private long userId;
+	private String userName;
+	private String userType;
     private Integer provincesId;      //省
     private Integer cityId;    //市
 	 private Integer districtCountyId; //区，
@@ -29,6 +31,8 @@ public class RealName {
 	 private String gender; //性别
 	 private String createTime;
 	 private String updateTime;
+	 private String examineName;//审核人员
+	 private String examineTime;//审核时间
 	@Override
 	public String toString() {
 		return "RealName [id=" + id + ", userId=" + userId + ", provincesId=" + provincesId + ", cityId=" + cityId

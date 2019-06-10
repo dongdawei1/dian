@@ -1,9 +1,12 @@
 package com.dian.mmall.util;
 
+import java.util.Collection;
+
 import com.dian.mmall.common.RedisPool;
 import com.dian.mmall.common.RedisShardedPool;
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisShardInfo;
 import redis.clients.jedis.ShardedJedis;
 
 /**
@@ -138,6 +141,7 @@ public class RedisShardedPoolUtil {
             return result;
         }
         RedisShardedPool.returnResource(jedis);
+        
         return result;
     }
     
@@ -160,7 +164,7 @@ public class RedisShardedPoolUtil {
 
         RedisPoolUtil.set("keyTest","value");
    
-        
+      //  GetAllKeys（）
         
         String value = RedisPoolUtil.get("keyTest");
 
@@ -168,8 +172,12 @@ public class RedisShardedPoolUtil {
         
       RedisPoolUtil.set("keyTest","   value11111");
    
-        
-        
+      Collection<JedisShardInfo> D= jedis.getAllShardInfo();
+      for(JedisShardInfo aInf : D) {
+    	  System.out.println(aInf.toString());
+      }  
+      
+      
         String value1 = RedisPoolUtil.get("keyTest");
         RedisPoolUtil.set("keyTest","    value2222");
         

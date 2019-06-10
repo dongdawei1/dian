@@ -34,7 +34,7 @@ public interface UserMapper {
    //修改用户基本信息
    int update_information(User new_User);
    //修改用户实名状态
-   int update_newRealName(long id);
+   int update_newRealName(User user);
 //
 //    int checkEmail(String email);
 //

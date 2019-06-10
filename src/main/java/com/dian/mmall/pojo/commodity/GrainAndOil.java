@@ -67,6 +67,7 @@ public class GrainAndOil {
 	@IsEmptyAnnotation(message="审核状态不能为空")
 	private Integer approval_status;  //必填  后端加//审批状态 1 审批中 ，2通过，3审核不通过
 	private String approval_failure; //审核失败原因
+	
 	@IsEmptyAnnotation(message="创建时间不能为空")
     private String createTime;   //必填
     private String updateTime;
