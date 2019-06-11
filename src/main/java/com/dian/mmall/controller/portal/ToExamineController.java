@@ -22,6 +22,7 @@ import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
+import com.dian.mmall.util.RedisPoolUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
@@ -52,9 +53,7 @@ public class ToExamineController {
     	return realNameService.getRealNameAll(params);
     	
     }
-	//examine
-    
-    
+	//实名审核
     
     @RequestMapping(value = "examineRealName",method = RequestMethod.POST)
     @ResponseBody
@@ -78,15 +77,13 @@ public class ToExamineController {
 	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
 		   
 		User shenheUser=(User) serverResponse.getData();
-		System.out.println( shenheUser.toString());
-		
-		
-//		    CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
-//         	RedisShardedPoolUtil.del(loginToken);
-//         	CookieUtil.writeLoginToken(httpServletResponse,session.getId());
-//			//把用户session当做key存到数据库中，时长是 30分钟
-//			RedisShardedPoolUtil.setEx(session.getId(),serverResponse.getMsg(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME); 
-			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
+		int result=RedisPoolUtil.checkeKey(shenheUser);
+		if(result==0) {
+			return ServerResponse.createBySuccessMessage("成功用户登录");
+		}else if(result==1) {
+			return ServerResponse.createBySuccessMessage("成功用户未登录");
+		}
+			return ServerResponse.createBySuccessMessage("更新登录信息失败，请联系用户重新登陆");
 	}
 	
 	 return ServerResponse.createByErrorMessage(serverResponse.getMsg());

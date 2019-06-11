@@ -1,6 +1,12 @@
 package com.dian.mmall.util;
 
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.RedisPool;
+import com.dian.mmall.pojo.user.User;
+
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 
@@ -109,23 +115,60 @@ public class RedisPoolUtil {
         RedisPool.returnResource(jedis);
         return result;
     }
+    
+    public static int checkeKey(User user){
+        Jedis jedis = null;
+        //0有成功替换，1没有，2异常
+        try {
+        	jedis = RedisPool.getJedis();
+        	Set<String> keys=   jedis.keys("*");
+            for(String key : keys) {
+            	 String pattern = ".*"+ "\"username\""+":\""+user.getUsername()+"\","+".*";
+            	 String userJsonStr=RedisShardedPoolUtil.get(key);
+            	 if(userJsonStr.indexOf("username")!=-1) {
+            		 User userJedis = JsonUtil.string2Obj(userJsonStr,User.class);
+                	if(userJedis.getUsername().equals(user.getUsername())&& userJedis.getId()==user.getId()) {
+                		//在这里替换tocken
+                		RedisShardedPoolUtil.del(key);
+                		RedisShardedPoolUtil.setEx(key,JsonUtil.obj2String(user),Const.RedisCacheExtime.REDIS_SESSION_EXTIME); 
+                		System.out.println(RedisShardedPoolUtil.get(key)+"  ,,,");
+                		return 0;
+                	} 
+            	 }
+	 
+            }
+            RedisPool.returnResource(jedis);
+             	
+        } catch (Exception e) {
+            RedisPool.returnBrokenResource(jedis);
+            return 2;
+        }
+       
+        return 1;
+    }
+    
 
     public static void main(String[] args) {
         Jedis jedis = RedisPool.getJedis();
 
         RedisShardedPoolUtil.set("keyTest","value");
   
-        
-        
-        
+   
+        User usetUser=new User();
+       //System.out.println( RedisPoolUtil.checkeKey(usetUser));
        Boolean value = RedisShardedPoolUtil.exists("keyTest");
    
         
-        System.out.println(value+"    ");
-        
         RedisShardedPoolUtil.setEx("keyex","valueex",60*10);
 
-        RedisShardedPoolUtil.expire("keyTest",60*20);
+        Set<String> keyes=   jedis.keys("*");
+        for(String key : keyes) {
+        	System.out.println(key +"ddd");
+        	String userJsonStr=RedisShardedPoolUtil.get(key);
+        	
+        	System.out.println(userJsonStr);
+        	
+        }
 
     //    RedisShardedPoolUtil.del("keyTest");
 
@@ -133,7 +176,6 @@ public class RedisPoolUtil {
 //        String aaa = RedisShardedPoolUtil.get(null);
 //        System.out.println(aaa);
 
-        System.out.println("end");
 
 
     }

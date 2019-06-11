@@ -72,8 +72,7 @@ public class UserController {
         	   return response;
     	}else {
     		return response;
-        }
-        
+        }      
     }
     
     
