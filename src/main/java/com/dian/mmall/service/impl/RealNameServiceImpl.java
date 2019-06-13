@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.sql.ast.statement.SQLIfStatement.Else;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
@@ -114,9 +115,14 @@ public class RealNameServiceImpl implements RealNameService{
 		 		 contact= params_map.get("contact").toString().trim() ;
 		 		 consignee_name=params_map.get("consignee_name").toString().trim() ;
 		 		 email=params_map.get("email").toString().trim() ;
-		 		//判断必传字段
+		 		
+		 		//判断手机号是否合法
+			    	serverResponse=LegalCheck.legalCheckMobilePhone(contact);
+			    	if(serverResponse.getStatus()!=0) {	
+						return serverResponse;			
+					}
+		 		 //判断必传字段
 		 		 if( address_detailed.length()<101 && address_detailed.length()>0 
-		 				&& contact.length()<13 && contact.length()>5 	
 		 				&& consignee_name.length()<13 && consignee_name.length()>1) {
 		 			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
 		            
@@ -129,7 +135,7 @@ public class RealNameServiceImpl implements RealNameService{
 		 					 }
 		 			realName.setAddressDetailed(address_detailed);
 		 			realName.setLicenseUrl(licenseUrl);
-		 			realName.setContact(contact);
+		 			realName.setContact(EncrypDES.encryptPhone(contact));
 		 			realName.setConsigneeName(consignee_name);
 		 			realName.setCityId(city_id);
 		 			realName.setDistrictCountyId(district_county_id);
@@ -218,9 +224,13 @@ public class RealNameServiceImpl implements RealNameService{
 		 		 contact= params_map.get("contact").toString().trim() ;
 		 		 consignee_name=params_map.get("consignee_name").toString().trim() ;
 		 		 email=params_map.get("email").toString().trim() ;
-		 		//判断必传字段
+		 		//判断手机号是否合法
+			    	serverResponse=LegalCheck.legalCheckMobilePhone(contact);
+			    	if(serverResponse.getStatus()!=0) {	
+						return serverResponse;			
+					}
+		 		 //判断必传字段
 		 		 if( address_detailed.length()<101 && address_detailed.length()>0 
-		 				&& contact.length()<13 && contact.length()>5 	
 		 				&& consignee_name.length()<13 && consignee_name.length()>1) {
 		 			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
 		            
@@ -232,7 +242,7 @@ public class RealNameServiceImpl implements RealNameService{
 		 				realName.setEmail(email); 
 		 					 }
 		 			realName.setAddressDetailed(address_detailed);
-		 			realName.setContact(contact);
+		 			realName.setContact(EncrypDES.encryptPhone(contact));
 		 			realName.setConsigneeName(consignee_name);
 		 			realName.setCityId(city_id);
 		 			realName.setDistrictCountyId(district_county_id);
@@ -284,6 +294,7 @@ public class RealNameServiceImpl implements RealNameService{
 		RealName realName=realNameMapper.getRealName(user.getId());
 		if(realName!=null) {
 		realName.setLicenseUrl(null);
+		realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
 		return ServerResponse.createBySuccess(realName);
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
@@ -368,9 +379,13 @@ public class RealNameServiceImpl implements RealNameService{
 		 		 contact= params_map.get("contact").toString().trim() ;
 		 		 consignee_name=params_map.get("consignee_name").toString().trim() ;
 		 		 email=params_map.get("email").toString().trim() ;
-		 		//判断必传字段
+		 		//判断手机号是否合法
+			    	serverResponse=LegalCheck.legalCheckMobilePhone(contact);
+			    	if(serverResponse.getStatus()!=0) {	
+						return serverResponse;			
+					}
+		 		 //判断必传字段
 		 		 if( address_detailed.length()<101 && address_detailed.length()>0 
-		 				&& contact.length()<13 && contact.length()>5 	
 		 				&& consignee_name.length()<13 && consignee_name.length()>1) {
 		 			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
 		            
@@ -383,7 +398,7 @@ public class RealNameServiceImpl implements RealNameService{
 		 					 }
 		 			realName.setAddressDetailed(address_detailed);
 		 			realName.setLicenseUrl(licenseUrl);
-		 			realName.setContact(contact);
+		 			realName.setContact(EncrypDES.encryptPhone(contact));
 		 			realName.setConsigneeName(consignee_name);
 		 			realName.setCityId(city_id);
 		 			realName.setDistrictCountyId(district_county_id);
@@ -472,9 +487,13 @@ public class RealNameServiceImpl implements RealNameService{
 		 		 contact= params_map.get("contact").toString().trim() ;
 		 		 consignee_name=params_map.get("consignee_name").toString().trim() ;
 		 		 email=params_map.get("email").toString().trim() ;
-		 		//判断必传字段
+		 		//判断手机号是否合法
+			    	serverResponse=LegalCheck.legalCheckMobilePhone(contact);
+			    	if(serverResponse.getStatus()!=0) {	
+						return serverResponse;			
+					}
+		 		 //判断必传字段
 		 		 if( address_detailed.length()<101 && address_detailed.length()>0 
-		 				&& contact.length()<13 && contact.length()>5 	
 		 				&& consignee_name.length()<13 && consignee_name.length()>1) {
 		 			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
 		            
@@ -487,7 +506,7 @@ public class RealNameServiceImpl implements RealNameService{
 		 					 }
 		 			realName.setAddressDetailed(address_detailed);
 		 			
-		 			realName.setContact(contact);
+		 			realName.setContact(EncrypDES.encryptPhone(contact));
 		 			realName.setConsigneeName(consignee_name);
 		 			realName.setCityId(city_id);
 		 			realName.setDistrictCountyId(district_county_id);
@@ -585,23 +604,35 @@ public class RealNameServiceImpl implements RealNameService{
 		realName_pagePage.setPageSize(pageSize);
 		realName_pagePage.setCurrentPage(currentPage); //当前页
 		
-		realName_pagePage.setDatas(realNameMapper.getRealNameAll((currentPage-1)*pageSize,pageSize,userName,contact));
+	    List<RealName> list_realname  =	new ArrayList();
+		for(RealName realName :realNameMapper.getRealNameAll((currentPage-1)*pageSize,pageSize,userName,contact)) {
+			realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
+			list_realname.add(realName);
+		}
+
+		realName_pagePage.setDatas(list_realname );
 		
 		return ServerResponse.createBySuccess(realName_pagePage);
 	}
 
     //实名
 	@Override
-	public ServerResponse<Object> examineRealName(User user, Map<String, Object> params) {
-	    String	user_beishenhe =params.get("userId").toString().trim();	
+	public ServerResponse<Object> examineRealName(User user, Map<String, Object> params,String loginToken) {
+	   String isArtificialString=params.get("isArtificial").toString().trim();	
+	   if(isArtificialString==null ||isArtificialString.contentEquals("")) {
+			return	ServerResponse.createByErrorMessage(ResponseMessage.JueSeBuHeFa.getMessage());
+			}
+	   int isArtificial=Integer.valueOf(isArtificialString);
+		if(isArtificial==1) {
+		String	user_beishenhe =params.get("userId").toString().trim();	
 		if(user_beishenhe==null ||user_beishenhe.contentEquals("")) {
-			return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuIdBuJingCunZai.getMessage());
+			return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingBuKeYong.getMessage());
 			}
 	    
 		long user_id=Long.valueOf(user_beishenhe);
 		User user_shenhe= userMapper.selectUserById(user_id);
 	  if(user_shenhe==null) {
-		  return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuIdBuJingCunZai.getMessage());
+		  return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingBuKeYong.getMessage());
 	  }	
 	  
 		RealName realName = new RealName(); 
@@ -636,7 +667,6 @@ public class RealNameServiceImpl implements RealNameService{
 		}else {
 			return	ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
 		}
-		
 		user_shenhe.setIsAuthentication(authentiCationStatus);
 		resultCount= userMapper.update_newRealName(user_shenhe);
 		if(resultCount==0) {
@@ -647,5 +677,161 @@ public class RealNameServiceImpl implements RealNameService{
 		user_shenhe.setMobilePhone(EncrypDES.decryptPhone(user_shenhe.getMobilePhone()));
 		user_shenhe.setPassword(null);
         return ServerResponse.createBySuccess(user_shenhe);
-	}
+	   }
+	else if(isArtificial==2) {
+		String username=params.get("userName").toString().trim();	
+		   if(username==null ||username.contentEquals("")) {
+				return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingBuKeYong.getMessage());
+				}	
+	    User user2=	userMapper.checkUsername(username);
+	    if(user2==null) {
+			  return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuIdBuJingCunZai.getMessage());
+		  }	
+	    String mobilePhone=params.get("mobilePhone").toString().trim();
+	    if(!mobilePhone.equals(EncrypDES.decryptPhone(user2.getMobilePhone()))) {
+	    	return	ServerResponse.createByErrorMessage(ResponseMessage.ZhuoCeShouJiCuoWu.getMessage());
+	    }
+	   
+	    
+	    
+		//校验是否有特殊字符
+		    	ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
+			 	//检查是否有非法输入
+			 	if(serverResponse.getStatus()!=0) {	
+						return ServerResponse.createByErrorMessage(serverResponse.getMsg());			
+					}	
+			 	
+			 	//所有商户实名
+			 	String address_detailed =null;
+			    int	provinces_id=0;
+			    int	city_id=0;
+			    int	district_county_id=0;
+			 	String licenseUrl=null;   //营业执照图片url
+				String contact=null;  //收/送货联系方式
+			    String email=null; 
+			    String city=null;
+			    Integer eag=0;   //求职年龄
+			    String gender=null; //性别
+			   try {
+			 		provinces_id=Integer.valueOf(params.get("provinces_id").toString().trim());
+			 		city_id=Integer.valueOf(params.get("city_id").toString().trim());
+				    district_county_id=Integer.valueOf(params.get("district_county_id").toString().trim());
+				   //判断省市区id是否正确
+				    if(provinces_id>10000 &&  city_id>10000 && district_county_id>10000) {
+				    	 city=cityMapper.checkeCity(provinces_id,city_id,district_county_id);
+				    	 if( city==null) {
+			 				return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+			 			}
+			 		}else {
+			 			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+			 		}
+				    eag=Integer.valueOf(params.get("eag").toString().trim());
+				     //判断年龄
+				     if( eag<18 || eag>60) {
+				    	 return	ServerResponse.createByErrorMessage(ResponseMessage.NianLiFanWei.getMessage()); 
+				     }
+				    
+				     gender=params.get("gender").toString().trim() ;
+				     //判断性别
+				     if(!gender.equals("男") && !gender.equals("女") ) {
+				    	 return	ServerResponse.createByErrorMessage(ResponseMessage.XinBieYouWu.getMessage()); 
+				     }	 
+				    //图片
+					List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) params.get("licenseUrl"),List.class,Picture.class);
+					int list_size=listObj3.size();
+					//把getUse_status()==1 放到这个集合中
+					List<Picture> listObj4=new ArrayList<Picture>();
+					
+					int getNum=PictureNum.ShiMingRenZheng.getNum();
+					//如果大于3要判断没删除的是否超过总数
+					if(list_size>0) {
+						int count=0;
+						for(int a=0;a<list_size;a++) {
+							if(listObj3.get(a).getUse_status()==1) {
+								listObj4.add(listObj3.get(a));
+								count+=1;
+							}
+							if(count>getNum) {
+								return ServerResponse.createByErrorMessage("图片数量不能超过 "+getNum+"个");
+							}
+							
+						}}
+					
+					 licenseUrl= params.get("licenseUrl").toString().trim() ;
+					 address_detailed = params.get("address_detailed").toString().trim() ;
+			 		 contact= params.get("contact").toString().trim() ;
+			 		 email=params.get("email").toString().trim() ;
+			 		
+			 		//判断手机号是否合法
+				    	serverResponse=LegalCheck.legalCheckMobilePhone(contact);
+				    	if(serverResponse.getStatus()!=0) {	
+							return ServerResponse.createByErrorMessage(serverResponse.getMsg());			
+						}
+			 		 //判断必传字段
+			 		 if( address_detailed.length()<101 && address_detailed.length()>0 ) {
+			 			RealName realName = new RealName(); 
+			 			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
+			 			realName.setExamineTime(formatter.format(new Date()));
+			 			realName.setExamineName(user.getUsername());
+			 			realName.setUserId(user2.getId());
+			 			realName.setUserName(user2.getUsername());
+			 			realName.setAuthentiCationStatus(2);
+						realName.setCreateTime(formatter.format(new Date()));
+
+			 			 if(email!=null) {
+			 				realName.setEmail(email); 
+			 					 }
+			 			realName.setAddressDetailed(address_detailed);
+			 			realName.setLicenseUrl(licenseUrl);
+			 			realName.setContact(EncrypDES.encryptPhone(contact));
+			 			realName.setConsigneeName(username);
+			 			realName.setCityId(city_id);
+			 			realName.setDistrictCountyId(district_county_id);
+			 			realName.setProvincesId(provinces_id);
+			 			realName.setDetailed(city);
+			 		    realName.setEag(eag);
+					    realName.setGender(gender);
+			 			//添加
+			 			serverResponse=SetBean.setRole(user2.getRole());
+			 			//检查用户类型
+			 		 	if(serverResponse.getStatus()!=0) {	
+			 				return ServerResponse.createByErrorMessage(serverResponse.getMsg());		
+			 			}	
+			 		 	realName.setUserType(serverResponse.getMsg());
+			 			//检查id是否已经存在
+			 			if(realNameMapper.isNewRealName(user2.getId())>0) {
+			 				return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
+			 			}
+			 			int resultCount=  realNameMapper.newRealName(realName);
+		     			if(resultCount == 0){
+		     				return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage()); 
+		                 }
+		     			user2.setIsAuthentication(2);
+		     			resultCount= userMapper.update_newRealName(user2);
+		     			if(resultCount == 0){
+		     				return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage()); 
+		                 }
+		     			if(listObj4.size()>0) {
+		     		 		for(int a=0;a<listObj4.size();a++) {
+		     		 			Picture picture=listObj4.get(a);
+		     		 			picture.setTocken(loginToken);
+		     		 			picture.setUser_id(user.getId());
+		     		 			
+		     		 			ipics.updatePictureUse(picture);
+		     		 		}
+		     		 	}
+		     			user2.setPassword(null);
+		     			user2.setMobilePhone(mobilePhone);
+		     			 return ServerResponse.createBySuccess(user2);
+			 		 }
+			 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+			 	} catch (Exception e) {
+			 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+				}
+		
+	   }
+	return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+    }
+	
+
 }

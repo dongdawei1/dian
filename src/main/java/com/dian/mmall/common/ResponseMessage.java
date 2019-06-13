@@ -32,7 +32,8 @@ public enum ResponseMessage {
 	YongHuIdYiJingCunZai("用户ID已经存在"),
 	JueSeBuHeFa("角色不合法"),
 	ShiBaiYuanYinWeiKong("失败原因为空"),
-	YongHuIdBuJingCunZai("用户ID不存在");
+	YongHuIdBuJingCunZai("用户ID不存在"),
+	ZhuoCeShouJiCuoWu("注册手机号错误");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

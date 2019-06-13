@@ -15,6 +15,6 @@ public interface RealNameService {
 
 	ServerResponse<Object> getRealNameAll(Map<String, Object> params);
 
-	ServerResponse<Object> examineRealName(User user, Map<String, Object> params);
+	ServerResponse<Object> examineRealName(User user, Map<String, Object> params,String loginToken);
 
 }

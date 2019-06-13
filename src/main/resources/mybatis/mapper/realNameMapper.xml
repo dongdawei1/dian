@@ -9,9 +9,9 @@
    <!--创建用户成功返回非0  -->
      <insert id="newRealName"  >
         insert into t_user_realname (
-            userId, provincesId, cityId, districtCountyId,addressDetailed,contact,consigneeName, authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender,userName,userType
+            userId, provincesId, cityId, districtCountyId,addressDetailed,contact,consigneeName, authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender,userName,userType,examineName,examineTime
         ) values (
-            #{userId}, #{provincesId}, #{cityId}, #{districtCountyId},#{addressDetailed},#{contact}, #{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed},#{eag},#{gender},#{userName},#{userType}
+            #{userId}, #{provincesId}, #{cityId}, #{districtCountyId},#{addressDetailed},#{contact}, #{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed},#{eag},#{gender},#{userName},#{userType},#{examineName},#{examineTime}
         )
     </insert>
      

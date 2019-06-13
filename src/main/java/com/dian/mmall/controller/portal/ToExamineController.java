@@ -72,7 +72,7 @@ public class ToExamineController {
  		return ServerResponse.createByErrorMessage("没有权限");
  	}
  	
- 	ServerResponse<Object> serverResponse= realNameService.examineRealName(user,params);
+ 	ServerResponse<Object> serverResponse= realNameService.examineRealName(user,params, loginToken);
 	System.out.println(serverResponse.getMsg());
 	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
 		   
