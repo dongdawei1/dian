@@ -154,16 +154,13 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	 	params.put("approval_status", 1);
 	 	params.put("isReceivingPurchase", 1);//初始化都是再有效期
 	 	params.put("approval_status", 1);//初始化审核中
-	 	params.put("createTime", formatter.format(new Date()));
-	 	
+	 	params.put("createTime", formatter.format(new Date()));	 	
 	 	params.put("pictureUrl", params.get("pictureUrl").toString());
-	 	params.put("isDelete", 1);
-	 	
+	 	params.put("isDelete", 1);	 	
 	 	GrainAndOil grainAndOil=(GrainAndOil) BeanMapConvertUtil.convertMap(GrainAndOil.class,params);
 			
 	 	
 	 	//{result=true, message=验证通过} 返回结果
-	 	System.out.println(AnnotationDealUtil.validate(grainAndOil).toString());
 	 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(grainAndOil);
 	 	if((boolean)checknullMap.get("result")==true && ((String)checknullMap.get("message")).equals("验证通过")) {
 	 		
