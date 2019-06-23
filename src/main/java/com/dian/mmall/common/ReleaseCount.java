@@ -7,7 +7,8 @@ import lombok.Getter;
 public enum ReleaseCount {
  //商品对应的类型id
 	 
-	GRAINANDOIL("shang_grainandoil",30);   
+	GRAINANDOIL("shang_grainandoil",30),
+	create_position("create_position",30);   
 	//OIL("oil",52);  //油
 		
     private Integer count; //类型编号

@@ -173,9 +173,11 @@ public class RealNameServiceImpl implements RealNameService{
 	     		 			ipics.updatePictureUse(picture);
 	     		 		}
 	     		 	}
+	     			System.out.println(user.toString());
 	     			User currentUser = userMapper.selectUserById(user_id);
                     currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
                     currentUser.setPassword(null);
+                    System.out.println(currentUser.toString());
                     return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
 		 		 }
 		 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
@@ -295,6 +297,8 @@ public class RealNameServiceImpl implements RealNameService{
 		if(realName!=null) {
 		realName.setLicenseUrl(null);
 		realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
+		realName.setExamineName(null);
+		realName.setExamineTime(null);
 		return ServerResponse.createBySuccess(realName);
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
