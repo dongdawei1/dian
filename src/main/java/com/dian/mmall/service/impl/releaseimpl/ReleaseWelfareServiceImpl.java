@@ -134,15 +134,18 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 			}
 			
 		String string=stringBuffer.toString();
+		stringBuffer=stringBuffer.delete(0, stringBuffer.length());
 		for(int a=0;  a< listObj3.size();a++) {
 			String welfare=".*"+listObj3.get(a)+".*";
 		      boolean isMatch = Pattern.matches(welfare, string);
 			 if(isMatch==false) {
 				 return ServerResponse.createByErrorMessage(ResponseMessage.fulibuhefa.getMessage());
 			 }
+			 stringBuffer.append(listObj3.get(a)+"/");
 		}
+		params.put("welfare", stringBuffer.toString());
 		//校验职位类型
-		stringBuffer=stringBuffer.delete(0, stringBuffer.length());;
+		stringBuffer=stringBuffer.delete(0, stringBuffer.length());
 		Position[] position=Position.values();
 		for(int a1=0;  a1< position.length;a1++) {
 			stringBuffer.append(position[a1].getPositionType());
@@ -251,27 +254,33 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		String addressDetailed=realName.getAddressDetailed();
 		if(!addressDetailed.equals(params.get("workingAddress").toString().trim())) {
 			params.put("addressConsistency",2); //2不一致1一致
+		}else {
+			params.put("addressConsistency",1);
 		}
-		params.put("addressConsistency",1);
+		
 		//判断实名地址
 		if(!addressDetailed.equals(params.get("addressDetailed").toString().trim())) {
 	    	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
 	    }
+		params.remove("addressDetailed");
 		//	判断省市区
 		String detailed=params.get("detailed").toString().trim();
 	    if(!detailed.equals(realName.getDetailed())) {
 	    	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
 	    }
+	    params.remove("detailed");
 		//判断电话
 	    String contact=EncrypDES.decryptPhone(realName.getContact());
 		if(!contact.equals(params.get("contact").toString().trim())) {
 	    	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());		
 		}
+		params.remove("contact");
 		//判断实名姓名
 	    String consigneeName=realName.getConsigneeName();
 		if(!consigneeName.equals(params.get("consigneeName").toString().trim())) {
 		 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());			
 		}
+		params.remove("consigneeName");
 		}
 		
 		return ServerResponse.createBySuccess(params);
