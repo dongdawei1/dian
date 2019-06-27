@@ -24,7 +24,7 @@ public enum ResponseMessage {
    	BianJiChengGongChongXinDengLu("编辑成功重新登陆"),
 	YongHuLeiXingCuoWu("用户类型错误"),
 	ChengShiBuHeFa("城市输入不合法"),
-	ChengGong("成功"),
+	ChengGong("创建成功"),
 	GengXinYongHuXinXiShiBai("更新用户信息失败"),
 	LuoKuShiBai("落库失败"), 
 	NianLiFanWei("年龄必须在18至60之间"), 
@@ -53,7 +53,9 @@ public enum ResponseMessage {
 	nianlingbuhefa("年龄输入不合法"),
 	jianglikong("奖励不能为空"),
 	jianglibuhefa("奖励不合法"),
-	shimingxinxibuyizhi("实名信息不一致");
+	shimingxinxibuyizhi("实名信息不一致"),
+	yonghuidhuoshenpixiangbucunzi("用户或者审批项不存在"),
+	shenpishenggong("审批成功");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

@@ -598,7 +598,7 @@ public class RealNameServiceImpl implements RealNameService{
 	 	String contact = params.get("contact").toString().trim();
 	 	Page<RealName> realName_pagePage=new Page<RealName>();
 		
-	 	int zongtiaoshu=realNameMapper.getRealNamePageno(userName,contact);
+	 	long zongtiaoshu=realNameMapper.getRealNamePageno(userName,contact);
 		int totalno=(int) Math.ceil((float)zongtiaoshu/pageSize);
 		
 //		System.out.println(grainAndOilMapper.getGrainAndOilPageno()+"   "+pageSize+"    "+
@@ -609,7 +609,8 @@ public class RealNameServiceImpl implements RealNameService{
 		realName_pagePage.setCurrentPage(currentPage); //当前页
 		
 	    List<RealName> list_realname  =	new ArrayList();
-		for(RealName realName :realNameMapper.getRealNameAll((currentPage-1)*pageSize,pageSize,userName,contact)) {
+	    List<RealName> list_srelnameall= realNameMapper.getRealNameAll((currentPage-1)*pageSize,pageSize,userName,contact);
+		for(RealName realName :list_srelnameall) {
 			realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
 			list_realname.add(realName);
 		}

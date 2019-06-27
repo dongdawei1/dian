@@ -6,7 +6,7 @@ public class Page<T> {
 
 	private List<T> datas;
 	private int currentPage;  //当前页
-	private int totalno; //总页数
+	private long totalno; //总条数
 	private int pageSize; //每页的条数
 	public List<T> getDatas() {
 		return datas;
@@ -20,10 +20,10 @@ public class Page<T> {
 	public void setCurrentPage(int pageno) {
 		this.currentPage = pageno;
 	}
-	public int getTotalno() {
+	public long getTotalno() {
 		return totalno;
 	}
-	public void setTotalno(int totalno) {
+	public void setTotalno(long totalno) {
 		this.totalno = totalno;
 	}
 	public int getPageSize() {

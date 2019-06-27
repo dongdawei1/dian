@@ -22,6 +22,7 @@ import com.dian.mmall.common.zhiwei.Salary;
 import com.dian.mmall.common.zhiwei.Welfare;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
+import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.commodity.GrainAndOil;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
@@ -34,6 +35,7 @@ import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
+import com.dian.mmall.util.SetBean;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,11 +54,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	   if(serverResponse.getStatus()!=0) {
 		   return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 	   }
-	   params=(Map<String, Object>) serverResponse.getData();
-	   
-
-//		return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
-//	   
+	   params=(Map<String, Object>) serverResponse.getData();  
 	   params.put("authentiCationStatus",1);
 	   params.put("welfareStatus",4);
 	   SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
@@ -65,22 +63,127 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	   params.put("updateTime",timeString);
 	  
 	   ReleaseWelfare releaseWelfare=(ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class,params);
-	   
+	   System.out.println(releaseWelfare.toString());
 	 	//{result=true, message=验证通过} 返回结果
 	 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(releaseWelfare);
 	 	if((boolean)checknullMap.get("result")==true && ((String)checknullMap.get("message")).equals("验证通过")) {
-	 		  System.out.println(releaseWelfare.toString());
+	 		int count=releaseWelfareMapper.create_position(releaseWelfare); 
+	 		System.out.println(releaseWelfare.toString());
 	 	}else if((boolean)checknullMap.get("result")==false) {
 	 		return ServerResponse.createByErrorMessage((String)checknullMap.get("message"));
 	 	}else {
 	 		return ServerResponse.createByErrorMessage("系统异常稍后重试");
 	 	}
 	
-	  return null;
+	  return ServerResponse.createBySuccessMessage(ResponseMessage.BianJiChengGong.getMessage());
 	 
 		
 	}
 
+   //管理员获取全部待审批的发布
+	@Override
+	public ServerResponse<Object> getReleaseWelfareAll(Map<String, Object> params) {
+		String currentPage_string= params.get("currentPage").toString().trim() ;    
+		String pageSize_string= params.get("pageSize").toString().trim() ;    
+		int currentPage=0;
+		int  pageSize=0;
+	 	
+	 	if(currentPage_string!=null && currentPage_string!="") {
+	 		currentPage=Integer.parseInt(currentPage_string);
+	 		if(currentPage<=0) {
+	 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+	 		}
+	 		
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+ 	    }
+	 	
+	 	if(pageSize_string!=null && pageSize_string!="") {
+	 		pageSize=Integer.parseInt(pageSize_string);
+	 		if(pageSize<=0) {
+	 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+	 		}
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+ 	    }
+		
+	 
+	 	String userName = params.get("userName").toString().trim();
+	 	String contact = params.get("contact").toString().trim();
+	 	
+	 	Page<ReleaseWelfare> releaseWelfare_pagePage=new Page<ReleaseWelfare>();
+		
+	 	long zongtiaoshu=releaseWelfareMapper.getReleaseWelfarePageno(userName,contact);
+		int totalno=(int) Math.ceil((float)zongtiaoshu/pageSize);
+		releaseWelfare_pagePage.setTotalno(zongtiaoshu);
+		releaseWelfare_pagePage.setPageSize(pageSize);
+		releaseWelfare_pagePage.setCurrentPage(currentPage); //当前页
+		
+	    List<ReleaseWelfare> list_releaseWelfare  =	new ArrayList();
+	    List<ReleaseWelfare> list_releaseWelfareall=  releaseWelfareMapper.getReleaseWelfareAll((currentPage-1)*pageSize,pageSize,userName,contact);
+	    
+		for(ReleaseWelfare releaseWelfare :list_releaseWelfareall) {
+			releaseWelfare.setContact(EncrypDES.decryptPhone(releaseWelfare.getContact()));
+			list_releaseWelfare.add(releaseWelfare);
+		}
+
+		releaseWelfare_pagePage.setDatas(list_releaseWelfare );
+		return ServerResponse.createBySuccess(releaseWelfare_pagePage);
+	}
+	
+	
+	 //审核招聘
+		@Override
+		public ServerResponse<String> examineReleaseWelfare(User user, Map<String, Object> params) {
+			String	userId =params.get("userId").toString().trim();	
+			String  id=params.get("id").toString().trim();	
+			if(userId==null ||userId.contentEquals("") ||id==null ||id.contentEquals("") ) {
+				return	ServerResponse.createByErrorMessage(ResponseMessage.yonghuidhuoshenpixiangbucunzi.getMessage());
+				}
+			int authentiCationStatus=Integer.valueOf(params.get("authentiCationStatus").toString().trim());
+			if(authentiCationStatus!=2 && authentiCationStatus!=3) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+			}
+			
+			long user_id=Long.valueOf(userId);
+			long releaseWelfareId=Long.valueOf(id);
+			params.put("userId", user_id);
+			params.put("id", releaseWelfareId);
+			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
+			params.put("examineTime", formatter.format(new Date()));
+			params.put("examineName", user.getUsername());
+
+			int resultCount=0;
+			if(authentiCationStatus==2) {
+				params.put("welfareStatus", 1);
+				params.put("authentiCationStatus", 2);
+				ReleaseWelfare releaseWelfare=(ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class, params);
+				resultCount=releaseWelfareMapper.examineReleaseWelfare(releaseWelfare);
+				if(resultCount==0) {
+					return	ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+				}
+				
+			}else if(authentiCationStatus==3) {
+				String authentiCationFailure= params.get("authentiCationFailure").toString().trim();
+				if(authentiCationFailure==null ||authentiCationFailure.contentEquals("")) {
+				return	ServerResponse.createByErrorMessage(ResponseMessage.ShiBaiYuanYinWeiKong.getMessage());
+				}
+				params.put("authentiCationStatus", 3);
+				params.put("welfareStatus", 4);
+				params.put("authentiCationFailure", authentiCationFailure);
+				ReleaseWelfare releaseWelfare=(ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class, params);
+				resultCount=releaseWelfareMapper.examineReleaseWelfare(releaseWelfare);
+				if(resultCount==0) {
+					return	ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+				}
+						
+			}
+				return	ServerResponse.createBySuccessMessage(ResponseMessage.shenpishenggong.getMessage());
+			
+
+		}
+	
+	
 	
 	
 	//各种校验
@@ -262,29 +365,38 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		if(!addressDetailed.equals(params.get("addressDetailed").toString().trim())) {
 	    	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
 	    }
-		params.remove("addressDetailed");
+		
 		//	判断省市区
 		String detailed=params.get("detailed").toString().trim();
 	    if(!detailed.equals(realName.getDetailed())) {
 	    	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
 	    }
-	    params.remove("detailed");
+	    
 		//判断电话
-	    String contact=EncrypDES.decryptPhone(realName.getContact());
-		if(!contact.equals(params.get("contact").toString().trim())) {
+	    String contact= params.get("contact").toString().trim();
+		if(!EncrypDES.decryptPhone(realName.getContact()).equals(contact)) {
 	    	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());		
 		}
-		params.remove("contact");
+		params.put("contact", realName.getContact());
 		//判断实名姓名
 	    String consigneeName=realName.getConsigneeName();
 		if(!consigneeName.equals(params.get("consigneeName").toString().trim())) {
 		 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());			
 		}
-		params.remove("consigneeName");
 		}
 		
+		//获取用户类型
+		serverResponse=SetBean.setRole(currentUser.getRole());
+		//检查用户类型
+	 	if(serverResponse.getStatus()!=0) {	
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());		
+		}	
+	 	params.put("userType", serverResponse.getMsg());
 		return ServerResponse.createBySuccess(params);
 
 	}
-	
+   
+
+
+
 }

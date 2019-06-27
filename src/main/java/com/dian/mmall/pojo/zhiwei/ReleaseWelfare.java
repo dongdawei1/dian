@@ -39,7 +39,7 @@ public class ReleaseWelfare {
   private String gender; 
   @IsEmptyAnnotation(message="职位描述不能为空")
  	@MaxSize(max=100, message="职位描述 100字以下")
-  private String describe;//职位描述 100字以下  
+  private String describeOne;//职位描述 100字以下  
   
   @IsEmptyAnnotation(message="介绍人奖励不能为空")
   private String introductoryAward;//介绍人奖励  非必填
@@ -63,16 +63,24 @@ public class ReleaseWelfare {
 	//实名人员
   private String examineName;//审核人员   非必填
   private String examineTime;//审核时间   非必填
+ //实名信息
+  private String detailed;//省市区  回显置灰
+  private String addressDetailed;//实名地址不可编辑 回显置灰 不可修改
+  private String contact;  //实名联系联系方式 回显置灰 不可修改
+  private String consigneeName; //联系人姓名 回显置灰 不可修改
+  private String userType;//用户类型
 @Override
 public String toString() {
 	return "ReleaseWelfare [id=" + id + ", userId=" + userId + ", userName=" + userName + ", position=" + position
 			+ ", number=" + number + ", salary=" + salary + ", welfare=" + welfare + ", education=" + education
-			+ ", experience=" + experience + ", age=" + age + ", gender=" + gender + ", describe=" + describe
+			+ ", experience=" + experience + ", age=" + age + ", gender=" + gender + ", describeOne=" + describeOne
 			+ ", introductoryAward=" + introductoryAward + ", email=" + email + ", welfareStatus=" + welfareStatus
 			+ ", isPublishContact=" + isPublishContact + ", createTime=" + createTime + ", updateTime=" + updateTime
 			+ ", workingAddress=" + workingAddress + ", addressConsistency=" + addressConsistency
 			+ ", authentiCationStatus=" + authentiCationStatus + ", authentiCationFailure=" + authentiCationFailure
-			+ ", examineName=" + examineName + ", examineTime=" + examineTime + "]";
+			+ ", examineName=" + examineName + ", examineTime=" + examineTime + ", detailed=" + detailed
+			+ ", addressDetailed=" + addressDetailed + ", contact=" + contact + ", consigneeName=" + consigneeName
+			+ "]";
 }
 	 
 }

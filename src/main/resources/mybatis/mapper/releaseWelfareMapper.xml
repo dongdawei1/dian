@@ -7,6 +7,48 @@
         select count(*) from release_welfare where userId=#{userId}  and welfareStatus!=3
     </select>
     
+    
+        <!--分页总条数  --> 
+        <select id="getReleaseWelfarePageno"  resultType="long">
+        select count(*) from release_welfare where welfareStatus=4   
+        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
+        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>      
+    </select>
+      
+       
+       <!--分页待审批 --> 
+        <select id="getReleaseWelfareAll"  resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
+        select * from release_welfare where welfareStatus=4   
+        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
+        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>
+        limit #{pageLength}, #{pageSize}
+    </select>
+    <!-- 审核  -->  
+    
+       <update id="examineReleaseWelfare" >
+       update release_welfare set  
+       authentiCationStatus=#{authentiCationStatus},authentiCationFailure=#{authentiCationFailure},examineTime=#{examineTime},examineName=#{examineName},
+       welfareStatus=#{welfareStatus}
+        where userId=#{userId}  and id=#{id}
+    </update>
+    
+    
+       <!--创建用户成功返回非0  -->
+     <insert id="create_position"  >
+        insert into release_welfare (
+            userId, userName, position, number, salary,welfare,education,
+            experience,describeOne,introductoryAward,gender,age,email,
+            welfareStatus,isPublishContact,createTime,updateTime,workingAddress,
+            authentiCationStatus,addressConsistency,
+            detailed,addressDetailed,contact,consigneeName,userType
+        ) values (
+            #{userId}, #{userName}, #{position}, #{number}, #{salary},#{welfare},
+            #{education},#{experience},#{describeOne},#{introductoryAward},#{gender},#{age},#{email},
+            #{welfareStatus},#{isPublishContact},#{createTime},#{updateTime},
+            #{workingAddress}, #{authentiCationStatus},#{addressConsistency},
+            #{detailed},#{addressDetailed},#{contact},#{consigneeName},#{userType}
+        )
+    </insert>
 
    
 </mapper>
