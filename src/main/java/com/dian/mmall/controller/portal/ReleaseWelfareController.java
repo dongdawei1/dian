@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.CheckLand;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseCode;
 import com.dian.mmall.common.ResponseMessage;
@@ -38,24 +39,35 @@ public class ReleaseWelfareController {
 	    @RequestMapping(value = "create_position",method = RequestMethod.POST)
 	    @ResponseBody
 	    public ServerResponse<String> create_position(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-	        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-	        if(StringUtils.isEmpty(loginToken)){
-	            return ServerResponse.createByErrorMessage(ResponseMessage.DengLuGuoQi.getMessage());
-	        }
-	        String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-	        User currentUser = JsonUtil.string2Obj(userJsonStr,User.class);
-	        if(currentUser == null){
-	            return ServerResponse.createByErrorMessage(ResponseMessage.DengLuGuoQi.getMessage());
-	        }
+	    	
+	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,"/home/recruitWorkers");
+	     	//检查登陆和是否有权限
+	     	if(serverResponse.getStatus()!=0 ) {
+	     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+	     	}
+	        User user=	(User) serverResponse.getData();
 	        
-	        return releaseWelfareService.create_position(currentUser,params);
+	        return releaseWelfareService.create_position(user,params);
 	    
 	    }
 		
 	
+	//获取发布的除删除外的全部信息
 	
-	
-	
+	    @RequestMapping(value = "get_position_list",method = RequestMethod.POST)
+	    @ResponseBody
+	    public ServerResponse<Object> get_position_list(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+	    	
+	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,"/home/recruitWorkers");
+	     	//检查登陆和是否有权限
+	     	if(serverResponse.getStatus()!=0 ) {
+	     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+	     	}
+	        User user=	(User) serverResponse.getData();
+	        
+	        return releaseWelfareService.get_position_list(user,params);
+	    
+	    }
 	
 
   //获取职位类型

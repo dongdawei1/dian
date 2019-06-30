@@ -12,5 +12,7 @@ public interface ReleaseWelfareService {
 	ServerResponse<Object> getReleaseWelfareAll(Map<String, Object> params);
 	//审核招聘
 	ServerResponse<String> examineReleaseWelfare(User user, Map<String, Object> params);
+	//用户全部发布职位
+	ServerResponse<Object> get_position_list(User user, Map<String, Object> params);
 
 }

@@ -32,6 +32,7 @@ import com.dian.mmall.service.impl.UserServiceImpl;
 import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
+import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
@@ -61,9 +62,9 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
    	   String timeString=formatter.format(new Date());
 	   params.put("createTime",timeString);
 	   params.put("updateTime",timeString);
-	  
+	   params.put("termOfValidity",DateTimeUtil.a_few_days_later(30).getMsg());
+	  System.out.print(params.toString());
 	   ReleaseWelfare releaseWelfare=(ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class,params);
-	   System.out.println(releaseWelfare.toString());
 	 	//{result=true, message=验证通过} 返回结果
 	 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(releaseWelfare);
 	 	if((boolean)checknullMap.get("result")==true && ((String)checknullMap.get("message")).equals("验证通过")) {
@@ -80,7 +81,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		
 	}
 
-   //管理员获取全部待审批的发布
+   //管理员获取全部待审批的发布职位
 	@Override
 	public ServerResponse<Object> getReleaseWelfareAll(Map<String, Object> params) {
 		String currentPage_string= params.get("currentPage").toString().trim() ;    
@@ -202,11 +203,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 			if(currentUser.getIsAuthentication()!=2) {
 				 return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 			}
-		//判断是否有权限
-			int role=currentUser.getRole();
-			if(role!=1 && role!=2 && role!=5) {
-				 return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
-			}
+
 		//判断非法输入
 			ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
 		 	//检查是否有非法输入
@@ -394,6 +391,60 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	 	params.put("userType", serverResponse.getMsg());
 		return ServerResponse.createBySuccess(params);
 
+	}
+   //用户获取发布的职位
+	@Override
+	public ServerResponse<Object> get_position_list(User user, Map<String, Object> params) {
+		String currentPage_string= params.get("currentPage").toString().trim() ;    
+		String pageSize_string= params.get("pageSize").toString().trim() ;    
+		int currentPage=0;
+		int  pageSize=0;
+	 	
+	 	if(currentPage_string!=null && currentPage_string!="") {
+	 		currentPage=Integer.parseInt(currentPage_string);
+	 		if(currentPage<=0) {
+	 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+	 		}
+	 		
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+ 	    }
+	 	
+	 	if(pageSize_string!=null && pageSize_string!="") {
+	 		pageSize=Integer.parseInt(pageSize_string);
+	 		if(pageSize<=0) {
+	 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+	 		}
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+ 	    }
+		
+	 
+	 	String position = params.get("position").toString().trim();
+	 	String getwelfareStatusString=params.get("welfareStatus").toString().trim();
+	 	Integer welfareStatus = null;
+	 	if(getwelfareStatusString!=null && !getwelfareStatusString.equals("")) {
+	 		welfareStatus=	Integer.valueOf(getwelfareStatusString);
+	 	}
+	 	
+	 	Page<ReleaseWelfare> releaseWelfare_pagePage=new Page<ReleaseWelfare>();
+		
+	 	long zongtiaoshu=releaseWelfareMapper.get_position_list_no(position,welfareStatus,user.getId());
+		int totalno=(int) Math.ceil((float)zongtiaoshu/pageSize);
+		releaseWelfare_pagePage.setTotalno(zongtiaoshu);
+		releaseWelfare_pagePage.setPageSize(pageSize);
+		releaseWelfare_pagePage.setCurrentPage(currentPage); //当前页
+		
+	    List<ReleaseWelfare> list_releaseWelfare  =	new ArrayList();
+	    List<ReleaseWelfare> list_releaseWelfareall=  releaseWelfareMapper.get_position_list_all((currentPage-1)*pageSize,pageSize,position,welfareStatus,user.getId());
+	    
+		for(ReleaseWelfare releaseWelfare :list_releaseWelfareall) {
+			releaseWelfare.setContact(EncrypDES.decryptPhone(releaseWelfare.getContact()));
+			list_releaseWelfare.add(releaseWelfare);
+		}
+
+		releaseWelfare_pagePage.setDatas(list_releaseWelfare );
+		return ServerResponse.createBySuccess(releaseWelfare_pagePage);
 	}
    
 

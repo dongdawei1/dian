@@ -5,6 +5,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.dian.mmall.common.ResponseMessage;
+import com.dian.mmall.common.ServerResponse;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -48,10 +53,23 @@ public class DateTimeUtil {
         return dateTime.toString(STANDARD_FORMAT);
     }
 
-
-
+     /**
+          * @param date
+          * @param day 想要获取的日期与传入日期的差值 比如想要获取传入日期前四天的日期 day=-4即可
+          * @return
+          */
+    public static ServerResponse<Object> a_few_days_later(int length){
+        if(length <=0 || length >30 ){
+            return ServerResponse.createByErrorMessage(ResponseMessage.youxiaoqibuhefa.getMessage());
+        }
+        Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DATE, length);
+                return ServerResponse.createBySuccessMessage(DateTimeUtil.dateToStr(calendar.getTime(),"yyyy-MM-dd HH:mm:ss"));
+    }
 
     public static void main(String[] args) {
+    	a_few_days_later(20);
     	System.out.println(DateTimeUtil.dateToStr(new Date()));
         System.out.println(DateTimeUtil.dateToStr(new Date(),"yyyy-MM-dd HH:mm:ss"));
         System.out.println(DateTimeUtil.strToDate("2010-01-01 11:11:11","yyyy-MM-dd HH:mm:ss"));

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.CheckLand;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseCode;
 import com.dian.mmall.common.ResponseMessage;
@@ -38,7 +39,7 @@ public class ToExamineController {
     @ResponseBody
     public ServerResponse<Object> getRealNameAll(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
 
- 	ServerResponse<Object> serverResponse=checke_role(httpServletRequest);
+ 	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
  	//检查是否有管理员权限
  	if(serverResponse.getStatus()!=0 ) {
  		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
@@ -51,7 +52,7 @@ public class ToExamineController {
     @ResponseBody
     public ServerResponse<String> examineRealName(@RequestBody Map<String,Object> params, HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,HttpSession session){
 		
-     	ServerResponse<Object> serverResponse=checke_role(httpServletRequest);
+     	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
      	//检查是否有管理员权限
      	if(serverResponse.getStatus()!=0 ) {
      		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
@@ -83,7 +84,7 @@ public class ToExamineController {
     @RequestMapping(value = "getReleaseWelfareAll",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Object> getReleaseWelfareAll(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-    	ServerResponse<Object> serverResponse=checke_role(httpServletRequest);
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
      	//检查是否有管理员权限
      	if(serverResponse.getStatus()!=0 ) {
      		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
@@ -98,7 +99,7 @@ public class ToExamineController {
     @ResponseBody
     public ServerResponse<String> examineReleaseWelfare(@RequestBody Map<String,Object> params, HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,HttpSession session){
 		
-     	ServerResponse<Object> serverResponse=checke_role(httpServletRequest);
+     	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
      	//检查是否有管理员权限
      	if(serverResponse.getStatus()!=0 ) {
      		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
@@ -111,21 +112,6 @@ public class ToExamineController {
     
     
     
-    private ServerResponse<Object> checke_role(HttpServletRequest httpServletRequest){
-    	//TODO  写死的代码 如果不是这个用户名将查不到
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-     	if(StringUtils.isEmpty(loginToken)){
-     		return ServerResponse.createByErrorMessage("用户登陆已过期");
-     	}
-     	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-     	User user = JsonUtil.string2Obj(userJsonStr,User.class);
-     	if(user == null){
-     		return ServerResponse.createByErrorMessage("用户登陆已过期");
-     	}	
-     	if(user.getRole()!=1 || !user.getUsername().equals("z222222221") ) {
-     		return ServerResponse.createByErrorMessage("没有权限");
-     	}
-     	return ServerResponse.createBySuccess(user);
-    }
+
     
 }

@@ -45,7 +45,7 @@ public class ReleaseWelfare {
   private String introductoryAward;//介绍人奖励  非必填
   private String email;  //非必填
   @IsEmptyAnnotation(message="审核状态不能为空")
-  private Integer welfareStatus; // 1发布中，2隐藏中，3删除,4审核中
+  private Integer welfareStatus; // 1发布中，2隐藏中，3删除,4审核中,5不在有效期不显示
   @IsEmptyAnnotation(message="是否公开手机号不能为空")
   private Integer isPublishContact; // 是否公开手机 1公开，2隐藏
   @IsEmptyAnnotation(message="创建时间不能为空")
@@ -69,6 +69,8 @@ public class ReleaseWelfare {
   private String contact;  //实名联系联系方式 回显置灰 不可修改
   private String consigneeName; //联系人姓名 回显置灰 不可修改
   private String userType;//用户类型
+  @IsEmptyAnnotation(message="有效期不能为空")
+  private String  termOfValidity;//职位有效期 创建时间加 30天
 @Override
 public String toString() {
 	return "ReleaseWelfare [id=" + id + ", userId=" + userId + ", userName=" + userName + ", position=" + position

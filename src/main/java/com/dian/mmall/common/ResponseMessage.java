@@ -55,7 +55,8 @@ public enum ResponseMessage {
 	jianglibuhefa("奖励不合法"),
 	shimingxinxibuyizhi("实名信息不一致"),
 	yonghuidhuoshenpixiangbucunzi("用户或者审批项不存在"),
-	shenpishenggong("审批成功");
+	shenpishenggong("审批成功"),
+	youxiaoqibuhefa("有效期在1-30之内");
    String message;
    ResponseMessage(String message){
 	   this.message=message;
