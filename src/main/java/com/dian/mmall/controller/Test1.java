@@ -22,9 +22,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer.FromDecim
 
 public class Test1 {
 public static void main(String[] args) {
-    int eag=19;
-    if(eag!=1 || !"z222222221".equals("z222222221") ) {
- 		System.out.println("Test1.main()");
- 	}
+	Integer  gender=Integer.valueOf("rr");
+	System.out.println(gender);
 }
 }

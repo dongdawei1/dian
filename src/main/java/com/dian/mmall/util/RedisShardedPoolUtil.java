@@ -160,42 +160,43 @@ public class RedisShardedPoolUtil {
     }
 
     public static void main(String[] args) {
-        ShardedJedis jedis = RedisShardedPool.getJedis();
-
-        RedisPoolUtil.set("keyTest","value");
-   
-      //  GetAllKeys（）
-        
-        String value = RedisPoolUtil.get("keyTest");
-
-        System.out.println(value +"  d  ");
-        
-      RedisPoolUtil.set("keyTest","   value11111");
-   
-      Collection<JedisShardInfo> D= jedis.getAllShardInfo();
-      for(JedisShardInfo aInf : D) {
-    	  System.out.println(aInf.toString());
-      }  
-      
-      
-        String value1 = RedisPoolUtil.get("keyTest");
-        RedisPoolUtil.set("keyTest","    value2222");
-        
-        
-        
-        
-        
-        RedisPoolUtil.setEx("keyex","valueex",60*10);
-
-        RedisPoolUtil.expire("keyTest",60*20);
-
-        RedisPoolUtil.del("keyTest");
-
-
-//        String aaa = RedisPoolUtil.get(null);
-//        System.out.println(aaa);
-
-        System.out.println("end");
+    	del("75A4B3AFF24694E7CC25164D15A57DE2");
+//        ShardedJedis jedis = RedisShardedPool.getJedis();
+//
+//        RedisPoolUtil.set("keyTest","value");
+//   
+//      //  GetAllKeys（）
+//        
+//        String value = RedisPoolUtil.get("keyTest");
+//
+//        System.out.println(value +"  d  ");
+//        
+//      RedisPoolUtil.set("keyTest","   value11111");
+//   
+//      Collection<JedisShardInfo> D= jedis.getAllShardInfo();
+//      for(JedisShardInfo aInf : D) {
+//    	  System.out.println(aInf.toString());
+//      }  
+//      
+//      
+//        String value1 = RedisPoolUtil.get("keyTest");
+//        RedisPoolUtil.set("keyTest","    value2222");
+//        
+//        
+//        
+//        
+//        
+//        RedisPoolUtil.setEx("keyex","valueex",60*10);
+//
+//        RedisPoolUtil.expire("keyTest",60*20);
+//
+//        RedisPoolUtil.del("keyTest");
+//
+//
+////        String aaa = RedisPoolUtil.get(null);
+////        System.out.println(aaa);
+//
+//        System.out.println("end");
 
 
     }

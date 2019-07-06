@@ -33,6 +33,8 @@ import com.dian.mmall.util.RedisShardedPoolUtil;
 @Controller
 @RequestMapping("/api/releaseWelfare/")
 public class ReleaseWelfareController {
+	private String recruitWorkers="/home/recruitWorkers";
+	
 	 @Autowired
 	    private ReleaseWelfareService releaseWelfareService;
 	//创建职位信息
@@ -40,7 +42,7 @@ public class ReleaseWelfareController {
 	    @ResponseBody
 	    public ServerResponse<String> create_position(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
 	    	
-	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,"/home/recruitWorkers");
+	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,recruitWorkers);
 	     	//检查登陆和是否有权限
 	     	if(serverResponse.getStatus()!=0 ) {
 	     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
@@ -58,7 +60,7 @@ public class ReleaseWelfareController {
 	    @ResponseBody
 	    public ServerResponse<Object> get_position_list(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
 	    	
-	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,"/home/recruitWorkers");
+	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,recruitWorkers);
 	     	//检查登陆和是否有权限
 	     	if(serverResponse.getStatus()!=0 ) {
 	     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
@@ -69,6 +71,24 @@ public class ReleaseWelfareController {
 	    
 	    }
 	
+		//职位操作列
+		
+	    @RequestMapping(value = "position_operation",method = RequestMethod.POST)
+	    @ResponseBody
+	    public ServerResponse<String> position_operation(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+	    	
+	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,recruitWorkers);
+	     	//检查登陆和是否有权限
+	     	if(serverResponse.getStatus()!=0 ) {
+	     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+	     	}
+	        User user=	(User) serverResponse.getData();
+	        
+	        return releaseWelfareService.position_operation(user,params);
+	    
+	    }
+	    
+	    
 
   //获取职位类型
     

@@ -56,7 +56,14 @@ public enum ResponseMessage {
 	shimingxinxibuyizhi("实名信息不一致"),
 	yonghuidhuoshenpixiangbucunzi("用户或者审批项不存在"),
 	shenpishenggong("审批成功"),
-	youxiaoqibuhefa("有效期在1-30之内");
+	youxiaoqibuhefa("有效期在1-30之内"),
+	canshuyouwu("操作参数有误"),
+	yonghuidbucunzai("用户ID不存在"),
+	caozuoleixincuowu("操作类型错误"),
+	caozuoshibai("操作失败"),
+	caozuochenggong("操作成功"),
+	shifougongkaidianhualeixingcuowu("是否公开电话类型错误"),
+	gongkaidianhuahuozheshuruyouxiang("公开电话或者输入邮箱");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

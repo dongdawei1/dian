@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.sql.visitor.functions.If;
 import com.dian.mmall.common.ReleaseCount;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
@@ -64,6 +65,8 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	   params.put("updateTime",timeString);
 	   params.put("termOfValidity",DateTimeUtil.a_few_days_later(30).getMsg());
 	  System.out.print(params.toString());
+	 // isPublishContact
+	  
 	   ReleaseWelfare releaseWelfare=(ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class,params);
 	 	//{result=true, message=验证通过} 返回结果
 	 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(releaseWelfare);
@@ -211,7 +214,11 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 					return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 				}
 		//转男女code为字符串
-		int  gender=Integer.valueOf(params.get("gender").toString().trim());
+		String genString=params.get("gender").toString().trim();
+		if(genString.equals("")||genString==null) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.xingbiebuhefa.getMessage());
+		}
+		int  gender=Integer.valueOf(genString);
 		if(gender==1) {
 			params.put("gender", "男");
 		}else if(gender==2) {
@@ -221,6 +228,26 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		}else {
 			 return ServerResponse.createByErrorMessage(ResponseMessage.xingbiebuhefa.getMessage());
 		}
+		
+		
+		//判断是否公开电话
+		String isPublishContactString=params.get("isPublishContact").toString().trim();
+		if(isPublishContactString.equals("")||isPublishContactString==null) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.shifougongkaidianhualeixingcuowu.getMessage());
+		}
+		int isPublishContact=Integer.valueOf(isPublishContactString);
+		if(isPublishContact!=1 &&  isPublishContact!=2) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.shifougongkaidianhualeixingcuowu.getMessage());
+		}
+		System.out.println(params.toString());
+		//判断邮箱和联系方式必须有一个公开email
+		String email=params.get("email").toString().trim();
+		if(isPublishContact==2 && (email.equals("")||email==null)) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.gongkaidianhuahuozheshuruyouxiang.getMessage());
+		}
+		
+		
+		
 		//检查福利输入是否合法
 		List<String> listObj3	= JsonUtil.list2Obj((ArrayList<String>) params.get("welfare"),List.class,String.class);
 		if(listObj3.isEmpty()) {
@@ -446,8 +473,103 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		releaseWelfare_pagePage.setDatas(list_releaseWelfare );
 		return ServerResponse.createBySuccess(releaseWelfare_pagePage);
 	}
-   
 
+	
+	//操作列
+	@Override
+	public ServerResponse<String> position_operation(User user, Map<String, Object> params) {
+//        data.type=type;
+//        data.userId= form.userId;
+//        data.id=form.id;
+		String type=params.get("type").toString().trim();
+		String userId=params.get("userId").toString().trim();
+		String id=params.get("id").toString().trim();
+		if(type!=null && !type.equals("") && userId!=null && !userId.equals("")
+				&& id!=null && !id.equals("") ) {
+			int type_int=Integer.valueOf(type);
+			if(type_int<1 || type_int>6) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+			}
+			long userIdLong=Long.valueOf(userId);
+			long idLong=Long.valueOf(id);
+			if(userIdLong!=user.getId()) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
+			}
+			 SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
+			 String timeString=null;
+			 int  result=0;
+			if(type_int==1) {
+				 timeString=formatter.format(new Date());
+				result=releaseWelfareMapper.position_operation(userIdLong,idLong,type_int,timeString);
+			}else if(type_int==2) {
+				 timeString=DateTimeUtil.a_few_days_later(30).getMsg();
+				result=releaseWelfareMapper.position_operation(userIdLong,idLong,type_int,timeString);
+			}else if(type_int==3 || type_int==4 || type_int==5) {
+				timeString=formatter.format(new Date());
+				result=releaseWelfareMapper.position_operation(userIdLong,idLong,type_int,timeString);
+			}else if(type_int==6){
+				//判断非法输入
+				ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
+			 	//检查是否有非法输入
+			 	if(serverResponse.getStatus()!=0) {	
+						return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+				}
+			 	ReleaseWelfare  releaseWelfare=new ReleaseWelfare();
+			 	//判断是否公开电话
+				String isPublishContactString=params.get("isPublishContact").toString().trim();
+				if(isPublishContactString.equals("")||isPublishContactString==null) {
+					 return ServerResponse.createByErrorMessage(ResponseMessage.shifougongkaidianhualeixingcuowu.getMessage());
+				}
+				int isPublishContact=Integer.valueOf(isPublishContactString);
+				if(isPublishContact!=1 &&  isPublishContact!=2) {
+					 return ServerResponse.createByErrorMessage(ResponseMessage.shifougongkaidianhualeixingcuowu.getMessage());
+				}
+				releaseWelfare.setIsPublishContact(isPublishContact);
+				//判断邮箱和联系方式必须有一个公开
+				String email=params.get("email").toString().trim();
+				if(isPublishContact==2 && (email.equals("")||email==null)) {
+					 return ServerResponse.createByErrorMessage(ResponseMessage.gongkaidianhuahuozheshuruyouxiang.getMessage());
+				}
+				releaseWelfare.setEmail(email);
+			 	
+				//判断实名信息是否正确
+				RealName realName=realNameMapper.getRealName(userIdLong);
+				if(realName!=null) {
+				//判断实际工作地址和实名地址是否一致
+				String addressDetailed=realName.getAddressDetailed();
+				if(!addressDetailed.equals(params.get("workingAddress").toString().trim())) {
+					 //2不一致1一致
+					releaseWelfare.setAddressConsistency(2);
+				}else {
+					releaseWelfare.setAddressConsistency(1);
+				}
+				releaseWelfare.setWorkingAddress(params.get("workingAddress").toString().trim());
+				releaseWelfare.setDescribeOne(params.get("describeOne").toString().trim());
+				releaseWelfare.setId(idLong);
+				releaseWelfare.setUserId(userIdLong);
+				timeString=formatter.format(new Date());
+				releaseWelfare.setUpdateTime(timeString);
+				result=releaseWelfareMapper.position_operation_edit(releaseWelfare);
+				}
+				}else {
+				 return ServerResponse.createByErrorMessage(ResponseMessage.caozuoleixincuowu.getMessage());
+			}
+			
+			if(result==0) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.caozuoshibai.getMessage());
+			}
+			
+			return ServerResponse.createBySuccessMessage(ResponseMessage.caozuochenggong.getMessage());
+			
+			
+		}else {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+		}
+		
+		
+	}
+   
+	
 
 
 }

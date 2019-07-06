@@ -105,12 +105,15 @@ public class BeanMapConvertUtil {
 					descriptor.getWriteMethod().invoke(obj, args);
 				} catch (IllegalAccessException e) {
 					 log.warn("类型转换",e);
+					 log.warn(propertyName);
 					return ServerResponse.createByErrorMessage("转换 JavaBean异常");
 				} catch (IllegalArgumentException e) {
 					log.warn("类型转换",e);
+					log.warn(propertyName);
 					return ServerResponse.createByErrorMessage("转换 JavaBean异常");
 				} catch (InvocationTargetException e) {
 					log.warn("类型转换",e);
+					log.warn(propertyName);
 					return ServerResponse.createByErrorMessage("转换 JavaBean异常");
 				}   
             }  

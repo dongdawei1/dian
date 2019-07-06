@@ -364,6 +364,7 @@ public class UserServiceImpl implements IUserService {
 			
 			String newmobilePhone  = params.get("mobilePhone").toString().trim() ;	
 			String md5_newmobilePhone=EncrypDES.encryptPhone(newmobilePhone);
+
 			//判断手机号是否合法
 	    	serverResponse=LegalCheck.legalCheckMobilePhone(newmobilePhone);
 	    	if(serverResponse.getStatus()!=0) {	
@@ -372,12 +373,8 @@ public class UserServiceImpl implements IUserService {
 	    	User new_User=new User();
 	    	new_User.setId(user.getId());
 	    	new_User.setUsername(newusernamr);
-	    	//判断有没有修改手机号
-	    	if(!user.getMobilePhone().equals(md5_newmobilePhone)) {
-	        	new_User.setMobilePhone(md5_newmobilePhone);
-	        }else {
-	        	new_User.setMobilePhone(user.getMobilePhone());
-	        }
+	        new_User.setMobilePhone(md5_newmobilePhone);
+	      
 	    	
 	    	
 	    	String newPassword  = params.get("newPassword").toString().trim() ;
@@ -421,6 +418,7 @@ public class UserServiceImpl implements IUserService {
      			new_User.setRole(user.getRole());
      			new_User.setCreateTime(user.getCreateTime());
      			new_User.setMobilePhone(newmobilePhone);
+     			new_User.setIsAuthentication(user.getIsAuthentication());
      			return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(new_User));
 			}
 		}else {

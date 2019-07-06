@@ -34,11 +34,31 @@
        <!--用户查询分页--> 
         <select id="get_position_list_all"  resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
         select id, userId,position ,number,welfare,salary,education,experience,describeOne,introductoryAward,gender,age,email,welfareStatus,isPublishContact, createTime,updateTime,
-workingAddress,authentiCationStatus,authentiCationFailure,termOfValidity,contact from release_welfare where welfareStatus!=3 and userId=#{userId} 
+workingAddress,authentiCationStatus,authentiCationFailure,termOfValidity,contact,detailed,consigneeName from release_welfare where welfareStatus!=3 and userId=#{userId} 
         <if test="position!=null and position.trim()!=''">and  position=#{position}   </if>
         <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
         limit #{pageLength}, #{pageSize}
     </select>
+     
+     <!-- 刷新，隐藏等操作 -->
+            <update id="position_operation" >
+       update release_welfare set  
+      <if test="type==1 "> updateTime=#{timeString}  </if>
+      <if test="type==2 ">termOfValidity=#{timeString} </if>
+      <if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
+      <if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+      <if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if> 
+        where userId=#{userId}  and id=#{id}
+      <if test="type==4 "> and welfareStatus not in(4,5)</if>
+    </update>
+     <!-- 重新编辑 -->
+      <update id="position_operation_edit" >
+       update release_welfare set  addressConsistency=#{addressConsistency},
+       workingAddress=#{workingAddress},updateTime=#{updateTime},
+       isPublishContact=#{isPublishContact},describeOne=#{describeOne},
+       email=#{email},welfareStatus=4 ,authentiCationStatus=1 where userId=#{userId}  and id=#{id}
+    </update>
+    
     
     
     <!-- 审核  -->  

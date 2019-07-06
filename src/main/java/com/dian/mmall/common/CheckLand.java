@@ -22,6 +22,7 @@ public class CheckLand {
      	if(user == null){
      		return ServerResponse.createByErrorMessage("用户登陆已过期");
      	}	
+     	//TODO  写死的代码 如果不是这个用户名将查不到
      	if(user.getRole()!=1 || !user.getUsername().equals("z222222221") ) {
      		return ServerResponse.createByErrorMessage("没有权限");
      	}
@@ -30,7 +31,6 @@ public class CheckLand {
     
     //检查登陆
     public static ServerResponse<Object> checke_land(HttpServletRequest httpServletRequest,String...menu ){
-    	//TODO  写死的代码 如果不是这个用户名将查不到
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
      	if(StringUtils.isEmpty(loginToken)){
      		return ServerResponse.createByErrorMessage("用户登陆已过期");
