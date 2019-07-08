@@ -40,6 +40,24 @@ workingAddress,authentiCationStatus,authentiCationFailure,termOfValidity,contact
         limit #{pageLength}, #{pageSize}
     </select>
      
+             <!--可见全部条数  --> 
+        <select id="getUserReleaseWelfarePageno"  resultType="long">
+        select count(*) from release_welfare where welfareStatus=1 
+        <if test="detailed!=null and detailed.trim()!=''">and  detailed like #{detailed}   </if>
+        <if test="position!=null and position.trim()!=''">and  position=#{position}   </if>   
+    </select>
+     
+            <!--可见全部查询分页--> 
+        <select id="getUserReleaseWelfareList"  resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
+        select id, userId,position ,number,welfare,salary,education,experience,describeOne,introductoryAward,gender,age,email,isPublishContact, createTime,updateTime,
+workingAddress,termOfValidity,contact,detailed,consigneeName from release_welfare where welfareStatus=1
+        <if test="position!=null and position.trim()!=''">and  position=#{position}   </if>
+        <if test="detailed!=null and detailed.trim()!=''">and  detailed like #{detailed}   </if>
+        order by updateTime desc
+        limit #{pageLength}, #{pageSize}
+    </select>
+     
+     
      <!-- 刷新，隐藏等操作 -->
             <update id="position_operation" >
        update release_welfare set  

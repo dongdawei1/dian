@@ -10,21 +10,23 @@ import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 public class CheckLand {
+	
+	static String meiyouquanxString=ResponseMessage.meiyouciquanxian.getMessage();
 	//检查管理员
     public static ServerResponse<Object> checke_role(HttpServletRequest httpServletRequest){
     	
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
      	if(StringUtils.isEmpty(loginToken)){
-     		return ServerResponse.createByErrorMessage("用户登陆已过期");
+     		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
      	}
      	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
      	User user = JsonUtil.string2Obj(userJsonStr,User.class);
      	if(user == null){
-     		return ServerResponse.createByErrorMessage("用户登陆已过期");
+     		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
      	}	
      	//TODO  写死的代码 如果不是这个用户名将查不到
      	if(user.getRole()!=1 || !user.getUsername().equals("z222222221") ) {
-     		return ServerResponse.createByErrorMessage("没有权限");
+     		return ServerResponse.createByErrorMessage(meiyouquanxString);
      	}
      	return ServerResponse.createBySuccess(user);
     }
@@ -33,12 +35,12 @@ public class CheckLand {
     public static ServerResponse<Object> checke_land(HttpServletRequest httpServletRequest,String...menu ){
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
      	if(StringUtils.isEmpty(loginToken)){
-     		return ServerResponse.createByErrorMessage("用户登陆已过期");
+     		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
      	}
      	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
      	User user = JsonUtil.string2Obj(userJsonStr,User.class);
      	if(user == null){
-     		return ServerResponse.createByErrorMessage("用户登陆已过期");
+     		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
      	}	
      	
      	
@@ -72,35 +74,35 @@ public class CheckLand {
           int role=user.getRole();
      		if(menu.equals("/home/recruitWorkers") ) {
      			if(role!=2&&role!=5) {
-         		return ServerResponse.createByErrorMessage("没有权限");}
+         		return ServerResponse.createByErrorMessage(meiyouquanxString);}
          	}else if(menu.equals("/home/lease") ) {
      			if(role!=2&&role!=3&&role!=6) {
-             		return ServerResponse.createByErrorMessage("没有权限");}
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/release") ) {
      			if(role!=2) {
-             		return ServerResponse.createByErrorMessage("没有权限");}
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/kitchenUtensils") || menu.equals("/home/repair")) {
      			if(role!=3) {
-             		return ServerResponse.createByErrorMessage("没有权限");}
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
             	||	menu.equals("/home/clean") || menu.equals("/home/aquaticProduct")) {
      			if(role!=4&& role!=5) {
-             		return ServerResponse.createByErrorMessage("没有权限");}
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/rentalBooth") ) {
      			if(role!=4 &&role!=5 &&role!=6) {
-             		return ServerResponse.createByErrorMessage("没有权限");}
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/wine") || menu.equals("/home/tableware")) {
      			if(role!=5) {
-             		return ServerResponse.createByErrorMessage("没有权限");}
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/renovation") || menu.equals("/home/pestControl") ||menu.equals("/home/menu") ) {
      			if(role!=7) {
-             		return ServerResponse.createByErrorMessage("没有权限");}
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/jobWanted") ) {
      			if(role!=11) {
-             		return ServerResponse.createByErrorMessage("没有权限");}
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/departmentStore") ) {
      			if(role!=12) {
-             		return ServerResponse.createByErrorMessage("没有权限");}
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }
      		
      		

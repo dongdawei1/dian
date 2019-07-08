@@ -26,4 +26,8 @@ public interface ReleaseWelfareMapper {
 int position_operation(long userId, long id, int type, String timeString);
 //审核失败后重新发布
 int position_operation_edit(ReleaseWelfare releaseWelfare);
+//根据查询条件查询出全部
+long getUserReleaseWelfarePageno(String detailed, String position);
+//用户查询
+List<ReleaseWelfare> getUserReleaseWelfareList(int pageLength, int pageSize, String detailed, String position);
 }

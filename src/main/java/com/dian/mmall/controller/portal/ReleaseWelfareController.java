@@ -108,16 +108,20 @@ public class ReleaseWelfareController {
     		
     		Position[] positions=	Position.values();
     		
-    			if(role==1 || role==2) {
+    			if( role==2) {
     			for(int i=0;i<positions.length;i++) {
     			if(positions[i].getRoleId()==2) {
     				list.add(positions[i].getPositionType());
     			}}
-    		}else if(role==1 || role==5) {
+    		}else if( role==5) {
     			for(int i=0;i<positions.length;i++) {
     			if(positions[i].getRoleId()==5) {
     				list.add(positions[i].getPositionType());
     			}}
+    		}else {
+    			for(int i=0;i<positions.length;i++) { 
+        				list.add(positions[i].getPositionType());
+        			}
     		}
     		return ServerResponse.createBySuccess(list);
     	}

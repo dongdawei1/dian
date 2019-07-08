@@ -8,5 +8,7 @@ import com.dian.mmall.pojo.City;
 public interface CityMapper {
 	
 	String checkeCity(int provincesId, int cityId, int districtCountyId);
+	String checkeCityTuo(int provincesId, int cityId);
+	String checkeCityOne(int provincesId);
 
 }

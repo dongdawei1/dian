@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.ReleaseCommodityService;
@@ -33,13 +34,13 @@ public class ReleaseCommodityController {
 		
 		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
  	if(StringUtils.isEmpty(loginToken)){
- 		return ServerResponse.createByErrorMessage("用户登陆已过期");
+ 		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
  	}
  	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
  	User user = JsonUtil.string2Obj(userJsonStr,User.class);
  	
  	if(user == null){
- 		return ServerResponse.createByErrorMessage("用户登陆已过期");
+ 		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
  	}	
  	if(user.getIsAuthentication()!=2) {
  		return ServerResponse.createByErrorMessage("发布需求需要先进行实名");

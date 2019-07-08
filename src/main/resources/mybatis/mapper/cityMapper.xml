@@ -13,7 +13,14 @@
     </select>
     
     
-     
+         <select id="checkeCityTuo" resultType="String">
+       SELECT  CONCAT(c.`provincesName`,'/',a.`cityName`) b 
+        FROM `city` c  JOIN city a
+			ON c.provincesId=#{provincesId}  AND a.`cityId`=#{cityId}  AND a.`provincesCityId`=#{provincesId} 
+			
+    </select>
     
-   
+       <select id="checkeCityOne" resultType="String">
+       SELECT provincesName from city where provincesId=#{provincesId}
+    </select>
 </mapper>

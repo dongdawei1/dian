@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.GetPublishingsService;
@@ -35,13 +36,13 @@ public class GetPublishingsController {
     public ServerResponse getGoods(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
 		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
  	if(StringUtils.isEmpty(loginToken)){
- 		return ServerResponse.createByErrorMessage("用户登陆已过期");
+ 		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
  	}
  	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
  	User user = JsonUtil.string2Obj(userJsonStr,User.class);
  	
  	if(user == null){
- 		return ServerResponse.createByErrorMessage("用户登陆已过期");
+ 		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
  	}	
  	
     	return getPublishingsService.getMenuList(user, params);
