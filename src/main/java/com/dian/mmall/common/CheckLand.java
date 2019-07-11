@@ -31,7 +31,7 @@ public class CheckLand {
      	return ServerResponse.createBySuccess(user);
     }
     
-    //检查登陆
+    //检查创建权限
     public static ServerResponse<Object> checke_land(HttpServletRequest httpServletRequest,String...menu ){
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
      	if(StringUtils.isEmpty(loginToken)){
@@ -42,9 +42,7 @@ public class CheckLand {
      	if(user == null){
      		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
      	}	
-     	
-     	
-     	
+     	     	    	
 //        //商家2
 //        isCreatePosition:false,//发布职位权限 2,5
 //        isWindowRental:false,//窗口出租 2,3,6
@@ -73,18 +71,101 @@ public class CheckLand {
      	if(menu.length>0 ) {
           int role=user.getRole();
      		if(menu.equals("/home/recruitWorkers") ) {
-     			if(role!=2&&role!=5) {
+     			if(role!=2&&role!=5&& role!=1) {
          		return ServerResponse.createByErrorMessage(meiyouquanxString);}
          	}else if(menu.equals("/home/lease") ) {
-     			if(role!=2&&role!=3&&role!=6) {
+     			if(role!=2&&role!=3&&role!=6 && role!=1) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/release") ) {
-     			if(role!=2) {
+     			if(role!=2 && role!=1) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/kitchenUtensils") || menu.equals("/home/repair")) {
-     			if(role!=3) {
+     			if(role!=3&& role!=1) { //TODO 一下没有验证
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
+            	||	menu.equals("/home/clean") || menu.equals("/home/aquaticProduct")) {
+     			if(role!=4&& role!=5&& role!=1) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }else if(menu.equals("/home/rentalBooth") ) {
+     			if(role!=4 &&role!=5 &&role!=6&& role!=1) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }else if(menu.equals("/home/wine") || menu.equals("/home/tableware")) {
+     			if(role!=5&& role!=1) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }else if(menu.equals("/home/renovation") || menu.equals("/home/pestControl") ||menu.equals("/home/menu") ) {
+     			if(role!=7&& role!=1) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }else if(menu.equals("/home/jobWanted") ) {
+     			if(role!=11&& role!=1) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }else if(menu.equals("/home/departmentStore") ) {
+     			if(role!=12&& role!=1) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }
+     		
+     		
+     	}
+     	return ServerResponse.createBySuccess(user);
+    }
+    //菜单查看权限
+    public static ServerResponse<Object> checke_see(HttpServletRequest httpServletRequest,String...menu ){
+    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+     	if(StringUtils.isEmpty(loginToken)){
+     		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
+     	}
+     	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+     	User user = JsonUtil.string2Obj(userJsonStr,User.class);
+     	if(user == null){
+     		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
+     	}	
+     	     	    	
+//        //商家2
+//        isCreatePosition:false,//发布职位权限 2,5
+//        isWindowRental:false,//窗口出租 2,3,6
+//        isPurchase:false,//采购信息 2
+//        // 厨具/电器/设备维修3
+//        isKitchenUtensils:false,//发布厨具 3
+//        isRepair:false,//发布维修信息 3
+//        //蔬菜/调料/水产禽蛋4
+//        isCommodity:false,//发布商品 4,5
+//         isBooth:false,//摊位出租4，5,6
+//
+//       //酒水/消毒餐具/清洁用品5
+//        isTableware:false,//消毒餐具5
+//        isWine:false,//酒水5
+//
+//        //商铺/摊位出租6
+//        //装修/菜谱/广告牌/杀虫灭蟑
+//        isMenu:false,//菜谱 7
+//        isRenovation:false,//装修7
+//        isPestControl:false,//灭虫7
+//        //求职11
+//        isJobWanted:false,//求职11
+//        //工服百货
+//        isDepartmentStore:false,//百货12
+     	
+     	if(menu.length>0 ) {
+          int role=user.getRole();
+     		if(menu.equals("/home/recruitWorkers") ) {
+     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
+         		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+         	}else if(menu.equals("/home/lease") ) {
+     			if(role!=2&&role!=3&&role!=6&&role!=1&&role!=11) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }else if(menu.equals("/home/release") ) {
+            	if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }else if(menu.equals("/home/kitchenUtensils")) {
+     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=12) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }else if( menu.equals("/home/repair")) {
+     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=12) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+            }
+            
+     		//TODO 一下没有验证
+            
+            else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
             	||	menu.equals("/home/clean") || menu.equals("/home/aquaticProduct")) {
      			if(role!=4&& role!=5) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
@@ -109,7 +190,6 @@ public class CheckLand {
      	}
      	return ServerResponse.createBySuccess(user);
     }
- 
     public static void main(String[] args) {
     
 	}

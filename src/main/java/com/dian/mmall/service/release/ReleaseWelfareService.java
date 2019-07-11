@@ -16,5 +16,7 @@ public interface ReleaseWelfareService {
 	ServerResponse<Object> get_position_list(User user, Map<String, Object> params);
 	//操作
 	ServerResponse<String> position_operation(User user, Map<String, Object> params);
+	//
+	ServerResponse getContact(User user, Map<String, Object> params);
 
 }

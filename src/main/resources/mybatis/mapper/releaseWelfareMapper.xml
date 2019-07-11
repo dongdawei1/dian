@@ -47,10 +47,18 @@ workingAddress,authentiCationStatus,authentiCationFailure,termOfValidity,contact
         <if test="position!=null and position.trim()!=''">and  position=#{position}   </if>   
     </select>
      
+      <!--查询手机号  --> 
+     <select id="getReleaseWelfareById"   resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
+        select * from release_welfare where welfareStatus=1 and id=#{id}
+        <if test="queriesType==1">and  isPublishContact=1   </if>
+        <if test="queriesType==2">and  email is not null   </if>
+    </select>
+    
+     
             <!--可见全部查询分页--> 
         <select id="getUserReleaseWelfareList"  resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
         select id, userId,position ,number,welfare,salary,education,experience,describeOne,introductoryAward,gender,age,email,isPublishContact, createTime,updateTime,
-workingAddress,termOfValidity,contact,detailed,consigneeName from release_welfare where welfareStatus=1
+workingAddress,termOfValidity,detailed from release_welfare where welfareStatus=1
         <if test="position!=null and position.trim()!=''">and  position=#{position}   </if>
         <if test="detailed!=null and detailed.trim()!=''">and  detailed like #{detailed}   </if>
         order by updateTime desc

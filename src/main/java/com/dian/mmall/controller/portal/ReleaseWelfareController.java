@@ -37,7 +37,7 @@ public class ReleaseWelfareController {
 	
 	 @Autowired
 	    private ReleaseWelfareService releaseWelfareService;
-	//创建职位信息
+	//商户创建职位信息
 	    @RequestMapping(value = "create_position",method = RequestMethod.POST)
 	    @ResponseBody
 	    public ServerResponse<String> create_position(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
@@ -54,7 +54,7 @@ public class ReleaseWelfareController {
 	    }
 		
 	
-	//获取发布的除删除外的全部信息
+	//商户获取获取自己发布的除删除外的全部信息
 	
 	    @RequestMapping(value = "get_position_list",method = RequestMethod.POST)
 	    @ResponseBody

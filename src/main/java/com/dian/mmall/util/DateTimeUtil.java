@@ -67,10 +67,16 @@ public class DateTimeUtil {
                 calendar.add(Calendar.DATE, length);
                 return ServerResponse.createBySuccessMessage(DateTimeUtil.dateToStr(calendar.getTime(),"yyyy-MM-dd HH:mm:ss"));
     }
+    
+    public static String dateToDay(){
 
+        DateTime dateTime = new DateTime(new Date());
+        return dateTime.toString("yyyy-MM-dd");
+    }
+    
     public static void main(String[] args) {
     	a_few_days_later(20);
-    	System.out.println(DateTimeUtil.dateToStr(new Date()));
+    	System.out.println(DateTimeUtil.dateToDay());
         System.out.println(DateTimeUtil.dateToStr(new Date(),"yyyy-MM-dd HH:mm:ss"));
         System.out.println(DateTimeUtil.strToDate("2010-01-01 11:11:11","yyyy-MM-dd HH:mm:ss"));
 

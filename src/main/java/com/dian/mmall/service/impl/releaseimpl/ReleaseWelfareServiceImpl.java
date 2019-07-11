@@ -3,6 +3,7 @@ package com.dian.mmall.service.impl.releaseimpl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -22,8 +23,10 @@ import com.dian.mmall.common.zhiwei.Position;
 import com.dian.mmall.common.zhiwei.Salary;
 import com.dian.mmall.common.zhiwei.Welfare;
 import com.dian.mmall.dao.RealNameMapper;
+import com.dian.mmall.dao.chaxuncishu.NumberOfQueriesMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
 import com.dian.mmall.pojo.Page;
+import com.dian.mmall.pojo.chaxuncishu.NumberOfQueries;
 import com.dian.mmall.pojo.commodity.GrainAndOil;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
@@ -49,7 +52,9 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	private ReleaseWelfareMapper releaseWelfareMapper;
 	@Autowired
 	private RealNameMapper realNameMapper;
-
+   @Autowired
+   private NumberOfQueriesMapper numberOfQueriesMapper;
+	
 	public ServerResponse<String> create_position(User currentUser, Map<String, Object> params) {
 
 		ServerResponse<Object> serverResponse=check_position(currentUser, params);
@@ -125,11 +130,11 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		
 	    List<ReleaseWelfare> list_releaseWelfare  =	new ArrayList();
 	    List<ReleaseWelfare> list_releaseWelfareall=  releaseWelfareMapper.getReleaseWelfareAll((currentPage-1)*pageSize,pageSize,userName,contact);
-	    
+	    if(list_releaseWelfareall.size()>0) {
 		for(ReleaseWelfare releaseWelfare :list_releaseWelfareall) {
 			releaseWelfare.setContact(EncrypDES.decryptPhone(releaseWelfare.getContact()));
 			list_releaseWelfare.add(releaseWelfare);
-		}
+		}}
 
 		releaseWelfare_pagePage.setDatas(list_releaseWelfare );
 		return ServerResponse.createBySuccess(releaseWelfare_pagePage);
@@ -568,8 +573,82 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		
 		
 	}
+
+	@Override
+	public ServerResponse getContact(User user, Map<String, Object> params) {
+		String queriesTypeString=params.get("queriesType").toString().trim();
+        if(queriesTypeString==null || queriesTypeString.equals("")) {
+        	return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+        }		
+        int queriesType=Integer.valueOf(queriesTypeString);
+        //1电话2邮箱
+        if(queriesType!=1 && queriesType!=2) {
+        	return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+        }
+        
+        String idString=params.get("id").toString().trim();
+        if(idString==null || idString.equals("")) {
+        	return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+        }
+        int id=Integer.valueOf(idString);
+        if(queriesType<0) {
+        	return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+        }
+        
+        ReleaseWelfare releaseWelfare=null;
+        
+        Map<String ,String> returnMap=new HashMap<String, String>();
+        
+        //TODO  1是查询类型 招聘电话
+		NumberOfQueries numberOfQueries=getNumberOfQueries(user.getId(),1);
+		String dateString=DateTimeUtil.dateToDay();
+		if(numberOfQueries==null) {
+			
+			releaseWelfare=	releaseWelfareMapper.getReleaseWelfareById(id,queriesType);
+			if(releaseWelfare==null) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+			}
+			numberOfQueries=new NumberOfQueries();
+			numberOfQueries.setCountQueries(1);
+			numberOfQueries.setQueriesType(1);
+			numberOfQueries.setUserId(user.getId());
+			numberOfQueries.setDateString(dateString);		
+			
+			numberOfQueriesMapper.setNumberOfQueries(numberOfQueries);
+		}else {
+			int countQueries=numberOfQueries.getCountQueries();
+			if(countQueries>20 && numberOfQueries.getDateString().equals(dateString)) {
+				 return ServerResponse.createByErrorMessage(ResponseMessage.weibaozhengxinxianquan.getMessage());
+			}
+			if(numberOfQueries.getDateString().equals(dateString)) {
+				numberOfQueries.setCountQueries(countQueries+1);
+			}else {
+				numberOfQueries.setCountQueries(1);
+			}
+			numberOfQueries.setDateString(dateString);
+			
+			releaseWelfare=	releaseWelfareMapper.getReleaseWelfareById(id,queriesType);
+			if(releaseWelfare==null) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+			}
+			int count=	numberOfQueriesMapper.updateNumberOfQueries(numberOfQueries);
+		}
+		//1电话2邮箱
+		if(queriesType==1) {
+			returnMap.put("contact", EncrypDES.decryptPhone(releaseWelfare.getContact()));
+			returnMap.put("email", null);
+		}else {
+			returnMap.put("contact", null);
+			returnMap.put("email", releaseWelfare.getEmail());
+		}
+		returnMap.put("consigneeName", releaseWelfare.getConsigneeName());
+		return ServerResponse.createBySuccess(returnMap);
+	}
    
 	
-
+    //计算查询次数
+	public  NumberOfQueries getNumberOfQueries(long userId,int queriesType) {
+		return numberOfQueriesMapper.getNumberOfQueries(userId,queriesType);
+	}
 
 }

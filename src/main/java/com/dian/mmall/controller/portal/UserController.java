@@ -120,8 +120,6 @@ public class UserController {
     
     
     //退出
-    
-    //退出
     @RequestMapping(value = "logout",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> logout(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse){

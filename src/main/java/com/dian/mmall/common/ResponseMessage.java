@@ -66,7 +66,9 @@ public enum ResponseMessage {
 	gongkaidianhuahuozheshuruyouxiang("公开电话或者输入邮箱"),
 	dengluguoqi("用户登陆已过期"),
 	meiyouciquanxian("没有权限"),
-	cheshichaxunshibai("城市查询失败，请更换城市");
+	cheshichaxunshibai("城市查询失败，请更换城市"),
+	weibaozhengxinxianquan("为保证用户信息安全，每天只能查询20次联系方式"),
+	chaxunshibai("查询失败");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

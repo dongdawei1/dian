@@ -24,6 +24,7 @@ import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
+import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.JsonUtil;
 @Service("getPublishingsService")
 public class GetPublishingsServiceImpl implements GetPublishingsService {
@@ -144,6 +145,15 @@ public class GetPublishingsServiceImpl implements GetPublishingsService {
 						releaseWelfare_pagePage.setTotalno(count);
 						releaseWelfare_pagePage.setPageSize(pageSize);
 						releaseWelfare_pagePage.setCurrentPage(currentPage); //当前页
+						
+//					    List<ReleaseWelfare> list_releaseWelfare  =	new ArrayList();
+//					    List<ReleaseWelfare> list_releaseWelfareall= releaseWelfareMapper.getUserReleaseWelfareList((currentPage-1)*pageSize,pageSize,detailed,position);
+//					    if(list_releaseWelfareall.size()>0) {
+//						for(ReleaseWelfare releaseWelfare :list_releaseWelfareall) {
+//							releaseWelfare.setContact(EncrypDES.decryptPhone(releaseWelfare.getContact()));
+//							list_releaseWelfare.add(releaseWelfare);
+//						}
+//					    }
 						releaseWelfare_pagePage.setDatas(releaseWelfareMapper.getUserReleaseWelfareList((currentPage-1)*pageSize,pageSize,detailed,position));
 						return ServerResponse.createBySuccess(releaseWelfare_pagePage);
 					}else {

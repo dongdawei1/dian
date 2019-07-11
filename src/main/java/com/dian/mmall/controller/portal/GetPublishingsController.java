@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.CheckLand;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.service.release.ReleaseCommodityService;
+import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
@@ -25,9 +27,13 @@ import com.dian.mmall.util.RedisShardedPoolUtil;
 @Controller
 @RequestMapping("/api/getPublishings/")
 public class GetPublishingsController {
-
+   String recruitWorkers="/home/recruitWorkers";
+	
+	
 	@Autowired
 	private  GetPublishingsService getPublishingsService;
+	@Autowired
+	private ReleaseWelfareService releaseWelfareService;
 	
 //查询商品接口
     
@@ -47,5 +53,19 @@ public class GetPublishingsController {
  	
     	return getPublishingsService.getMenuList(user, params);
     	
+    }
+    
+    //职位获取电话或者邮箱   
+    @RequestMapping(value = "getContact",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse getContact(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+   
+    	ServerResponse<Object> serverResponse=CheckLand.checke_see(httpServletRequest,recruitWorkers);
+     	//检查登陆和是否有权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+        User user=	(User) serverResponse.getData();
+    	return releaseWelfareService.getContact(user, params);
     }
 }
