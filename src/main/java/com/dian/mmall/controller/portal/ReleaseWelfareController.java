@@ -41,13 +41,19 @@ public class ReleaseWelfareController {
 	    @RequestMapping(value = "create_position",method = RequestMethod.POST)
 	    @ResponseBody
 	    public ServerResponse<String> create_position(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-	    	
-	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,recruitWorkers);
-	     	//检查登陆和是否有权限
-	     	if(serverResponse.getStatus()!=0 ) {
-	     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-	     	}
-	        User user=	(User) serverResponse.getData();
+	    	//检查登陆
+	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+	    	if(serverResponse.getStatus()!=0) {
+	    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+	    	}
+	     	User user = (User) serverResponse.getData();
+	    	//检查权限
+	     	params.put("StringPath", recruitWorkers);
+	     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+	    	if(serverResponse1.getStatus()!=0) {
+	    		return serverResponse1;
+	    	}
+	   
 	        
 	        return releaseWelfareService.create_position(user,params);
 	    
@@ -60,12 +66,18 @@ public class ReleaseWelfareController {
 	    @ResponseBody
 	    public ServerResponse<Object> get_position_list(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
 	    	
-	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,recruitWorkers);
-	     	//检查登陆和是否有权限
-	     	if(serverResponse.getStatus()!=0 ) {
-	     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-	     	}
-	        User user=	(User) serverResponse.getData();
+	    	//检查登陆
+	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+	    	if(serverResponse.getStatus()!=0) {
+	    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+	    	}
+	     	User user = (User) serverResponse.getData();
+	    	//检查权限
+	     	params.put("StringPath", recruitWorkers);
+	     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+	    	if(serverResponse1.getStatus()!=0) {
+	    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+	    	}
 	        
 	        return releaseWelfareService.get_position_list(user,params);
 	    
@@ -77,12 +89,18 @@ public class ReleaseWelfareController {
 	    @ResponseBody
 	    public ServerResponse<String> position_operation(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
 	    	
-	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest,recruitWorkers);
-	     	//检查登陆和是否有权限
-	     	if(serverResponse.getStatus()!=0 ) {
-	     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-	     	}
-	        User user=	(User) serverResponse.getData();
+	    	//检查登陆
+	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+	    	if(serverResponse.getStatus()!=0) {
+	    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+	    	}
+	     	User user = (User) serverResponse.getData();
+	    	//检查权限
+	     	params.put("StringPath", recruitWorkers);
+	     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+	    	if(serverResponse1.getStatus()!=0) {
+	    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+	    	}
 	        
 	        return releaseWelfareService.position_operation(user,params);
 	    

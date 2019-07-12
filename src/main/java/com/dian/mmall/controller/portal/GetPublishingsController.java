@@ -40,16 +40,18 @@ public class GetPublishingsController {
     @RequestMapping(value = "getGoods",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse getGoods(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
- 	if(StringUtils.isEmpty(loginToken)){
- 		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
- 	}
- 	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
- 	User user = JsonUtil.string2Obj(userJsonStr,User.class);
- 	
- 	if(user == null){
- 		return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
- 	}	
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	params.put("StringPath", recruitWorkers);
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
  	
     	return getPublishingsService.getMenuList(user, params);
     	
@@ -60,12 +62,18 @@ public class GetPublishingsController {
     @ResponseBody
     public ServerResponse getContact(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
    
-    	ServerResponse<Object> serverResponse=CheckLand.checke_see(httpServletRequest,recruitWorkers);
-     	//检查登陆和是否有权限
-     	if(serverResponse.getStatus()!=0 ) {
-     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-     	}
-        User user=	(User) serverResponse.getData();
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	params.put("StringPath", recruitWorkers);
+     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
     	return releaseWelfareService.getContact(user, params);
     }
 }
