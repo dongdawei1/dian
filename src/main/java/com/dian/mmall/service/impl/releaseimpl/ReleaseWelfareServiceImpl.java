@@ -412,6 +412,8 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		if(!consigneeName.equals(params.get("consigneeName").toString().trim())) {
 		 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());			
 		}
+		}else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());			
 		}
 		
 		//获取用户类型

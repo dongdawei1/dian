@@ -54,9 +54,10 @@ public enum ResponseMessage {
 	jianglikong("奖励不能为空"),
 	jianglibuhefa("奖励不合法"),
 	shimingxinxibuyizhi("实名信息不一致"),
+	huoqushimingxinxishibai("获取实名信息失败"),
 	yonghuidhuoshenpixiangbucunzi("用户或者审批项不存在"),
 	shenpishenggong("审批成功"),
-	youxiaoqibuhefa("有效期在1-30之内"),
+	youxiaoqibuhefa("有效期在超过范围"),
 	canshuyouwu("操作参数有误"),
 	yonghuidbucunzai("用户ID不存在"),
 	caozuoleixincuowu("操作类型错误"),
@@ -68,7 +69,9 @@ public enum ResponseMessage {
 	meiyouciquanxian("没有权限"),
 	cheshichaxunshibai("城市查询失败，请更换城市"),
 	weibaozhengxinxianquan("为保证用户信息安全，每天只能查询20次联系方式"),
-	chaxunshibai("查询失败");
+	chaxunshibai("查询失败"),
+	yifabuguojianli("已发布过简历"),
+	weifabuguojianli("未发布过简历");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

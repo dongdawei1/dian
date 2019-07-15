@@ -61,7 +61,6 @@ public class ToExamineController {
      User user=	(User) serverResponse.getData();
      String loginToken = CookieUtil.readLoginToken(httpServletRequest);
  	 serverResponse= realNameService.examineRealName(user,params, loginToken);
-	System.out.println(serverResponse.getMsg());
 	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
 		User shenheUser=(User) serverResponse.getData();
 		int result=RedisPoolUtil.checkeKey(shenheUser);

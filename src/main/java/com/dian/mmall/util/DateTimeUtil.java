@@ -59,7 +59,7 @@ public class DateTimeUtil {
           * @return
           */
     public static ServerResponse<Object> a_few_days_later(int length){
-        if(length <=0 || length >30 ){
+        if(length <=0 || length >100 ){
             return ServerResponse.createByErrorMessage(ResponseMessage.youxiaoqibuhefa.getMessage());
         }
         Calendar calendar = Calendar.getInstance();
@@ -72,6 +72,11 @@ public class DateTimeUtil {
 
         DateTime dateTime = new DateTime(new Date());
         return dateTime.toString("yyyy-MM-dd");
+    }
+    public static String dateToAll(){
+
+        DateTime dateTime = new DateTime(new Date());
+        return dateTime.toString(STANDARD_FORMAT);
     }
     
     public static void main(String[] args) {

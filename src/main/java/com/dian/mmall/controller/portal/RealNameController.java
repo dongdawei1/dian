@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.CheckLand;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseCode;
 import com.dian.mmall.common.ResponseMessage;
@@ -41,14 +42,13 @@ public class RealNameController {
     @ResponseBody
     public ServerResponse<String> newRealName(@RequestBody Map<String, Object> params, HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,HttpSession session){
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-    	if(StringUtils.isEmpty(loginToken)){
-    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    	//检查登陆
+    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
     	}
-    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
-    	if(user == null){
-    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
-    	}
+     	User user = (User) serverResponse1.getData();
+     	
     	ServerResponse<String> serverResponse= realNameService.newRealName(user,loginToken,params);
     	
     	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
@@ -70,14 +70,12 @@ public class RealNameController {
     @ResponseBody
     public ServerResponse<String> updateRealName(@RequestBody Map<String, Object> params, HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,HttpSession session){
     	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-    	if(StringUtils.isEmpty(loginToken)){
-    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    	//检查登陆
+    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
     	}
-    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
-    	if(user == null){
-    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
-    	}
+     	User user = (User) serverResponse1.getData();
     	ServerResponse<String> serverResponse= realNameService.updateRealName(user,loginToken,params);
     	
     	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
@@ -96,15 +94,12 @@ public class RealNameController {
     @RequestMapping(value = "getRealName",method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<Object> getRealName(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse){
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-    	if(StringUtils.isEmpty(loginToken)){
-    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    	//检查登陆
+    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
     	}
-    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
-    	if(user == null){
-    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
-    	}
+     	User user = (User) serverResponse1.getData();
     	return realNameService.getRealName(user);
     	
     }

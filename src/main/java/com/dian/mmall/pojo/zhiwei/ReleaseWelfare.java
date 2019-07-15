@@ -42,7 +42,7 @@ public class ReleaseWelfare {
   private String describeOne;//职位描述 100字以下  
   
   @IsEmptyAnnotation(message="介绍人奖励不能为空")
-  private String introductoryAward;//介绍人奖励  非必填
+  private String introductoryAward;//介绍人奖励  必填
   private String email;  //非必填
   @IsEmptyAnnotation(message="审核状态不能为空")
   private Integer welfareStatus; // 1发布中，2隐藏中，3删除,4审核中,5不在有效期不显示

@@ -114,13 +114,12 @@ public class ReleaseWelfareController {
     @ResponseBody
     public ServerResponse<Object> getPosition(HttpServletRequest httpServletRequest){
    
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-    	if(StringUtils.isEmpty(loginToken)){
-    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
     	}
-    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
-    	if(user != null){
+     	User user = (User) serverResponse.getData();
     		int role=user.getRole();
     		List<String> list=new ArrayList<String>();
     		
@@ -142,8 +141,7 @@ public class ReleaseWelfareController {
         			}
     		}
     		return ServerResponse.createBySuccess(list);
-    	}
-    	return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+
     }
 	
     

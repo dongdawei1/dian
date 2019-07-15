@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dian.mmall.dao.releaseDao.ResumeMapper">
+     
+           <!--用户我的发布 --> 
+        <select id="selectResumeById"  resultType="com.dian.mmall.pojo.zhiwei.Resume">
+        select id,userId,position,experience,salary,education,
+        describeOne,email,welfareStatus,isPublishContact,createTime,updateTime,authentiCationStatus,
+        authentiCationFailure,detailed,addressDetailed,
+        contact,consigneeName,gender,age,termOfValidity
+         from resume where welfareStatus!=3 and  userId=#{userId}       
+        </select>
+        
+        
+          <!--创建用户成功返回非0  -->
+     <insert id="create_resume"  >
+        insert into resume (
+        userId,position,experience,salary,education,
+        describeOne,email,welfareStatus,isPublishContact,createTime,updateTime,authentiCationStatus,
+        detailed,addressDetailed,
+        contact,consigneeName,gender,age,userType
+        ) values (
+            #{userId},  #{position}, #{experience}, #{salary},#{education},
+            #{describeOne},#{email},#{welfareStatus},#{isPublishContact},
+            #{createTime},#{updateTime},#{authentiCationStatus},
+            #{detailed},#{addressDetailed},
+            #{contact},#{consigneeName},
+            #{gender},#{age},#{userType}
+        )
+    </insert>
+    <!--操作  -->
+   
+          <update id="operation_resume" >
+      update resume set updateTime=#{resume.updateTime}
+      <if test="type==1 "> ,termOfValidity=#{resume.termOfValidity}  </if>
+      <if test="type==2 ">,welfareStatus=#{resume.welfareStatus} </if>
+      <if test="type==3 "> ,welfareStatus=#{resume.welfareStatus} </if>
+      <if test="type==4 "> ,termOfValidity=#{resume.termOfValidity},welfareStatus=#{resume.welfareStatus}</if>
+        where userId=#{resume.userId}  and id=#{resume.id}
+        <if test="type==1 ">and   welfareStatus  in(1,5)</if>
+        <if test="type==2 "> and welfareStatus =1</if>
+        <if test="type==4 "> and welfareStatus in(2,5)</if>     
+    </update>
+   
+         <update id="update_resume" >
+      update resume set updateTime=#{updateTime},
+                   position= #{position}, experience=#{experience}, salary=#{salary},education=#{education},
+           describeOne= #{describeOne},email=#{email},welfareStatus=#{welfareStatus},isPublishContact=#{isPublishContact},
+         authentiCationStatus=#{authentiCationStatus},
+           detailed= #{detailed},addressDetailed=#{addressDetailed},
+           contact= #{contact},consigneeName=#{consigneeName},
+           gender= #{gender},age=#{age}
+        where userId=#{userId}  and id=#{id}   
+    </update>
+</mapper>

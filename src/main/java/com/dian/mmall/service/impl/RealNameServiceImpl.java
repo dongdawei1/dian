@@ -81,7 +81,7 @@ public class RealNameServiceImpl implements RealNameService{
 			   //判断省市区id是否正确
 			    if(provinces_id>10000 &&  city_id>10000 && district_county_id>10000) {
 			    	 city=cityMapper.checkeCity(provinces_id,city_id,district_county_id);
-			    	System.out.println( city);
+			    	
 			    	 if( city==null) {
 		 				return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		 			}
@@ -212,17 +212,16 @@ public class RealNameServiceImpl implements RealNameService{
 		 			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		 		}
 			     		    
-			     eag=Integer.valueOf(params_map.get("eag").toString().trim());
-			     //判断年龄
-			     if( eag<18 || eag>60) {
-			    	 return	ServerResponse.createByErrorMessage(ResponseMessage.NianLiFanWei.getMessage()); 
-			     }
-			     gender=params_map.get("gender").toString().trim() ;
-			     //判断性别
-			     if(!gender.equals("男") && !gender.equals("女") ) {
-			    	 return	ServerResponse.createByErrorMessage(ResponseMessage.XinBieYouWu.getMessage()); 
-			     }
-				 address_detailed = params_map.get("address_detailed").toString().trim() ;
+//			     eag=Integer.valueOf(params_map.get("eag").toString().trim());
+//			     //判断年龄
+//			     if( eag<18 || eag>60) {
+//			    	 return	ServerResponse.createByErrorMessage(ResponseMessage.NianLiFanWei.getMessage()); 
+//			     }
+//			     gender=params_map.get("gender").toString().trim() ;
+//			     //判断性别
+//			     if(!gender.equals("男") && !gender.equals("女") ) {
+//			    	 return	ServerResponse.createByErrorMessage(ResponseMessage.XinBieYouWu.getMessage()); 
+//			     }
 		 		 contact= params_map.get("contact").toString().trim() ;
 		 		 consignee_name=params_map.get("consignee_name").toString().trim() ;
 		 		 email=params_map.get("email").toString().trim() ;
@@ -232,8 +231,7 @@ public class RealNameServiceImpl implements RealNameService{
 						return serverResponse;			
 					}
 		 		 //判断必传字段
-		 		 if( address_detailed.length()<101 && address_detailed.length()>0 
-		 				&& consignee_name.length()<13 && consignee_name.length()>1) {
+		 		 if(  consignee_name.length()<13 && consignee_name.length()>1) {
 		 			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
 		            
 					RealName realName = new RealName();   		
@@ -243,7 +241,6 @@ public class RealNameServiceImpl implements RealNameService{
 		 			 if(email!=null) {
 		 				realName.setEmail(email); 
 		 					 }
-		 			realName.setAddressDetailed(address_detailed);
 		 			realName.setContact(EncrypDES.encryptPhone(contact));
 		 			realName.setConsigneeName(consignee_name);
 		 			realName.setCityId(city_id);
@@ -251,8 +248,6 @@ public class RealNameServiceImpl implements RealNameService{
 		 			realName.setProvincesId(provinces_id);
 		 			realName.setAuthentiCationStatus(1);
 		 			realName.setDetailed(city);
-		 			realName.setEag(eag);
-		 			realName.setGender(gender);
 		 			realName.setUserName(user.getUsername());
 		 			//添加
 		 			serverResponse=SetBean.setRole(user.getRole());
