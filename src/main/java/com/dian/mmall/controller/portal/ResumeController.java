@@ -83,12 +83,30 @@ public class ResumeController {
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
     	if(serverResponse1.getStatus()!=0) {
     		return serverResponse1;
-    	}
-   
-        
+    	}   
         return resumeService.operation_resume(user,params);
     
     }
+    //查看简历列表
+	
+    @RequestMapping(value = "get_resume_all",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> get_resume_all(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
     
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+        
+        return resumeService.get_resume_all(user,params);
     
+    }
 }

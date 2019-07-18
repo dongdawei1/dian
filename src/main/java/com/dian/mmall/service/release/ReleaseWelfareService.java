@@ -16,7 +16,9 @@ public interface ReleaseWelfareService {
 	ServerResponse<Object> get_position_list(User user, Map<String, Object> params);
 	//操作
 	ServerResponse<String> position_operation(User user, Map<String, Object> params);
-	//
+	// 获取职位电话
 	ServerResponse getContact(User user, Map<String, Object> params);
+	
+	ServerResponse<Object> get_position_all(User user, Map<String, Object> params);
 
 }

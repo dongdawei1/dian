@@ -20,6 +20,7 @@ import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.service.release.ReleaseCommodityService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
+import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
@@ -34,6 +35,8 @@ public class GetPublishingsController {
 	private  GetPublishingsService getPublishingsService;
 	@Autowired
 	private ReleaseWelfareService releaseWelfareService;
+    @Autowired
+    private ResumeService resumeService;
 	
 //查询商品接口
     
@@ -69,11 +72,25 @@ public class GetPublishingsController {
     	}
      	User user = (User) serverResponse.getData();
     	//检查权限
-     	params.put("StringPath", recruitWorkers);
-     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
     	if(serverResponse1.getStatus()!=0) {
     		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
     	}
-    	return releaseWelfareService.getContact(user, params);
+    	
+//        selectType:1   //1是查询职位 ，2是查询 简历
+    	String selectTypeString=params.get("selectType").toString().trim();
+        if(selectTypeString==null || selectTypeString.equals("")) {
+        	return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+        }		
+        int selectType=Integer.valueOf(selectTypeString);
+        //1电话2邮箱
+        if(selectType==1 ) {
+        	return releaseWelfareService.getContact(user, params);
+        }else if(selectType==2){
+        	return resumeService.getContact(user, params);
+        }
+        
+            return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+       
     }
 }

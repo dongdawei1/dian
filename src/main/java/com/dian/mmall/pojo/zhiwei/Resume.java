@@ -16,7 +16,7 @@ public class Resume {
 	private long id;
 	
 	  private long userId;  //ol
-	
+	  private String userName;
 	  @IsEmptyAnnotation(message="求职类型不能为空")
 	  private String position; //职位类型  ol
 	  @IsEmptyAnnotation(message="薪资不能为空")

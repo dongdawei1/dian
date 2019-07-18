@@ -15,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 public class LegalCheck {
    //判断字段输入是否合法
 	public static ServerResponse<String> legalCheckFrom(Map<String, Object> params){
-		 Set<String> key=params.keySet();
+
+		params.remove("StringPath");
+		Set<String> key=params.keySet();
 		  for(String s11  : key){
 			  
 			  Object s12=params.get(s11);	

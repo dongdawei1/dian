@@ -22,6 +22,7 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
+import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisPoolUtil;
@@ -34,6 +35,8 @@ public class ToExamineController {
 	
 	@Autowired  
 	private RealNameService realNameService;
+	
+ 
 	
     @RequestMapping(value = "getRealNameAll",method = RequestMethod.POST)
     @ResponseBody
@@ -109,8 +112,35 @@ public class ToExamineController {
 
     }
     
+    @Autowired
+    private ResumeService resumeService;
+    //简历审核列表
     
-    
+    @RequestMapping(value = "getTrialResumeAll",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> getTrialResumeAll(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+ 	
+    	return resumeService.getTrialResumeAll(params);
+    	
+    }
+    //审核简历
+    @RequestMapping(value = "examineResume",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> examineResume(@RequestBody Map<String,Object> params, HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,HttpSession session){
+		
+     	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+     	
+     User user=	(User) serverResponse.getData();
+ 	 return resumeService.examineResume(user,params);
 
-    
+    }
 }

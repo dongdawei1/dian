@@ -22,7 +22,22 @@ import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer.FromDecim
 
 public class Test1 {
 public static void main(String[] args) {
-	Integer  gender=Integer.valueOf("rr");
-	System.out.println(gender);
+	//Integer  gender=Integer.valueOf("rr");
+	//System.out.println(gender);
+	
+	Map<String, String> sMap=new HashMap<String, String>();
+	sMap.put("aa", "dd");
+	sMap.remove("dd");
+	String string=sMap.get("dde");
+//	try {
+//		String string=sMap.get("dde");
+//		System.out.println("Test1.main()");
+//	} catch (Exception e) {
+//		e.getMessage();
+//	}
+	
+	System.out.println(sMap.toString());
+	sMap.remove("aa");
+	System.out.println(sMap.toString());
 }
 }

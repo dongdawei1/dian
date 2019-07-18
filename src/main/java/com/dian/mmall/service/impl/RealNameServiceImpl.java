@@ -591,6 +591,12 @@ public class RealNameServiceImpl implements RealNameService{
 	 
 	 	String userName = params.get("userName").toString().trim();
 	 	String contact = params.get("contact").toString().trim();
+	 	if(contact.length()!=11 && contact!=null && !contact.equals("")) {
+	 		 return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
+	 	}	
+	 	if(contact.length()==11) {
+			contact = EncrypDES.encryptPhone(contact);
+		}
 	 	Page<RealName> realName_pagePage=new Page<RealName>();
 		
 	 	long zongtiaoshu=realNameMapper.getRealNamePageno(userName,contact);

@@ -29,7 +29,7 @@ public class EncrypDES {
 		String val = "13810875784";//~a76hqkggq8hqhh
 		String result=encryptPhone(val);
 		System.out.println(result);
-		String rawdata=decryptPhone("~a89qb5aqgwkwqh");
+		String rawdata=decryptPhone("~aqb24a0qgwkwqh");//~aqbaqgwkwqh//~aqb24a0qgwkwqh
 		System.out.println(rawdata);
 	}
 //	~ahqkg2g0qhq6hh
@@ -203,7 +203,7 @@ public class EncrypDES {
 		//2.将全部号码转换为对应的字符
 		phoneStr=getPhoneStr(phoneStr);
 		//3.任意位置插入三个随机数字
-		phoneStr=insertNum(phoneStr);
+		//phoneStr=insertNum(phoneStr);
 		//4.在步骤C之后的字符串前加上”~”
 		phoneStr=prefixStr(phoneStr);
 		return phoneStr;

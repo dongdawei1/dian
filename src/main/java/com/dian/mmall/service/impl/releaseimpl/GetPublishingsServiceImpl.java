@@ -13,10 +13,12 @@ import com.dian.mmall.common.PermissionCode;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.CityMapper;
+import com.dian.mmall.dao.chaxuncishu.NumberOfQueriesMapper;
 import com.dian.mmall.dao.releaseDao.GrainAndOilMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
 import com.dian.mmall.dao.releaseDao.TRolePermissionMapper;
 import com.dian.mmall.pojo.Page;
+import com.dian.mmall.pojo.chaxuncishu.NumberOfQueries;
 import com.dian.mmall.pojo.commodity.GrainAndOil;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.User;
@@ -24,6 +26,7 @@ import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
+import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.JsonUtil;
 @Service("getPublishingsService")
@@ -38,6 +41,10 @@ public class GetPublishingsServiceImpl implements GetPublishingsService {
 	
 	@Autowired
 	private CityMapper cityMapper;
+	
+	
+	   @Autowired
+	   private NumberOfQueriesMapper numberOfQueriesMapper;
 	
 	@Override
 	public ServerResponse getMenuList(User user, Map<String,Object> params) {
@@ -82,10 +89,9 @@ public class GetPublishingsServiceImpl implements GetPublishingsService {
 		
 			return   	getGrainAndOilList(permissionid, userId,params,currentPage,pageSize);
 
-		}else if(permissionid ==PermissionCode.ZHIWEI.getCode()) {
-			//招聘查询
-			return   	getPositionList(permissionid, userId,params,currentPage,pageSize);
 		}
+	
+		
 		else {
 			//如果不等于所有就不是此菜单
 		 return ServerResponse.createByErrorMessage("不存在的菜单");
@@ -119,49 +125,7 @@ public class GetPublishingsServiceImpl implements GetPublishingsService {
 			
 		}
 		
-		
-		//招聘
-    public ServerResponse getPositionList(Integer permissionid, long userId,Map<String,Object> params,int currentPage,
-				int  pageSize){
-					ServerResponse checkroleString=checkRoleAndcommodityType(permissionid,  userId);
-					if(checkroleString.getMsg().equals("success")) {
-						
-					
-				 	String	provinces_id=params.get("provincesId").toString().trim();
-				 	String	city_id=params.get("cityId").toString().trim();
-					String   district_county_id=params.get("districtCountyId").toString().trim();
-					
 
-					
-					String detailed="%"+ctiy(provinces_id,city_id,district_county_id)+"%";
-					System.out.println(detailed);
-					String position=params.get("position").toString().trim();
-						Page<ReleaseWelfare> releaseWelfare_pagePage=new Page<ReleaseWelfare>();
-						long count =releaseWelfareMapper.getUserReleaseWelfarePageno(detailed,position);
-						if(count==0) {
-							detailed="%"+ctiy(provinces_id,city_id,null)+"%";
-							count =releaseWelfareMapper.getUserReleaseWelfarePageno(detailed,position);
-						}
-						releaseWelfare_pagePage.setTotalno(count);
-						releaseWelfare_pagePage.setPageSize(pageSize);
-						releaseWelfare_pagePage.setCurrentPage(currentPage); //当前页
-						
-//					    List<ReleaseWelfare> list_releaseWelfare  =	new ArrayList();
-//					    List<ReleaseWelfare> list_releaseWelfareall= releaseWelfareMapper.getUserReleaseWelfareList((currentPage-1)*pageSize,pageSize,detailed,position);
-//					    if(list_releaseWelfareall.size()>0) {
-//						for(ReleaseWelfare releaseWelfare :list_releaseWelfareall) {
-//							releaseWelfare.setContact(EncrypDES.decryptPhone(releaseWelfare.getContact()));
-//							list_releaseWelfare.add(releaseWelfare);
-//						}
-//					    }
-						releaseWelfare_pagePage.setDatas(releaseWelfareMapper.getUserReleaseWelfareList((currentPage-1)*pageSize,pageSize,detailed,position));
-						return ServerResponse.createBySuccess(releaseWelfare_pagePage);
-					}else {
-						
-						 return checkroleString;  
-					}					
-				}	
-		
 		
 		//校验
 	public  ServerResponse<String> checkRoleAndcommodityType(int permissionid ,long userId) {
@@ -198,4 +162,7 @@ public class GetPublishingsServiceImpl implements GetPublishingsService {
 		 }
 		 
 	 }
+	 
+	 
+	
 }

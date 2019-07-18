@@ -83,6 +83,31 @@ public class ReleaseWelfareController {
 	    
 	    }
 	
+	    
+		//职位分页
+		
+	    @RequestMapping(value = "get_position_all",method = RequestMethod.POST)
+	    @ResponseBody
+	    public ServerResponse<Object> get_position_all(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+	    	
+	    	//检查登陆
+	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+	    	if(serverResponse.getStatus()!=0) {
+	    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+	    	}
+	     	User user = (User) serverResponse.getData();
+	    	//检查权限
+	    
+	     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+	    	if(serverResponse1.getStatus()!=0) {
+	    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+	    	}
+	        
+	        return releaseWelfareService.get_position_all(user,params);
+	    
+	    }
+	    
+	    
 		//职位操作列
 		
 	    @RequestMapping(value = "position_operation",method = RequestMethod.POST)
@@ -105,6 +130,11 @@ public class ReleaseWelfareController {
 	        return releaseWelfareService.position_operation(user,params);
 	    
 	    }
+	    
+	 
+	    
+	    
+	    
 	    
 	    
 

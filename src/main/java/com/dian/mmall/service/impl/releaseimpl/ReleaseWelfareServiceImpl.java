@@ -33,6 +33,7 @@ import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.service.impl.UserServiceImpl;
+import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
@@ -54,6 +55,9 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	private RealNameMapper realNameMapper;
    @Autowired
    private NumberOfQueriesMapper numberOfQueriesMapper;
+   
+   @Autowired
+   private GetPublishingsService getPublishingsService;
 	
 	public ServerResponse<String> create_position(User currentUser, Map<String, Object> params) {
 
@@ -119,6 +123,13 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	 
 	 	String userName = params.get("userName").toString().trim();
 	 	String contact = params.get("contact").toString().trim();
+		if(contact.length()!=11 && contact!=null && !contact.equals("")) {
+	 		 return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
+	 	}
+		if(contact.length()==11) {
+			contact = EncrypDES.encryptPhone(contact);
+		}
+	 	
 	 	
 	 	Page<ReleaseWelfare> releaseWelfare_pagePage=new Page<ReleaseWelfare>();
 		
@@ -485,9 +496,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	//操作列
 	@Override
 	public ServerResponse<String> position_operation(User user, Map<String, Object> params) {
-//        data.type=type;
-//        data.userId= form.userId;
-//        data.id=form.id;
+
 		String type=params.get("type").toString().trim();
 		String userId=params.get("userId").toString().trim();
 		String id=params.get("id").toString().trim();
@@ -619,7 +628,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 			numberOfQueriesMapper.setNumberOfQueries(numberOfQueries);
 		}else {
 			int countQueries=numberOfQueries.getCountQueries();
-			if(countQueries>20 && numberOfQueries.getDateString().equals(dateString)) {
+			if(countQueries>=20 && numberOfQueries.getDateString().equals(dateString)) {
 				 return ServerResponse.createByErrorMessage(ResponseMessage.weibaozhengxinxianquan.getMessage());
 			}
 			if(numberOfQueries.getDateString().equals(dateString)) {
@@ -651,6 +660,64 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
     //计算查询次数
 	public  NumberOfQueries getNumberOfQueries(long userId,int queriesType) {
 		return numberOfQueriesMapper.getNumberOfQueries(userId,queriesType);
+	}
+//分页展示职位
+	@Override
+	public ServerResponse<Object> get_position_all(User user, Map<String, Object> params) {
+		String currentPage_string= params.get("currentPage").toString().trim() ;    
+		String pageSize_string= params.get("pageSize").toString().trim() ;    
+		int currentPage=0;
+		int  pageSize=0;
+	 	
+	 	if(currentPage_string!=null && currentPage_string!="") {
+	 		currentPage=Integer.parseInt(currentPage_string);
+	 		if(currentPage<=0) {
+	 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+	 		}
+	 		
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+ 	    }
+	 	
+	 	if(pageSize_string!=null && pageSize_string!="") {
+	 		pageSize=Integer.parseInt(pageSize_string);
+	 		if(pageSize<=0) {
+	 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+	 		}
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+ 	    }
+		
+	 	String	provinces_id=params.get("provincesId").toString().trim();
+	 	String	city_id=params.get("cityId").toString().trim();
+		String   district_county_id=params.get("districtCountyId").toString().trim();
+		
+        
+		
+		String detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,district_county_id)+"%";
+		
+		String position=params.get("position").toString().trim();
+			Page<ReleaseWelfare> releaseWelfare_pagePage=new Page<ReleaseWelfare>();
+			long count =releaseWelfareMapper.getUserReleaseWelfarePageno(detailed,position);
+			if(count==0) {
+				detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,null)+"%";
+				count =releaseWelfareMapper.getUserReleaseWelfarePageno(detailed,position);
+			}
+			releaseWelfare_pagePage.setTotalno(count);
+			releaseWelfare_pagePage.setPageSize(pageSize);
+			releaseWelfare_pagePage.setCurrentPage(currentPage); //当前页
+			
+//		    List<ReleaseWelfare> list_releaseWelfare  =	new ArrayList();
+//		    List<ReleaseWelfare> list_releaseWelfareall= releaseWelfareMapper.getUserReleaseWelfareList((currentPage-1)*pageSize,pageSize,detailed,position);
+//		    if(list_releaseWelfareall.size()>0) {
+//			for(ReleaseWelfare releaseWelfare :list_releaseWelfareall) {
+//				releaseWelfare.setContact(EncrypDES.decryptPhone(releaseWelfare.getContact()));
+//				list_releaseWelfare.add(releaseWelfare);
+//			}
+//		    }
+			releaseWelfare_pagePage.setDatas(releaseWelfareMapper.getUserReleaseWelfareList((currentPage-1)*pageSize,pageSize,detailed,position));
+			return ServerResponse.createBySuccess(releaseWelfare_pagePage);
+						
 	}
 
 }

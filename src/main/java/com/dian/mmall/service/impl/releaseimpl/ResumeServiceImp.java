@@ -1,6 +1,8 @@
 package com.dian.mmall.service.impl.releaseimpl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,12 +23,16 @@ import com.dian.mmall.common.zhiwei.Salary;
 import com.dian.mmall.common.zhiwei.Welfare;
 import com.dian.mmall.dao.CityMapper;
 import com.dian.mmall.dao.RealNameMapper;
+import com.dian.mmall.dao.chaxuncishu.NumberOfQueriesMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
 import com.dian.mmall.dao.releaseDao.ResumeMapper;
+import com.dian.mmall.pojo.Page;
+import com.dian.mmall.pojo.chaxuncishu.NumberOfQueries;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.pojo.zhiwei.Resume;
+import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
@@ -46,6 +52,13 @@ public class ResumeServiceImp implements ResumeService{
 	private RealNameMapper realNameMapper;
 	@Autowired
 	private CityMapper cityMapper;
+	
+	   @Autowired
+	   private GetPublishingsService getPublishingsService;
+	   
+	   @Autowired
+	   private NumberOfQueriesMapper numberOfQueriesMapper;
+	   
 	//创建简历
 	public ServerResponse<String> create_resume(User user, Map<String, Object> params) {
 	System.out.println(params.toString());
@@ -66,6 +79,7 @@ public class ResumeServiceImp implements ResumeService{
 	   Map<String,Object> map=(Map<String, Object>) serverResponse.getData();
 	   map.put("authentiCationStatus",1);
 	   map.put("welfareStatus",4);
+	  
 	 
 	   
 		  
@@ -111,6 +125,7 @@ public  ServerResponse<Object> check_position(User currentUser, Map<String, Obje
 		}
 		 map.put("updateTime",createTime);
 		 map.put("createTime",createTime);
+		 map.put("userName", currentUser.getUsername());
 	 }else {
 			if(resume==null) {
 				 return ServerResponse.createByErrorMessage(ResponseMessage.weifabuguojianli.getMessage());
@@ -373,5 +388,234 @@ public ServerResponse<String> operation_resume(User user, Map<String, Object> pa
 	}
 	}
 	return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
+}
+//审核分页
+@Override
+public ServerResponse<Object> getTrialResumeAll(Map<String, Object> params) {
+	String currentPage_string= params.get("currentPage").toString().trim() ;    
+	String pageSize_string= params.get("pageSize").toString().trim() ;    
+	int currentPage=0;
+	int  pageSize=0;
+ 	
+ 	if(currentPage_string!=null && currentPage_string!="") {
+ 		currentPage=Integer.parseInt(currentPage_string);
+ 		if(currentPage<=0) {
+ 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+ 		}
+ 		
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+	    }
+ 	
+ 	if(pageSize_string!=null && pageSize_string!="") {
+ 		pageSize=Integer.parseInt(pageSize_string);
+ 		if(pageSize<=0) {
+ 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+ 		}
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+	    }
+	
+ 
+ 	String userName = params.get("userName").toString().trim();
+ 	String contact = params.get("contact").toString().trim();
+ 	
+	if(contact.length()!=11 && contact!=null && !contact.equals("")) {
+		 return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
+	}
+	if(contact.length()==11) {
+		contact = EncrypDES.encryptPhone(contact);
+	}
+ 	
+ 	Page<Resume> releaseWelfare_pagePage=new Page<Resume>();
+	
+ 	long zongtiaoshu=resumeMapper.getRresumePageno(userName,contact);
+
+	releaseWelfare_pagePage.setTotalno(zongtiaoshu);
+	releaseWelfare_pagePage.setPageSize(pageSize);
+	releaseWelfare_pagePage.setCurrentPage(currentPage); //当前页
+	
+    List<Resume> list_resume  =	new ArrayList();
+    List<Resume> list_resumeall=  resumeMapper.getRresumeAll((currentPage-1)*pageSize,pageSize,userName,contact);
+    if(list_resumeall.size()>0) {
+	for(Resume resume :list_resumeall) {
+		resume.setContact(EncrypDES.decryptPhone(resume.getContact()));
+		list_resume.add(resume);
+	}}
+
+	releaseWelfare_pagePage.setDatas(list_resume );
+	return ServerResponse.createBySuccess(releaseWelfare_pagePage);
+}
+//审核
+@Override
+public ServerResponse<String> examineResume(User user, Map<String, Object> params) {
+	String	userId =params.get("userId").toString().trim();	
+	String  id=params.get("id").toString().trim();	
+	if(userId==null ||userId.contentEquals("") ||id==null ||id.contentEquals("") ) {
+		return	ServerResponse.createByErrorMessage(ResponseMessage.yonghuidhuoshenpixiangbucunzi.getMessage());
+		}
+	int authentiCationStatus=Integer.valueOf(params.get("authentiCationStatus").toString().trim());
+	if(authentiCationStatus!=2 && authentiCationStatus!=3) {
+		return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+	}
+	
+	long user_id=Long.valueOf(userId);
+	long releaseWelfareId=Long.valueOf(id);
+	params.put("userId", user_id);
+	params.put("id", releaseWelfareId);
+	String timeString=DateTimeUtil.dateToAll();
+	params.put("examineTime", timeString);
+	params.put("examineName", user.getUsername());
+
+	int resultCount=0;
+	if(authentiCationStatus==2) {
+		params.put("welfareStatus", 1);
+		params.put("authentiCationStatus", 2);
+		Resume resume=(Resume) BeanMapConvertUtil.convertMap(Resume.class, params);
+		resultCount=resumeMapper.examineResume(resume);
+		
+	}else if(authentiCationStatus==3) {
+		String authentiCationFailure= params.get("authentiCationFailure").toString().trim();
+		if(authentiCationFailure==null ||authentiCationFailure.contentEquals("")) {
+		return	ServerResponse.createByErrorMessage(ResponseMessage.ShiBaiYuanYinWeiKong.getMessage());
+		}
+		params.put("authentiCationStatus", 3);
+		params.put("welfareStatus", 4);
+		params.put("authentiCationFailure", authentiCationFailure);
+		Resume resume=(Resume) BeanMapConvertUtil.convertMap(Resume.class, params);
+		resultCount=resumeMapper.examineResume(resume);
+		
+				
+	}
+	if(resultCount==0) {
+		return	ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+	}
+		return	ServerResponse.createBySuccessMessage(ResponseMessage.shenpishenggong.getMessage());
+}
+@Override
+public ServerResponse<Object> get_resume_all(User user, Map<String, Object> params) {
+	String currentPage_string= params.get("currentPage").toString().trim() ;    
+	String pageSize_string= params.get("pageSize").toString().trim() ;    
+	int currentPage=0;
+	int  pageSize=0;
+ 	
+ 	if(currentPage_string!=null && currentPage_string!="") {
+ 		currentPage=Integer.parseInt(currentPage_string);
+ 		if(currentPage<=0) {
+ 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+ 		}
+ 		
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+	    }
+ 	
+ 	if(pageSize_string!=null && pageSize_string!="") {
+ 		pageSize=Integer.parseInt(pageSize_string);
+ 		if(pageSize<=0) {
+ 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+ 		}
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+	    }
+	
+ 	String	provinces_id=params.get("provincesId").toString().trim();
+ 	String	city_id=params.get("cityId").toString().trim();
+	String   district_county_id=params.get("districtCountyId").toString().trim();
+	
+    
+	
+	String detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,district_county_id)+"%";
+	
+	String position=params.get("position").toString().trim();
+		Page<Resume> resume_pagePage=new Page<Resume>();
+		long count =resumeMapper.getUserRresumePageno(detailed,position);
+		if(count==0) {
+			detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,null)+"%";
+			count =resumeMapper.getUserRresumePageno(detailed,position);
+		}
+		resume_pagePage.setTotalno(count);
+		resume_pagePage.setPageSize(pageSize);
+		resume_pagePage.setCurrentPage(currentPage); //当前页
+		resume_pagePage.setDatas(resumeMapper.getUserRresumeList((currentPage-1)*pageSize,pageSize,detailed,position));
+		return ServerResponse.createBySuccess(resume_pagePage);
+}
+
+
+@Override
+public ServerResponse getContact(User user, Map<String, Object> params) {
+	String queriesTypeString=params.get("queriesType").toString().trim();
+    if(queriesTypeString==null || queriesTypeString.equals("")) {
+    	return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+    }		
+    int queriesType=Integer.valueOf(queriesTypeString);
+    //1电话2邮箱
+    if(queriesType!=1 && queriesType!=2) {
+    	return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+    }
+    
+    String idString=params.get("id").toString().trim();
+    if(idString==null || idString.equals("")) {
+    	return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+    }
+    int id=Integer.valueOf(idString);
+    if(queriesType<0) {
+    	return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+    } //TODO  1是查询类型 招聘联系方式  2是查询 简历联系方式
+    
+    Resume resume=null;
+    
+    Map<String ,String> returnMap=new HashMap<String, String>();
+    
+    int eslectType=2;
+   
+	NumberOfQueries numberOfQueries=getNumberOfQueries(user.getId(),eslectType);
+	String dateString=DateTimeUtil.dateToDay();
+	if(numberOfQueries==null) {
+		
+		resume=	resumeMapper.getResumeContactById(id,queriesType);
+		if(resume==null) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+		}
+		numberOfQueries=new NumberOfQueries();
+		numberOfQueries.setCountQueries(1);
+		numberOfQueries.setQueriesType(eslectType);
+		numberOfQueries.setUserId(user.getId());
+		numberOfQueries.setDateString(dateString);		
+		
+		numberOfQueriesMapper.setNumberOfQueries(numberOfQueries);
+	}else {
+		int countQueries=numberOfQueries.getCountQueries();
+		if(countQueries>=20 && numberOfQueries.getDateString().equals(dateString)) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.weibaozhengxinxianquan.getMessage());
+		}
+		if(numberOfQueries.getDateString().equals(dateString)) {
+			numberOfQueries.setCountQueries(countQueries+1);
+		}else {
+			numberOfQueries.setCountQueries(1);
+		}
+		numberOfQueries.setDateString(dateString);
+		
+		resume=	resumeMapper.getResumeContactById(id,queriesType);
+		if(resume==null) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+		}
+		numberOfQueriesMapper.updateNumberOfQueries(numberOfQueries);
+	}
+	//1电话2邮箱
+	if(queriesType==1) {
+		returnMap.put("contact", EncrypDES.decryptPhone(resume.getContact()));
+		returnMap.put("email", null);
+	}else {
+		returnMap.put("contact", null);
+		returnMap.put("email", resume.getEmail());
+	}
+	returnMap.put("consigneeName", resume.getConsigneeName());
+	return ServerResponse.createBySuccess(returnMap);
+}
+
+
+//计算查询次数
+public  NumberOfQueries getNumberOfQueries(long userId,int queriesType) {
+	return numberOfQueriesMapper.getNumberOfQueries(userId,queriesType);
 }
 }

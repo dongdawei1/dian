@@ -10,17 +10,19 @@
     
         <!--审批分页总条数  --> 
         <select id="getReleaseWelfarePageno"  resultType="long">
-        select count(*) from release_welfare where welfareStatus=4  
+        select count(*) from release_welfare where  authentiCationStatus in(1,3) 
                 <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
-        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>   
+        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>  
+         
     
     </select>
            <!--分页待审批 --> 
         <select id="getReleaseWelfareAll"  resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
-        select * from release_welfare where welfareStatus=4   
+        select * from release_welfare where authentiCationStatus in(1,3)  
         <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
         <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>
-        limit #{pageLength}, #{pageSize}
+         
+      order by  updateTime limit #{pageLength}, #{pageSize}
     </select>
     
 
@@ -37,6 +39,7 @@
 workingAddress,authentiCationStatus,authentiCationFailure,termOfValidity,contact,detailed,consigneeName from release_welfare where welfareStatus!=3 and userId=#{userId} 
         <if test="position!=null and position.trim()!=''">and  position=#{position}   </if>
         <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
+       order by  updateTime desc
         limit #{pageLength}, #{pageSize}
     </select>
      
@@ -57,7 +60,7 @@ workingAddress,authentiCationStatus,authentiCationFailure,termOfValidity,contact
      
             <!--可见全部查询分页--> 
         <select id="getUserReleaseWelfareList"  resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
-        select id, userId,position ,number,welfare,salary,education,experience,describeOne,introductoryAward,gender,age,email,isPublishContact, createTime,updateTime,
+        select id, userId,position ,number,welfare,salary,education,experience,describeOne,introductoryAward,gender,age,isPublishContact, createTime,updateTime,
 workingAddress,termOfValidity,detailed from release_welfare where welfareStatus=1
         <if test="position!=null and position.trim()!=''">and  position=#{position}   </if>
         <if test="detailed!=null and detailed.trim()!=''">and  detailed like #{detailed}   </if>
