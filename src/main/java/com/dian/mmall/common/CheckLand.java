@@ -286,9 +286,35 @@ public class CheckLand {
      			isButten.put("isAuthentication", user.getIsAuthentication());
      			isButten.put("isSee", true);
      		}
+     		 //查看职位创建灭虫
+     		else if(menu.equals("/home/pestControl")) {
+     			if(role!=12&&role!=1&&role!=2&&role!=6&&role!=7&&role!=3) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			if( role==1||  role==7) {
+     				isButten.put("isCreate", true);
+     			}else {
+     				isButten.put("isCreate", false);
+     			}
+     			isButten.put("isAuthentication", user.getIsAuthentication());
+     			isButten.put("isSee", true);
+     		} //查看职位创建米面
+     		else if(menu.equals("/home/GrainAndOilPage")) {
+     			if(role!=1&&role!=2&&role!=4) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			if( role==1||  role==4) {
+     				isButten.put("isCreate", true);
+     			}else {
+     				isButten.put("isCreate", false);
+     			}
+     			isButten.put("isAuthentication", user.getIsAuthentication());
+     			isButten.put("isSee", true);
+     		}
      		
      		
-     
+     		
+     		
+     		
+     		
      		
      		else if(menu.equals("/home/lease") ) {
      			if(role!=2&&role!=3&&role!=6&&role!=1&&role!=11) {
