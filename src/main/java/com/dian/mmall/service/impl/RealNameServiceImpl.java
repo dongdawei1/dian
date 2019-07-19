@@ -96,7 +96,7 @@ public class RealNameServiceImpl implements RealNameService{
 				List<Picture> listObj4=new ArrayList<Picture>();
 				
 				int getNum=PictureNum.ShiMingRenZheng.getNum();
-				//如果大于3要判断没删除的是否超过总数
+				
 				if(list_size>0) {
 					int count=0;
 					for(int a=0;a<list_size;a++) {
@@ -104,11 +104,18 @@ public class RealNameServiceImpl implements RealNameService{
 							listObj4.add(listObj3.get(a));
 							count+=1;
 						}
+						}
 						if(count>getNum) {
+							//判断没有删除的图片是否大于规定
 							return ServerResponse.createByErrorMessage("图片数量不能超过 "+getNum+"个");
 						}
+						if(count==0) {
+							return ServerResponse.createByErrorMessage("图片不能为空");
+						}
 						
-					}}
+					}else {
+						return ServerResponse.createByErrorMessage("图片不能为空");
+					}
 				 licenseUrl= params_map.get("licenseUrl").toString().trim() ;
 		 		 
 				 address_detailed = params_map.get("address_detailed").toString().trim() ;
