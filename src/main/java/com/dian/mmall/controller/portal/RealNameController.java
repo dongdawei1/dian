@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dian.mmall.common.CheckLand;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseCode;
 import com.dian.mmall.common.ResponseMessage;
@@ -25,6 +24,7 @@ import com.dian.mmall.dao.UserMapper;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IUserService;
 import com.dian.mmall.service.RealNameService;
+import com.dian.mmall.util.CheckLand;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;

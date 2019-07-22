@@ -33,6 +33,7 @@ public class RealName {
 	 private String updateTime;
 	 private String examineName;//审核人员
 	 private String examineTime;//审核时间
+	 private String companyName;//非必填，企业名称
 	@Override
 	public String toString() {
 		return "RealName [id=" + id + ", userId=" + userId + ", provincesId=" + provincesId + ", cityId=" + cityId

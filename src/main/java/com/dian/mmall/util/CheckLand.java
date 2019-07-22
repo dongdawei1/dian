@@ -1,4 +1,4 @@
-package com.dian.mmall.common;
+package com.dian.mmall.util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,10 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.dian.mmall.common.ResponseMessage;
+import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
-import com.dian.mmall.util.CookieUtil;
-import com.dian.mmall.util.JsonUtil;
-import com.dian.mmall.util.RedisShardedPoolUtil;
 
 public class CheckLand {
 	
@@ -91,7 +90,17 @@ public class CheckLand {
      			if(role!=11&& role!=1&& role!=4) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }
-     		
+     		//装修，灭虫广告菜谱创建权限  ，这几项放在一个页面中	
+     		else if(menu.equals("menuAndRenovationAndPestControl")) {
+     			if(role!=1&&role!=7) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			
+     		}//创建米面
+     		else if(menu.equals("/home/GrainAndOilPage")) {
+     			if(role!=1&&role!=4) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     		}
+     	
      		
      		
      		else if(menu.equals("/home/lease") ) {
@@ -169,6 +178,20 @@ public class CheckLand {
      			if(role!=11&&role!=1&&role!=2&&role!=4&&role!=5) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }
+   		//查看职位创建米面
+     		else if(menu.equals("/home/GrainAndOilPage")) {
+     			if(role!=1&&role!=2&&role!=4) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     		}//装修，灭虫广告菜谱查看权限	
+     		else if(menu.equals("/home/pestControl")|| menu.equals("/home/menu")||menu.equals("/home/renovation")||menu.equals("menuAndRenovationAndPestControl")) {
+     			if(role!=12&&role!=1&&role!=2&&role!=6&&role!=7&&role!=3) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     		}
+     		
+     		
+     		
+     		
+     		
      		
      		
      		
@@ -286,8 +309,9 @@ public class CheckLand {
      			isButten.put("isAuthentication", user.getIsAuthentication());
      			isButten.put("isSee", true);
      		}
-     		 //查看职位创建灭虫
-     		else if(menu.equals("/home/pestControl")) {
+     		 //查看职位创建灭虫  menuAndRenovationAndPestControl 我的发布灭虫装修广告在一个页面
+     		///home/menu 广告
+     		else if(menu.equals("/home/pestControl")|| menu.equals("/home/menu")||menu.equals("/home/renovation")||menu.equals("menuAndRenovationAndPestControl")) {
      			if(role!=12&&role!=1&&role!=2&&role!=6&&role!=7&&role!=3) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			if( role==1||  role==7) {

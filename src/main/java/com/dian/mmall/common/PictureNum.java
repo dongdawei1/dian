@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum PictureNum {
 	GRAINANDOIL("粮油区",5),
-	ShiMingRenZheng("实名认证",3);
+	ShiMingRenZheng("实名认证",3),
+	miechongzhuangxiu("灭虫装修广告",8);
 //	  LEASE("店面/窗口出租",14),
 //	   RENTALBOOTH("摊位出租转让",15),
 //	   JOBWANTED("求职专区",31);

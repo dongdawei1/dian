@@ -9,9 +9,9 @@
    <!--创建用户成功返回非0  -->
      <insert id="newRealName"  >
         insert into t_user_realname (
-            userId, provincesId, cityId, districtCountyId,addressDetailed,contact,consigneeName, authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender,userName,userType,examineName,examineTime
+            userId, provincesId, cityId, districtCountyId,addressDetailed,contact,consigneeName, authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender,userName,userType,examineName,examineTime,companyName
         ) values (
-            #{userId}, #{provincesId}, #{cityId}, #{districtCountyId},#{addressDetailed},#{contact}, #{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed},#{eag},#{gender},#{userName},#{userType},#{examineName},#{examineTime}
+            #{userId}, #{provincesId}, #{cityId}, #{districtCountyId},#{addressDetailed},#{contact}, #{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed},#{eag},#{gender},#{userName},#{userType},#{examineName},#{examineTime},#{companyName}
         )
     </insert>
      
@@ -27,7 +27,7 @@
     <update id="updateRealName" >
        update t_user_realname set  
        provincesId=#{provincesId},cityId=#{cityId},districtCountyId=#{districtCountyId},addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},
-       authentiCationStatus=#{authentiCationStatus},email=#{email},licenseUrl=#{licenseUrl},detailed=#{detailed},updateTime=#{updateTime},eag=#{eag},gender=#{gender}
+       authentiCationStatus=#{authentiCationStatus},email=#{email},licenseUrl=#{licenseUrl},detailed=#{detailed},updateTime=#{updateTime},eag=#{eag},gender=#{gender},companyName=#{companyName}
         where id=#{id} 
     </update>
         <!--审批用户实名  -->   

@@ -61,7 +61,7 @@ public class ResumeServiceImp implements ResumeService{
 	   
 	//创建简历
 	public ServerResponse<String> create_resume(User user, Map<String, Object> params) {
-	System.out.println(params.toString());
+	
 		String typeString=params.get("type").toString().trim();
 		System.out.println(typeString);
 		if(typeString==null || typeString.equals("")) {

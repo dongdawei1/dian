@@ -475,7 +475,6 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	 	Page<ReleaseWelfare> releaseWelfare_pagePage=new Page<ReleaseWelfare>();
 		
 	 	long zongtiaoshu=releaseWelfareMapper.get_position_list_no(position,welfareStatus,user.getId());
-		int totalno=(int) Math.ceil((float)zongtiaoshu/pageSize);
 		releaseWelfare_pagePage.setTotalno(zongtiaoshu);
 		releaseWelfare_pagePage.setPageSize(pageSize);
 		releaseWelfare_pagePage.setCurrentPage(currentPage); //当前页

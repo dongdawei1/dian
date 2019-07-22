@@ -7,6 +7,7 @@ public enum ResponseMessage {
    YongHuMingKeYong("用户名可用"),
    YongHuMingBuKeYong("用户名不可用"),
    ZhuCeShiBai("注册失败"),
+   gongsimingchengkong("公司/企业/个人名称不能为空"),
    ChuangJianYongHuShiBai("创建用户失败"),
    YanZhengMaCuoWu("验证码错误或失效"),
    YongHuMingMiMaGeShiCouWu("用户名或密码格式错误"),
@@ -71,7 +72,11 @@ public enum ResponseMessage {
 	weibaozhengxinxianquan("为保证用户信息安全，每天只能查询20次联系方式"),
 	chaxunshibai("查询失败"),
 	yifabuguojianli("已发布过简历"),
-	weifabuguojianli("未发布过简历");
+	weifabuguojianli("未发布过简历"),
+	fabuleixingkong("发布类型不能为空"),
+	chaoguofabuzongshu("此类型信息每位商户只能发布5条"),
+	fuwuchengshicuowu("服务城区输入错误"),
+	qibujiagebuhefa("起步价格只能是整数数字");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

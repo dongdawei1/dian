@@ -122,7 +122,11 @@ public class RealNameServiceImpl implements RealNameService{
 		 		 contact= params_map.get("contact").toString().trim() ;
 		 		 consignee_name=params_map.get("consignee_name").toString().trim() ;
 		 		 email=params_map.get("email").toString().trim() ;
-		 		
+		 	String	companyName=params_map.get("companyName").toString().trim() ;
+		 	if(companyName==null ||companyName.equals("")) {
+		 		return ServerResponse.createByErrorMessage(ResponseMessage.gongsimingchengkong.getMessage());
+		 	}
+		 	
 		 		//判断手机号是否合法
 			    	serverResponse=LegalCheck.legalCheckMobilePhone(contact);
 			    	if(serverResponse.getStatus()!=0) {	
@@ -150,7 +154,7 @@ public class RealNameServiceImpl implements RealNameService{
 		 			realName.setAuthentiCationStatus(1);
 		 			realName.setDetailed(city);
 		 			realName.setUserName(user.getUsername());
-		 			
+		 			realName.setCompanyName(companyName);
 		 			//添加
 		 			serverResponse=SetBean.setRole(user.getRole());
 		 			//检查是否有非法输入
@@ -390,6 +394,11 @@ public class RealNameServiceImpl implements RealNameService{
 			    	if(serverResponse.getStatus()!=0) {	
 						return serverResponse;			
 					}
+			    	
+				 	String	companyName=params_map.get("companyName").toString().trim() ;
+				 	if(companyName==null ||companyName.equals("")) {
+				 		return ServerResponse.createByErrorMessage(ResponseMessage.gongsimingchengkong.getMessage());
+				 	}
 		 		 //判断必传字段
 		 		 if( address_detailed.length()<101 && address_detailed.length()>0 
 		 				&& consignee_name.length()<13 && consignee_name.length()>1) {
@@ -402,6 +411,7 @@ public class RealNameServiceImpl implements RealNameService{
 		 			 if(email!=null) {
 		 				realName.setEmail(email); 
 		 					 }
+		 			 realName.setCompanyName(companyName);
 		 			realName.setAddressDetailed(address_detailed);
 		 			realName.setLicenseUrl(licenseUrl);
 		 			realName.setContact(EncrypDES.encryptPhone(contact));
