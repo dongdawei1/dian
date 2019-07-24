@@ -1,6 +1,8 @@
 package com.dian.mmall.service.impl.releaseimpl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +151,7 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 				return ServerResponse.createByErrorMessage("图片不能为空");
 			}
 		
-		 map.put("pictureUrl",params.get("pictureUrl").toString().trim());
+		 map.put("pictureUrl",JsonUtil.obj2StringPretty(listObj4));
 		 
 	//判断非法输入
 		ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
@@ -286,4 +288,67 @@ public ServerResponse<Object> get_usermrp_list(User user, Map<String, Object> pa
 	releaseWelfare_pagePage.setDatas(list_releaseWelfare );
 	return ServerResponse.createBySuccess(releaseWelfare_pagePage);
 }
+@Override
+public ServerResponse<Object> getmrpAll(Map<String, Object> params) {
+	String currentPage_string= params.get("currentPage").toString().trim() ;    
+	String pageSize_string= params.get("pageSize").toString().trim() ;    
+	int currentPage=0;
+	int  pageSize=0;
+ 	
+ 	if(currentPage_string!=null && currentPage_string!="") {
+ 		currentPage=Integer.parseInt(currentPage_string);
+ 		if(currentPage<=0) {
+ 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+ 		}
+ 		
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+	    }
+ 	
+ 	if(pageSize_string!=null && pageSize_string!="") {
+ 		pageSize=Integer.parseInt(pageSize_string);
+ 		if(pageSize<=0) {
+ 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+ 		}
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+	    }
+	
+    
+ 	String releaseTypeString = params.get("releaseType").toString().trim();
+ 	Integer releaseType=null;
+ 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
+ 		releaseType =	Integer.valueOf(releaseTypeString);
+ 	}
+ 	
+ 	String contact = params.get("contact").toString().trim();
+	if(contact.length()!=11 && contact!=null && !contact.equals("")) {
+ 		 return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
+ 	}
+	if(contact.length()==11) {
+		contact = EncrypDES.encryptPhone(contact);
+	}
+ 	
+ 	
+ 	
+ 	Page<MenuAndRenovationAndPestControl> releaseWelfare_pagePage=new Page<MenuAndRenovationAndPestControl>();
+	
+ 	long zongtiaoshu=menuAndRenovationAndPestControlMapper.get_mrp_list_no(releaseType,contact);
+	
+	releaseWelfare_pagePage.setTotalno(zongtiaoshu);
+	releaseWelfare_pagePage.setPageSize(pageSize);
+	releaseWelfare_pagePage.setCurrentPage(currentPage); //当前页
+	
+    List<MenuAndRenovationAndPestControl> list_releaseWelfare  =	new ArrayList();
+    List<MenuAndRenovationAndPestControl> list_releaseWelfareall=  menuAndRenovationAndPestControlMapper.get_mpr_list_all((currentPage-1)*pageSize,pageSize,releaseType,contact);
+    
+	for(MenuAndRenovationAndPestControl releaseWelfare :list_releaseWelfareall) {
+		releaseWelfare.setContact(EncrypDES.decryptPhone(releaseWelfare.getContact()));
+		list_releaseWelfare.add(releaseWelfare);
+	}
+
+	releaseWelfare_pagePage.setDatas(list_releaseWelfare );
+	return ServerResponse.createBySuccess(releaseWelfare_pagePage);
+}
+
 }

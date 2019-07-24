@@ -446,52 +446,7 @@ public ServerResponse<Object> getTrialResumeAll(Map<String, Object> params) {
 	releaseWelfare_pagePage.setDatas(list_resume );
 	return ServerResponse.createBySuccess(releaseWelfare_pagePage);
 }
-//审核
-@Override
-public ServerResponse<String> examineResume(User user, Map<String, Object> params) {
-	String	userId =params.get("userId").toString().trim();	
-	String  id=params.get("id").toString().trim();	
-	if(userId==null ||userId.contentEquals("") ||id==null ||id.contentEquals("") ) {
-		return	ServerResponse.createByErrorMessage(ResponseMessage.yonghuidhuoshenpixiangbucunzi.getMessage());
-		}
-	int authentiCationStatus=Integer.valueOf(params.get("authentiCationStatus").toString().trim());
-	if(authentiCationStatus!=2 && authentiCationStatus!=3) {
-		return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-	}
-	
-	long user_id=Long.valueOf(userId);
-	long releaseWelfareId=Long.valueOf(id);
-	params.put("userId", user_id);
-	params.put("id", releaseWelfareId);
-	String timeString=DateTimeUtil.dateToAll();
-	params.put("examineTime", timeString);
-	params.put("examineName", user.getUsername());
 
-	int resultCount=0;
-	if(authentiCationStatus==2) {
-		params.put("welfareStatus", 1);
-		params.put("authentiCationStatus", 2);
-		Resume resume=(Resume) BeanMapConvertUtil.convertMap(Resume.class, params);
-		resultCount=resumeMapper.examineResume(resume);
-		
-	}else if(authentiCationStatus==3) {
-		String authentiCationFailure= params.get("authentiCationFailure").toString().trim();
-		if(authentiCationFailure==null ||authentiCationFailure.contentEquals("")) {
-		return	ServerResponse.createByErrorMessage(ResponseMessage.ShiBaiYuanYinWeiKong.getMessage());
-		}
-		params.put("authentiCationStatus", 3);
-		params.put("welfareStatus", 4);
-		params.put("authentiCationFailure", authentiCationFailure);
-		Resume resume=(Resume) BeanMapConvertUtil.convertMap(Resume.class, params);
-		resultCount=resumeMapper.examineResume(resume);
-		
-				
-	}
-	if(resultCount==0) {
-		return	ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
-	}
-		return	ServerResponse.createBySuccessMessage(ResponseMessage.shenpishenggong.getMessage());
-}
 @Override
 public ServerResponse<Object> get_resume_all(User user, Map<String, Object> params) {
 	String currentPage_string= params.get("currentPage").toString().trim() ;    

@@ -127,7 +127,9 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 					return ServerResponse.createByErrorMessage("图片数量不能超过 "+getNum+"个");
 				}
 				
-			}}
+			}}else {
+				return ServerResponse.createByErrorMessage("图片不能为空");
+			}
 		
 		
 
@@ -155,7 +157,7 @@ public class ReleaseCommodityImpl implements ReleaseCommodityService {
 	 	params.put("isReceivingPurchase", 1);//初始化都是再有效期
 	 	params.put("approval_status", 1);//初始化审核中
 	 	params.put("createTime", formatter.format(new Date()));	 	
-	 	params.put("pictureUrl", params.get("pictureUrl").toString());
+	 	params.put("pictureUrl", JsonUtil.obj2StringPretty(listObj4));
 	 	params.put("isDelete", 1);	 	
 	 	GrainAndOil grainAndOil=(GrainAndOil) BeanMapConvertUtil.convertMap(GrainAndOil.class,params);
 			

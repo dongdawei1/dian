@@ -10,5 +10,8 @@ public interface MenuAndRenovationAndPestControlService {
 	ServerResponse<String> create_menuAndRenovationAndPestControl(User user, Map<String, Object> params);
     //用户自己获取自己的发布
 	ServerResponse<Object> get_usermrp_list(User user, Map<String, Object> params);
+	//审核列表
+	ServerResponse<Object> getmrpAll(Map<String, Object> params);
+	
 
 }

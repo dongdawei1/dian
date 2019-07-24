@@ -52,26 +52,36 @@
     
     
     
-    <!--           
-        <select id="get_usermrp_list_no"  resultType="long">
-        select count(*) from menuandrenovationandpestcontrol where welfareStatus in()   
-        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
+              
+        <select id="get_mrp_list_no"  resultType="long">
+        select count(*) from menuandrenovationandpestcontrol where authentiCationStatus in(1,3)   
+       <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>  
         <if test="releaseType!=null">and  releaseType=#{releaseType}   </if>  
     </select> 
     
         
-        <select id="get_usermpr_list_all"  resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
+        <select id="get_mpr_list_all"  resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
         select id,userId,evaluateid,servicFrequenc,releaseType,
     releaseTitle,serviceIntroduction,remarks,pictureUrl,startPrice,
     welfareStatus,authentiCationStatus,authentiCationFailure,
     detailed,addressDetailed,contact,consigneeName,createTime,
-    updateTime,serviceDetailed,companyName
+    updateTime,serviceDetailed,companyName,examineName,examineTime,userType
        from menuandrenovationandpestcontrol       
-       where welfareStatus!=3 and userId=#{userId} 
-        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
+       where authentiCationStatus in(1,3)  
+         <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>   
         <if test="releaseType!=null">and  releaseType=#{releaseType}   </if>  
-       order by  updateTime desc
+       order by  createTime
         limit #{pageLength}, #{pageSize}
-    </select> -->
+    </select> 
+    
+       <!-- 审核  -->  
+    
+       <update id="examineMrp" >
+       update menuandrenovationandpestcontrol set  
+       authentiCationStatus=#{authentiCationStatus},authentiCationFailure=#{authentiCationFailure},examineTime=#{examineTime},examineName=#{examineName},
+       welfareStatus=#{welfareStatus}
+        where userId=#{userId}  and id=#{id}
+    </update>
+    
     
 </mapper>

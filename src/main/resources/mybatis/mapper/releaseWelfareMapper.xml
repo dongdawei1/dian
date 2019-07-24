@@ -22,7 +22,7 @@
         <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
         <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>
          
-      order by  updateTime limit #{pageLength}, #{pageSize}
+      order by  createTime limit #{pageLength}, #{pageSize}
     </select>
     
 

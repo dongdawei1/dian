@@ -152,57 +152,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	}
 	
 	
-	 //审核招聘
-		@Override
-		public ServerResponse<String> examineReleaseWelfare(User user, Map<String, Object> params) {
-			String	userId =params.get("userId").toString().trim();	
-			String  id=params.get("id").toString().trim();	
-			if(userId==null ||userId.contentEquals("") ||id==null ||id.contentEquals("") ) {
-				return	ServerResponse.createByErrorMessage(ResponseMessage.yonghuidhuoshenpixiangbucunzi.getMessage());
-				}
-			int authentiCationStatus=Integer.valueOf(params.get("authentiCationStatus").toString().trim());
-			if(authentiCationStatus!=2 && authentiCationStatus!=3) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-			}
-			
-			long user_id=Long.valueOf(userId);
-			long releaseWelfareId=Long.valueOf(id);
-			params.put("userId", user_id);
-			params.put("id", releaseWelfareId);
-			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
-			params.put("examineTime", formatter.format(new Date()));
-			params.put("examineName", user.getUsername());
 
-			int resultCount=0;
-			if(authentiCationStatus==2) {
-				params.put("welfareStatus", 1);
-				params.put("authentiCationStatus", 2);
-				ReleaseWelfare releaseWelfare=(ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class, params);
-				resultCount=releaseWelfareMapper.examineReleaseWelfare(releaseWelfare);
-				if(resultCount==0) {
-					return	ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
-				}
-				
-			}else if(authentiCationStatus==3) {
-				String authentiCationFailure= params.get("authentiCationFailure").toString().trim();
-				if(authentiCationFailure==null ||authentiCationFailure.contentEquals("")) {
-				return	ServerResponse.createByErrorMessage(ResponseMessage.ShiBaiYuanYinWeiKong.getMessage());
-				}
-				params.put("authentiCationStatus", 3);
-				params.put("welfareStatus", 4);
-				params.put("authentiCationFailure", authentiCationFailure);
-				ReleaseWelfare releaseWelfare=(ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class, params);
-				resultCount=releaseWelfareMapper.examineReleaseWelfare(releaseWelfare);
-				if(resultCount==0) {
-					return	ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
-				}
-						
-			}
-				return	ServerResponse.createBySuccessMessage(ResponseMessage.shenpishenggong.getMessage());
-			
-
-		}
-	
 	
 	
 	

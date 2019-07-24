@@ -14,8 +14,7 @@ public interface ResumeService {
 	ServerResponse<String> operation_resume(User user, Map<String, Object> params);
 	//待审核列表
 	ServerResponse<Object> getTrialResumeAll(Map<String, Object> params);
-	//审核
-	ServerResponse<String> examineResume(User user, Map<String, Object> params);
+	
 	ServerResponse<Object> get_resume_all(User user, Map<String, Object> params);
 	//获取电话或者邮箱
 	ServerResponse getContact(User user, Map<String, Object> params);

@@ -18,4 +18,11 @@ public interface MenuAndRenovationAndPestControlMapper {
 
 		List<MenuAndRenovationAndPestControl> get_usermpr_list_all(int pageLength, int pageSize, Integer releaseType,
 				Integer welfareStatus, long userId);
+        //审核总数
+		long get_mrp_list_no(Integer releaseType, String contact);
+        //审核列表
+		List<MenuAndRenovationAndPestControl> get_mpr_list_all(int pageLength, int pageSize, Integer releaseType,
+				String contact);
+      //审核
+		int examineMrp(MenuAndRenovationAndPestControl releaseWelfare);
 }

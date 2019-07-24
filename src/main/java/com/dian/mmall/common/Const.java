@@ -17,7 +17,7 @@ public class Const {
 
 
     public interface RedisCacheExtime{
-        int REDIS_SESSION_EXTIME = 60 * 30;//30分钟
+        int REDIS_SESSION_EXTIME = 60 * 1200;//1200分钟
     }
     public interface ProductListOrderBy{
         //没有导入jar包   暂时没有实现
