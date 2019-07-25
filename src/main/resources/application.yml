@@ -30,3 +30,8 @@ mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
   # 指定sql映射文件位置
   mapper-locations: classpath:mybatis/mapper/*.xml
+#文件上传
+cbs:
+    imagesPath:
+        file:/E:/img/  
+  

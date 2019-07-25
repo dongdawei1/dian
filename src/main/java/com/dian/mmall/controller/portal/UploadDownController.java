@@ -33,7 +33,8 @@ import com.dian.mmall.util.RedisShardedPoolUtil;
 @Controller
 @RequestMapping("/api/uploadDown/")
 public class UploadDownController {
-    
+  
+	//图片访问地址  http://localhost:8080/img/201907251001091.jpg
 
     @Autowired
     private IPictureService ipics;
@@ -56,9 +57,12 @@ public class UploadDownController {
     	User user = JsonUtil.string2Obj(userJsonStr,User.class);
     	
     	
+    	
+    	  
+    	
         //获取文件在服务器的储存位置
        // String path = httpServletRequest.getSession().getServletContext().getRealPath("/upload");
-    	String path="e:/upload/";
+    	String path="E:/img/";
     	File filePath = new File(path);
         System.out.println(httpServletRequest.getSession().getServletContext().getRealPath("/upload"));
         System.out.println(filePath.toPath().toString());
@@ -90,6 +94,8 @@ public class UploadDownController {
         Picture picture1=new Picture();
         //将文件保存到服务器指定位置
         try {
+        //	http://localhost:8080/img/201907251001091.jpg
+        	
             picture.transferTo(targetFile);       
             //将文件在服务器的存储路径返回
             picture1.setCreate_time(date);           
@@ -98,11 +104,16 @@ public class UploadDownController {
             picture1.setUser_name(user.getUsername());
             picture1.setUse_status(1);        
             picture1.setPicture_name(originalFileName);
-            picture1.setPicture_url(path + fileName);
             
+            //TODO 访问地址写死的
+            //picture1.setPicture_url(path + fileName);
+            String linshiString="http://localhost:8080/img/";
+            picture1.setPicture_url(linshiString + fileName);
+          
            ipics.createPicture(picture1);
-            
-            return new Result(true,path + fileName);
+           
+           return new Result(true,linshiString + fileName);
+           // return new Result(true,path + fileName);
         } catch (IOException e) {
            
             e.printStackTrace();
