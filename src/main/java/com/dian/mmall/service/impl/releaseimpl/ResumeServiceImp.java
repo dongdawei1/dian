@@ -59,11 +59,10 @@ public class ResumeServiceImp implements ResumeService{
 	   @Autowired
 	   private NumberOfQueriesMapper numberOfQueriesMapper;
 	   
-	//创建简历
+	//创建和编辑简历type=1 创建 && type=2 编辑
 	public ServerResponse<String> create_resume(User user, Map<String, Object> params) {
 	
 		String typeString=params.get("type").toString().trim();
-		System.out.println(typeString);
 		if(typeString==null || typeString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 		}
@@ -340,6 +339,7 @@ public ServerResponse<Object> select_resume_by_id(long userId) {
 		resume.setContact(EncrypDES.decryptPhone(resume.getContact()));
 		return ServerResponse.createBySuccess(resume);
 }
+//操作
 @Override
 public ServerResponse<String> operation_resume(User user, Map<String, Object> params) {
 	String type=params.get("type").toString().trim();

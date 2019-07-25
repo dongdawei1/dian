@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dian.mmall.common.ServerResponse;
@@ -24,7 +25,7 @@ public class MenuAndRenovationAndPestControlController {
 	@Autowired
 	private MenuAndRenovationAndPestControlService menuAndRenovationAndPestControlService;
 	
-	//创建简历
+	//创建灭虫
     @RequestMapping(value = "create_menuAndRenovationAndPestControl",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> create_menuAndRenovationAndPestControl(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
@@ -67,4 +68,43 @@ public class MenuAndRenovationAndPestControlController {
         return menuAndRenovationAndPestControlService.get_usermrp_list(user,params);
     
     }
+
+
+	//灭虫操作列
+	
+    @RequestMapping(value = "operation_usermrp",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> operation_usermrp(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+        
+        return menuAndRenovationAndPestControlService.operation_usermrp(user,params);
+    
+    }
+
+	//商户根据id获取详细编辑
+	
+    @RequestMapping(value = "get_usermrp_id",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> get_usermrp_id(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();   
+       return menuAndRenovationAndPestControlService.get_usermrp_id(user,id);
+    
+    }
+
 }

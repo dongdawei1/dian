@@ -39,18 +39,15 @@ public class ToExamineController {
 	private RealNameService realNameService;
 	
  
-	
+	//获取待实名
     @RequestMapping(value = "getRealNameAll",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Object> getRealNameAll(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-
  	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
- 	//检查是否有管理员权限
  	if(serverResponse.getStatus()!=0 ) {
  		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
  	}
     	return realNameService.getRealNameAll(params);
-    	
     }
 	//实名审核 
     @RequestMapping(value = "examineRealName",method = RequestMethod.POST)

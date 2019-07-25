@@ -72,10 +72,10 @@ workingAddress,termOfValidity,detailed from release_welfare where welfareStatus=
      <!-- 刷新，隐藏等操作 -->
             <update id="position_operation" >
        update release_welfare set  
-      <if test="type==1 "> updateTime=#{timeString}  </if>
-      <if test="type==2 ">termOfValidity=#{timeString} </if>
+      <if test="type==1 "> updateTime=#{timeString} ,termOfValidity=#{timeString}  </if>
+      <if test="type==2 ">welfareStatus=1,termOfValidity=#{timeString} </if>
       <if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
-      <if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+      <if test="type==4 "> welfareStatus=1,updateTime=#{timeString},termOfValidity=#{timeString}</if>
       <if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if> 
         where userId=#{userId}  and id=#{id}
       <if test="type==4 "> and welfareStatus not in(4,5)</if>

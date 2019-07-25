@@ -9,7 +9,7 @@
         select id,userId,position,experience,salary,education,
         describeOne,email,welfareStatus,isPublishContact,createTime,updateTime,authentiCationStatus,
         authentiCationFailure,detailed,addressDetailed,
-        contact,consigneeName,gender,age,termOfValidity
+        contact,consigneeName,gender,age
          from resume where welfareStatus!=3 and  userId=#{userId}       
         </select>
         
