@@ -29,15 +29,21 @@ public class IPictureServiceImp implements IPictureService {
 	}
 
 	@Override
-	public void updatePicture(Picture picture1) {
-		pictureMapper.updatePicture(picture1);
+	public void updatePicture(long id) {
+		pictureMapper.updatePicture(id);
 		
 	}
 
 	@Override
-	public void updatePictureUse(Picture picture) {
-		pictureMapper.updatePictureUse( picture);
+	public void updatePictureUse(long id) {
+		pictureMapper.updatePictureUse( id);
 		
+	}
+
+	@Override
+	public Picture selectPictureBYid(long id) {
+		// TODO Auto-generated method stub
+		return pictureMapper.selectPictureBYid(id);
 	}
 	  
 	  

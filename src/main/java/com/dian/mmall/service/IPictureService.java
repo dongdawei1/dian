@@ -9,7 +9,8 @@ public interface IPictureService {
 	int createPicture(Picture picture1);
    //更新前检查是否有
 	Picture selectPicture(Picture picture1);
-	void updatePicture(Picture picture1);
-	void updatePictureUse(Picture picture);
+	void updatePicture(long id);
+	void updatePictureUse(long id);
+	Picture selectPictureBYid(long id);
 
 }

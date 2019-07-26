@@ -99,9 +99,20 @@
          <select id="get_usermrp_id"  resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
         select id,userId,releaseType,
     releaseTitle,serviceIntroduction,remarks,pictureUrl,startPrice,
-    detailed,addressDetailed,contact,consigneeName,serviceDetailed,companyName
+    detailed,addressDetailed,contact,consigneeName,serviceDetailed,companyName,
+    welfareStatus,authentiCationStatus,createTime
        from menuandrenovationandpestcontrol       
        where welfareStatus!=3 and userId=#{userId} and id=#{id}
     </select>
     
+     <!-- 用户编辑 -->
+       <update id="update_menuAndRenovationAndPestControl" >
+       update menuandrenovationandpestcontrol set       
+    releaseTitle=#{releaseTitle},serviceIntroduction=#{serviceIntroduction},
+    remarks=#{remarks},pictureUrl=#{pictureUrl},startPrice=#{startPrice},
+    serviceDetailed=#{serviceDetailed},updateTime=#{updateTime}
+     where welfareStatus!=3 and userId=#{userId} and id=#{id}
+    </update>
+     
+     
 </mapper>

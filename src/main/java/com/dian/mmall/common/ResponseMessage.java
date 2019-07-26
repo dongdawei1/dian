@@ -76,7 +76,11 @@ public enum ResponseMessage {
 	fabuleixingkong("发布类型不能为空"),
 	chaoguofabuzongshu("此类型信息每位商户只能发布5条"),
 	fuwuchengshicuowu("服务城区输入错误"),
-	qibujiagebuhefa("起步价格只能是整数数字");
+	qibujiagebuhefa("起步价格只能是整数数字"),
+	shangchuanshibai("上传失败,请稍后重试"),
+	shanchuchenggeng("删除成功"),
+	shangchushibai("删除失败"),
+	idbucunzai("图片ID不存在");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

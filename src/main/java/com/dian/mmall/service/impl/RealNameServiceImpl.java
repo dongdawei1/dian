@@ -100,7 +100,7 @@ public class RealNameServiceImpl implements RealNameService{
 				if(list_size>0) {
 					int count=0;
 					for(int a=0;a<list_size;a++) {
-						if(listObj3.get(a).getUse_status()==1) {
+						if(listObj3.get(a).getUseStatus()==1) {
 							listObj4.add(listObj3.get(a));
 							count+=1;
 						}
@@ -179,7 +179,7 @@ public class RealNameServiceImpl implements RealNameService{
 	     		 		for(int a=0;a<listObj4.size();a++) {
 	     		 			Picture picture=listObj4.get(a);
 	     		 			picture.setTocken(loginToken);
-	     		 			picture.setUser_id(user_id);
+	     		 			picture.setUserId(user_id);
 	     		 			
 	     		 			ipics.updatePictureUse(picture);
 	     		 		}
@@ -374,7 +374,7 @@ public class RealNameServiceImpl implements RealNameService{
 				if(list_size>0) {
 					int count=0;
 					for(int a=0;a<list_size;a++) {
-						if(listObj3.get(a).getUse_status()==1) {
+						if(listObj3.get(a).getUseStatus()==1) {
 							listObj4.add(listObj3.get(a));
 							count+=1;
 						}
@@ -456,7 +456,7 @@ public class RealNameServiceImpl implements RealNameService{
 	     		 		for(int a=0;a<listObj4.size();a++) {
 	     		 			Picture picture=listObj4.get(a);
 	     		 			picture.setTocken(loginToken);
-	     		 			picture.setUser_id(user_id);
+	     		 			picture.setUserId(user_id);
 	     		 			
 	     		 			ipics.updatePictureUse(picture);
 	     		 		}
@@ -770,7 +770,7 @@ public class RealNameServiceImpl implements RealNameService{
 					if(list_size>0) {
 						int count=0;
 						for(int a=0;a<list_size;a++) {
-							if(listObj3.get(a).getUse_status()==1) {
+							if(listObj3.get(a).getUseStatus()==1) {
 								listObj4.add(listObj3.get(a));
 								count+=1;
 							}
@@ -838,7 +838,7 @@ public class RealNameServiceImpl implements RealNameService{
 		     		 		for(int a=0;a<listObj4.size();a++) {
 		     		 			Picture picture=listObj4.get(a);
 		     		 			picture.setTocken(loginToken);
-		     		 			picture.setUser_id(user.getId());
+		     		 			picture.setUserId(user.getId());
 		     		 			
 		     		 			ipics.updatePictureUse(picture);
 		     		 		}

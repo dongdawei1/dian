@@ -135,7 +135,7 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 		if(list_size>0) {
 			int count=0;
 			for(int a=0;a<list_size;a++) {
-				if(listObj3.get(a).getUse_status()==1) {
+				if(listObj3.get(a).getUseStatus()==1) {
 					listObj4.add(listObj3.get(a));
 					count+=1;
 				}

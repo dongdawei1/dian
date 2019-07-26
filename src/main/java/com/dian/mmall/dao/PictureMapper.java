@@ -12,8 +12,10 @@ public interface PictureMapper {
 
 	Picture selectPicture(Picture picture1);
    //删除更新
-	void updatePicture(Picture picture1);
+	void updatePicture(long id);
 //使用更新
-	void updatePictureUse(Picture picture);
+	void updatePictureUse(long id);
+
+	Picture selectPictureBYid(long id);
 
 }

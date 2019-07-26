@@ -4,37 +4,36 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dian.mmall.dao.PictureMapper">
   
-
-	
   
     <select id="selectPicture" resultType="com.dian.mmall.pojo.tupian.Picture"  >
         select * from picture
-        where use_status = #{use_status} and user_name=#{user_name} and 
-        tocken=#{tocken}  and picture_name=#{picture_name} and picture_url=#{picture_url}
+        where useStatus = #{useStatus} and userName=#{userName} and 
+        tocken=#{tocken}  and pictureName=#{pictureName} and pictureUrl=#{pictureUrl}  and createTime=#{createTime}
     </select>
     
-   <!--创建用户返回id  -->
+     <select id="selectPictureBYid" resultType="com.dian.mmall.pojo.tupian.Picture"  >
+        select * from picture  where id=#{id}
+    </select>
+    
+   <!--创建用户返回id  create_time -->
      <insert id="createPicture"  >
         insert into picture (
-            use_status, user_name, user_id, tocken, picture_name,picture_url,create_time
+            useStatus, userName, userId, tocken, pictureName,pictureUrl,createTime
         ) values (
-            #{use_status}, #{user_name}, #{user_id}, #{tocken}, #{picture_name}, #{picture_url}, #{create_time}
+            #{useStatus}, #{userName}, #{userId}, #{tocken}, #{pictureName}, #{pictureUrl}, #{createTime}
         )
     </insert>
     
     
+ 
+    
     <update id="updatePicture"  >
     update picture
-    set use_status = 2 
-    where use_status =  #{use_status} and user_name=#{user_name} and 
-        tocken=#{tocken}  and picture_name=#{picture_name} and picture_url=#{picture_url}
+    set useStatus = 2  where  id=#{id}
   </update>
     
      <update id="updatePictureUse"  >
     update picture
-    set use_status = 3 
-    where use_status =1 and user_id=#{user_id}  and 
-        tocken=#{tocken} 
-         and picture_name=#{picture_name} and picture_url=#{picture_url}
+    set useStatus = 3   where id=#{id}
   </update>
 </mapper>

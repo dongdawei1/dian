@@ -31,4 +31,6 @@ public interface MenuAndRenovationAndPestControlMapper {
 		
        //用户根据id查询
 		MenuAndRenovationAndPestControl get_usermrp_id(long userId, long id);
+        //编辑
+		int update_menuAndRenovationAndPestControl(MenuAndRenovationAndPestControl menuAndRenovationAndPestControl);
 }

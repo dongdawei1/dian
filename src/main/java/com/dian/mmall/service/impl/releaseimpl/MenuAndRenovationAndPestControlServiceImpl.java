@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.dao.releaseDao.MenuAndRenovationAndPestControlMapper;
@@ -40,6 +41,9 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 	private MenuAndRenovationAndPestControlMapper menuAndRenovationAndPestControlMapper;
 	@Autowired
 	private RealNameMapper realNameMapper;
+	
+	@Autowired
+	private PictureMapper pictureMapper;
 	//创建
 	public ServerResponse<String> create_menuAndRenovationAndPestControl(User user, Map<String, Object> params) {
 	
@@ -80,7 +84,7 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 	map.put("userId", userId);
 	
 	String createTime=DateTimeUtil.dateToAll();
-	//判断是否超过可以发布的总数
+	
 		 
 			String releaseTypeString=params.get("releaseType").toString().trim();	
 			if(releaseTypeString==null || releaseTypeString.equals("")) {
@@ -92,13 +96,16 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 			}
 			int count=0;
 			if(type==1) {  //TODO新建时才检查总数
+			//判断是否超过可以发布的总数
 			 count =menuAndRenovationAndPestControlMapper.countNum(releaseType,userId);
 		      if(count>5) {
 		    	 return ServerResponse.createByErrorMessage(ResponseMessage.chaoguofabuzongshu.getMessage());
-		    }}
+		       }
+		    map.put("createTime",createTime);
+		    }
 		    map.put("releaseType",releaseType);
 		    map.put("updateTime",createTime);
-		    map.put("createTime",createTime);
+		   
 
 	 
   //判断是否实名
@@ -106,21 +113,23 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 			 return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 		
+		if(type==1) {
 		//图片
 		List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) params.get("pictureUrl"),List.class,Picture.class);
 		int list_size=listObj3.size();
 		//把getUse_status()==1 放到这个集合中
-		List<Picture> listObj4=new ArrayList<Picture>();
-		
+		List<Picture> listObj4=new ArrayList<Picture>();	
 		int getNum=PictureNum.miechongzhuangxiu.getNum();	
 		if(list_size>0) {
 			 count=0;
 			for(int a=0;a<list_size;a++) {
-				if(listObj3.get(a).getUse_status()==1) {
-					listObj4.add(listObj3.get(a));
-					count+=1;
-				}
-				}
+				Picture picture=listObj3.get(a);
+				if(picture.getUseStatus()==1) {
+				   picture.setUserId(userId);
+					listObj4.add(picture);
+					pictureMapper.updatePictureUse(picture.getId());
+					count+=1;				
+				}}
 				if(count>getNum) {
 					//判断没有删除的图片是否大于规定
 					return ServerResponse.createByErrorMessage("图片数量不能超过 "+getNum+"个");
@@ -133,7 +142,7 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 			}
 		
 		 map.put("pictureUrl",JsonUtil.obj2StringPretty(listObj4));
-		 
+		} 
 	//判断非法输入
 		ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
 	 	//检查是否有非法输入
@@ -189,7 +198,6 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 	map.put("userType", serverResponse.getMsg());
 	
 	
-     map.put("serviceIntroduction", params.get("serviceIntroduction").toString().trim());
      String serviceDetailed=params.get("serviceDetailed").toString().trim();
       if(!serviceDetailed.equals("全市") &&!serviceDetailed.equals("来电确认")) {
     	  return ServerResponse.createByErrorMessage(ResponseMessage.fuwuchengshicuowu.getMessage());			  
@@ -341,6 +349,7 @@ public ServerResponse<String> operation_usermrp(User user, Map<String, Object> p
 	String type=params.get("type").toString().trim();
 	String userId=params.get("userId").toString().trim();
 	String id=params.get("id").toString().trim();
+	long idLong=0;
 	if(type!=null && !type.equals("") && userId!=null && !userId.equals("")
 			&& id!=null && !id.equals("") ) {
 		int type_int=Integer.valueOf(type);
@@ -348,7 +357,7 @@ public ServerResponse<String> operation_usermrp(User user, Map<String, Object> p
 			return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 		}
 		long userIdLong=Long.valueOf(userId);
-		long idLong=Long.valueOf(id);
+		idLong=Long.valueOf(id);
 		if(userIdLong!=user.getId()) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
 		}
@@ -362,51 +371,32 @@ public ServerResponse<String> operation_usermrp(User user, Map<String, Object> p
 			timeString=formatter.format(new Date());
 			result=menuAndRenovationAndPestControlMapper.operation_usermrp(userIdLong,idLong,type_int,timeString);
 		}else if(type_int==6){
-			//判断非法输入
-			ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
-		 	//检查是否有非法输入
-		 	if(serverResponse.getStatus()!=0) {	
-					return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-			}
-		 	ReleaseWelfare  releaseWelfare=new ReleaseWelfare();
-		 	//判断是否公开电话
-			String isPublishContactString=params.get("isPublishContact").toString().trim();
-			if(isPublishContactString.equals("")||isPublishContactString==null) {
-				 return ServerResponse.createByErrorMessage(ResponseMessage.shifougongkaidianhualeixingcuowu.getMessage());
-			}
-			int isPublishContact=Integer.valueOf(isPublishContactString);
-			if(isPublishContact!=1 &&  isPublishContact!=2) {
-				 return ServerResponse.createByErrorMessage(ResponseMessage.shifougongkaidianhualeixingcuowu.getMessage());
-			}
-			releaseWelfare.setIsPublishContact(isPublishContact);
-			//判断邮箱和联系方式必须有一个公开
-			String email=params.get("email").toString().trim();
-			if(isPublishContact==2 && (email.equals("")||email==null)) {
-				 return ServerResponse.createByErrorMessage(ResponseMessage.gongkaidianhuahuozheshuruyouxiang.getMessage());
-			}
-			releaseWelfare.setEmail(email);
-		 	
-			//判断实名信息是否正确
-			RealName realName=realNameMapper.getRealName(userIdLong);
-			if(realName!=null) {
-			//判断实际工作地址和实名地址是否一致
-			String addressDetailed=realName.getAddressDetailed();
-			if(!addressDetailed.equals(params.get("workingAddress").toString().trim())) {
-				 //2不一致1一致
-				releaseWelfare.setAddressConsistency(2);
-			}else {
-				releaseWelfare.setAddressConsistency(1);
-			}
-			releaseWelfare.setWorkingAddress(params.get("workingAddress").toString().trim());
-			releaseWelfare.setDescribeOne(params.get("describeOne").toString().trim());
-			releaseWelfare.setId(idLong);
-			releaseWelfare.setUserId(userIdLong);
-			timeString=formatter.format(new Date());
-			releaseWelfare.setUpdateTime(timeString);
-			//result=releaseWelfareMapper.position_operation_edit(releaseWelfare);
-			}
-			}else {
-			 return ServerResponse.createByErrorMessage(ResponseMessage.caozuoleixincuowu.getMessage());
+			
+			ServerResponse<Object> serverResponse=get_usermrp_id(user, idLong);
+			  if(serverResponse.getStatus()!=0) {
+				   return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+			   }
+			MenuAndRenovationAndPestControl sAndPestControl=(MenuAndRenovationAndPestControl) serverResponse.getData();
+			  
+			serverResponse=check_evaluate(user, params,2);
+			   if(serverResponse.getStatus()!=0) {
+				   return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+			   }
+			   Map<String,Object> map=(Map<String, Object>) serverResponse.getData();
+			   map.put("authentiCationStatus", sAndPestControl.getAuthentiCationStatus());
+		       map.put("welfareStatus", sAndPestControl.getWelfareStatus());
+		       map.put("createTime", sAndPestControl.getCreateTime());
+		       map.put("id", sAndPestControl.getId());
+		       MenuAndRenovationAndPestControl menuAndRenovationAndPestControl=(MenuAndRenovationAndPestControl) BeanMapConvertUtil.convertMap(MenuAndRenovationAndPestControl.class,map);
+			 	//{result=true, message=验证通过} 返回结果
+			 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(menuAndRenovationAndPestControl);
+			 	if((boolean)checknullMap.get("result")==true && ((String)checknullMap.get("message")).equals("验证通过")) {
+			 		result=menuAndRenovationAndPestControlMapper.update_menuAndRenovationAndPestControl(menuAndRenovationAndPestControl);
+			 	}else if((boolean)checknullMap.get("result")==false) {
+			 		return ServerResponse.createByErrorMessage((String)checknullMap.get("message"));
+			 	}else {
+			 		return ServerResponse.createByErrorMessage("系统异常稍后重试");
+			 	}
 		}
 		
 		if(result==0) {
@@ -420,6 +410,7 @@ public ServerResponse<String> operation_usermrp(User user, Map<String, Object> p
 		 return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 	}
 }
+//用户自己根据id获取发布用于编辑11
 @Override
 public ServerResponse<Object> get_usermrp_id(User user, long id) {
     if(id<=0) {
