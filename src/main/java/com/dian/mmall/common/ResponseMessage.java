@@ -80,7 +80,8 @@ public enum ResponseMessage {
 	shangchuanshibai("上传失败,请稍后重试"),
 	shanchuchenggeng("删除成功"),
 	shangchushibai("删除失败"),
-	idbucunzai("图片ID不存在");
+	idbucunzai("图片ID不存在"),
+	tupianbunnegkong("图片不能为空");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

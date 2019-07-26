@@ -110,7 +110,9 @@
        update menuandrenovationandpestcontrol set       
     releaseTitle=#{releaseTitle},serviceIntroduction=#{serviceIntroduction},
     remarks=#{remarks},pictureUrl=#{pictureUrl},startPrice=#{startPrice},
-    serviceDetailed=#{serviceDetailed},updateTime=#{updateTime}
+    serviceDetailed=#{serviceDetailed},updateTime=#{updateTime},
+    authentiCationStatus=#{authentiCationStatus},welfareStatus=#{welfareStatus}
+  
      where welfareStatus!=3 and userId=#{userId} and id=#{id}
     </update>
      

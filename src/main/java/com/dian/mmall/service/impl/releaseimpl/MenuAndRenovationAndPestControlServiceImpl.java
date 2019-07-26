@@ -24,11 +24,13 @@ import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
+import com.dian.mmall.service.IPictureService;
 import com.dian.mmall.service.release.MenuAndRenovationAndPestControlService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
+import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
 import com.dian.mmall.util.SetBean;
@@ -44,6 +46,10 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 	
 	@Autowired
 	private PictureMapper pictureMapper;
+	
+	   @Autowired
+	    private IPictureService ipics;
+	    private  String path="E:/img/";
 	//创建
 	public ServerResponse<String> create_menuAndRenovationAndPestControl(User user, Map<String, Object> params) {
 	
@@ -113,7 +119,7 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 			 return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 		
-		if(type==1) {
+		if(type==1) {  //新建
 		//图片
 		List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) params.get("pictureUrl"),List.class,Picture.class);
 		int list_size=listObj3.size();
@@ -126,7 +132,12 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 				Picture picture=listObj3.get(a);
 				if(picture.getUseStatus()==1) {
 				   picture.setUserId(userId);
+				   picture.setUseStatus(3);
 					listObj4.add(picture);
+					Picture picture1=pictureMapper.selectPictureBYid(picture.getId());
+					if(!picture.getPictureUrl().equals(picture1.getPictureUrl())) {
+						return ServerResponse.createByErrorMessage("图片地址不一致");
+					}
 					pictureMapper.updatePictureUse(picture.getId());
 					count+=1;				
 				}}
@@ -143,6 +154,10 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 		
 		 map.put("pictureUrl",JsonUtil.obj2StringPretty(listObj4));
 		} 
+		
+		
+		
+		
 	//判断非法输入
 		ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
 	 	//检查是否有非法输入
@@ -377,16 +392,24 @@ public ServerResponse<String> operation_usermrp(User user, Map<String, Object> p
 				   return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 			   }
 			MenuAndRenovationAndPestControl sAndPestControl=(MenuAndRenovationAndPestControl) serverResponse.getData();
-			  
+			   
+			//检查图片
+			ServerResponse<String> serverResponseString=setPictureUrl((ArrayList<Picture>) params.get("pictureUrl"), sAndPestControl.getPictureUrl());
+			   if(serverResponseString.getStatus()!=0) {
+				  return  serverResponseString;
+			   }
+			//检查其他输入
 			serverResponse=check_evaluate(user, params,2);
 			   if(serverResponse.getStatus()!=0) {
 				   return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 			   }
+			   
 			   Map<String,Object> map=(Map<String, Object>) serverResponse.getData();
-			   map.put("authentiCationStatus", sAndPestControl.getAuthentiCationStatus());
-		       map.put("welfareStatus", sAndPestControl.getWelfareStatus());
 		       map.put("createTime", sAndPestControl.getCreateTime());
 		       map.put("id", sAndPestControl.getId());
+		       map.put("pictureUrl", serverResponseString.getMsg());
+		       map.put("authentiCationStatus", 1);
+		       map.put("welfareStatus", 4);
 		       MenuAndRenovationAndPestControl menuAndRenovationAndPestControl=(MenuAndRenovationAndPestControl) BeanMapConvertUtil.convertMap(MenuAndRenovationAndPestControl.class,map);
 			 	//{result=true, message=验证通过} 返回结果
 			 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(menuAndRenovationAndPestControl);
@@ -422,6 +445,55 @@ public ServerResponse<Object> get_usermrp_id(User user, long id) {
 	}
 	menuAndRenovationAndPestControl.setContact(EncrypDES.decryptPhone(menuAndRenovationAndPestControl.getContact()));
 	return ServerResponse.createBySuccess(menuAndRenovationAndPestControl);
+}
+//编辑时检查图片并重新赋值
+public ServerResponse<String> setPictureUrl(Object object,String PictureUrl){
+	 //前端传入
+	List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) object,List.class,Picture.class);
+    //数据库查询
+	List<Picture> listObj4	= JsonUtil.string2Obj(PictureUrl,List.class,Picture.class);
+	if(listObj3.size()==0 || listObj4.size()==0) {
+		return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
+	}
+	List<Picture> listObjCun=new ArrayList<Picture>();
+	//处理编辑前
+	for(int a4=0;a4<listObj4.size();a4++) {
+		long id4=listObj4.get(a4).getId();
+		for(int a3=0;a3<listObj3.size();a3++) {
+			Picture picture=listObj3.get(a3);
+			if(id4==picture.getId()) {
+				int useStatus=picture.getUseStatus();
+				if(useStatus==3) {
+					listObjCun.add(picture);
+				}else {
+					   FileControl.deleteFile(path+picture.getUserName());
+				       ipics.updatePicture(id4);
+				}
+				
+			}	
+		}
+	}
+	//处理编辑后
+	for(int a3=0;a3<listObj3.size();a3++) {
+		Picture picture=listObj3.get(a3);
+		long id3=picture.getId();
+		int useStatus=picture.getUseStatus();
+		if(useStatus==1) {
+			//1上传更新为3使用 
+			ipics.updatePictureUse(id3);
+			picture.setUseStatus(3);
+			listObjCun.add(picture);
+		}else if(useStatus==2){
+			//2为删除
+			   FileControl.deleteFile(path+picture.getUserName());
+		       ipics.updatePicture(id3);
+		}
+	}
+	if(listObjCun.size()>0) {
+		return ServerResponse.createBySuccessMessage(JsonUtil.obj2StringPretty(listObjCun));
+	}	
+	return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
+	
 }
 
 }

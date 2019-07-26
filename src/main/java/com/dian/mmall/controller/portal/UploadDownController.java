@@ -61,21 +61,15 @@ public class UploadDownController {
     
         //获取文件在服务器的储存位置
        // String path = httpServletRequest.getSession().getServletContext().getRealPath("/upload");
-    	
     	File filePath = new File(path);
-      
         if (!filePath.exists() && !filePath.isDirectory()) {
             
             filePath.mkdir();
         }
- 
         //获取原始文件名称(包含格式)
         String originalFileName = picture.getOriginalFilename();
-        
- 
         //获取文件类型，以最后一个`.`为标识
         String type = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
-        
         //获取文件名称（不包含格式）
         String name = originalFileName.substring(0, originalFileName.lastIndexOf("."));
        
@@ -91,7 +85,6 @@ public class UploadDownController {
         //将文件保存到服务器指定位置
         try {
         //	http://localhost:8080/img/201907251001091.jpg
-        	
             picture.transferTo(targetFile);       
             //将文件在服务器的存储路径返回
             picture1.setCreateTime(date);           

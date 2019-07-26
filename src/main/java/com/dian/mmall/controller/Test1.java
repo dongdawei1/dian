@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -39,5 +40,28 @@ public static void main(String[] args) {
 	System.out.println(sMap.toString());
 	sMap.remove("aa");
 	System.out.println(sMap.toString());
+	
+	List<String>  aList=new ArrayList<String>();
+	aList.add("11");
+	aList.add("12");
+	aList.add("13");
+	aList.add("14");
+	List<String>  aList1=new ArrayList<String>();
+	aList1.add("11");
+	aList1.add("121");
+	aList1.add("131");
+	aList1.add("141");
+	
+	for(int a=0; a<aList.size();a++) {
+		
+		for (int i = 0; i < aList1.size(); i++) {
+			if (aList.get(a).equals(aList1.get(i))) {
+				System.out.println("Test1.main()"+aList1.get(i));
+				
+			}
+		}
+	}
+	
+	
 }
 }
