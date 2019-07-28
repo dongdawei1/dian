@@ -17,5 +17,7 @@ public interface PictureMapper {
 	void updatePictureUse(long id);
 
 	Picture selectPictureBYid(long id);
+   //管理员添加自由送货的实名
+	void updatePictureAdmin(Picture picture);
 
 }

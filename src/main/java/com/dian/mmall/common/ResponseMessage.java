@@ -61,6 +61,7 @@ public enum ResponseMessage {
 	youxiaoqibuhefa("有效期在超过范围"),
 	canshuyouwu("操作参数有误"),
 	yonghuidbucunzai("用户ID不存在"),
+	huoquxinxishibai("获取用户信息失败"),
 	caozuoleixincuowu("操作类型错误"),
 	caozuoshibai("操作失败"),
 	caozuochenggong("操作成功"),
@@ -81,7 +82,10 @@ public enum ResponseMessage {
 	shanchuchenggeng("删除成功"),
 	shangchushibai("删除失败"),
 	idbucunzai("图片ID不存在"),
-	tupianbunnegkong("图片不能为空");
+	tupianbunnegkong("图片不能为空"),
+	meiyouchaxundaoshimingxinxi("没有查询到实名信息"),
+	chaxunshimingshixishibai("查询实名信息失败"),
+	benditupianbucunzai("本地图片不存在");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

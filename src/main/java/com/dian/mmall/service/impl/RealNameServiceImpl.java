@@ -14,6 +14,7 @@ import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.CityMapper;
+import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.UserMapper;
 import com.dian.mmall.pojo.City;
@@ -25,6 +26,7 @@ import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IPictureService;
 import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.util.EncrypDES;
+import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
 import com.dian.mmall.util.SetBean;
@@ -37,12 +39,13 @@ public class RealNameServiceImpl implements RealNameService{
 	private RealNameMapper realNameMapper;
 	@Autowired
 	private CityMapper cityMapper;
-	 @Autowired
-	    private IPictureService ipics;  //图片库更新
-
+	
+	    private  String path="E:/img/";
+	    @Autowired
+		private PictureMapper pictureMapper;
 	 @Autowired
 	  private UserMapper userMapper;
-	 //实名认证
+	 //创建实名认证
 	@Override
 	public ServerResponse<String> newRealName(User user,String loginToken, Map<String, Object> params) {
 		String isbusiness_string = params.get("isbusiness").toString().trim() ;
@@ -94,14 +97,22 @@ public class RealNameServiceImpl implements RealNameService{
 				int list_size=listObj3.size();
 				//把getUse_status()==1 放到这个集合中
 				List<Picture> listObj4=new ArrayList<Picture>();
-				
 				int getNum=PictureNum.ShiMingRenZheng.getNum();
 				
 				if(list_size>0) {
 					int count=0;
 					for(int a=0;a<list_size;a++) {
+						Picture picture=listObj3.get(a);
 						if(listObj3.get(a).getUseStatus()==1) {
-							listObj4.add(listObj3.get(a));
+							   picture.setUserId(user_id);
+							   picture.setUseStatus(3);
+							
+							Picture picture1=pictureMapper.selectPictureBYid(picture.getId());
+							if(!picture.getPictureUrl().equals(picture1.getPictureUrl())) {
+								return ServerResponse.createByErrorMessage("图片地址不一致");
+							}
+							pictureMapper.updatePictureUse(picture.getId());
+							listObj4.add(picture);
 							count+=1;
 						}
 						}
@@ -116,7 +127,7 @@ public class RealNameServiceImpl implements RealNameService{
 					}else {
 						return ServerResponse.createByErrorMessage("图片不能为空");
 					}
-				 licenseUrl= params_map.get("licenseUrl").toString().trim() ;
+				 licenseUrl=JsonUtil.obj2StringPretty(listObj4);
 		 		 
 				 address_detailed = params_map.get("address_detailed").toString().trim() ;
 		 		 contact= params_map.get("contact").toString().trim() ;
@@ -177,18 +188,13 @@ public class RealNameServiceImpl implements RealNameService{
 	                 }
 	     			if(listObj4.size()>0) {
 	     		 		for(int a=0;a<listObj4.size();a++) {
-	     		 			Picture picture=listObj4.get(a);
-	     		 			picture.setTocken(loginToken);
-	     		 			picture.setUserId(user_id);
-	     		 			
-	     		 			ipics.updatePictureUse(picture);
+	     		 			Picture picture=listObj4.get(a);	     		 			
+	     		 			pictureMapper.updatePictureUse(picture.getId());
 	     		 		}
 	     		 	}
-	     			System.out.println(user.toString());
 	     			User currentUser = userMapper.selectUserById(user_id);
                     currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
                     currentUser.setPassword(null);
-                    System.out.println(currentUser.toString());
                     return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
 		 		 }
 		 		return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
@@ -222,17 +228,7 @@ public class RealNameServiceImpl implements RealNameService{
 		 		}else {
 		 			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		 		}
-			     		    
-//			     eag=Integer.valueOf(params_map.get("eag").toString().trim());
-//			     //判断年龄
-//			     if( eag<18 || eag>60) {
-//			    	 return	ServerResponse.createByErrorMessage(ResponseMessage.NianLiFanWei.getMessage()); 
-//			     }
-//			     gender=params_map.get("gender").toString().trim() ;
-//			     //判断性别
-//			     if(!gender.equals("男") && !gender.equals("女") ) {
-//			    	 return	ServerResponse.createByErrorMessage(ResponseMessage.XinBieYouWu.getMessage()); 
-//			     }
+
 		 		 contact= params_map.get("contact").toString().trim() ;
 		 		 consignee_name=params_map.get("consignee_name").toString().trim() ;
 		 		 email=params_map.get("email").toString().trim() ;
@@ -301,13 +297,12 @@ public class RealNameServiceImpl implements RealNameService{
 	public ServerResponse<Object> getRealName(User user) {
 		RealName realName=realNameMapper.getRealName(user.getId());
 		if(realName!=null) {
-		realName.setLicenseUrl(null);
 		realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
 		realName.setExamineName(null);
 		realName.setExamineTime(null);
 		return ServerResponse.createBySuccess(realName);
 		}
-		return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
+		return ServerResponse.createByErrorMessage(ResponseMessage.meiyouchaxundaoshimingxinxi.getMessage());
 	}
 	
 	//重新实名updateRealName
@@ -316,12 +311,12 @@ public class RealNameServiceImpl implements RealNameService{
 	public ServerResponse<String> updateRealName(User user,String loginToken, Map<String, Object> params) {
 		
 		
-		String isbusiness_string = params.get("isbusiness").toString().trim() ;
+		String isbusinessString = params.get("isbusiness").toString().trim() ;
 //		if(!isbusiness_string.equals("true") && !isbusiness_string.equals("false") ) {
 //		return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuLeiXingCuoWu.getMessage());
 //		}
-		int isbusiness=Integer.valueOf(isbusiness_string);
-		long user_id=user.getId();
+		int isbusiness=Integer.valueOf(isbusinessString);
+		long userId=user.getId();
 		//校验是否有特殊字符
 		Map<String, Object>  params_map=(Map<String, Object>) params.get("ruleForm");
     	ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params_map);
@@ -329,33 +324,35 @@ public class RealNameServiceImpl implements RealNameService{
 	 	if(serverResponse.getStatus()!=0) {	
 				return serverResponse;			
 			}	
-	 	User currentUser1 = userMapper.selectUserById(user_id);
+	 	User currentUser1 = userMapper.selectUserById(userId);
+	 	if(currentUser1 != null ) {
 	 	if(currentUser1.getIsAuthentication()!=3) {
 	 		log.info("updateRealName   ",currentUser1.getIsAuthentication());
 	 		return	ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
+	 	}}else {
+	 		return	ServerResponse.createByErrorMessage(ResponseMessage.huoquxinxishibai.getMessage());
 	 	}
-	 	String address_detailed =null;
-	    int	provinces_id=0;
-	    int	city_id=0;
-	    int	district_county_id=0;	 	
+	 	String addressDetailed =null;
+	    int	provincesId=0;
+	    int	cityId=0;
+	    int	districtCountyId=0;	 	
 		String contact=null;  //收/送货联系方式
-	    String consignee_name=null; //收/送货人姓名 
+	    String consigneeName=null; //收/送货人姓名 
 	    String email=null; 
 	    String city=null;
 	    Integer eag=0;   //求职年龄
 	    String gender=null; //性别
-	    String licenseUrl=null;
+	   
 	    
 		if(isbusiness==2 || isbusiness==6 ) {
 			//商家的 实名认证
 		   try {
-		 		provinces_id=Integer.valueOf(params_map.get("provinces_id").toString().trim());
-		 		city_id=Integer.valueOf(params_map.get("city_id").toString().trim());
-			    district_county_id=Integer.valueOf(params_map.get("district_county_id").toString().trim());
+		 		provincesId=Integer.valueOf(params_map.get("provincesId").toString().trim());
+		 		cityId=Integer.valueOf(params_map.get("cityId").toString().trim());
+			    districtCountyId=Integer.valueOf(params_map.get("districtCountyId").toString().trim());
 			   //判断省市区id是否正确
-			    if(provinces_id>10000 &&  city_id>10000 && district_county_id>10000) {
-			    	 city=cityMapper.checkeCity(provinces_id,city_id,district_county_id);
-			    	System.out.println( city);
+			    if(provincesId>10000 &&  cityId>10000 && districtCountyId>10000) {
+			    	 city=cityMapper.checkeCity(provincesId,cityId,districtCountyId);
 			    	 if( city==null) {
 		 				return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		 			}
@@ -363,31 +360,9 @@ public class RealNameServiceImpl implements RealNameService{
 		 			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		 		}
 			    		    
-			    //图片
-				List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) params_map.get("licenseUrl"),List.class,Picture.class);
-				int list_size=listObj3.size();
-				//把getUse_status()==1 放到这个集合中
-				List<Picture> listObj4=new ArrayList<Picture>();
-				
-				int getNum=PictureNum.ShiMingRenZheng.getNum();
-				//如果大于3要判断没删除的是否超过总数
-				if(list_size>0) {
-					int count=0;
-					for(int a=0;a<list_size;a++) {
-						if(listObj3.get(a).getUseStatus()==1) {
-							listObj4.add(listObj3.get(a));
-							count+=1;
-						}
-						if(count>getNum) {
-							return ServerResponse.createByErrorMessage("图片数量不能超过 "+getNum+"个");
-						}
-						
-					}}
-				 licenseUrl= params_map.get("licenseUrl").toString().trim() ;
-		 		 
-				 address_detailed = params_map.get("address_detailed").toString().trim() ;
+				 addressDetailed = params_map.get("addressDetailed").toString().trim() ;
 		 		 contact= params_map.get("contact").toString().trim() ;
-		 		 consignee_name=params_map.get("consignee_name").toString().trim() ;
+		 		 consigneeName=params_map.get("consigneeName").toString().trim() ;
 		 		 email=params_map.get("email").toString().trim() ;
 		 		//判断手机号是否合法
 			    	serverResponse=LegalCheck.legalCheckMobilePhone(contact);
@@ -400,68 +375,73 @@ public class RealNameServiceImpl implements RealNameService{
 				 		return ServerResponse.createByErrorMessage(ResponseMessage.gongsimingchengkong.getMessage());
 				 	}
 		 		 //判断必传字段
-		 		 if( address_detailed.length()<101 && address_detailed.length()>0 
-		 				&& consignee_name.length()<13 && consignee_name.length()>1) {
+		 		 if( addressDetailed.length()<101 && addressDetailed.length()>0 
+		 				&& consigneeName.length()<13 && consigneeName.length()>1) {
 		 			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
 		            
 					RealName realName = new RealName();   		
 					realName.setUpdateTime(formatter.format(new Date()));
-					realName.setUserId(user_id);
+					realName.setUserId(userId);
 					
 		 			 if(email!=null) {
 		 				realName.setEmail(email); 
 		 					 }
 		 			 realName.setCompanyName(companyName);
-		 			realName.setAddressDetailed(address_detailed);
-		 			realName.setLicenseUrl(licenseUrl);
+		 			realName.setAddressDetailed(addressDetailed);
 		 			realName.setContact(EncrypDES.encryptPhone(contact));
-		 			realName.setConsigneeName(consignee_name);
-		 			realName.setCityId(city_id);
-		 			realName.setDistrictCountyId(district_county_id);
-		 			realName.setProvincesId(provinces_id);
+		 			realName.setConsigneeName(consigneeName);
+		 			realName.setCityId(cityId);
+		 			realName.setDistrictCountyId(districtCountyId);
+		 			realName.setProvincesId(provincesId);
 		 			realName.setAuthentiCationStatus(1);
 		 			realName.setDetailed(city);
 		 			realName.setUserName(user.getUsername());
 		 			//检查id是否已经存在
-		 			RealName realName1=realNameMapper.getRealName(user_id);
+		 			RealName realName1=realNameMapper.getRealName(userId);
 		 			int resultCount=0;
+		 			
+				
 		 			if(realName1!=null) {
-		 			//不等于null 更新
+		 				//检查图片
+		 				ServerResponse<String> serverResponseString=setPictureUrl((ArrayList<Picture>) params_map.get("licenseUrl"), realName1.getLicenseUrl());
+		 				   if(serverResponseString.getStatus()!=0) {
+		 					  return  serverResponseString;
+		 				   }
+		 				realName.setLicenseUrl(serverResponseString.getMsg());
 		 				realName.setId(realName1.getId());
 		 				 resultCount=  realNameMapper.updateRealName(realName);
-		 				 System.out.println(resultCount);
-			     			if(resultCount == 0){
-			     				return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage()); 
-			                 }		
-		 			}else {
-		 			//等于null 重新插入		
-		 				//添加
-			 			serverResponse=SetBean.setRole(user.getRole());
-			 			//检查是否有非法输入
-			 		 	if(serverResponse.getStatus()!=0) {	
-			 					return serverResponse;			
-			 			}	
-			 		 	realName.setUserType(serverResponse.getMsg());
-		 			 resultCount=  realNameMapper.newRealName(realName);
-	     			if(resultCount == 0){
-	     				return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage()); 
-	                 }}
 		 			
+		 				if(resultCount == 0){
+		     				return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage()); 
+		                 }
+		 				
+		 				//删除图片
+							try {
+								List<Picture> listObj4	= JsonUtil.list2Obj((ArrayList<Picture>)params.get("licenseUrl"),List.class,Picture.class);
+						        for(int a=0;a<listObj4.size();a++) {
+						        Picture	picture=listObj4.get(a);
+						        	if(picture.getUseStatus()==2) {
+											   FileControl.deleteFile(path+picture.getUserName());
+											   pictureMapper.updatePicture(picture.getId());
+										
+						        	}
+						        }
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+						
+		 				
+		 				
+		 			}else {
+		 				return	ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());	
+	     			}
 		 			user.setIsAuthentication(1);
 	     			resultCount= userMapper.update_newRealName(user);
 	     			if(resultCount == 0){
 	     				return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage()); 
 	                 }
-	     			if(listObj4.size()>0) {
-	     		 		for(int a=0;a<listObj4.size();a++) {
-	     		 			Picture picture=listObj4.get(a);
-	     		 			picture.setTocken(loginToken);
-	     		 			picture.setUserId(user_id);
-	     		 			
-	     		 			ipics.updatePictureUse(picture);
-	     		 		}
-	     		 	}
-	     			User currentUser = userMapper.selectUserById(user_id);
+	
+	     			User currentUser = userMapper.selectUserById(userId);
                     currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
                     currentUser.setPassword(null);
                     return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
@@ -474,13 +454,12 @@ public class RealNameServiceImpl implements RealNameService{
 		}else if(isbusiness==11) {
 			//找工作
 		   try {
-		 		provinces_id=Integer.valueOf(params_map.get("provinces_id").toString().trim());
-		 		city_id=Integer.valueOf(params_map.get("city_id").toString().trim());
-			    district_county_id=Integer.valueOf(params_map.get("district_county_id").toString().trim());
+		 		provincesId=Integer.valueOf(params_map.get("provincesId").toString().trim());
+		 		cityId=Integer.valueOf(params_map.get("cityId").toString().trim());
+			    districtCountyId=Integer.valueOf(params_map.get("districtCountyId").toString().trim());
 			   //判断省市区id是否正确
-			    if(provinces_id>10000 &&  city_id>10000 && district_county_id>10000) {
-			    	 city=cityMapper.checkeCity(provinces_id,city_id,district_county_id);
-			    	System.out.println( city);
+			    if(provincesId>10000 &&  cityId>10000 && districtCountyId>10000) {
+			    	 city=cityMapper.checkeCity(provincesId,cityId,districtCountyId);
 			    	 if( city==null) {
 		 				return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		 			}
@@ -499,9 +478,9 @@ public class RealNameServiceImpl implements RealNameService{
 			    	 return	ServerResponse.createByErrorMessage(ResponseMessage.XinBieYouWu.getMessage()); 
 			     }
 		 		 
-				 address_detailed = params_map.get("address_detailed").toString().trim() ;
+				 addressDetailed = params_map.get("addressDetailed").toString().trim() ;
 		 		 contact= params_map.get("contact").toString().trim() ;
-		 		 consignee_name=params_map.get("consignee_name").toString().trim() ;
+		 		 consigneeName=params_map.get("consigneeName").toString().trim() ;
 		 		 email=params_map.get("email").toString().trim() ;
 		 		//判断手机号是否合法
 			    	serverResponse=LegalCheck.legalCheckMobilePhone(contact);
@@ -509,31 +488,31 @@ public class RealNameServiceImpl implements RealNameService{
 						return serverResponse;			
 					}
 		 		 //判断必传字段
-		 		 if( address_detailed.length()<101 && address_detailed.length()>0 
-		 				&& consignee_name.length()<13 && consignee_name.length()>1) {
+		 		 if( addressDetailed.length()<101 && addressDetailed.length()>0 
+		 				&& consigneeName.length()<13 && consigneeName.length()>1) {
 		 			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
 		            
 					RealName realName = new RealName();   		
 					realName.setUpdateTime(formatter.format(new Date()));
-					realName.setUserId(user_id);
+					realName.setUserId(userId);
 					
 		 			 if(email!=null) {
 		 				realName.setEmail(email); 
 		 					 }
-		 			realName.setAddressDetailed(address_detailed);
+		 			realName.setAddressDetailed(addressDetailed);
 		 			
 		 			realName.setContact(EncrypDES.encryptPhone(contact));
-		 			realName.setConsigneeName(consignee_name);
-		 			realName.setCityId(city_id);
-		 			realName.setDistrictCountyId(district_county_id);
-		 			realName.setProvincesId(provinces_id);
+		 			realName.setConsigneeName(consigneeName);
+		 			realName.setCityId(cityId);
+		 			realName.setDistrictCountyId(districtCountyId);
+		 			realName.setProvincesId(provincesId);
 		 			realName.setAuthentiCationStatus(1);
 		 			realName.setDetailed(city);
 		 			realName.setEag(eag);
 		 			realName.setGender(gender);
 		 			realName.setUserName(user.getUsername());
 		 			//检查id是否已经存在
-		 			RealName realName1=realNameMapper.getRealName(user_id);
+		 			RealName realName1=realNameMapper.getRealName(userId);
 		 			int resultCount=0;
 		 			if(realName1!=null) {
 		 			//不等于null 更新
@@ -543,19 +522,8 @@ public class RealNameServiceImpl implements RealNameService{
 			     				return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage()); 
 			                 }		
 		 			}else {
-		 			//等于null 重新插入		
-		 				//添加
-			 			serverResponse=SetBean.setRole(user.getRole());
-			 			//检查是否有非法输入
-			 		 	if(serverResponse.getStatus()!=0) {	
-			 					return serverResponse;			
-			 			}	
-			 		 	realName.setUserType(serverResponse.getMsg());
-		 				
-		 			 resultCount=  realNameMapper.newRealName(realName);
-	     			if(resultCount == 0){
-	     				return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage()); 
-	                 }}
+		 				return	ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());	
+		 			}
 		 			
 		 			user.setIsAuthentication(1);
 	     			resultCount= userMapper.update_newRealName(user);
@@ -563,7 +531,7 @@ public class RealNameServiceImpl implements RealNameService{
 	     				return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage()); 
 	                 }
 	     			
-	     			User currentUser = userMapper.selectUserById(user_id);
+	     			User currentUser = userMapper.selectUserById(userId);
                     currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
                     currentUser.setPassword(null);
                     return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
@@ -638,7 +606,7 @@ public class RealNameServiceImpl implements RealNameService{
 		return ServerResponse.createBySuccess(realName_pagePage);
 	}
 
-    //实名
+    //实名审核和添加实名
 	@Override
 	public ServerResponse<Object> examineRealName(User user, Map<String, Object> params,String loginToken) {
 	   String isArtificialString=params.get("isArtificial").toString().trim();	
@@ -646,7 +614,7 @@ public class RealNameServiceImpl implements RealNameService{
 			return	ServerResponse.createByErrorMessage(ResponseMessage.JueSeBuHeFa.getMessage());
 			}
 	   int isArtificial=Integer.valueOf(isArtificialString);
-		if(isArtificial==1) {
+		if(isArtificial==1) { //审批
 		String	user_beishenhe =params.get("userId").toString().trim();	
 		if(user_beishenhe==null ||user_beishenhe.contentEquals("")) {
 			return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingBuKeYong.getMessage());
@@ -701,7 +669,7 @@ public class RealNameServiceImpl implements RealNameService{
 		user_shenhe.setPassword(null);
         return ServerResponse.createBySuccess(user_shenhe);
 	   }
-	else if(isArtificial==2) {
+	else if(isArtificial==2) {  //添加
 		String username=params.get("userName").toString().trim();	
 		   if(username==null ||username.contentEquals("")) {
 				return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuMingBuKeYong.getMessage());
@@ -759,28 +727,43 @@ public class RealNameServiceImpl implements RealNameService{
 				     if(!gender.equals("男") && !gender.equals("女") ) {
 				    	 return	ServerResponse.createByErrorMessage(ResponseMessage.XinBieYouWu.getMessage()); 
 				     }	 
-				    //图片
-					List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) params.get("licenseUrl"),List.class,Picture.class);
-					int list_size=listObj3.size();
-					//把getUse_status()==1 放到这个集合中
-					List<Picture> listObj4=new ArrayList<Picture>();
-					
-					int getNum=PictureNum.ShiMingRenZheng.getNum();
-					//如果大于3要判断没删除的是否超过总数
-					if(list_size>0) {
-						int count=0;
-						for(int a=0;a<list_size;a++) {
-							if(listObj3.get(a).getUseStatus()==1) {
-								listObj4.add(listObj3.get(a));
-								count+=1;
+				   //图片
+						List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) params.get("licenseUrl"),List.class,Picture.class);
+						int list_size=listObj3.size();
+						//把getUse_status()==1 放到这个集合中
+						List<Picture> listObj4=new ArrayList<Picture>();
+						int getNum=PictureNum.ShiMingRenZheng.getNum();
+						
+						if(list_size>0) {
+							int count=0;
+							for(int a=0;a<list_size;a++) {
+								Picture picture=listObj3.get(a);
+								if(listObj3.get(a).getUseStatus()==1) {
+									   picture.setUserId(user2.getId());
+									   picture.setUseStatus(3);
+									
+									Picture picture1=pictureMapper.selectPictureBYid(picture.getId());
+									if(!picture.getPictureUrl().equals(picture1.getPictureUrl())) {
+										return ServerResponse.createByErrorMessage("图片地址不一致");
+									}
+									pictureMapper.updatePictureAdmin(picture);
+									listObj4.add(picture);
+									count+=1;
+								}
+								}
+								if(count>getNum) {
+									//判断没有删除的图片是否大于规定
+									return ServerResponse.createByErrorMessage("图片数量不能超过 "+getNum+"个");
+								}
+								if(count==0) {
+									return ServerResponse.createByErrorMessage("图片不能为空");
+								}
+								
+							}else {
+								return ServerResponse.createByErrorMessage("图片不能为空");
 							}
-							if(count>getNum) {
-								return ServerResponse.createByErrorMessage("图片数量不能超过 "+getNum+"个");
-							}
-							
-						}}
-					
-					 licenseUrl= params.get("licenseUrl").toString().trim() ;
+						 licenseUrl=JsonUtil.obj2StringPretty(listObj4);
+
 					 address_detailed = params.get("address_detailed").toString().trim() ;
 			 		 contact= params.get("contact").toString().trim() ;
 			 		 email=params.get("email").toString().trim() ;
@@ -834,15 +817,6 @@ public class RealNameServiceImpl implements RealNameService{
 		     			if(resultCount == 0){
 		     				return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage()); 
 		                 }
-		     			if(listObj4.size()>0) {
-		     		 		for(int a=0;a<listObj4.size();a++) {
-		     		 			Picture picture=listObj4.get(a);
-		     		 			picture.setTocken(loginToken);
-		     		 			picture.setUserId(user.getId());
-		     		 			
-		     		 			ipics.updatePictureUse(picture);
-		     		 		}
-		     		 	}
 		     			user2.setPassword(null);
 		     			user2.setMobilePhone(mobilePhone);
 		     			 return ServerResponse.createBySuccess(user2);
@@ -856,5 +830,48 @@ public class RealNameServiceImpl implements RealNameService{
 	return	ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
     }
 	
+	//编辑时检查图片并重新赋值
+	public ServerResponse<String> setPictureUrl(Object object,String PictureUrl){
+		 //前端传入
+		List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) object,List.class,Picture.class);
+	    //数据库查询
+		List<Picture> listObj4	= JsonUtil.string2Obj(PictureUrl,List.class,Picture.class);
+		if(listObj3.size()==0 || listObj4.size()==0) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
+		}
+		List<Picture> listObjCun=new ArrayList<Picture>();
 
+		//处理编辑后
+		for(int a3=0;a3<listObj3.size();a3++) {
+			Picture picture=listObj3.get(a3);
+			long id3=picture.getId();
+			int useStatus=picture.getUseStatus();
+			if(useStatus==1) {
+				//1上传更新为3使用 
+				pictureMapper.updatePictureUse(id3);
+				picture.setUseStatus(3);
+				listObjCun.add(picture);
+			}else if(useStatus==3){	
+				
+				boolean  fanduanshifouweiyijingchunli=false;
+			
+					
+				for(int a4=0;a4<listObj4.size();a4++) {
+					if(id3==listObj4.get(a4).getId()) {
+						listObjCun.add(picture);
+						fanduanshifouweiyijingchunli=true;
+						break;
+					}	
+				}
+				if(fanduanshifouweiyijingchunli==false) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.benditupianbucunzai.getMessage());	
+				}			
+			}
+		}
+		if(listObjCun.size()>0) {
+			return ServerResponse.createBySuccessMessage(JsonUtil.obj2StringPretty(listObjCun));
+		}	
+		return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
+		
+	}
 }

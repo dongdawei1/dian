@@ -47,8 +47,7 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 	@Autowired
 	private PictureMapper pictureMapper;
 	
-	   @Autowired
-	    private IPictureService ipics;
+	  
 	    private  String path="E:/img/";
 	//创建
 	public ServerResponse<String> create_menuAndRenovationAndPestControl(User user, Map<String, Object> params) {
@@ -133,12 +132,13 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 				if(picture.getUseStatus()==1) {
 				   picture.setUserId(userId);
 				   picture.setUseStatus(3);
-					listObj4.add(picture);
+					
 					Picture picture1=pictureMapper.selectPictureBYid(picture.getId());
 					if(!picture.getPictureUrl().equals(picture1.getPictureUrl())) {
 						return ServerResponse.createByErrorMessage("图片地址不一致");
 					}
 					pictureMapper.updatePictureUse(picture.getId());
+					listObj4.add(picture);
 					count+=1;				
 				}}
 				if(count>getNum) {
@@ -415,6 +415,24 @@ public ServerResponse<String> operation_usermrp(User user, Map<String, Object> p
 			 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(menuAndRenovationAndPestControl);
 			 	if((boolean)checknullMap.get("result")==true && ((String)checknullMap.get("message")).equals("验证通过")) {
 			 		result=menuAndRenovationAndPestControlMapper.update_menuAndRenovationAndPestControl(menuAndRenovationAndPestControl);
+			 		
+			 		if(result>0) {
+						try {
+							List<Picture> listObj4	= JsonUtil.list2Obj((ArrayList<Picture>)params.get("pictureUrl"),List.class,Picture.class);
+					        for(int a=0;a<listObj4.size();a++) {
+					        Picture	picture=listObj4.get(a);
+					        	if(picture.getUseStatus()==2) {
+										   FileControl.deleteFile(path+picture.getUserName());
+										   pictureMapper.updatePicture(picture.getId());
+									
+					        	}
+					        }
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+			 		
+			 		
 			 	}else if((boolean)checknullMap.get("result")==false) {
 			 		return ServerResponse.createByErrorMessage((String)checknullMap.get("message"));
 			 	}else {
@@ -456,23 +474,7 @@ public ServerResponse<String> setPictureUrl(Object object,String PictureUrl){
 		return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
 	}
 	List<Picture> listObjCun=new ArrayList<Picture>();
-	//处理编辑前
-	for(int a4=0;a4<listObj4.size();a4++) {
-		long id4=listObj4.get(a4).getId();
-		for(int a3=0;a3<listObj3.size();a3++) {
-			Picture picture=listObj3.get(a3);
-			if(id4==picture.getId()) {
-				int useStatus=picture.getUseStatus();
-				if(useStatus==3) {
-					listObjCun.add(picture);
-				}else {
-					   FileControl.deleteFile(path+picture.getUserName());
-				       ipics.updatePicture(id4);
-				}
-				
-			}	
-		}
-	}
+
 	//处理编辑后
 	for(int a3=0;a3<listObj3.size();a3++) {
 		Picture picture=listObj3.get(a3);
@@ -480,13 +482,24 @@ public ServerResponse<String> setPictureUrl(Object object,String PictureUrl){
 		int useStatus=picture.getUseStatus();
 		if(useStatus==1) {
 			//1上传更新为3使用 
-			ipics.updatePictureUse(id3);
+			pictureMapper.updatePictureUse(id3);
 			picture.setUseStatus(3);
 			listObjCun.add(picture);
-		}else if(useStatus==2){
-			//2为删除
-			   FileControl.deleteFile(path+picture.getUserName());
-		       ipics.updatePicture(id3);
+		}else if(useStatus==3){	
+			
+			boolean  fanduanshifouweiyijingchunli=false;
+		
+				
+			for(int a4=0;a4<listObj4.size();a4++) {
+				if(id3==listObj4.get(a4).getId()) {
+					listObjCun.add(picture);
+					fanduanshifouweiyijingchunli=true;
+					break;
+				}	
+			}
+			if(fanduanshifouweiyijingchunli==false) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.benditupianbucunzai.getMessage());	
+			}			
 		}
 	}
 	if(listObjCun.size()>0) {

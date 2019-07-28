@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dian.mmall.dao.PictureMapper">
+   <mapper namespace="com.dian.mmall.dao.PictureMapper">
   
   
     <select id="selectPicture" resultType="com.dian.mmall.pojo.tupian.Picture"  >
@@ -24,9 +24,7 @@
         )
     </insert>
     
-    
  
-    
     <update id="updatePicture"  >
     update picture
     set useStatus = 2  where  id=#{id}
@@ -35,5 +33,10 @@
      <update id="updatePictureUse"  >
     update picture
     set useStatus = 3   where id=#{id}
+  </update>
+  
+      <update id="updatePictureAdmin"  >
+    update picture
+    set useStatus = 3 ,userId=#{userId}   where id=#{id}
   </update>
 </mapper>
