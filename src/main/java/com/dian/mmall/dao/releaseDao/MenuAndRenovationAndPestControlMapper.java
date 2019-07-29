@@ -33,4 +33,12 @@ public interface MenuAndRenovationAndPestControlMapper {
 		MenuAndRenovationAndPestControl get_usermrp_id(long userId, long id);
         //编辑
 		int update_menuAndRenovationAndPestControl(MenuAndRenovationAndPestControl menuAndRenovationAndPestControl);
+        //根据标题模糊搜索总数
+		long getmrpListNo(String releaseTitle, int releaseType, String detailed);
+		//根据标题模糊搜索列表
+		List<MenuAndRenovationAndPestControl> getmrpList(int pageLength, int pageSize, String releaseTitle, int releaseType, String detailed);
+		//根据实名区域查找服务标题
+		List<String> getReleaseTitleList(Integer releaseType, String detailed, String releaseTitle);
+
+
 }

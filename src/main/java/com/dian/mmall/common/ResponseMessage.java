@@ -85,7 +85,8 @@ public enum ResponseMessage {
 	tupianbunnegkong("图片不能为空"),
 	meiyouchaxundaoshimingxinxi("没有查询到实名信息"),
 	chaxunshimingshixishibai("查询实名信息失败"),
-	benditupianbucunzai("本地图片不存在");
+	benditupianbucunzai("本地图片不存在"),
+	chaxunleixingbunnegweikong("查询类型不能为空");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

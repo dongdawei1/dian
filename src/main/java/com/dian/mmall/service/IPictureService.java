@@ -9,7 +9,9 @@ public interface IPictureService {
 	int createPicture(Picture picture1);
    //更新前检查是否有
 	Picture selectPicture(Picture picture1);
+	//更新为删除
 	void updatePicture(long id);
+	//更新为使用
 	void updatePictureUse(long id);
 	Picture selectPictureBYid(long id);
 

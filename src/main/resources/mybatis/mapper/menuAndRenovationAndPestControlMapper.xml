@@ -116,5 +116,25 @@
      where welfareStatus!=3 and userId=#{userId} and id=#{id}
     </update>
      
+     <!-- 公开列表分页总数 -->  
+     
+        <select id="getmrpListNo"  resultType="long">
+        select count(*) from menuandrenovationandpestcontrol where welfareStatus=1  and  releaseType=#{releaseType} and detailed like #{detailed}
+       <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle =#{releaseTitle}   </if>  
+    </select> 
+     
+     
+         <select id="getmrpList"  resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
+        select id,servicFrequenc,releaseTitle,pictureUrl,startPrice,serviceDetailed from menuandrenovationandpestcontrol where welfareStatus=1   and  releaseType=#{releaseType}
+       and detailed like #{detailed}
+       <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle = #{releaseTitle}   </if>  
+       order by updateTime desc
+        limit #{pageLength}, #{pageSize}
+    </select> 
+    
+     <select id="getReleaseTitleList"  resultType="String">
+        select DISTINCT releaseTitle from menuandrenovationandpestcontrol where welfareStatus=1   and  releaseType=#{releaseType} and detailed like #{detailed}
+        <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>         
+    </select> 
      
 </mapper>

@@ -25,6 +25,7 @@ import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.service.IPictureService;
+import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.service.release.MenuAndRenovationAndPestControlService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
@@ -46,7 +47,8 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 	
 	@Autowired
 	private PictureMapper pictureMapper;
-	
+	   @Autowired
+	   private GetPublishingsService getPublishingsService;
 	  
 	    private  String path="E:/img/";
 	//创建
@@ -507,6 +509,118 @@ public ServerResponse<String> setPictureUrl(Object object,String PictureUrl){
 	}	
 	return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
 	
+}
+//公开列表
+@Override
+public ServerResponse<Object> getmrpList(Map<String, Object> params) {
+	String currentPage_string= params.get("currentPage").toString().trim() ;    
+	String pageSize_string= params.get("pageSize").toString().trim() ;    
+	int currentPage=0;
+	int  pageSize=0;
+ 	
+ 	if(currentPage_string!=null && currentPage_string!="") {
+ 		currentPage=Integer.parseInt(currentPage_string);
+ 		if(currentPage<=0) {
+ 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+ 		}
+ 		
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+	    }
+ 	
+ 	if(pageSize_string!=null && pageSize_string!="") {
+ 		pageSize=Integer.parseInt(pageSize_string);
+ 		if(pageSize<=0) {
+ 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+ 		}
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+	    }
+	
+    
+ 	
+ 	String releaseTitle= params.get("releaseTitle").toString().trim();
+    
+	String releaseTypeString = params.get("releaseType").toString().trim();
+ 	Integer releaseType=null;
+ 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
+ 		releaseType =	Integer.valueOf(releaseTypeString);
+ 		if(releaseType!=13 &&releaseType!=17 &&releaseType!=19) {
+ 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
+ 		}
+ 	}else {
+ 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());	
+ 	}
+ 	
+ 	
+ 	String	provinces_id=params.get("provincesId").toString().trim();
+ 	String	city_id=params.get("cityId").toString().trim();
+	String   district_county_id=params.get("districtCountyId").toString().trim();
+	String detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,district_county_id)+"%";
+ 	
+ 	
+ 	Page<MenuAndRenovationAndPestControl> releaseWelfare_pagePage=new Page<MenuAndRenovationAndPestControl>();
+	
+ 	long zongtiaoshu=menuAndRenovationAndPestControlMapper.getmrpListNo(releaseTitle,releaseType,detailed);
+	
+ 	if(zongtiaoshu==0) {
+ 		detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,null)+"%";
+ 		zongtiaoshu=menuAndRenovationAndPestControlMapper.getmrpListNo(releaseTitle,releaseType,detailed);
+ 	}
+ 	
+	releaseWelfare_pagePage.setTotalno(zongtiaoshu);
+	releaseWelfare_pagePage.setPageSize(pageSize);
+	releaseWelfare_pagePage.setCurrentPage(currentPage); //当前页
+   //查询list
+ List<MenuAndRenovationAndPestControl>	mrpList=menuAndRenovationAndPestControlMapper.getmrpList((currentPage-1)*pageSize,pageSize,releaseTitle, releaseType,detailed);
+ List<MenuAndRenovationAndPestControl>	setMrpList=new ArrayList<MenuAndRenovationAndPestControl>();
+ for(int i=0;i<mrpList.size();i++) {
+		MenuAndRenovationAndPestControl mrp=mrpList.get(i);
+		List<Picture> listObj3	= JsonUtil.string2Obj(mrp.getPictureUrl(),List.class,Picture.class);
+		Picture picture = listObj3.get(0);
+		picture.setId(-1);
+		picture.setUserId(-1);
+		picture.setTocken(null);
+		picture.setPictureName(null);
+		mrp.setPictureUrl(JsonUtil.obj2String(picture));
+		setMrpList.add(mrp);
+	}
+ 
+ releaseWelfare_pagePage.setDatas(setMrpList);
+	return ServerResponse.createBySuccess(releaseWelfare_pagePage);
+}
+@Override
+public ServerResponse<Object> getReleaseTitleList(Map<String, Object> params) {
+	String	provinces_id=params.get("provincesId").toString().trim();
+ 	String	city_id=params.get("cityId").toString().trim();
+	String   district_county_id=params.get("districtCountyId").toString().trim();
+	String detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,district_county_id)+"%";
+	
+	String releaseTitle= params.get("releaseTitle").toString().trim();
+	
+	if(releaseTitle!=null && !releaseTitle.equals("")) {
+		releaseTitle="%"+releaseTitle+"%";
+	}
+	
+	
+	String releaseTypeString = params.get("releaseType").toString().trim();
+ 	Integer releaseType=null;
+ 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
+ 		releaseType =	Integer.valueOf(releaseTypeString);
+ 		if(releaseType!=13 &&releaseType!=17 &&releaseType!=19) {
+ 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
+ 		}
+ 	}else {
+ 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());	
+ 	}
+	
+      List<String> releaseTitleList=	menuAndRenovationAndPestControlMapper.getReleaseTitleList(releaseType,detailed,releaseTitle);
+	if(releaseTitleList.size()==0) {
+		detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,null)+"%";
+		releaseTitleList=	menuAndRenovationAndPestControlMapper.getReleaseTitleList(releaseType,detailed,releaseTitle);
+	}
+      
+      return ServerResponse.createBySuccess(releaseTitleList); 
 }
 
 }

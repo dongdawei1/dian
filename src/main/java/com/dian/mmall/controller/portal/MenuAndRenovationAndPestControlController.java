@@ -1,5 +1,6 @@
 package com.dian.mmall.controller.portal;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -103,8 +104,62 @@ public class MenuAndRenovationAndPestControlController {
     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
     	}
      	User user = (User) serverResponse.getData();   
+     	Map<String, Object> params= new HashMap<String, Object>();
+     	params.put("StringPath", "menuAndRenovationAndPestControl");
+    	//检查权限
+     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
        return menuAndRenovationAndPestControlService.get_usermrp_id(user,id);
     
     }
 
+    
+    //公开展示灭虫装修等列表
+    
+    @RequestMapping(value = "getmrpList",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> getmrpList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData(); 
+     	//检查权限
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+ 	
+    	return menuAndRenovationAndPestControlService.getmrpList(params);
+    	
+    }
+    
+//根据类型获取全部标题
+	
+    @RequestMapping(value = "getReleaseTitleList",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> getReleaseTitleList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();   
+    
+    	//检查权限
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+     	
+       return menuAndRenovationAndPestControlService.getReleaseTitleList(params);
+    
+    }
+    
+    
+    
 }
