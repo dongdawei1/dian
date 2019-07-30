@@ -123,7 +123,7 @@
        <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle =#{releaseTitle}   </if>  
     </select> 
      
-     
+      <!-- 公开列表分页概览 -->
          <select id="getmrpList"  resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
         select id,servicFrequenc,releaseTitle,pictureUrl,startPrice,serviceDetailed from menuandrenovationandpestcontrol where welfareStatus=1   and  releaseType=#{releaseType}
        and detailed like #{detailed}
@@ -131,10 +131,20 @@
        order by updateTime desc
         limit #{pageLength}, #{pageSize}
     </select> 
-    
+     <!-- 查看该实名城市下发布过服务的标题 -->
      <select id="getReleaseTitleList"  resultType="String">
         select DISTINCT releaseTitle from menuandrenovationandpestcontrol where welfareStatus=1   and  releaseType=#{releaseType} and detailed like #{detailed}
         <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>         
     </select> 
+      <!-- 查看详情 -->
+       <select id="getMrpDetails"  resultType="String">
+        select id,evaluateid,servicFrequenc,releaseType,
+        releaseTitle,serviceIntroduction,remarks,
+        pictureUrl,startPrice,detailed,addressDetailed,
+        contact,consigneeName,createTime,serviceDetailed,companyName      
+         from menuandrenovationandpestcontrol where welfareStatus=1   and  id=#{id}
+        
+    </select> 
+     
      
 </mapper>

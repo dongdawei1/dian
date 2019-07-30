@@ -34,6 +34,7 @@ import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
+import com.dian.mmall.util.PictureUtil;
 import com.dian.mmall.util.SetBean;
 
 import lombok.extern.slf4j.Slf4j;
@@ -578,11 +579,7 @@ public ServerResponse<Object> getmrpList(Map<String, Object> params) {
 		MenuAndRenovationAndPestControl mrp=mrpList.get(i);
 		List<Picture> listObj3	= JsonUtil.string2Obj(mrp.getPictureUrl(),List.class,Picture.class);
 		Picture picture = listObj3.get(0);
-		picture.setId(-1);
-		picture.setUserId(-1);
-		picture.setTocken(null);
-		picture.setPictureName(null);
-		mrp.setPictureUrl(JsonUtil.obj2String(picture));
+		mrp.setPictureUrl(picture.getPictureUrl());
 		setMrpList.add(mrp);
 	}
  
@@ -621,6 +618,22 @@ public ServerResponse<Object> getReleaseTitleList(Map<String, Object> params) {
 	}
       
       return ServerResponse.createBySuccess(releaseTitleList); 
+}
+//公开根据id获取发布
+@Override
+public ServerResponse<Object> getMrpDetails(long id) {
+    if(id<=0) {
+   	 return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());	
+   }
+	MenuAndRenovationAndPestControl menuAndRenovationAndPestControl=menuAndRenovationAndPestControlMapper.getMrpDetails( id);
+	if(menuAndRenovationAndPestControl==null) {
+		 return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());	
+	}
+	menuAndRenovationAndPestControl.setContact(EncrypDES.decryptPhone(menuAndRenovationAndPestControl.getContact()));
+	//处理图片
+	menuAndRenovationAndPestControl.setPictureUrl(PictureUtil.listToString(menuAndRenovationAndPestControl.getPictureUrl()));
+	
+	return ServerResponse.createBySuccess(menuAndRenovationAndPestControl);
 }
 
 }

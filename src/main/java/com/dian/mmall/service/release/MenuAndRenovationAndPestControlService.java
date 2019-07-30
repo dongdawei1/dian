@@ -20,6 +20,8 @@ public interface MenuAndRenovationAndPestControlService {
 	ServerResponse<Object> getmrpList(Map<String, Object> params);
    //根据类型获取标题
 	ServerResponse<Object> getReleaseTitleList(Map<String, Object> params);
+	//公开查看详情
+	ServerResponse<Object> getMrpDetails(long id);
 	
 
 }

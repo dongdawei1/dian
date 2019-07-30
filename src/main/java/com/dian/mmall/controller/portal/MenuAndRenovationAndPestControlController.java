@@ -162,4 +162,26 @@ public class MenuAndRenovationAndPestControlController {
     
     
     
+	//商户根据id获取详细编辑
+	
+    @RequestMapping(value = "getMrpDetails",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> getMrpDetails(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();   
+     	Map<String, Object> params= new HashMap<String, Object>();
+     	params.put("StringPath", "menuAndRenovationAndPestControl");
+    	//检查权限
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+       return menuAndRenovationAndPestControlService.getMrpDetails(id);
+    
+    }
+    
 }

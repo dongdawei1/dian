@@ -40,5 +40,7 @@ public interface MenuAndRenovationAndPestControlMapper {
 		//根据实名区域查找服务标题
 		List<String> getReleaseTitleList(Integer releaseType, String detailed, String releaseTitle);
 
+		MenuAndRenovationAndPestControl getMrpDetails(long id);
+
 
 }
