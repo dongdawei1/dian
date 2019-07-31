@@ -137,7 +137,7 @@
         <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>         
     </select> 
       <!-- 查看详情 -->
-       <select id="getMrpDetails"  resultType="String">
+       <select id="getMrpDetails"  resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
         select id,evaluateid,servicFrequenc,releaseType,
         releaseTitle,serviceIntroduction,remarks,
         pictureUrl,startPrice,detailed,addressDetailed,

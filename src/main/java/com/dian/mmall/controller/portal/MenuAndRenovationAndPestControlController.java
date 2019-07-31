@@ -37,6 +37,7 @@ public class MenuAndRenovationAndPestControlController {
     	}
      	User user = (User) serverResponse.getData();
     	//检查权限
+     	params.put("StringPath", "menuAndRenovationAndPestControl");
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
     	if(serverResponse1.getStatus()!=0) {
     		return serverResponse1;
@@ -61,6 +62,7 @@ public class MenuAndRenovationAndPestControlController {
     	}
      	User user = (User) serverResponse.getData();
     	//检查权限
+     	params.put("StringPath", "menuAndRenovationAndPestControl");
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
     	if(serverResponse1.getStatus()!=0) {
     		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
@@ -84,6 +86,7 @@ public class MenuAndRenovationAndPestControlController {
     	}
      	User user = (User) serverResponse.getData();
     	//检查权限
+     	params.put("StringPath", "menuAndRenovationAndPestControl");
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
     	if(serverResponse1.getStatus()!=0) {
     		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
@@ -129,6 +132,7 @@ public class MenuAndRenovationAndPestControlController {
     	}
      	User user = (User) serverResponse.getData(); 
      	//检查权限
+     	params.put("StringPath", "menuAndRenovationAndPestControl");
      	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
     	if(serverResponse1.getStatus()!=0) {
     		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
@@ -149,7 +153,7 @@ public class MenuAndRenovationAndPestControlController {
     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
     	}
      	User user = (User) serverResponse.getData();   
-    
+     	params.put("StringPath", "menuAndRenovationAndPestControl");
     	//检查权限
      	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
     	if(serverResponse1.getStatus()!=0) {
@@ -162,7 +166,7 @@ public class MenuAndRenovationAndPestControlController {
     
     
     
-	//商户根据id获取详细编辑
+	//公开获取id
 	
     @RequestMapping(value = "getMrpDetails",method = RequestMethod.GET)
     @ResponseBody

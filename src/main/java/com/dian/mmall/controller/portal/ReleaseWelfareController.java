@@ -97,7 +97,7 @@ public class ReleaseWelfareController {
 	    	}
 	     	User user = (User) serverResponse.getData();
 	    	//检查权限
-	    
+	     	params.put("StringPath", recruitWorkers);
 	     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
 	    	if(serverResponse1.getStatus()!=0) {
 	    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
