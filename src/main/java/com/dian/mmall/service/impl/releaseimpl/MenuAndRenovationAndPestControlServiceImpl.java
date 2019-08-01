@@ -52,6 +52,9 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 	   private GetPublishingsService getPublishingsService;
 	  
 	    private  String path="E:/img/";
+	    
+		@Autowired 
+		private EvaluateMapper evaluateMapper;
 	//创建
 	public ServerResponse<String> create_menuAndRenovationAndPestControl(User user, Map<String, Object> params) {
 	
@@ -632,8 +635,15 @@ public ServerResponse<Object> getMrpDetails(long id) {
 	menuAndRenovationAndPestControl.setContact(EncrypDES.decryptPhone(menuAndRenovationAndPestControl.getContact()));
 	//处理图片
 	menuAndRenovationAndPestControl.setPictureUrl(PictureUtil.listToString(menuAndRenovationAndPestControl.getPictureUrl()));
-	
-	return ServerResponse.createBySuccess(menuAndRenovationAndPestControl);
+	Map<String,Object> map=new HashMap<String, Object>();
+	Evaluate evaluate=new Evaluate();
+	if(menuAndRenovationAndPestControl.getEvaluateid()!=0) {
+		evaluate=evaluateMapper.selectEvvaluateById(menuAndRenovationAndPestControl.getEvaluateid());
+		
+	}
+	map.put("evaluate",evaluate);
+	map.put("mrp",menuAndRenovationAndPestControl);	
+	return ServerResponse.createBySuccess(map);
 }
 
 }

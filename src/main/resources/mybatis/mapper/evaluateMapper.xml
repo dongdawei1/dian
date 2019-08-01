@@ -9,21 +9,9 @@
         select count(*) from menuandrenovationandpestcontrol where welfareStatus!=3  and releaseType=#{releaseType} and userId =#{userId}
     </select>
          
-          <!--创建用户成功返回非0  -->
-     <insert id="create_evaluate"  >
-        insert into menuandrenovationandpestcontrol (
-        userId,releaseType,updateTime,createTime,pictureUrl,contact,
-        consigneeName,companyName,detailed,addressDetailed,userType,describeOne,serviceDetailed,
-        startPrice,remarks,
-        serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus
-        ) values (
-            #{userId},  #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
-            #{contact},#{consigneeName},#{companyName},#{detailed},
-            #{addressDetailed},#{userType},#{describeOne},
-            #{serviceDetailed},#{startPrice},
-            #{remarks},#{serviceIntroduction},
-            #{releaseTitle},#{authentiCationStatus},#{welfareStatus}
-        )
-    </insert><!-- countNum -->
+     <!--根据id查  -->
+     <select id="selectEvvaluateById" resultType="com.dian.mmall.pojo.pingjia.Evaluate">
+        select * from evaluate where id=#{id}
+    </select>
     
 </mapper>

@@ -7,8 +7,10 @@ import com.dian.mmall.pojo.pingjia.Evaluate;
 @Mapper
 public interface EvaluateMapper {
    //计算发布过的总数   5条以下
-	int countNum(int releaseType, long userId);
+	int countNum(int releaseType, long userId); //TODO
 
-	int create_evaluate(Evaluate evaluate);
+	int create_evaluate(Evaluate evaluate);//TODO
+
+	Evaluate selectEvvaluateById(long evaluateid);
 
 }
