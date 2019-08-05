@@ -147,4 +147,10 @@
     </select> 
      
      
+       
+      <!-- 公开列表分页概览 -->
+         <select id="getMrpBunner"  resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
+        select id,servicFrequenc,releaseTitle,pictureUrl,startPrice,serviceDetailed from menuandrenovationandpestcontrol 
+       where welfareStatus=1   and  id=#{id}
+    </select> 
 </mapper>

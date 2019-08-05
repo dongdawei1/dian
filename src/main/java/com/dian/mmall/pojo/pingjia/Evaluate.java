@@ -39,16 +39,7 @@ public class Evaluate {
 	private Integer	zhilianghao=0;
 	private Integer	zhiliangyiban=0;
 	private Integer	zhiliangcha=0;  //质量
-	@Override
-	public String toString() {
-		return "Evaluate [id=" + id + ", permissionid=" + permissionid + ", releaseid=" + releaseid + ", fuwutaiduhao="
-				+ fuwutaiduhao + ", fuwutaiduzhong=" + fuwutaiduzhong + ", fuwutaiducha=" + fuwutaiducha + ", jiagegao="
-				+ jiagegao + ", jiagezhong=" + jiagezhong + ", jiagedi=" + jiagedi + ", zhuanye=" + zhuanye
-				+ ", zhuayeyiban=" + zhuayeyiban + ", zhunshihao=" + zhunshihao + ", zhunshijiaohao=" + zhunshijiaohao
-				+ ", zhunshijiaocha=" + zhunshijiaocha + ", shouhouhao=" + shouhouhao + ", shouhouzhong=" + shouhouzhong
-				+ ", shouhoucha=" + shouhoucha + ", zhilianghao=" + zhilianghao + ", zhiliangyiban=" + zhiliangyiban
-				+ ", zhiliangcha=" + zhiliangcha + "]";
-	}
+
 	
 	
 }

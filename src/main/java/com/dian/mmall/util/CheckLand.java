@@ -86,7 +86,7 @@ public class CheckLand {
      			if(role!=2&&role!=5&& role!=1) {
          		return ServerResponse.createByErrorMessage(meiyouquanxString);}
          	} //创建职位
-     		else if(menu.equals("myJobWanted") ) {
+     		else if(menu.equals("/home/jobWanted") ) {
      			if(role!=11&& role!=1&& role!=4) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }

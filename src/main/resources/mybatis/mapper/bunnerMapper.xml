@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dian.mmall.dao.BunnerMapper">
+    
+    <select id="getBunnerList" resultType="com.dian.mmall.pojo.banner.DibuBunner">
+      select  tableName,tableId,url  from dibubunner where permissionid=#{permissionid}  and bunnerType=#{bunnerType}
+      order by updateTime  desc  limit 2
+      
+    </select>
+    
+   
+</mapper>
