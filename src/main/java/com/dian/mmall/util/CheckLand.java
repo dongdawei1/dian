@@ -332,9 +332,33 @@ public class CheckLand {
      			}
      			isButten.put("isAuthentication", user.getIsAuthentication());
      			isButten.put("isSee", true);
-     		}
-     		
-     		
+     		}//店面出租创建
+     		else if(menu.equals("/home/lease") ) {
+     			//店面1236 11（查看权限）   ，摊位 1456 11查看
+     			if(role!=1 &&role!=2 &&role!=3&&role!=6&&role!=11) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			if( role==1|| role==2||role==3||role==6) {
+     				isButten.put("isCreate", true);
+     			}else {
+     				isButten.put("isCreate", false);
+     			}
+     			isButten.put("isAuthentication", user.getIsAuthentication());
+     			isButten.put("isSee", true);
+     			
+            }//摊位出租创建
+     		else if(menu.equals("/home/rentalBooth") ) {
+     			//店面1236 11（查看权限）   ，摊位 1456 11查看
+     			if(role!=1 &&role!=4 &&role!=5&&role!=6&&role!=11) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			if( role==1|| role==4||role==5||role==6) {
+     				isButten.put("isCreate", true);
+     			}else {
+     				isButten.put("isCreate", false);
+     			}
+     			isButten.put("isAuthentication", user.getIsAuthentication());
+     			isButten.put("isSee", true);
+     			
+            }
      		
      		
      		
@@ -354,14 +378,13 @@ public class CheckLand {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }
             
+     		
+     		
      		//TODO 一下没有验证
             
             else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
             	||	menu.equals("/home/clean") || menu.equals("/home/aquaticProduct")) {
      			if(role!=4&& role!=5) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/rentalBooth") ) {
-     			if(role!=4 &&role!=5 &&role!=6) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/wine") || menu.equals("/home/tableware")) {
      			if(role!=5) {
