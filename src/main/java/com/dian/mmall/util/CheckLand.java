@@ -100,13 +100,22 @@ public class CheckLand {
      			if(role!=1&&role!=4) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      		}
-     	
-     		
-     		
      		else if(menu.equals("/home/lease") ) {
-     			if(role!=2&&role!=3&&role!=6 && role!=1) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/release") ) {
+     			//店面1236 11（查看权限）   ，摊位 1456 11查看
+     			if( role!=1&& role!=2&&role!=3&&role==6) {
+     				return ServerResponse.createByErrorMessage(meiyouquanxString);
+     			}
+            }//摊位出租创建
+     		else if(menu.equals("/home/rentalBooth") ) {
+     			//店面1236 11（查看权限）   ，摊位 1456 11查看
+     			if( role!=1&& role!=4&&role!=5&&role==6) {
+     				return ServerResponse.createByErrorMessage(meiyouquanxString);
+     		}
+     			
+            }
+     		
+     		
+     		else if(menu.equals("/home/release") ) {
      			if(role!=2 && role!=1) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/kitchenUtensils") || menu.equals("/home/repair")) {
@@ -115,9 +124,6 @@ public class CheckLand {
             }else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
             	||	menu.equals("/home/clean") || menu.equals("/home/aquaticProduct")) {
      			if(role!=4&& role!=5&& role!=1) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/rentalBooth") ) {
-     			if(role!=4 &&role!=5 &&role!=6&& role!=1) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/wine") || menu.equals("/home/tableware")) {
      			if(role!=5&& role!=1) {
@@ -187,18 +193,27 @@ public class CheckLand {
      			if(role!=12&&role!=1&&role!=2&&role!=6&&role!=7&&role!=3) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      		}
-     		
-     		
-     		
-     		
-     		
-     		
-     		
-     		
      		else if(menu.equals("/home/lease") ) {
-     			if(role!=2&&role!=3&&role!=6&&role!=1&&role!=11) {
+     			//店面1236 11（查看权限）   ，摊位 1456 11查看
+     			if(role!=1 &&role!=2 &&role!=3&&role!=6&&role!=11) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/release") ) {
+     			
+            }//摊位出租创建
+     		else if(menu.equals("/home/rentalBooth") ) {
+     			//店面1236 11（查看权限）   ，摊位 1456 11查看
+     			if(role!=1 &&role!=4 &&role!=5&&role!=6&&role!=11) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			
+            }
+     		
+     		
+     		
+     		
+     		
+     		
+     		
+     		
+     	else if(menu.equals("/home/release") ) {
             	if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/kitchenUtensils")) {
@@ -214,9 +229,6 @@ public class CheckLand {
             else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
             	||	menu.equals("/home/clean") || menu.equals("/home/aquaticProduct")) {
      			if(role!=4&& role!=5) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/rentalBooth") ) {
-     			if(role!=4 &&role!=5 &&role!=6) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/wine") || menu.equals("/home/tableware")) {
      			if(role!=5) {

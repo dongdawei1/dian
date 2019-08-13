@@ -4,6 +4,8 @@ package com.dian.mmall.common;
 
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * Created by geely
  */
@@ -14,8 +16,9 @@ public class Const {
     public static final String EMAIL = "email";
     public static final String USERNAME = "username";
     public static final String TOKEN_PREFIX = "token_";
-
-
+  
+    public static String  PATH_E_IMG="E:/img/";
+    
     public interface RedisCacheExtime{
         int REDIS_SESSION_EXTIME = 60 * 1200;//1200分钟
     }

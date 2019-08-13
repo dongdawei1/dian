@@ -361,7 +361,7 @@ public ServerResponse<String> operation_resume(User user, Map<String, Object> pa
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
 		}
 		String timeString=DateTimeUtil.dateToAll();
-		String a_few_days_later=DateTimeUtil.a_few_days_later(90).getMsg();
+		String a_few_days_later=DateTimeUtil.a_few_days_later(90);
 		int result=0;
 		if(type_int==1) {
 			resume.setUpdateTime(timeString);

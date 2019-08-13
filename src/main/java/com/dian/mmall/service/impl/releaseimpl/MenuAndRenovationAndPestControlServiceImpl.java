@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
@@ -51,7 +52,6 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 	   @Autowired
 	   private GetPublishingsService getPublishingsService;
 	  
-	    private  String path="E:/img/";
 	    
 		@Autowired 
 		private EvaluateMapper evaluateMapper;
@@ -428,7 +428,7 @@ public ServerResponse<String> operation_usermrp(User user, Map<String, Object> p
 					        for(int a=0;a<listObj4.size();a++) {
 					        Picture	picture=listObj4.get(a);
 					        	if(picture.getUseStatus()==2) {
-										   FileControl.deleteFile(path+picture.getUserName());
+										   FileControl.deleteFile(Const.PATH_E_IMG+picture.getUserName());
 										   pictureMapper.updatePicture(picture.getId());
 									
 					        	}

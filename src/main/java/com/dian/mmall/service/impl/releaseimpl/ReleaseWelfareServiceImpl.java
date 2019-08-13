@@ -72,7 +72,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
    	   String timeString=formatter.format(new Date());
 	   params.put("createTime",timeString);
 	   params.put("updateTime",timeString);
-	   params.put("termOfValidity",DateTimeUtil.a_few_days_later(60).getMsg());
+	   params.put("termOfValidity",DateTimeUtil.a_few_days_later(60));
 	  System.out.print(params.toString());
 	 // isPublishContact
 	  
@@ -467,7 +467,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 				 timeString=formatter.format(new Date());
 				result=releaseWelfareMapper.position_operation(userIdLong,idLong,type_int,timeString);
 			}else if(type_int==2) {
-				 timeString=DateTimeUtil.a_few_days_later(60).getMsg();
+				 timeString=DateTimeUtil.a_few_days_later(60);
 				result=releaseWelfareMapper.position_operation(userIdLong,idLong,type_int,timeString);
 			}else if(type_int==3 || type_int==4 || type_int==5) {
 				timeString=formatter.format(new Date());

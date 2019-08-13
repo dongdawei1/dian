@@ -58,14 +58,12 @@ public class DateTimeUtil {
           * @param day 想要获取的日期与传入日期的差值 比如想要获取传入日期前四天的日期 day=-4即可
           * @return
           */
-    public static ServerResponse<Object> a_few_days_later(int length){
-        if(length <=0 || length >100 ){
-            return ServerResponse.createByErrorMessage(ResponseMessage.youxiaoqibuhefa.getMessage());
-        }
+    public static String a_few_days_later(int length){
+   
         Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());
                 calendar.add(Calendar.DATE, length);
-                return ServerResponse.createBySuccessMessage(DateTimeUtil.dateToStr(calendar.getTime(),"yyyy-MM-dd HH:mm:ss"));
+        return DateTimeUtil.dateToStr(calendar.getTime(),"yyyy-MM-dd HH:mm:ss");
     }
     
     public static String dateToDay(){

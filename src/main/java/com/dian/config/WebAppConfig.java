@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
 
+import com.dian.mmall.common.Const;
+
 import javax.servlet.MultipartConfigElement;
 
 //上传配置类
@@ -19,6 +21,8 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
     @Value("${cbs.imagesPath}")
     private String mImagesPath;
 
+//	private String mImagesPath=Const.PATH_E_IMG;
+	
     @Bean
     public MultipartConfigElement multipartConfigElement(){
         MultipartConfigFactory factory = new MultipartConfigFactory();

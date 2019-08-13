@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.Permission;
@@ -40,7 +41,7 @@ public class UploadDownController {
     @Autowired
     private IPictureService ipics;
     
-    private  String path="E:/img/";
+
 	
     /**
      * 文件上传
@@ -61,7 +62,7 @@ public class UploadDownController {
     
         //获取文件在服务器的储存位置
        // String path = httpServletRequest.getSession().getServletContext().getRealPath("/upload");
-    	File filePath = new File(path);
+    	File filePath = new File(Const.PATH_E_IMG);
         if (!filePath.exists() && !filePath.isDirectory()) {
             
             filePath.mkdir();
@@ -80,7 +81,7 @@ public class UploadDownController {
         String fileName = date +(int)(Math.random()*10000) + "." + type;
        
         //在指定路径下创建一个文件
-        File targetFile = new File(path, fileName);
+        File targetFile = new File(Const.PATH_E_IMG, fileName);
         Picture picture1=new Picture();
         //将文件保存到服务器指定位置
         try {
@@ -148,7 +149,7 @@ public class UploadDownController {
     		 return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
     	}
         
-       Boolean fal =FileControl.deleteFile(path+userNameString);
+       Boolean fal =FileControl.deleteFile(Const.PATH_E_IMG+userNameString);
        if(fal==true) {
     	   ipics.updatePicture(id);
     	   return ServerResponse.createBySuccess(); 
