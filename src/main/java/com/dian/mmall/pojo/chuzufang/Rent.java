@@ -34,7 +34,8 @@ public class Rent {
 	@IsEmptyAnnotation(message="图片不能为空") 
 	private String pictureUrl; //图片地址
 	
-
+	@IsEmptyAnnotation(message="面积不能为空") 
+	private Integer fouseSize;
 	
 	@IsEmptyAnnotation(message="发布状态不能为空") //1发布中，2隐藏中，3删除,4审核中,5不在有效期
 	private Integer welfareStatus;

@@ -15,7 +15,7 @@
         userId,releaseType,updateTime,createTime,pictureUrl,contact,
         consigneeName,companyName,detailed,addressDetailed,userType,serviceDetailed,
         remarks,serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus,
-        termOfValidity
+        termOfValidity,fouseSize
         ) values (
             #{userId},  #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
             #{contact},#{consigneeName},#{companyName},#{detailed},
@@ -23,19 +23,122 @@
             #{serviceDetailed},
             #{remarks},#{serviceIntroduction},
             #{releaseTitle},#{authentiCationStatus},#{welfareStatus},
-            #{termOfValidity}
+            #{termOfValidity},#{fouseSize}
         )
     </insert><!-- countNum -->
     
  
+             <!--用户查询分页总条数  --> 
+        <select id="get_myRent_list_no"  resultType="long">
+        select count(*) from rent where welfareStatus!=3 and userId=#{userId}   
+        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
+    </select> 
     
+       <!--用户查询分页--> 
+        <select id="get_myRent_list"  resultType="com.dian.mmall.pojo.chuzufang.Rent">
+        select id,userId,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceDetailed,
+    welfareStatus,authentiCationStatus,authentiCationFailure,
     
-    
+    detailed,addressDetailed,contact,consigneeName,companyName,createTime,
+    updateTime,termOfValidity,fouseSize
+       from rent       
+       where welfareStatus!=3 and userId=#{userId} 
+        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>   
+       order by  updateTime desc
+        limit #{pageLength}, #{pageSize}
+    </select>
     
     
    
+        <!-- 审核分页总条数    只有一个入参时if _parameter 不能用参数名--> 
+        <select id="adminMent_no"  resultType="long">
+        select count(*) from  rent  where authentiCationStatus in(1,3)   
+       <if test="_parameter !=null">and  contact=#{contact}   </if>  
+        </select> 
+       <!-- 审核分页 -->
+        
+        <select id="adminMent"  resultType="com.dian.mmall.pojo.chuzufang.Rent">
+      select id,userId,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceDetailed,
+    welfareStatus,authentiCationStatus,authentiCationFailure,fouseSize,
+    detailed,addressDetailed,contact,consigneeName,companyName,createTime,
+    updateTime,termOfValidity,userType,examineName,examineTime
+       from rent       
+       where authentiCationStatus in(1,3)  
+         <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>   
+       order by  createTime
+        limit #{pageLength}, #{pageSize}
+    </select> 
     
     
+        <!-- 审核  -->  
     
+       <update id="examineResume" >
+       update rent set  
+       authentiCationStatus=#{authentiCationStatus},authentiCationFailure=#{authentiCationFailure},examineTime=#{examineTime},examineName=#{examineName},
+       welfareStatus=#{welfareStatus}
+        where userId=#{userId}  and id=#{id}
+    </update>
    
+   
+        <!-- 刷新，隐藏等操作 -->
+      <update id="operation_userment" >
+       update rent set  
+      <if test="type==1 "> updateTime=#{timeString} , termOfValidity=#{termOfValidity}</if>
+      <if test="type==2 "> updateTime=#{timeString} , termOfValidity=#{termOfValidity} ,welfareStatus=1</if>
+      <if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
+      <if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+      <if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if> 
+        where userId=#{userId}  and id=#{id}
+      <if test="type==4 "> and welfareStatus not in(4,3)</if>
+       <if test="type==2 "> and welfareStatus=5 and authentiCationStatus=2</if>
+    </update>
+   
+   
+      <!--用户查询分页--> 
+        <select id="get_userrent_id"  resultType="com.dian.mmall.pojo.chuzufang.Rent">
+        select id,userId,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceDetailed,fouseSize,
+    detailed,addressDetailed,contact,consigneeName,companyName,userType,createTime
+       from rent       
+       where welfareStatus!=3 and userId=#{userId} and id=#{id}
+  
+    </select>
+   
+   
+       <!-- 用户编辑 -->
+       <update id="update_rent" >
+       update rent set       
+    pictureUrl=#{pictureUrl},authentiCationStatus=#{authentiCationStatus},
+    welfareStatus=#{welfareStatus},serviceDetailed=#{serviceDetailed},
+    remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},fouseSize=#{fouseSize},
+    releaseTitle=#{releaseTitle},updateTime=#{updateTime},termOfValidity=#{termOfValidity}
+     where welfareStatus!=3 and userId=#{userId} and id=#{id}
+    </update>
+    
+    
+       <!-- 查看该实名城市下发布过服务的标题 -->
+     <select id="getRentTitleList"  resultType="String">
+        select DISTINCT releaseTitle from rent where welfareStatus=1   and  releaseType=#{releaseType} and detailed like #{detailed}
+        <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>         
+    </select> 
+    
+    
+        <!-- 公开列表分页总数 -->  
+     
+        <select id="getrentListNo"  resultType="long">
+        select count(*) from rent where welfareStatus=1  and  releaseType=#{releaseType} and detailed like #{detailed}
+       <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle =#{releaseTitle}   </if>  
+    </select> 
+     
+      <!-- 公开列表分页概览 -->
+         <select id="getrentList"  resultType="com.dian.mmall.pojo.chuzufang.Rent">
+        select id,releaseTitle,pictureUrl,detailed,fouseSize from rent where welfareStatus=1   and  releaseType=#{releaseType}
+       and detailed like #{detailed}
+       <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle = #{releaseTitle}   </if>  
+       order by updateTime desc
+        limit #{pageLength}, #{pageSize}
+    </select> 
+    
 </mapper>

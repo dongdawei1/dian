@@ -23,6 +23,7 @@ import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.service.ToExamineService;
 import com.dian.mmall.service.release.MenuAndRenovationAndPestControlService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
+import com.dian.mmall.service.release.RentService;
 import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.CheckLand;
 import com.dian.mmall.util.CookieUtil;
@@ -134,7 +135,23 @@ public class ToExamineController {
     	
     }
     
-    
+    @Autowired
+    private RentService rentService;
+    //获取待审核装修灭虫
+    @RequestMapping(value = "adminMent",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> adminMent(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	
+    	
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+ 	
+    	return rentService.adminMent(params);
+    	
+    }
     
     
     @Autowired

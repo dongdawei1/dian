@@ -11,7 +11,9 @@ import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.releaseDao.MenuAndRenovationAndPestControlMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
+import com.dian.mmall.dao.releaseDao.RentMapper;
 import com.dian.mmall.dao.releaseDao.ResumeMapper;
+import com.dian.mmall.pojo.chuzufang.Rent;
 import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
@@ -30,6 +32,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private ReleaseWelfareMapper releaseWelfareMapper;
 	@Autowired
 	private ResumeMapper resumeMapper;
+	@Autowired
+	private RentMapper rentMapper;
 	//全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
 	String	userId =params.get("userId").toString().trim();	
@@ -78,7 +82,11 @@ public class ToExamineServiceImpl implements ToExamineService {
 	if(tabuleType==13) {
 	MenuAndRenovationAndPestControl releaseWelfare=(MenuAndRenovationAndPestControl) BeanMapConvertUtil.convertMap(MenuAndRenovationAndPestControl.class, params);
 	resultCount=menuAndRenovationAndPestControlMapper.examineMrp(releaseWelfare);	
-	}else if(tabuleType==30){
+	}else if(tabuleType==14){
+		Rent rent=(Rent) BeanMapConvertUtil.convertMap(Rent.class, params);
+		resultCount=rentMapper.examineResume(rent);
+	}
+	else if(tabuleType==30){
 	ReleaseWelfare releaseWelfare=(ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class, params);
 	resultCount=releaseWelfareMapper.examineReleaseWelfare(releaseWelfare);
 	}else if(tabuleType==31){

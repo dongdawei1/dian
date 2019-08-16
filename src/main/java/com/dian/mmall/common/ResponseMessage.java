@@ -86,7 +86,9 @@ public enum ResponseMessage {
 	meiyouchaxundaoshimingxinxi("没有查询到实名信息"),
 	chaxunshimingshixishibai("查询实名信息失败"),
 	benditupianbucunzai("本地图片不存在"),
-	chaxunleixingbunnegweikong("查询类型不能为空");
+	chaxunleixingbunnegweikong("查询类型不能为空"),
+	mianjibunnegweikong("面积不能为空"),
+	mianjibuhefa("面积为大于1小于1万的整数");
    String message;
    ResponseMessage(String message){
 	   this.message=message;
