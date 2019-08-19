@@ -141,10 +141,12 @@ public class RentController {
     
     }
 
+
+    
     //获取title
-    @RequestMapping(value = "getRentTitleList",method = RequestMethod.POST)
+    @RequestMapping(value = "getServiceDetailedList",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<Object> getRentTitleList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    public ServerResponse<Object> getServiceDetailedList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
     	//检查登陆
     	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
     	if(serverResponse.getStatus()!=0) {
@@ -170,7 +172,7 @@ public class RentController {
     		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
     	}
      	
-       return rentService.getRentTitleList(params);
+       return rentService.getServiceDetailedList(params);
     
     }
     

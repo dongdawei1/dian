@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.Null;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import com.dian.mmall.common.Const;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.dao.CityMapper;
 import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.releaseDao.RentMapper;
@@ -46,6 +49,8 @@ public class RentServiceImpl implements RentService {
 	private RealNameMapper realNameMapper;
 	@Autowired
     private GetPublishingsService getPublishingsService;
+	@Autowired
+	private CityMapper cityMapper;
 	@Override
 	public ServerResponse<String> create_rent(User user, Map<String, Object> params) {
 
@@ -57,7 +62,6 @@ public class RentServiceImpl implements RentService {
 		   Map<String,Object> map=(Map<String, Object>) serverResponse.getData();
 	       map.put("authentiCationStatus", 1);
 	       map.put("welfareStatus", 4);
-	       System.out.println(map.toString());
 	    Rent rent=(Rent) BeanMapConvertUtil.convertMap(Rent.class,map);
 		 	//{result=true, message=验证通过} 返回结果
 		 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(rent);
@@ -133,8 +137,7 @@ public class RentServiceImpl implements RentService {
 			    }
 			    map.put("updateTime",createTime);
 			    map.put("termOfValidity",DateTimeUtil.a_few_days_later(90));
-
-		 
+ 
 	  //判断是否实名
 			if(currentUser.getIsAuthentication()!=2) {
 				 return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
@@ -175,6 +178,28 @@ public class RentServiceImpl implements RentService {
 				}
 			
 			 map.put("pictureUrl",JsonUtil.obj2StringPretty(listObj4));
+			//城市
+				List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+				if(selectedOptions_list.size()==3) {
+				Integer	provincesId=selectedOptions_list.get(0);
+				Integer	cityId=selectedOptions_list.get(1);
+				Integer   districtCountyId=selectedOptions_list.get(2);
+				   //判断省市区id是否正确
+				    if(provincesId>10000 &&  cityId>10000 && districtCountyId>10000) {
+				    	String city=cityMapper.checkeCity(provincesId,cityId,districtCountyId);
+				    	 if( city==null) {
+			 				return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+			 			}
+				    	 map.put("detailed", city);
+			 		}else {
+			 			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+			 		}
+				}else {
+					return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+				}
+				
+				
+				
 			} 
 			
 			
@@ -190,36 +215,18 @@ public class RentServiceImpl implements RentService {
 		//判断实名信息是否正确
 		RealName realName=realNameMapper.getRealName(currentUser.getId());
 		if(realName!=null) {
-	  
+			map.put("realNameId", realName.getId());
 		//判断电话
-	  String contact= params.get("contact").toString().trim();
-		if(!EncrypDES.decryptPhone(realName.getContact()).equals(contact)) {
-	  	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());		
-		}
-		map.put("contact", realName.getContact());
-		//判断实名姓名
-	  String consigneeName=realName.getConsigneeName();
-		if(!consigneeName.equals(params.get("consigneeName").toString().trim())) {
-		 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());			
-		}
-		map.put("consigneeName", consigneeName);
-		String companyName= realName.getCompanyName();
-		if(!companyName.equals(params.get("companyName").toString().trim())) {
-		 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());	
-		 	}		
-		map.put("companyName", companyName);
+			 String contact= params.get("contact").toString().trim();
+			//判断手机号是否合法
+		    	serverResponse=LegalCheck.legalCheckMobilePhone(contact);
+		    	if(serverResponse.getStatus()!=0) {	
+		    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());		
+				}
+		map.put("contact", EncrypDES.encryptPhone(contact));
+
+		map.put("consigneeName", params.get("consigneeName").toString().trim());
 		
-		String detailed=realName.getDetailed();
-		if(!detailed.equals(params.get("detailed").toString().trim())) {
-		 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());	
-		 	}		
-		map.put("detailed", detailed);
-		
-	   String addressDetailed=realName.getAddressDetailed();
-		if(!addressDetailed.equals(params.get("addressDetailed").toString().trim())) {
-		 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());	
-		 	}		
-		map.put("addressDetailed", addressDetailed);
 		}else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());			
 		}
@@ -316,7 +323,6 @@ public class RentServiceImpl implements RentService {
 		    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
 		    }
 		
-	    System.out.println(params.toString());
 	 	String contact = params.get("contact").toString().trim();
 		if(contact.length()!=11 && contact!=null && !contact.equals("")) {
 	 		 return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
@@ -402,7 +408,9 @@ public class RentServiceImpl implements RentService {
 			       map.put("welfareStatus", 4);
 			       map.put("userType", rent.getUserType());
 			       map.put("releaseType", rent.getReleaseType());
-			      Rent rent_create=(Rent) BeanMapConvertUtil.convertMap(Rent.class,map);
+			       map.put("detailed", rent.getDetailed());
+			       map.put("realNameId", rent.getRealNameId());
+			       Rent rent_create=(Rent) BeanMapConvertUtil.convertMap(Rent.class,map);
 				 	//{result=true, message=验证通过} 返回结果
 				 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(rent_create);
 				 	if((boolean)checknullMap.get("result")==true && ((String)checknullMap.get("message")).equals("验证通过")) {
@@ -502,39 +510,6 @@ public class RentServiceImpl implements RentService {
 		
 	}
 
-	@Override
-	public ServerResponse<Object> getRentTitleList(Map<String, Object> params) {
-		String	provinces_id=params.get("provincesId").toString().trim();
-	 	String	city_id=params.get("cityId").toString().trim();
-		String   district_county_id=params.get("districtCountyId").toString().trim();
-		String detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,district_county_id)+"%";
-		
-		String releaseTitle= params.get("releaseTitle").toString().trim();
-		
-		if(releaseTitle!=null && !releaseTitle.equals("")) {
-			releaseTitle="%"+releaseTitle+"%";
-		}
-		
-		
-		String releaseTypeString = params.get("releaseType").toString().trim();
-	 	Integer releaseType=null;
-	 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
-	 		releaseType =	Integer.valueOf(releaseTypeString);
-	 		if(releaseType!=14 &&releaseType!=15 ) {
-	 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
-	 		}
-	 	}else {
-	 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());	
-	 	}
-		
-	      List<String> releaseTitleList=rentMapper.getRentTitleList(releaseType,detailed,releaseTitle);
-		if(releaseTitleList.size()==0) {
-			detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,null)+"%";
-			releaseTitleList=rentMapper.getRentTitleList(releaseType,detailed,releaseTitle);
-		}
-	      
-	      return ServerResponse.createBySuccess(releaseTitleList); 
-	}
 
 	
 	@Override
@@ -562,10 +537,7 @@ public class RentServiceImpl implements RentService {
 		    } else {
 		    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
 		    }
-		
-	    
-	 	
-	 	String releaseTitle= params.get("releaseTitle").toString().trim();
+		 	
 	    
 		String releaseTypeString = params.get("releaseType").toString().trim();
 	 	Integer releaseType=null;
@@ -579,26 +551,51 @@ public class RentServiceImpl implements RentService {
 	 	}
 	 	
 	 	
-	 	String	provinces_id=params.get("provincesId").toString().trim();
-	 	String	city_id=params.get("cityId").toString().trim();
-		String   district_county_id=params.get("districtCountyId").toString().trim();
-		String detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,district_county_id)+"%";
+
+		List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+		if(selectedOptions_list.size()==3) {
+		Integer	provincesId=selectedOptions_list.get(0);
+		Integer	cityId=selectedOptions_list.get(1);
+		Integer   districtCountyId=selectedOptions_list.get(2);
+		   //判断省市区id是否正确
+		String detailed="%"+cityMapper.checkeCity(provincesId,cityId,districtCountyId)+"%";
 	 	
+		
+	   String	serviceDetailed=params.get("serviceDetailed").toString().trim();
 	 	
+		String fouseSizeGreaterString= params.get("fouseSizeGreater").toString().trim();
+		Integer fouseSizeGreater=null;
+		if(fouseSizeGreaterString!=null && !fouseSizeGreaterString.equals("")) {
+			fouseSizeGreater=Integer.valueOf(fouseSizeGreaterString);
+		}
+  
+		String fouseSizeLessString= params.get("fouseSizeLess").toString().trim();
+		Integer fouseSizeLess=null;
+		if(fouseSizeLessString!=null && !fouseSizeLessString.equals("")) {
+			fouseSizeLess=Integer.valueOf(fouseSizeLessString);
+		}
+		
+		if(fouseSizeLess!=null && fouseSizeGreater!=null) {
+			if(fouseSizeGreater>fouseSizeLess) {
+				 return ServerResponse.createByErrorMessage(ResponseMessage.mianjicuowu.getMessage());	
+			}
+		}
+		
+		
 	 	Page<Rent> rent_pagePage=new Page<Rent>();
 		
-	 	long zongtiaoshu=rentMapper.getrentListNo(releaseTitle,releaseType,detailed);
+	 	long zongtiaoshu=rentMapper.getrentListNo(releaseType,detailed,fouseSizeGreater,fouseSizeLess,serviceDetailed);
 		
 	 	if(zongtiaoshu==0) {
-	 		detailed="%"+getPublishingsService.ctiy(provinces_id,city_id,null)+"%";
-	 		zongtiaoshu=rentMapper.getrentListNo(releaseTitle,releaseType,detailed);
+	 		detailed="%"+cityMapper.checkeCityTuo(provincesId, cityId)+"%";
+	 		zongtiaoshu=rentMapper.getrentListNo(releaseType,detailed,fouseSizeGreater,fouseSizeLess,serviceDetailed);
 	 	}
 	 	
 		rent_pagePage.setTotalno(zongtiaoshu);
 		rent_pagePage.setPageSize(pageSize);
 		rent_pagePage.setCurrentPage(currentPage); //当前页
 	   //查询list
-	 List<Rent>	mrpList=rentMapper.getrentList((currentPage-1)*pageSize,pageSize,releaseTitle, releaseType,detailed);
+	 List<Rent>	mrpList=rentMapper.getrentList((currentPage-1)*pageSize,releaseType,pageSize,fouseSizeGreater,fouseSizeLess,detailed,serviceDetailed);
 	 List<Rent>	setMrpList=new ArrayList<Rent>();
 	 for(int i=0;i<mrpList.size();i++) {
 			Rent rent=mrpList.get(i);
@@ -610,5 +607,64 @@ public class RentServiceImpl implements RentService {
 	 
 	 rent_pagePage.setDatas(setMrpList);
 		return ServerResponse.createBySuccess(rent_pagePage);
+		}else {
+			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+		}
 	}
+
+	@Override
+	public ServerResponse<Object> getServiceDetailedList(Map<String, Object> params) {
+		
+		List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+		if(selectedOptions_list.size()==3) {
+		Integer	provincesId=selectedOptions_list.get(0);
+		Integer	cityId=selectedOptions_list.get(1);
+		Integer   districtCountyId=selectedOptions_list.get(2);
+		   //判断省市区id是否正确
+		String detailed="%"+cityMapper.checkeCity(provincesId,cityId,districtCountyId)+"%";
+	 		
+		
+		String fouseSizeGreaterString= params.get("fouseSizeGreater").toString().trim();
+		Integer fouseSizeGreater=null;
+		if(fouseSizeGreaterString!=null && !fouseSizeGreaterString.equals("")) {
+			fouseSizeGreater=Integer.valueOf(fouseSizeGreaterString);
+		}
+  
+		String fouseSizeLessString= params.get("fouseSizeLess").toString().trim();
+		Integer fouseSizeLess=null;
+		if(fouseSizeLessString!=null && !fouseSizeLessString.equals("")) {
+			fouseSizeLess=Integer.valueOf(fouseSizeLessString);
+		}
+		
+		if(fouseSizeLess!=null && fouseSizeGreater!=null) {
+			if(fouseSizeGreater>fouseSizeLess) {
+				 return ServerResponse.createByErrorMessage(ResponseMessage.mianjicuowu.getMessage());	
+			}
+		}
+		
+		String releaseTypeString = params.get("releaseType").toString().trim();
+	 	Integer releaseType=null;
+	 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
+	 		releaseType =	Integer.valueOf(releaseTypeString);
+	 		if(releaseType!=14 &&releaseType!=15 ) {
+	 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
+	 		}
+	 	}else {
+	 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());	
+	 	}
+		
+	      List<String> serviceDetailedList=rentMapper.getServiceDetailedList(releaseType,detailed,fouseSizeGreater,fouseSizeLess);
+		if(serviceDetailedList.size()==0) {
+			detailed="%"+cityMapper.checkeCityTuo(provincesId, cityId)+"%";
+			serviceDetailedList=rentMapper.getServiceDetailedList(releaseType,detailed,fouseSizeGreater,fouseSizeLess);
+		}
+	      
+	      return ServerResponse.createBySuccess(serviceDetailedList); 
+		
+	      
+		}else {
+			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+		}
+	}	
+	
 }

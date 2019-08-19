@@ -16,7 +16,10 @@
     </insert>
      
     <select id="getRealName" resultType="com.dian.mmall.pojo.user.RealName">
-        select * from t_user_realname where userId=#{userId}
+        select id,addressDetailed,contact ,consigneeName,
+        email,detailed,eag,gender,companyName,provincesId,
+        cityId,districtCountyId
+        from t_user_realname where userId=#{userId}
     </select>
     
     
@@ -50,5 +53,12 @@
         <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
         <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>
        order by  createTime limit #{pageLength}, #{pageSize}
+    </select>
+    
+     
+         <select id="getRealNameById"  resultType="com.dian.mmall.pojo.user.RealName">
+        select addressDetailed,detailed,companyName from t_user_realname 
+        where  authentiCationStatus=2 and id=#{id}  
+
     </select>
 </mapper>

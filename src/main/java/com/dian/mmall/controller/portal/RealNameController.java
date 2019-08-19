@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dian.mmall.common.Const;
@@ -104,6 +105,19 @@ public class RealNameController {
     	
     }
     
-    
+    //获取实名信息
+    @RequestMapping(value = "getRealNameById",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> getRealNameById(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+    	}
+  
+     	
+    	return realNameService.getRealNameById(id);
+    	
+    }
     
 }

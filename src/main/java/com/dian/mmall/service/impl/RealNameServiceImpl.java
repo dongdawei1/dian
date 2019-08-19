@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.sql.ast.statement.SQLIfStatement.Else;
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
@@ -40,7 +41,7 @@ public class RealNameServiceImpl implements RealNameService{
 	@Autowired
 	private CityMapper cityMapper;
 	
-	    private  String path="E:/img/";
+	    private  String path=Const.PATH_E_IMG;
 	    @Autowired
 		private PictureMapper pictureMapper;
 	 @Autowired
@@ -304,6 +305,8 @@ public class RealNameServiceImpl implements RealNameService{
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.meiyouchaxundaoshimingxinxi.getMessage());
 	}
+	
+	
 	
 	//重新实名updateRealName
 	
@@ -873,5 +876,22 @@ public class RealNameServiceImpl implements RealNameService{
 		}	
 		return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
 		
+	}
+
+
+
+	
+	@Override
+	public ServerResponse<Object> getRealNameById(long id) {
+		if(id>0) {
+			RealName realName=realNameMapper.getRealNameById(id);
+			if(realName!=null) {
+			return 	ServerResponse.createBySuccess(realName);
+			}else {
+			return 	ServerResponse.createByError()	;
+			}
+		}else {
+			return 	ServerResponse.createByError()	;
+			}
 	}
 }

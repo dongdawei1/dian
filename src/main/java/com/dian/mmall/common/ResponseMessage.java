@@ -55,6 +55,7 @@ public enum ResponseMessage {
 	jianglikong("奖励不能为空"),
 	jianglibuhefa("奖励不合法"),
 	shimingxinxibuyizhi("实名信息不一致"),
+	shimingIDkong("实名ID不能为空"),
 	huoqushimingxinxishibai("获取实名信息失败"),
 	yonghuidhuoshenpixiangbucunzi("用户或者审批项不存在"),
 	shenpishenggong("审批成功"),
@@ -88,7 +89,8 @@ public enum ResponseMessage {
 	benditupianbucunzai("本地图片不存在"),
 	chaxunleixingbunnegweikong("查询类型不能为空"),
 	mianjibunnegweikong("面积不能为空"),
-	mianjibuhefa("面积为大于1小于1万的整数");
+	mianjibuhefa("面积为大于1小于1万的整数"),
+	mianjicuowu("面积输入错误");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

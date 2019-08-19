@@ -18,8 +18,7 @@ public class ReleaseWelfare {
 	private long id;
 	
   private long userId;
-  @IsEmptyAnnotation(message="用户名不能为空")
-  private String userName;
+
   @IsEmptyAnnotation(message="职位类型不能为空")
   private String position; //职位类型
   @MinSize(min=1,message="招聘人数在1-99之间")
@@ -63,26 +62,19 @@ public class ReleaseWelfare {
 	//实名人员
   private String examineName;//审核人员   非必填
   private String examineTime;//审核时间   非必填
- //实名信息
-  private String detailed;//省市区  回显置灰
-  private String addressDetailed;//实名地址不可编辑 回显置灰 不可修改
-  private String contact;  //实名联系联系方式 回显置灰 不可修改
+
+  @IsEmptyAnnotation(message="联系方式不能为空")
+  private String contact;  //系联系方式 可修改
+  @IsEmptyAnnotation(message="联系人不能为空")
   private String consigneeName; //联系人姓名 回显置灰 不可修改
   private String userType;//用户类型
   @IsEmptyAnnotation(message="有效期不能为空")
   private String  termOfValidity;//职位有效期 创建时间加 30天
-@Override
-public String toString() {
-	return "ReleaseWelfare [id=" + id + ", userId=" + userId + ", userName=" + userName + ", position=" + position
-			+ ", number=" + number + ", salary=" + salary + ", welfare=" + welfare + ", education=" + education
-			+ ", experience=" + experience + ", age=" + age + ", gender=" + gender + ", describeOne=" + describeOne
-			+ ", introductoryAward=" + introductoryAward + ", email=" + email + ", welfareStatus=" + welfareStatus
-			+ ", isPublishContact=" + isPublishContact + ", createTime=" + createTime + ", updateTime=" + updateTime
-			+ ", workingAddress=" + workingAddress + ", addressConsistency=" + addressConsistency
-			+ ", authentiCationStatus=" + authentiCationStatus + ", authentiCationFailure=" + authentiCationFailure
-			+ ", examineName=" + examineName + ", examineTime=" + examineTime + ", detailed=" + detailed
-			+ ", addressDetailed=" + addressDetailed + ", contact=" + contact + ", consigneeName=" + consigneeName
-			+ "]";
-}
+  @IsEmptyAnnotation(message="实名id不能为空")
+  private Long realNameId;
+  //实名信息
+  private String detailed;//省市区  回显置灰
+  @IsEmptyAnnotation(message="企业名称不能为空")
+  private String  companyName;//公司名称
 	 
 }

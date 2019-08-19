@@ -29,4 +29,7 @@ public interface RealNameMapper {
     //实名
 	int examineRealName(RealName realName);
 
+
+	RealName getRealNameById(long id);
+
 }

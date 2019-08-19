@@ -17,4 +17,6 @@ public interface RealNameService {
 
 	ServerResponse<Object> examineRealName(User user, Map<String, Object> params,String loginToken);
 
+	ServerResponse<Object> getRealNameById(long id);
+
 }

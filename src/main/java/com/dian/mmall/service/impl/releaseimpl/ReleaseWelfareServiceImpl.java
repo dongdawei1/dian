@@ -73,8 +73,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	   params.put("createTime",timeString);
 	   params.put("updateTime",timeString);
 	   params.put("termOfValidity",DateTimeUtil.a_few_days_later(60));
-	  System.out.print(params.toString());
-	 // isPublishContact
+
 	  
 	   ReleaseWelfare releaseWelfare=(ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class,params);
 	 	//{result=true, message=验证通过} 返回结果
@@ -121,7 +120,11 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
  	    }
 		
 	 
-	 	String userName = params.get("userName").toString().trim();
+	 	String userName = params.get("companyName").toString().trim();
+	 	if(userName!=null && !userName.equals("")) {
+	 		userName="%"+userName+"%";
+	 	}
+	 	
 	 	String contact = params.get("contact").toString().trim();
 		if(contact.length()!=11 && contact!=null && !contact.equals("")) {
 	 		 return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
@@ -160,10 +163,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	public  ServerResponse<Object> check_position(User currentUser, Map<String, Object> params) {
 		//判断用户id与	tocken是否一致
 		long userId=Long.valueOf(params.get("userId").toString().trim());
-		String newusernamr = params.get("userName").toString().trim() ;
-		if(!newusernamr.equals(currentUser.getUsername())  || userId!=currentUser.getId()) {
-			 return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMinghuoidbuyizhi.getMessage());
-		}
+		
 		//判断是否超过可以发布的总数
 			if(releaseWelfareMapper.countReleaseWelfare(userId)>=ReleaseCount.create_position.getCount()) {
 				 return ServerResponse.createByErrorMessage(ResponseMessage.fabuzongshudayu.getMessage()+ReleaseCount.create_position.getCount());
@@ -205,7 +205,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		if(isPublishContact!=1 &&  isPublishContact!=2) {
 			 return ServerResponse.createByErrorMessage(ResponseMessage.shifougongkaidianhualeixingcuowu.getMessage());
 		}
-		System.out.println(params.toString());
+	
 		//判断邮箱和联系方式必须有一个公开email
 		String email=params.get("email").toString().trim();
 		if(isPublishContact==2 && (email.equals("")||email==null)) {
@@ -343,6 +343,21 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		//判断实名信息是否正确
 		RealName realName=realNameMapper.getRealName(currentUser.getId());
 		if(realName!=null) {
+			String  realNameIdString=params.get("realNameId").toString().trim();
+			long realNameId=0;
+			if(realNameIdString !=null && !realNameIdString.equals("")) {
+				realNameId=Long.valueOf(realNameIdString);
+				if(realNameId==realName.getId()) {
+					params.put("realNameId",realNameId);
+				}else {
+					return ServerResponse.createByErrorMessage(ResponseMessage.shimingIDkong.getMessage());
+				}
+			}else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.shimingIDkong.getMessage());
+			}
+			
+			
+			
 		//判断实际工作地址和实名地址是否一致
 		String addressDetailed=realName.getAddressDetailed();
 		if(!addressDetailed.equals(params.get("workingAddress").toString().trim())) {
@@ -350,11 +365,8 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 		}else {
 			params.put("addressConsistency",1);
 		}
+	
 		
-		//判断实名地址
-		if(!addressDetailed.equals(params.get("addressDetailed").toString().trim())) {
-	    	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
-	    }
 		
 		//	判断省市区
 		String detailed=params.get("detailed").toString().trim();
@@ -362,20 +374,24 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService{
 	    	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
 	    }
 	    
-		//判断电话
-	    String contact= params.get("contact").toString().trim();
-		if(!EncrypDES.decryptPhone(realName.getContact()).equals(contact)) {
-	    	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());		
+	    
+	    params.put("companyName",realName.getCompanyName());
+		//校验电话
+	    String contact= params.get("contact").toString().trim();    
+	  //判断手机号是否合法
+       ServerResponse<String>	serverContact=LegalCheck.legalCheckMobilePhone(contact);
+    	if(serverResponse.getStatus()!=0) {	
+			return ServerResponse.createByErrorMessage(serverContact.getMsg());			
 		}
-		params.put("contact", realName.getContact());
-		//判断实名姓名
-	    String consigneeName=realName.getConsigneeName();
-		if(!consigneeName.equals(params.get("consigneeName").toString().trim())) {
-		 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());			
-		}
+		params.put("contact", EncrypDES.encryptPhone(contact));
+		
+		
 		}else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());			
 		}
+		
+		
+		
 		
 		//获取用户类型
 		serverResponse=SetBean.setRole(currentUser.getRole());

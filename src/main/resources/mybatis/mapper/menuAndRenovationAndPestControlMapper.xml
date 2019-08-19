@@ -13,13 +13,13 @@
      <insert id="create_menuAndRenovationAndPestControl"  >
         insert into menuandrenovationandpestcontrol (
         userId,releaseType,updateTime,createTime,pictureUrl,contact,
-        consigneeName,companyName,detailed,addressDetailed,userType,serviceDetailed,
+        consigneeName,companyName,detailed,realNameId,userType,serviceDetailed,
         startPrice,remarks,
         serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus
         ) values (
             #{userId},  #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
             #{contact},#{consigneeName},#{companyName},#{detailed},
-            #{addressDetailed},#{userType},
+            #{realNameId},#{userType},
             #{serviceDetailed},#{startPrice},
             #{remarks},#{serviceIntroduction},
             #{releaseTitle},#{authentiCationStatus},#{welfareStatus}
@@ -38,7 +38,7 @@
         select id,userId,evaluateid,servicFrequenc,releaseType,
     releaseTitle,serviceIntroduction,remarks,pictureUrl,startPrice,
     welfareStatus,authentiCationStatus,authentiCationFailure,
-    detailed,addressDetailed,contact,consigneeName,createTime,
+    detailed,contact,consigneeName,createTime,
     updateTime,serviceDetailed,companyName
        from menuandrenovationandpestcontrol       
        where welfareStatus!=3 and userId=#{userId} 
@@ -64,7 +64,7 @@
         select id,userId,evaluateid,servicFrequenc,releaseType,
     releaseTitle,serviceIntroduction,remarks,pictureUrl,startPrice,
     welfareStatus,authentiCationStatus,authentiCationFailure,
-    detailed,addressDetailed,contact,consigneeName,createTime,
+    detailed,contact,consigneeName,createTime,
     updateTime,serviceDetailed,companyName,examineName,examineTime,userType
        from menuandrenovationandpestcontrol       
        where authentiCationStatus in(1,3)  
@@ -99,7 +99,7 @@
          <select id="get_usermrp_id"  resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
         select id,userId,releaseType,
     releaseTitle,serviceIntroduction,remarks,pictureUrl,startPrice,
-    detailed,addressDetailed,contact,consigneeName,serviceDetailed,companyName,
+    detailed,contact,consigneeName,serviceDetailed,companyName,
     welfareStatus,authentiCationStatus,createTime
        from menuandrenovationandpestcontrol       
        where welfareStatus!=3 and userId=#{userId} and id=#{id}
@@ -140,7 +140,7 @@
        <select id="getMrpDetails"  resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
         select id,evaluateid,servicFrequenc,releaseType,
         releaseTitle,serviceIntroduction,remarks,
-        pictureUrl,startPrice,detailed,addressDetailed,
+        pictureUrl,startPrice,detailed,
         contact,consigneeName,createTime,serviceDetailed,companyName      
          from menuandrenovationandpestcontrol where welfareStatus=1   and  id=#{id}
         

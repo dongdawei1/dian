@@ -29,10 +29,13 @@ public interface RentMapper {
 
 	int update_rent(Rent rent_create);
 
-	List<String> getRentTitleList(Integer releaseType, String detailed, String releaseTitle);
+	List<String> getServiceDetailedList(Integer releaseType, String detailed, Integer fouseSizeGreater,
+			Integer fouseSizeLess);
 
-	long getrentListNo(String releaseTitle, Integer releaseType, String detailed);
+	long getrentListNo(Integer releaseType, String detailed, Integer fouseSizeGreater, Integer fouseSizeLess, String serviceDetailed);
 
-	List<Rent> getrentList(int pageLength, int pageSize, String releaseTitle, Integer releaseType, String detailed);
+	List<Rent> getrentList(int pageLength, Integer releaseType, int pageSize, Integer fouseSizeGreater, Integer fouseSizeLess,
+			String detailed, String serviceDetailed);
+
 
 }

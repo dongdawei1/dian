@@ -176,22 +176,22 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 	if(realName!=null) {
   
 	//判断电话
-  String contact= params.get("contact").toString().trim();
-	if(!EncrypDES.decryptPhone(realName.getContact()).equals(contact)) {
-  	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());		
-	}
-	map.put("contact", realName.getContact());
-	//判断实名姓名
-  String consigneeName=realName.getConsigneeName();
-	if(!consigneeName.equals(params.get("consigneeName").toString().trim())) {
-	 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());			
-	}
-	map.put("consigneeName", consigneeName);
+	 String contact= params.get("contact").toString().trim();    
+		  //判断手机号是否合法
+	       ServerResponse<String>	serverContact=LegalCheck.legalCheckMobilePhone(contact);
+	    	if(serverResponse.getStatus()!=0) {	
+				return ServerResponse.createByErrorMessage(serverContact.getMsg());			
+			}
+	map.put("contact", EncrypDES.encryptPhone(contact));
+	
+	 
 	String companyName= realName.getCompanyName();
+	
 	if(!companyName.equals(params.get("companyName").toString().trim())) {
 	 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());	
 	 	}		
 	map.put("companyName", companyName);
+	map.put("consigneeName", params.get("consigneeName").toString().trim());
 	
 	String detailed=realName.getDetailed();
 	if(!detailed.equals(params.get("detailed").toString().trim())) {
@@ -199,11 +199,7 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 	 	}		
 	map.put("detailed", detailed);
 	
-   String addressDetailed=realName.getAddressDetailed();
-	if(!addressDetailed.equals(params.get("addressDetailed").toString().trim())) {
-	 	return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());	
-	 	}		
-	map.put("addressDetailed", addressDetailed);
+	map.put("realNameId", realName.getId());
 	}else {
 		return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());			
 	}

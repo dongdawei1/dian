@@ -56,14 +56,16 @@ public class MenuAndRenovationAndPestControl {
 	private String authentiCationFailure; //审核失败原因
 	@IsEmptyAnnotation(message="实名区域不能为空")
 	private String detailed;
-	@IsEmptyAnnotation(message="实名地址不能为空")
-	private String addressDetailed;
+
 	@IsEmptyAnnotation(message="实名联系方式不能为空")
 	private String contact;
 	@IsEmptyAnnotation(message="实名联系人不能为空")
 	private String consigneeName;
 	@IsEmptyAnnotation(message="公司名称不能为空")
 	private String companyName;  //公司名
+	
+	@IsEmptyAnnotation(message="实名id不能为空")
+    private Long realNameId;
 	
 	private String examineName;
 	private String examineTime;
