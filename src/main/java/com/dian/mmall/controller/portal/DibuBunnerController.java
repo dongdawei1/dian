@@ -33,17 +33,8 @@ public class DibuBunnerController {
     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
     	}
      	User user = (User) serverResponse.getData();   
-     	Map<String, Object> params= new HashMap<String, Object>();
-     	
-     	if(permissionid==13) {
-     	params.put("StringPath", "menuAndRenovationAndPestControl");
-     	}
-    	//检查权限
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
-       return bunnerService.getBunnerList(permissionid,bunnerType);
+     
+       return bunnerService.getBunnerList(user.getRole(),permissionid,bunnerType);
     
     }
 }

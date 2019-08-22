@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
 import com.dian.mmall.util.MD5Util;
 import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer.FromDecimalArguments;
@@ -26,10 +27,19 @@ public static void main(String[] args) {
 	//Integer  gender=Integer.valueOf("rr");
 	//System.out.println(gender);
 	
-	Map<String, String> sMap=new HashMap<String, String>();
-	sMap.put("aa", "dd");
-	sMap.remove("dd");
-	String string=sMap.get("dde");
+	List<Map<String, String>> sMap=new ArrayList();
+	
+	Map<String, String> sMap1=new HashMap<String,  String>();
+	sMap1.put("name", "这是类型滴滴1");
+	sMap1.put("value", "这是内容1");
+   
+	Map<String, String> sMap2=new HashMap<String,  String>();
+	sMap2.put("name", "这是类型滴滴2");
+	sMap2.put("value", "这是内容2");
+	
+	sMap.add(sMap1);
+	sMap.add(sMap2);
+	//String string=sMap.get("dde");
 //	try {
 //		String string=sMap.get("dde");
 //		System.out.println("Test1.main()");
@@ -37,7 +47,7 @@ public static void main(String[] args) {
 //		e.getMessage();
 //	}
 	
-	System.out.println(sMap.toString());
+	System.out.println(JsonUtil.obj2String(sMap));
 	sMap.remove("aa");
 	System.out.println(sMap.toString());
 	

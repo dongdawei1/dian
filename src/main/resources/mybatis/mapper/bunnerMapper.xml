@@ -5,7 +5,10 @@
 <mapper namespace="com.dian.mmall.dao.BunnerMapper">
     
     <select id="getBunnerList" resultType="com.dian.mmall.pojo.banner.DibuBunner">
-      select  tableName,tableId,url  from dibubunner where permissionid=#{permissionid}  and bunnerType=#{bunnerType}
+      select  tableName,tableId,url ,dibuBunnerbiaoti,introduceList,releaseType from dibubunner 
+      where  role=#{role}  and bunnerType=#{bunnerType}
+       <if test="permissionid!=null">and  permissionid=#{permissionid}  </if>  
+       
       order by updateTime  desc  limit 2
       
     </select>

@@ -209,5 +209,23 @@ public class RentController {
     	return rentService.getrentList(params);
     	
     }
+	//根据id获取详请编辑
+	
+    @RequestMapping(value = "get_rent_id",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> get_rent_id(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();   
+     	int role=user.getRole();
+		if(role!=1 &&role!=2 &&role!=3 &&role!=4 &&role!=5 &&role!=6 &&role!=11 ) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
+		}
+       return rentService.get_rent_id(id);
     
+    }
+
 }

@@ -27,30 +27,15 @@ public class BunnerServiceImpl implements BunnerService {
 	@Autowired 
 	private MenuAndRenovationAndPestControlMapper menuAndRenovationAndPestControlMapper;
 	@Override
-	public ServerResponse<Object> getBunnerList(Integer permissionid, Integer bunnerType) {
-		 List<DibuBunner> listBunner=bunnerMapper.getBunnerList(permissionid,bunnerType);
+	public ServerResponse<Object> getBunnerList(Integer role, Integer permissionid, Integer bunnerType) {
+		 List<DibuBunner> listBunner=bunnerMapper.getBunnerList(role,permissionid,bunnerType);
 		 int size =listBunner.size();
-	//	
-		List<Object> list=new ArrayList<Object>();
-		 if(size>0) {
-			
-			 for(int a=0;a<size;a++) {
-				 DibuBunner dibuBunner=listBunner.get(a);
-				 Map<String, Object> map=new HashMap<String, Object>();
-				 int tableName=dibuBunner.getTableName();
-				 if(tableName==13) {
-					 MenuAndRenovationAndPestControl mrp=menuAndRenovationAndPestControlMapper.getMrpBunner(dibuBunner.getTableId()); 
-					 map.put("object", mrp);	
-					 map.put("url", dibuBunner.getUrl()+"/"+mrp.getId());
-					 list.add(map); 
-				 }				 
-				if(list.size()==2) {
-				return ServerResponse.createBySuccess(list); 
-				}
-			 }
-			 return ServerResponse.createBySuccess(list); 
+
+		 if(size==0) {
+			 listBunner=bunnerMapper.getBunnerList(role,null,bunnerType);			
+			 return ServerResponse.createBySuccess(listBunner); 
 		 }else {
-			 return ServerResponse.createBySuccess(null);
+			 return ServerResponse.createBySuccess(listBunner);
 		 }
 		 
 		 

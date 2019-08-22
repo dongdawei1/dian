@@ -100,7 +100,7 @@
         <select id="get_userrent_id"  resultType="com.dian.mmall.pojo.chuzufang.Rent">
         select id,userId,releaseType,
     releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceDetailed,fouseSize,
-    detailed,contact,consigneeName,userType,createTime
+    detailed,contact,consigneeName,createTime
        from rent       
        where welfareStatus!=3 and userId=#{userId} and id=#{id}
   
@@ -150,5 +150,15 @@
        order by updateTime desc
         limit #{pageLength}, #{pageSize}
     </select> 
+    
+       <!--用户查询分页--> 
+        <select id="get_rent_id"  resultType="com.dian.mmall.pojo.chuzufang.Rent">
+        select id,userId,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceDetailed,fouseSize,
+    detailed,contact,consigneeName,createTime,realNameId
+       from rent       
+       where welfareStatus =1 and  id=#{id}
+  
+    </select>
     
 </mapper>

@@ -665,6 +665,19 @@ public class RentServiceImpl implements RentService {
 		}else {
 			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		}
+	}
+
+	@Override
+	public ServerResponse<Object> get_rent_id(long id) {
+	    if(id<=0) {
+	    	 return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());	
+	    }
+		Rent rent=rentMapper.get_rent_id( id);
+		if(rent==null) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());	
+		}
+		rent.setContact(EncrypDES.decryptPhone(rent.getContact()));
+		return ServerResponse.createBySuccess(rent);
 	}	
 	
 }

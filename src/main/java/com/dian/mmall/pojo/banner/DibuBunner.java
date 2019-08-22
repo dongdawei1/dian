@@ -1,6 +1,5 @@
 package com.dian.mmall.pojo.banner;
 
-import com.dian.mmall.util.checknullandmax.IsEmptyAnnotation;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,4 +21,10 @@ public class DibuBunner {
 	private long createId;
 	private String updateTime;
 	private String 	url;//路由连接
+	
+	private String dibuBunnerbiaoti;
+	private String introduceList;
+	private Integer role;
+	private String releaseType;
+	
 }

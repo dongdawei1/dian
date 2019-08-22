@@ -37,5 +37,7 @@ public interface RentMapper {
 	List<Rent> getrentList(int pageLength, Integer releaseType, int pageSize, Integer fouseSizeGreater, Integer fouseSizeLess,
 			String detailed, String serviceDetailed);
 
+	Rent get_rent_id(long id);
+
 
 }

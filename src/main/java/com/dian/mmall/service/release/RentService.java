@@ -21,4 +21,6 @@ public interface RentService {
 
 	ServerResponse<Object> getServiceDetailedList(Map<String, Object> params);
 
+	ServerResponse<Object> get_rent_id(long id);
+
 }
