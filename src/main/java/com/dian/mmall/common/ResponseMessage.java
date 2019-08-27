@@ -90,7 +90,10 @@ public enum ResponseMessage {
 	chaxunleixingbunnegweikong("查询类型不能为空"),
 	mianjibunnegweikong("面积不能为空"),
 	mianjibuhefa("面积为大于1小于1万的整数"),
-	mianjicuowu("面积输入错误");
+	mianjicuowu("面积输入错误"),
+	caidanIDweikong("菜单id不能为空"),
+	chaxunyiyouleixshibai("查询已有类型失败"),
+	leixingyicunzai("商品/服务类型已经存在");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

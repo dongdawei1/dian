@@ -113,12 +113,17 @@ public class CheckLand {
      		}
      			
             }
-     		
+     		else if(menu.equals("/home/equipment") ) {
+     			//电器
+     			if( role==1&& role==3) {
+     				return ServerResponse.createByErrorMessage(meiyouquanxString);
+     			}
+            }
      		
      		else if(menu.equals("/home/release") ) {
      			if(role!=2 && role!=1) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/kitchenUtensils") || menu.equals("/home/repair")) {
+            }else if(menu.equals("/home/kitchenUtensils") ) {
      			if(role!=3&& role!=1) { //TODO 一下没有验证
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
@@ -206,7 +211,11 @@ public class CheckLand {
      			
             }
      		
-     		
+     		else if(menu.equals("/home/equipment") ) {
+     			//看电器1,2,3,4,5,6,7,12 （查看权限）   ， 1,3查看
+     			if(role!=1 &&role!=2 &&role!=3 &&role!=4 &&role!=5&&role!=6&&role!=7 &&role!=12) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);} 			
+            }
      		
      		
      		
@@ -218,9 +227,6 @@ public class CheckLand {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/kitchenUtensils")) {
      			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=12) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if( menu.equals("/home/repair")) {
-     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=12) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }
             
@@ -371,10 +377,19 @@ public class CheckLand {
      			isButten.put("isSee", true);
      			
             }
-     		
-     		
-     		
-     		
+     		else if(menu.equals("/home/equipment") ) {
+     			//看电器1,2,3,4,5,6,7,12 （查看权限）   ， 1,3查看
+     			if(role!=1 &&role!=2 &&role!=3 &&role!=4 &&role!=5&&role!=6&&role!=7 &&role!=12) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			if( role==1|| role==3) {
+     				isButten.put("isCreate", true);
+     			}else {
+     				isButten.put("isCreate", false);
+     			}
+     			isButten.put("isAuthentication", user.getIsAuthentication());
+     			isButten.put("isSee", true);
+     			
+            }
      		
      		else if(menu.equals("/home/lease") ) {
      			if(role!=2&&role!=3&&role!=6&&role!=1&&role!=11) {
@@ -384,9 +399,6 @@ public class CheckLand {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else if(menu.equals("/home/kitchenUtensils")) {
      			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=12) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if( menu.equals("/home/repair")) {
-     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=12) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }
             

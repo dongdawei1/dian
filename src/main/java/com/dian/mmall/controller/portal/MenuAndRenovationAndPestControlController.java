@@ -37,7 +37,6 @@ public class MenuAndRenovationAndPestControlController {
     	}
      	User user = (User) serverResponse.getData();
     	//检查权限
-     	params.put("StringPath", "menuAndRenovationAndPestControl");
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
     	if(serverResponse1.getStatus()!=0) {
     		return serverResponse1;

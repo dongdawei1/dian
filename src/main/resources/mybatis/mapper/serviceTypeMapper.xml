@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dian.mmall.dao.ServiceTypeMapper">
+
+    
+    
+       <!--创建用户成功返回非0  -->
+     <insert id="create_serviceType" >
+        insert into serviceType (
+            serviceTypeName,releaseType,authentiCationStatus,createUserId
+        ) values (
+        #{serviceTypeName},#{releaseType},#{authentiCationStatus},#{createUserId}
+        )
+    </insert>
+
+        <!-- 查看该实名城市下发布过服务的标题 -->
+     <select id="get_serviceType"  resultType="String">
+        select DISTINCT serviceTypeName from serviceType where  releaseType=#{releaseType}     
+     <if test="serviceType!=null and serviceType.trim()!=''">and  serviceTypeName like #{serviceType}   </if>  
+     
+     and (authentiCationStatus=2  or (createUserId=#{userId} and authentiCationStatus=1))  
+   
+    </select> 
+</mapper>

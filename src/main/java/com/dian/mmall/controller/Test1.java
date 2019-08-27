@@ -27,18 +27,18 @@ public static void main(String[] args) {
 	//Integer  gender=Integer.valueOf("rr");
 	//System.out.println(gender);
 	
-	List<Map<String, String>> sMap=new ArrayList();
-	
-	Map<String, String> sMap1=new HashMap<String,  String>();
-	sMap1.put("name", "这是类型滴滴1");
-	sMap1.put("value", "这是内容1");
-   
-	Map<String, String> sMap2=new HashMap<String,  String>();
-	sMap2.put("name", "这是类型滴滴2");
-	sMap2.put("value", "这是内容2");
-	
-	sMap.add(sMap1);
-	sMap.add(sMap2);
+//	List<Map<String, String>> sMap=new ArrayList();
+//	
+//	Map<String, String> sMap1=new HashMap<String,  String>();
+//	sMap1.put("name", "这是类型滴滴1");
+//	sMap1.put("value", "这是内容1");
+//   
+//	Map<String, String> sMap2=new HashMap<String,  String>();
+//	sMap2.put("name", "这是类型滴滴2");
+//	sMap2.put("value", "这是内容2");
+//	
+//	sMap.add(sMap1);
+//	sMap.add(sMap2);
 	//String string=sMap.get("dde");
 //	try {
 //		String string=sMap.get("dde");
@@ -47,31 +47,36 @@ public static void main(String[] args) {
 //		e.getMessage();
 //	}
 	
-	System.out.println(JsonUtil.obj2String(sMap));
-	sMap.remove("aa");
-	System.out.println(sMap.toString());
-	
-	List<String>  aList=new ArrayList<String>();
-	aList.add("11");
-	aList.add("12");
-	aList.add("13");
-	aList.add("14");
-	List<String>  aList1=new ArrayList<String>();
-	aList1.add("11");
-	aList1.add("121");
-	aList1.add("131");
-	aList1.add("141");
-	
-	for(int a=0; a<aList.size();a++) {
-		
-		for (int i = 0; i < aList1.size(); i++) {
-			if (aList.get(a).equals(aList1.get(i))) {
-				System.out.println("Test1.main()"+aList1.get(i));
-				
-			}
-		}
-	}
-	
-	
+//	System.out.println(JsonUtil.obj2String(sMap));
+//	sMap.remove("aa");
+//	System.out.println(sMap.toString());
+//	
+//	List<String>  aList=new ArrayList<String>();
+//	aList.add("11");
+//	aList.add("12");
+//	aList.add("13");
+//	aList.add("14");
+//	List<String>  aList1=new ArrayList<String>();
+//	aList1.add("11");
+//	aList1.add("121");
+//	aList1.add("131");
+//	aList1.add("141");
+//	
+//	for(int a=0; a<aList.size();a++) {
+//		
+//		for (int i = 0; i < aList1.size(); i++) {
+//			if (aList.get(a).equals(aList1.get(i))) {
+//				System.out.println("Test1.main()"+aList1.get(i));
+//				
+//			}
+//		}
+//	}
+	  String str="a1b dddd张 c";  //待判断的字符串
+	    char[] ch = str.toCharArray();
+        for (char c : ch) {
+            if (c < 0x4E00 || c > 0x9FBF) {
+              System.out.println("Test1.main()"+c);
+            }
+        }
 }
 }

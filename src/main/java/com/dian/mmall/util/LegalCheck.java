@@ -33,6 +33,47 @@ public class LegalCheck {
 		  return ServerResponse.createBySuccessMessage(ResponseMessage.ShuRuHeFa.getMessage());
 		
 	}
+	//判断字段输入是否合法
+		public static ServerResponse<String> legalCheckNonum(Map<String, Object> params){
+
+			params.remove("StringPath");
+			Set<String> key=params.keySet();
+			  for(String s11  : key){
+				  
+				  Object s12=params.get(s11);	
+				  
+				  if((s12  instanceof String) && s12!= null){
+					  String s13=s12.toString();
+					    char[] ch = s13.toCharArray();
+				        for (char c : ch) {
+				            if (c < 0x4E00 || c > 0x9FBF) {
+				            	return	ServerResponse.createByErrorMessage(s12+ResponseMessage.ShuRuBuHeFa.getMessage());
+				            }
+				        }
+			      }else {
+			    	  return	ServerResponse.createByErrorMessage("名称只能是汉字切不能有空格");
+			      }		  
+			  }
+			  return ServerResponse.createBySuccess();
+			
+		}
+		//判断字段输入是否合法
+				public static ServerResponse<String> legalCheckServiceTypeName(String params){
+
+					params=params.trim();
+					  if(params==null || params.equals("")) {
+						  return	ServerResponse.createByErrorMessage("名称不能为空");
+					}
+				   
+				    char[] ch = params.toCharArray();
+					   for (char c : ch) {
+						    if (c < 0x4E00 || c > 0x9FBF) {
+								  return	ServerResponse.createByErrorMessage("名称只能是汉字切不能有空格");
+						    }
+						}
+					  return ServerResponse.createBySuccessMessage(params);
+					
+				}
 	//判断是否是合法角色
 		public static ServerResponse<String> legalCheckRole(String role){
 			
