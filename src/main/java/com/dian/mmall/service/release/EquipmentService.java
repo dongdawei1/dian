@@ -11,4 +11,6 @@ public interface EquipmentService {
 
 	ServerResponse<Object> adminEquipment(Map<String, Object> params);
 
+	ServerResponse<Object> get_myEquipment_list(User user, Map<String, Object> params);
+
 }

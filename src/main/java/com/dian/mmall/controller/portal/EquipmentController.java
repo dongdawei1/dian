@@ -45,4 +45,30 @@ public class EquipmentController {
         return equipmentService.create_equipment(user,params);
     
     }
+    
+	//商户获取获取自己发布的除删除外的全部信息
+	
+    @RequestMapping(value = "get_myEquipment_list",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> get_myEquipment_list(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	params.put("StringPath", StringPath);
+     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+        
+        return equipmentService.get_myEquipment_list(user,params);
+    
+    }
+
+    
+    
 }

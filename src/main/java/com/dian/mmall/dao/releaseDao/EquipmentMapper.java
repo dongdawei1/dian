@@ -19,4 +19,8 @@ public interface EquipmentMapper {
 
 	int examineEquipment(Equipment equipment);
 
+	long get_userEquipment_list_no(Integer releaseType, Integer welfareStatus, long userId);
+
+	List<Equipment> get_myEquipment_list(int pageLength, int pageSize, Integer releaseType, Integer welfareStatus, long userId);
+
 }

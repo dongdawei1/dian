@@ -58,5 +58,26 @@
        welfareStatus=#{welfareStatus}
         where userId=#{userId}  and id=#{id}
     </update>
+    
+          <!--用户查询分页总条数  --> 
+        <select id="get_userEquipment_list_no"  resultType="long">
+        select count(*) from equipment where welfareStatus!=3 and userId=#{userId}   
+        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
+        <if test="releaseType!=null">and  releaseType=#{releaseType}   </if>  
+    </select> 
+    <!--用户查询分页--> 
+        <select id="get_myEquipment_list"  resultType="com.dian.mmall.pojo.weixiuAnddianqi.Equipment">
+        select id,userId,evaluateid,servicFrequenc,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
+    welfareStatus,authentiCationStatus,authentiCationFailure,
+    detailed,contact,consigneeName,createTime,
+    updateTime,serviceDetailed,termOfValidity
+       from equipment       
+       where welfareStatus!=3 and userId=#{userId} 
+        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
+        <if test="releaseType!=null">and  releaseType=#{releaseType}   </if>  
+       order by  updateTime desc
+        limit #{pageLength}, #{pageSize}
+    </select>
    
 </mapper>

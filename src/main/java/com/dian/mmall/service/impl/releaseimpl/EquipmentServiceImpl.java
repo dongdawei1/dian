@@ -286,4 +286,68 @@ public class EquipmentServiceImpl implements EquipmentService {
 		equipment_pagePage.setDatas(list_equipment );
 		return ServerResponse.createBySuccess(equipment_pagePage);
 	}
+
+
+
+	@Override
+	public ServerResponse<Object> get_myEquipment_list(User user, Map<String, Object> params) {
+		String currentPage_string= params.get("currentPage").toString().trim() ;    
+		String pageSize_string= params.get("pageSize").toString().trim() ;    
+		int currentPage=0;
+		int  pageSize=0;
+	 	
+	 	if(currentPage_string!=null && currentPage_string!="") {
+	 		currentPage=Integer.parseInt(currentPage_string);
+	 		if(currentPage<=0) {
+	 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+	 		}
+	 		
+		    } else {
+		    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+		    }
+	 	
+	 	if(pageSize_string!=null && pageSize_string!="") {
+	 		pageSize=Integer.parseInt(pageSize_string);
+	 		if(pageSize<=0) {
+	 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+	 		}
+		    } else {
+		    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		    }
+		
+	    
+	 	String releaseTypeString = params.get("releaseType").toString().trim();
+	 	Integer releaseType=null;
+	 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
+	 		releaseType =	Integer.valueOf(releaseTypeString);
+	 	}
+	 	
+	 	
+	 	String getwelfareStatusString=params.get("welfareStatus").toString().trim();
+	 	Integer welfareStatus = null;
+	 	if(getwelfareStatusString!=null && !getwelfareStatusString.equals("")) {
+	 		welfareStatus=	Integer.valueOf(getwelfareStatusString);
+	 	}
+	 	
+	 	
+	 	
+	 	Page<Equipment> equipment_pagePage=new Page<Equipment>();
+		
+	 	long zongtiaoshu=equipmentMapper.get_userEquipment_list_no(releaseType,welfareStatus,user.getId());
+		
+		equipment_pagePage.setTotalno(zongtiaoshu);
+		equipment_pagePage.setPageSize(pageSize);
+		equipment_pagePage.setCurrentPage(currentPage); //当前页
+		
+	    List<Equipment> list_equipment  =	new ArrayList();
+	    List<Equipment> list_equipmentall=  equipmentMapper.get_myEquipment_list((currentPage-1)*pageSize,pageSize,releaseType,welfareStatus,user.getId());
+	    
+		for(Equipment equipment :list_equipmentall) {
+			equipment.setContact(EncrypDES.decryptPhone(equipment.getContact()));
+			list_equipment.add(equipment);
+		}
+
+		equipment_pagePage.setDatas(list_equipment );
+		return ServerResponse.createBySuccess(equipment_pagePage);
+	}
 }
