@@ -109,7 +109,7 @@ public  ServerResponse<Object> check_evaluate(User currentUser, Map<String, Obje
 			if(type==1) {  //TODO新建时才检查总数
 			//判断是否超过可以发布的总数
 			 count =menuAndRenovationAndPestControlMapper.countNum(releaseType,userId);
-		      if(count>5) {
+		      if(count>10) {
 		    	 return ServerResponse.createByErrorMessage(ResponseMessage.chaoguofabuzongshu.getMessage());
 		       }
 		    map.put("createTime",createTime);

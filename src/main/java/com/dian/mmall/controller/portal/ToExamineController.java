@@ -21,6 +21,7 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.service.ToExamineService;
+import com.dian.mmall.service.release.EquipmentService;
 import com.dian.mmall.service.release.MenuAndRenovationAndPestControlService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.service.release.RentService;
@@ -137,7 +138,7 @@ public class ToExamineController {
     
     @Autowired
     private RentService rentService;
-    //获取待审核装修灭虫
+    //获取待审核出租
     @RequestMapping(value = "adminMent",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Object> adminMent(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
@@ -153,6 +154,23 @@ public class ToExamineController {
     	
     }
     
+    @Autowired
+    private EquipmentService equipmentService;
+    //获取待审核出租
+    @RequestMapping(value = "adminEquipment",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> adminEquipment(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	
+    	
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+ 	
+    	return equipmentService.adminEquipment(params);
+    	
+    }
     
     @Autowired
     private ToExamineService  toExamineService;
@@ -171,4 +189,8 @@ public class ToExamineController {
  	 return toExamineService.examineAll(user,params);
 
     } 
+    
+    
+    
+    
 }

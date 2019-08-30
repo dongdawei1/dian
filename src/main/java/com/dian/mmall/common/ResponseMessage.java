@@ -93,7 +93,12 @@ public enum ResponseMessage {
 	mianjicuowu("面积输入错误"),
 	caidanIDweikong("菜单id不能为空"),
 	chaxunyiyouleixshibai("查询已有类型失败"),
-	leixingyicunzai("商品/服务类型已经存在");
+	leixingyicunzai("商品/服务类型已经存在"),
+	fabuleixinbixuan("发布类型必须选择"),
+	shenhefuwuleixin("服务类型不通过，审核必须也选不通过"),
+	shangpinfuwuleixingidnull("商品服务类型id不能为空"),
+	shangpinfuwuleixluokushibai("商品服务类型落库失败，刷新后重试"),
+	shangpinleixinchaxunshibai("商品类型查询失败,重新选择：服务类型 ");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

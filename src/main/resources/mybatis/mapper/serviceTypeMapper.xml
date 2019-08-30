@@ -23,4 +23,31 @@
      and (authentiCationStatus=2  or (createUserId=#{userId} and authentiCationStatus=1))  
    
     </select> 
+    
+    
+        <!-- 查看该实名城市下发布过服务的标题 -->
+     <select id="get_serviceTypeAll"  resultType="com.dian.mmall.pojo.ServiceType">
+        select id, serviceTypeName,createUserId,authentiCationStatus from serviceType where  releaseType=#{releaseType} and   authentiCationStatus in(1,2)   
+    </select> 
+    
+    <select id="selectbyId"  resultType="int">
+        select count(*) from serviceType where   authentiCationStatus=2 and id=#{id}  
+    </select> 
+    
+     <update id="updatebyId" >
+       update serviceType set  
+       authentiCationStatus=#{authentiCationStatus}
+        where  id=#{id}
+         <if test="authentiCationStatus ==3">and  authentiCationStatus =1   </if>  
+    </update>
+    
+    <update id="deletebyId">
+     update serviceType set  
+       authentiCationStatus=4
+     where id!=#{id} 
+    and serviceTypeName=(select   serviceTypeName 
+    from (select b.serviceTypeName from serviceType b where b.id=#{id})a )
+    
+    </update>
+    
 </mapper>

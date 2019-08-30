@@ -31,11 +31,11 @@ public class Equipment {
 	@IsEmptyAnnotation(message="标题不能为空")
     private String releaseTitle; //发布标题
 	
-	@IsEmptyAnnotation(message="类型不能为空") 
+	@IsEmptyAnnotation(message="具体类型不能为空") 
 	private String serviceType; //类型 数据库读取加用户自定义添加
 	
 
-	@MaxSize(max=2000, message="项目不能大于2000字")
+	@MaxSize(max=400, message="项目不能大于400字")
 	@IsEmptyAnnotation(message="项目及价格不能为空") 
 	private String serviceAndprice; //项目及价格
 	
@@ -50,7 +50,8 @@ public class Equipment {
 	@IsEmptyAnnotation(message="图片不能为空") 
 	private String pictureUrl; //图片地址	
 	
-	
+	@IsEmptyAnnotation(message="失效时间不能为空") 
+	private String termOfValidity;
 	
 
 	

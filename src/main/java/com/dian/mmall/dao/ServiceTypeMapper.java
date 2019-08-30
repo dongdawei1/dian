@@ -12,5 +12,13 @@ public interface ServiceTypeMapper {
 	int create_serviceType(ServiceType serviceType);
 
 	List<String> get_serviceType(Integer releaseType,String serviceType,Long userId);
+	
+	List<ServiceType> get_serviceTypeAll(Integer releaseType);
+
+	int updatebyId(ServiceType serviceType);
+
+	void deletebyId(ServiceType serviceType);
+
+	int selectbyId(long id);
 
 }

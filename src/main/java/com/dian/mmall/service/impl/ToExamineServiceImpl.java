@@ -9,13 +9,17 @@ import org.springframework.stereotype.Service;
 
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.dao.ServiceTypeMapper;
+import com.dian.mmall.dao.releaseDao.EquipmentMapper;
 import com.dian.mmall.dao.releaseDao.MenuAndRenovationAndPestControlMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
 import com.dian.mmall.dao.releaseDao.RentMapper;
 import com.dian.mmall.dao.releaseDao.ResumeMapper;
+import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.chuzufang.Rent;
 import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
 import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.pojo.zhiwei.Resume;
 import com.dian.mmall.service.ToExamineService;
@@ -34,6 +38,10 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private ResumeMapper resumeMapper;
 	@Autowired
 	private RentMapper rentMapper;
+	@Autowired
+	private ServiceTypeMapper serviceTypeMapper;
+	@Autowired
+	private EquipmentMapper equipmentMapper;
 	//全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
 	String	userId =params.get("userId").toString().trim();	
@@ -55,6 +63,56 @@ public class ToExamineServiceImpl implements ToExamineService {
 	params.put("examineName", user.getUsername());
 
 	int resultCount=0;
+	
+	String tabuleTypeString=params.get("tabuleType").toString().trim();	
+	if(tabuleTypeString==null ||tabuleTypeString.contentEquals("")) {
+		return	ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+		}
+	
+	int tabuleType=Integer.valueOf(tabuleTypeString);
+	params.remove("tabuleType");
+	//先判断是否需要审批审批类型
+	if(tabuleType==18) {	
+		String isServiceTypeString=params.get("isServiceType").toString().trim();	
+		if(isServiceTypeString==null ||isServiceTypeString.contentEquals("")) {
+			return	ServerResponse.createByErrorMessage(ResponseMessage.fabuleixinbixuan.getMessage());
+			}    
+		int isServiceType=Integer.valueOf(isServiceTypeString);
+		if(authentiCationStatus==2) {
+			if(isServiceType==3) {
+				return	ServerResponse.createByErrorMessage(ResponseMessage.shenhefuwuleixin.getMessage());
+			}
+		}	
+		
+		String serviceTypeIdString=params.get("serviceTypeId").toString().trim();
+		if(serviceTypeIdString==null ||serviceTypeIdString.contentEquals("")) {
+			return	ServerResponse.createByErrorMessage(ResponseMessage.shangpinfuwuleixingidnull.getMessage());
+			} 
+		long serviceTypeId=Integer.valueOf(serviceTypeIdString);
+		int result=0;
+		//不管发布状态是否通过，只要服务类型通过就去更新服务类型库
+		if(isServiceType==2 || isServiceType==3) {	   
+			ServiceType serviceType=new ServiceType();
+			serviceType.setId(serviceTypeId);
+			serviceType.setAuthentiCationStatus(isServiceType);
+			serviceType.setExamineName(user.getUsername());
+			serviceType.setExamineTime(formatter.format(new Date()));
+			result=serviceTypeMapper.updatebyId(serviceType);			
+			if(result==0) {
+				return	ServerResponse.createByErrorMessage(ResponseMessage.shangpinfuwuleixluokushibai.getMessage());
+			}else {
+				serviceTypeMapper.deletebyId(serviceType);
+			}
+		
+		}else {
+			result=serviceTypeMapper.selectbyId(serviceTypeId);
+			if(result==0) {
+				return	ServerResponse.createByErrorMessage(ResponseMessage.shangpinleixinchaxunshibai.getMessage());
+			}
+		}
+		
+	}
+	
 	if(authentiCationStatus==2) {
 		params.put("welfareStatus", 1);
 		params.put("authentiCationStatus", 2);
@@ -70,14 +128,9 @@ public class ToExamineServiceImpl implements ToExamineService {
 		params.put("authentiCationFailure", authentiCationFailure);				
 	}
 	
-	String tabuleTypeString=params.get("tabuleType").toString().trim();	
-	if(tabuleTypeString==null ||tabuleTypeString.contentEquals("")) {
-		return	ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
-		}
 	
-	int tabuleType=Integer.valueOf(tabuleTypeString);
-	params.remove("tabuleType");
-	
+	params.remove("serviceTypeId");
+	params.remove("isServiceType");
 	
 	if(tabuleType==13) {
 	MenuAndRenovationAndPestControl releaseWelfare=(MenuAndRenovationAndPestControl) BeanMapConvertUtil.convertMap(MenuAndRenovationAndPestControl.class, params);
@@ -92,6 +145,10 @@ public class ToExamineServiceImpl implements ToExamineService {
 	}else if(tabuleType==31){
 		Resume resume=(Resume) BeanMapConvertUtil.convertMap(Resume.class, params);
 		resultCount=resumeMapper.examineResume(resume);
+	}else if(tabuleType==18) {	
+		//正常落库即可
+		Equipment equipment=(Equipment) BeanMapConvertUtil.convertMap(Equipment.class, params);
+		resultCount=equipmentMapper.examineEquipment(equipment);
 	}
 	
 	
