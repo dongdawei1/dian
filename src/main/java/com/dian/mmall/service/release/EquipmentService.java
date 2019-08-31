@@ -13,4 +13,8 @@ public interface EquipmentService {
 
 	ServerResponse<Object> get_myEquipment_list(User user, Map<String, Object> params);
 
+	ServerResponse<String> operation_userequipment(User user, Map<String, Object> params);
+
+	ServerResponse<Object> get_userequipment_id(long userId, long id);
+
 }

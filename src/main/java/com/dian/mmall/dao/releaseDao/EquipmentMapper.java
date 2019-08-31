@@ -23,4 +23,10 @@ public interface EquipmentMapper {
 
 	List<Equipment> get_myEquipment_list(int pageLength, int pageSize, Integer releaseType, Integer welfareStatus, long userId);
 
+	int operation_userequipment(long userId, long id, int type, String timeString, String termOfValidity);
+
+	Equipment get_userequipment_id(long userId, long id);
+
+	int update_equipment(Equipment equipment);
+
 }

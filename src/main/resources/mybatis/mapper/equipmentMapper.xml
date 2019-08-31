@@ -80,4 +80,40 @@
         limit #{pageLength}, #{pageSize}
     </select>
    
+   <!-- 操作列 -->
+         <update id="operation_userequipment" >
+       update equipment set  
+      <if test="type==1 "> updateTime=#{timeString} , termOfValidity=#{termOfValidity}</if>
+      <if test="type==2 "> updateTime=#{timeString} , termOfValidity=#{termOfValidity} ,welfareStatus=1</if>
+      <if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
+      <if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+      <if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if> 
+        where userId=#{userId}  and id=#{id}
+      <if test="type==4 "> and welfareStatus not in(4,3)</if>
+       <if test="type==2 "> and welfareStatus=5 and authentiCationStatus=2</if>
+    </update>
+    
+    
+    
+          <!--用户查询分页--> 
+        <select id="get_userequipment_id"  resultType="com.dian.mmall.pojo.weixiuAnddianqi.Equipment">
+        select id,userId,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
+    serviceDetailed,
+    detailed,contact,consigneeName,createTime
+       from equipment       
+       where welfareStatus!=3 and userId=#{userId} and id=#{id}
+    </select>
+    
+    
+       <!-- 用户编辑 -->
+       <update id="update_equipment" >
+       update equipment set       
+    pictureUrl=#{pictureUrl},authentiCationStatus=#{authentiCationStatus},
+    welfareStatus=#{welfareStatus},serviceDetailed=#{serviceDetailed},
+    remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},serviceType=#{serviceType},serviceAndprice=#{serviceAndprice},
+    releaseTitle=#{releaseTitle},updateTime=#{updateTime},termOfValidity=#{termOfValidity},contact=#{contact},
+    consigneeName=#{consigneeName}
+     where welfareStatus!=3 and userId=#{userId} and id=#{id}
+    </update>
 </mapper>

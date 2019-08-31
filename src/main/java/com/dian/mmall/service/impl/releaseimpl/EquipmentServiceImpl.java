@@ -1,6 +1,8 @@
 package com.dian.mmall.service.impl.releaseimpl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
@@ -28,6 +31,7 @@ import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
+import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
 import com.dian.mmall.util.SetBean;
@@ -350,4 +354,163 @@ public class EquipmentServiceImpl implements EquipmentService {
 		equipment_pagePage.setDatas(list_equipment );
 		return ServerResponse.createBySuccess(equipment_pagePage);
 	}
+
+
+
+	@Override
+	public ServerResponse<String> operation_userequipment(User user, Map<String, Object> params) {
+		String type=params.get("type").toString().trim();
+		String userId=params.get("userId").toString().trim();
+		String id=params.get("id").toString().trim();
+		long idLong=0;
+		if(type!=null && !type.equals("") && userId!=null && !userId.equals("")
+				&& id!=null && !id.equals("") ) {
+			int type_int=Integer.valueOf(type);
+			if(type_int<1 || type_int>6) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+			}
+			long userIdLong=Long.valueOf(userId);
+			idLong=Long.valueOf(id);
+			if(userIdLong!=user.getId()) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
+			}
+			 SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
+			 String timeString=null;
+			 String termOfValidity=DateTimeUtil.a_few_days_later(90);
+			 int  result=0;
+			if(type_int==1 || type_int==2) {
+				 timeString=formatter.format(new Date());
+				result=equipmentMapper.operation_userequipment(userIdLong,idLong,type_int,timeString,termOfValidity);
+			}else if(type_int==3 || type_int==4 || type_int==5) {
+				timeString=formatter.format(new Date());
+				result=equipmentMapper.operation_userequipment(userIdLong,idLong,type_int,timeString,termOfValidity);
+			}
+			
+				else if(type_int==6){
+				
+				ServerResponse<Object> serverResponse=get_userequipment_id(userIdLong,idLong);
+				  if(serverResponse.getStatus()!=0) {
+					   return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+				   }
+				Equipment equipment=(Equipment) serverResponse.getData();
+				   
+				//检查图片
+				ServerResponse<String> serverResponseString=setPictureUrl((ArrayList<Picture>) params.get("pictureUrl"), equipment.getPictureUrl());
+				   if(serverResponseString.getStatus()!=0) {
+					  return  serverResponseString;
+				   }
+				//检查其他输入
+				serverResponse=check_evaluate(user, params,2);
+				   if(serverResponse.getStatus()!=0) {
+					   return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+				   }
+				   
+				   Map<String,Object> map=(Map<String, Object>) serverResponse.getData();
+			       map.put("createTime", equipment.getCreateTime());
+			       map.put("id", equipment.getId());
+			       map.put("pictureUrl", serverResponseString.getMsg());
+			       map.put("authentiCationStatus", 1);
+			       map.put("welfareStatus", 4);
+					
+			       Equipment equipment_create=(Equipment) BeanMapConvertUtil.convertMap(Equipment.class,map);
+				 	//{result=true, message=验证通过} 返回结果
+				 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(equipment_create);
+				 	if((boolean)checknullMap.get("result")==true && ((String)checknullMap.get("message")).equals("验证通过")) {
+				 		result=equipmentMapper.update_equipment(equipment_create);
+				 		
+				 		if(result>0) {
+							try {
+								List<Picture> listObj4	= JsonUtil.list2Obj((ArrayList<Picture>)params.get("pictureUrl"),List.class,Picture.class);
+						        for(int a=0;a<listObj4.size();a++) {
+						        Picture	picture=listObj4.get(a);
+						        	if(picture.getUseStatus()==2) {
+											   FileControl.deleteFile(Const.PATH_E_IMG+picture.getUserName());
+											   pictureMapper.updatePicture(picture.getId());
+										
+						        	}
+						        }
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+						}
+				 		
+				 		
+				 	}else if((boolean)checknullMap.get("result")==false) {
+				 		return ServerResponse.createByErrorMessage((String)checknullMap.get("message"));
+				 	}else {
+				 		return ServerResponse.createByErrorMessage("系统异常稍后重试");
+				 	}
+			}
+			
+			if(result==0) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.caozuoshibai.getMessage());
+			}
+			
+			return ServerResponse.createBySuccessMessage(ResponseMessage.caozuochenggong.getMessage());
+			
+			
+		}else {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+		}
+	}
+
+
+
+	@Override
+	public ServerResponse<Object> get_userequipment_id(long userId, long id) {
+	    if(id<=0) {
+	    	 return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());	
+	    }
+		Equipment equipment=equipmentMapper.get_userequipment_id(userId, id);
+		if(equipment==null) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());	
+		}
+		equipment.setContact(EncrypDES.decryptPhone(equipment.getContact()));
+		return ServerResponse.createBySuccess(equipment);
+	}
+	
+	//编辑时检查图片并重新赋值
+		public ServerResponse<String> setPictureUrl(Object object,String PictureUrl){
+			 //前端传入
+			List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) object,List.class,Picture.class);
+		    //数据库查询
+			List<Picture> listObj4	= JsonUtil.string2Obj(PictureUrl,List.class,Picture.class);
+			if(listObj3.size()==0 || listObj4.size()==0) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
+			}
+			List<Picture> listObjCun=new ArrayList<Picture>();
+
+			//处理编辑后
+			for(int a3=0;a3<listObj3.size();a3++) {
+				Picture picture=listObj3.get(a3);
+				long id3=picture.getId();
+				int useStatus=picture.getUseStatus();
+				if(useStatus==1) {
+					//1上传更新为3使用 
+					pictureMapper.updatePictureUse(id3);
+					picture.setUseStatus(3);
+					listObjCun.add(picture);
+				}else if(useStatus==3){	
+					
+					boolean  fanduanshifouweiyijingchunli=false;
+				
+						
+					for(int a4=0;a4<listObj4.size();a4++) {
+						if(id3==listObj4.get(a4).getId()) {
+							listObjCun.add(picture);
+							fanduanshifouweiyijingchunli=true;
+							break;
+						}	
+					}
+					if(fanduanshifouweiyijingchunli==false) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.benditupianbucunzai.getMessage());	
+					}			
+				}
+			}
+			if(listObjCun.size()>0) {
+				return ServerResponse.createBySuccessMessage(JsonUtil.obj2StringPretty(listObjCun));
+			}	
+			return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
+			
+		}
 }
