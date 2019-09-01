@@ -29,4 +29,14 @@ public interface EquipmentMapper {
 
 	int update_equipment(Equipment equipment);
 
+	List<String> getEquipmentReleaseTitleList(Integer releaseType, String detailed, String serviceType, String releaseTitle,
+			Integer type);
+
+	long getEquipmentListNo(Integer releaseType, String detailed, String releaseTitle, String serviceType);
+
+	List<Equipment> getEquipmentPublicList(int pageLength, Integer releaseType, int pageSize, String releaseTitle,
+			String detailed, String serviceType);
+
+	Equipment getEquipmentDetails(long id);
+
 }

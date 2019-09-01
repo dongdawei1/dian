@@ -17,4 +17,12 @@ public interface EquipmentService {
 
 	ServerResponse<Object> get_userequipment_id(long userId, long id);
 
+	ServerResponse<Object> getequipmentList(Map<String, Object> params);
+
+	ServerResponse<Object> getEquipmentReleaseTitleList(Map<String, Object> params);
+
+	ServerResponse<Object> getEquipmentPublicList(Map<String, Object> params);
+
+	ServerResponse<Object> getEquipmentDetails(long id);
+
 }

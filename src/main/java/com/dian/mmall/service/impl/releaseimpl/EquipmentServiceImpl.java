@@ -14,14 +14,17 @@ import com.dian.mmall.common.Const;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.dao.CityMapper;
 import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.ServiceTypeMapper;
 import com.dian.mmall.dao.releaseDao.EquipmentMapper;
+import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.chuzufang.Rent;
 import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
+import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
@@ -34,6 +37,7 @@ import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
+import com.dian.mmall.util.PictureUtil;
 import com.dian.mmall.util.SetBean;
 
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +52,10 @@ public class EquipmentServiceImpl implements EquipmentService {
 	private RealNameMapper realNameMapper;
 	@Autowired
 	private ServiceTypeMapper serviceTypeMapper;
-	
+	@Autowired
+	private CityMapper cityMapper;
+	@Autowired 
+	private EvaluateMapper evaluateMapper;
 	@Override
 	public ServerResponse<String> create_equipment(User user, Map<String, Object> params) {
 
@@ -512,5 +519,194 @@ public class EquipmentServiceImpl implements EquipmentService {
 			}	
 			return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());	
 			
+		}
+
+
+
+		@Override
+		public ServerResponse<Object> getequipmentList(Map<String, Object> params) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
+
+		@Override
+		public ServerResponse<Object> getEquipmentReleaseTitleList(Map<String, Object> params) {
+
+			List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+			if(selectedOptions_list.size()==3) {
+			Integer	provincesId=selectedOptions_list.get(0);
+			Integer	cityId=selectedOptions_list.get(1);
+			Integer   districtCountyId=selectedOptions_list.get(2);
+			   //判断省市区id是否正确
+			String detailed="%"+cityMapper.checkeCity(provincesId,cityId,districtCountyId)+"%";
+		 		
+			
+			String releaseTitle= params.get("releaseTitle").toString().trim();
+			
+			if(releaseTitle!=null && !releaseTitle.equals("")) {
+				releaseTitle="%"+releaseTitle+"%";
+			}
+			
+
+			String serviceType= params.get("serviceType").toString().trim();
+			
+			if(serviceType!=null && !serviceType.equals("")) {
+				serviceType="%"+serviceType+"%";
+			}
+			
+			
+			String releaseTypeString = params.get("releaseType").toString().trim();
+		 	Integer releaseType=null;
+		 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
+		 		releaseType =	Integer.valueOf(releaseTypeString);
+		 		if(releaseType!=18 &&releaseType!=33 &&releaseType!=34 ) {
+		 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
+		 		}
+		 	}else {
+		 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());	
+		 	}
+			
+		 	String typeString = params.get("type").toString().trim();
+		 	Integer type=null;
+		 	if(typeString!=null && !typeString.equals("")) {
+		 		type =	Integer.valueOf(typeString);
+		 		if(type!=1 &&type!=2 ) {
+		 			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinfuwuleixingidnull.getMessage());	
+		 		}
+		 	}else {
+		 		return ServerResponse.createByErrorMessage(ResponseMessage.shangpinfuwuleixingidnull.getMessage());	
+		 	}
+		 	
+		 	
+		      List<String> equipmentReleaseTitleList=equipmentMapper.getEquipmentReleaseTitleList(releaseType,detailed,serviceType,releaseTitle,type);
+			if(equipmentReleaseTitleList.size()==0) {
+				detailed="%"+cityMapper.checkeCityTuo(provincesId, cityId)+"%";
+				equipmentReleaseTitleList=equipmentMapper.getEquipmentReleaseTitleList(releaseType,detailed,serviceType,releaseTitle,type);
+			}
+		      
+		      return ServerResponse.createBySuccess(equipmentReleaseTitleList); 
+			
+		      
+			}else {
+				return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+			}
+		}
+
+
+
+		@Override
+		public ServerResponse<Object> getEquipmentPublicList(Map<String, Object> params) {
+			String currentPage_string= params.get("currentPage").toString().trim() ;    
+			String pageSize_string= params.get("pageSize").toString().trim() ;    
+			int currentPage=0;
+			int  pageSize=0;
+		 	
+		 	if(currentPage_string!=null && currentPage_string!="") {
+		 		currentPage=Integer.parseInt(currentPage_string);
+		 		if(currentPage<=0) {
+		 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+		 		}
+		 		
+			    } else {
+			    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+			    }
+		 	
+		 	if(pageSize_string!=null && pageSize_string!="") {
+		 		pageSize=Integer.parseInt(pageSize_string);
+		 		if(pageSize<=0) {
+		 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+		 		}
+			    } else {
+			    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+			    }
+			 	
+		    
+			String releaseTypeString = params.get("releaseType").toString().trim();
+		 	Integer releaseType=null;
+		 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
+		 		releaseType =	Integer.valueOf(releaseTypeString);
+		 		if(releaseType!=18 &&releaseType!=33 &&releaseType!=34 ) {
+		 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
+		 		}
+		 	}else {
+		 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());	
+		 	}
+		 	
+		 	
+
+			List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+			if(selectedOptions_list.size()==3) {
+			Integer	provincesId=selectedOptions_list.get(0);
+			Integer	cityId=selectedOptions_list.get(1);
+			Integer   districtCountyId=selectedOptions_list.get(2);
+			   //判断省市区id是否正确
+			String detailed="%"+cityMapper.checkeCity(provincesId,cityId,districtCountyId)+"%";
+		 	
+			
+			String releaseTitle= params.get("releaseTitle").toString().trim();
+			
+			if(releaseTitle!=null && !releaseTitle.equals("")) {
+				releaseTitle="%"+releaseTitle+"%";
+			}
+			
+
+			String serviceType= params.get("serviceType").toString().trim();
+			
+			
+		 	Page<Equipment> equipment_pagePage=new Page<Equipment>();
+			
+		 	long zongtiaoshu=equipmentMapper.getEquipmentListNo(releaseType,detailed,releaseTitle,serviceType);
+			
+		 	if(zongtiaoshu==0) {
+		 		detailed="%"+cityMapper.checkeCityTuo(provincesId, cityId)+"%";
+		 		zongtiaoshu=equipmentMapper.getEquipmentListNo(releaseType,detailed,releaseTitle,serviceType);
+		 	}
+		 	
+			equipment_pagePage.setTotalno(zongtiaoshu);
+			equipment_pagePage.setPageSize(pageSize);
+			equipment_pagePage.setCurrentPage(currentPage); //当前页
+		   //查询list
+		 List<Equipment>	equipmentList=equipmentMapper.getEquipmentPublicList((currentPage-1)*pageSize,releaseType,pageSize,releaseTitle,detailed,serviceType);
+		 List<Equipment>	setEquipmentList=new ArrayList<Equipment>();
+		 for(int i=0;i<equipmentList.size();i++) {
+			 Equipment equipment=equipmentList.get(i);
+				List<Picture> listObj3	= JsonUtil.string2Obj(equipment.getPictureUrl(),List.class,Picture.class);
+				Picture picture = listObj3.get(0);
+				equipment.setPictureUrl(picture.getPictureUrl());
+				setEquipmentList.add(equipment);
+			}
+		 
+		 equipment_pagePage.setDatas(setEquipmentList);
+			return ServerResponse.createBySuccess(equipment_pagePage);
+			}else {
+				return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+			}
+		}
+
+
+
+		@Override
+		public ServerResponse<Object> getEquipmentDetails(long id) {
+			  if(id<=0) {
+				   	 return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());	
+				   }
+					Equipment equipment=equipmentMapper.getEquipmentDetails( id);
+					if(equipment==null) {
+						 return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());	
+					}
+					equipment.setContact(EncrypDES.decryptPhone(equipment.getContact()));
+					//处理图片
+					equipment.setPictureUrl(PictureUtil.listToString(equipment.getPictureUrl()));
+					Map<String,Object> map=new HashMap<String, Object>();
+					Evaluate evaluate=new Evaluate();
+					if(equipment.getEvaluateid()!=0) {
+						evaluate=evaluateMapper.selectEvvaluateById(equipment.getEvaluateid());
+						
+					}
+					map.put("evaluate",evaluate);
+					map.put("result",equipment);	
+					return ServerResponse.createBySuccess(map);
 		}
 }

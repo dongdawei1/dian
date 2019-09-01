@@ -1,5 +1,6 @@
 package com.dian.mmall.controller.portal;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -112,5 +113,96 @@ public class EquipmentController {
        return equipmentService.get_userequipment_id(user.getId(),id);
     
     }
+   //公开展示电器维修等列表
     
+    @RequestMapping(value = "getequipmentList",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> getequipmentList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData(); 
+     
+     	
+     		params.put("StringPath", StringPath);
+     
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+ 	
+    	return equipmentService.getequipmentList(params);
+    	
+    } 
+    
+    
+//根据类型获取全部标题
+	
+    @RequestMapping(value = "getEquipmentReleaseTitleList",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> getEquipmentReleaseTitleList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();   
+     	params.put("StringPath", StringPath);
+    	//检查权限
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+     	
+       return equipmentService.getEquipmentReleaseTitleList(params);
+    
+    }
+    
+    
+    //公开展示灭虫装修等列表
+    
+    @RequestMapping(value = "getEquipmentPublicList",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> getEquipmentPublicList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData(); 
+     	//检查权限
+     	params.put("StringPath", StringPath);
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+ 	
+    	return equipmentService.getEquipmentPublicList(params);
+    	
+    }
+	//公开获取id
+	
+    @RequestMapping(value = "getEquipmentDetails",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> getEquipmentDetails(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();   
+     	Map<String, Object> params= new HashMap<String, Object>();
+     	params.put("StringPath", StringPath);
+    	//检查权限
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+       return equipmentService.getEquipmentDetails(id);
+    
+    }
 }
