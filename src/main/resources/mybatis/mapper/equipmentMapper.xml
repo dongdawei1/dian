@@ -31,7 +31,7 @@
     
           <!-- 审核分页总条数 --> 
         <select id="adminEquipment_no"  resultType="long">
-        select count(*) from equipment where authentiCationStatus in(1,3)   
+        select count(*) from equipment where authentiCationStatus in(1,3)  and releaseType in(18,33,34)
        <if test="_parameter!=null and _parameter.trim()!=''">and  contact=#{contact}   </if>  
     </select> 
  
@@ -44,7 +44,7 @@
     detailed,contact,consigneeName,createTime,
     updateTime,userType,examineName,examineTime
        from equipment       
-       where authentiCationStatus in(1,3)  
+       where authentiCationStatus in(1,3)  and releaseType in(18,33,34)
          <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>   
        order by  createTime
         limit #{pageLength}, #{pageSize}
@@ -61,9 +61,10 @@
     
           <!--用户查询分页总条数  --> 
         <select id="get_userEquipment_list_no"  resultType="long">
-        select count(*) from equipment where welfareStatus!=3 and userId=#{userId}   
+        select count(*) from equipment where welfareStatus!=3 and userId=#{userId}    
         <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
         <if test="releaseType!=null">and  releaseType=#{releaseType}   </if>  
+        <if test="releaseType==null">and releaseType in(18,33,34)  </if>  
     </select> 
     <!--用户查询分页--> 
         <select id="get_myEquipment_list"  resultType="com.dian.mmall.pojo.weixiuAnddianqi.Equipment">
@@ -73,9 +74,10 @@
     detailed,contact,consigneeName,createTime,
     updateTime,serviceDetailed,termOfValidity
        from equipment       
-       where welfareStatus!=3 and userId=#{userId} 
+       where welfareStatus!=3 and userId=#{userId}  
         <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
         <if test="releaseType!=null">and  releaseType=#{releaseType}   </if>  
+         <if test="releaseType==null">and releaseType in(18,33,34)  </if>  
        order by  updateTime desc
         limit #{pageLength}, #{pageSize}
     </select>
@@ -155,7 +157,145 @@
     detailed,contact,consigneeName,realNameId,createTime,
     updateTime,serviceDetailed,termOfValidity
        from equipment       
-       where welfareStatus=1 and id=#{id} 
-        
+       where welfareStatus=1 and id=#{id}       
     </select>
+    
+    
+    <!--下边的是菜的--> 
+    
+       <!--创建用户成功返回非0  -->
+     <insert id="create_foodAndGrain"  >
+        insert into equipment (
+        userId,releaseType,updateTime,createTime,pictureUrl,contact,
+        consigneeName,detailed,realNameId,userType,serviceDetailed,
+        remarks,
+        serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus,
+        serviceAndprice,serviceType,termOfValidity
+        ) values (
+            #{userId},  #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
+            #{contact},#{consigneeName},#{detailed},
+            #{realNameId},#{userType},
+            #{serviceDetailed},
+            #{remarks},#{serviceIntroduction},
+            #{releaseTitle},#{authentiCationStatus},#{welfareStatus},
+            #{serviceAndprice},#{serviceType},#{termOfValidity}
+        )
+    </insert>
+    
+              <!--用户查询分页总条数  --> 
+        <select id="get_myFoodAndGrain_list_no"  resultType="long">
+        select count(*) from equipment where welfareStatus!=3 and userId=#{userId}   
+        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
+        <if test="releaseType!=null">and  releaseType=#{releaseType}   </if>  
+    </select> 
+    <!--用户查询分页--> 
+        <select id="get_myFoodAndGrain_list"  resultType="com.dian.mmall.pojo.shichang.FoodAndGrain">
+        select id,userId,evaluateid,servicFrequenc,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
+    welfareStatus,authentiCationStatus,authentiCationFailure,
+    detailed,contact,consigneeName,createTime,
+    updateTime,serviceDetailed,termOfValidity
+       from equipment       
+       where welfareStatus!=3 and userId=#{userId} and  releaseType=#{releaseType}
+        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
+       order by  updateTime desc
+        limit #{pageLength}, #{pageSize}
+    </select>
+      <!-- 操作列 -->
+         <update id="operation_userFoodAndGrain" >
+       update equipment set  
+      <if test="type==1 "> updateTime=#{timeString} , termOfValidity=#{termOfValidity}</if>
+      <if test="type==2 "> updateTime=#{timeString} , termOfValidity=#{termOfValidity} ,welfareStatus=1</if>
+      <if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
+      <if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+      <if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if> 
+        where userId=#{userId}  and id=#{id}
+      <if test="type==4 "> and welfareStatus not in(4,3)</if>
+      <if test="type==2 "> and welfareStatus=5 and authentiCationStatus=2</if>
+    </update>
+    
+    
+    
+          <!--用户查询分页--> 
+        <select id="get_userFoodAndGrain_id"  resultType="com.dian.mmall.pojo.shichang.FoodAndGrain">
+        select id,userId,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
+    serviceDetailed,
+    detailed,contact,consigneeName,createTime
+       from equipment       
+       where welfareStatus!=3 and userId=#{userId} and id=#{id}
+    </select>
+    
+      <!-- 用户编辑 -->
+       <update id="update_foodAndGrain" >
+       update equipment set       
+    pictureUrl=#{pictureUrl},authentiCationStatus=#{authentiCationStatus},
+    welfareStatus=#{welfareStatus},serviceDetailed=#{serviceDetailed},
+    remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},serviceType=#{serviceType},serviceAndprice=#{serviceAndprice},
+    releaseTitle=#{releaseTitle},updateTime=#{updateTime},termOfValidity=#{termOfValidity},contact=#{contact},
+    consigneeName=#{consigneeName}
+     where welfareStatus!=3 and userId=#{userId} and id=#{id}
+    </update>
+    
+       <!-- 查看该实名城市下发布过服务的标题 -->
+     <select id="getFoodAndGrainTitleList"  resultType="String">
+        select
+        <if test="type==1 ">  DISTINCT releaseTitle </if>
+        <if test="type==2 ">  DISTINCT serviceType </if>
+          from equipment where welfareStatus=1   and  releaseType=#{releaseType} and detailed like #{detailed}
+        <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>       
+         <if test="serviceType!=null and serviceType.trim()!=''">and  serviceType like #{serviceType}   </if>           
+    </select> 
+    
+    
+        <!-- 公开列表分页总数 -->  
+     
+        <select id="getFoodAndGrainPublicListNo"  resultType="long">
+        select count(*) from equipment where welfareStatus=1  and  releaseType=#{releaseType} and detailed like #{detailed}
+       <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>  
+       <if test="serviceType!=null and serviceType.trim()!=''">and  serviceType =#{serviceType}   </if>  
+    </select> 
+    
+      <!-- 公开列表分页概览 -->
+         <select id="getFoodAndGrainPublicList"  resultType="com.dian.mmall.pojo.shichang.FoodAndGrain">
+        select id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed from equipment where welfareStatus=1   and  releaseType=#{releaseType}
+       and detailed like #{detailed}
+       <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>  
+       <if test="serviceType!=null and serviceType.trim()!=''">and  serviceType =#{serviceType}   </if>   
+       order by updateTime desc
+        limit #{pageLength}, #{pageSize}
+    </select> 
+     
+     
+     <!--用户查询分页--> 
+        <select id="getFoodAndGrainDetails"  resultType="com.dian.mmall.pojo.shichang.FoodAndGrain">
+        select id,userId,evaluateid,servicFrequenc,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
+    detailed,contact,consigneeName,realNameId,createTime,
+    updateTime,serviceDetailed,termOfValidity
+       from equipment       
+       where welfareStatus=1 and id=#{id}       
+    </select>
+    
+    
+         <!-- 审核分页总条数 --> 
+        <select id="adminFoodAndGrain_no"  resultType="long">
+        select count(*) from equipment where authentiCationStatus in(1,3)  and releaseType=#{releaseType} 
+             <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if> 
+    </select> 
+ 
+   <!-- 审核分页 -->
+        
+        <select id="adminFoodAndGrain"  resultType="com.dian.mmall.pojo.shichang.FoodAndGrain">
+      select id,userId,releaseType,
+    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,serviceDetailed,
+    welfareStatus,authentiCationStatus,authentiCationFailure,
+    detailed,contact,consigneeName,createTime,
+    updateTime,userType,examineName,examineTime
+       from equipment       
+       where authentiCationStatus in(1,3)  and releaseType=#{releaseType}
+         <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>   
+       order by  createTime
+        limit #{pageLength}, #{pageSize}
+    </select> 
 </mapper>

@@ -17,7 +17,6 @@ import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.GetPublishingsService;
-import com.dian.mmall.service.release.ReleaseCommodityService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.CheckLand;
@@ -38,27 +37,6 @@ public class GetPublishingsController {
     @Autowired
     private ResumeService resumeService;
 	
-//查询商品接口
-    
-    @RequestMapping(value = "getGoods",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse getGoods(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    	//检查权限
-     	params.put("StringPath", recruitWorkers);
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
- 	
-    	return getPublishingsService.getMenuList(user, params);
-    	
-    }
     
     //职位获取电话或者邮箱   
     @RequestMapping(value = "getContact",method = RequestMethod.POST)

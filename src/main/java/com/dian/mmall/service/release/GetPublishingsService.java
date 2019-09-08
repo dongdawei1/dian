@@ -8,8 +8,5 @@ import com.dian.mmall.pojo.user.User;
 
 public interface GetPublishingsService {
 
-
-
-	ServerResponse getMenuList(User user, Map<String, Object> params);
 	String ctiy(String provinces_Id,String city_Id,String districtCounty_Id);
 }

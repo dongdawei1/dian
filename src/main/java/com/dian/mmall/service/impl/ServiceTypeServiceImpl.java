@@ -43,7 +43,10 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 	 		releaseType=Integer.valueOf(releaseTypeString);	
 	 		if(releaseType==18 || releaseType==33 ||releaseType==34) {
 	 		releaseType=18;
+	 		}else if(releaseType==4 || releaseType==5 ||releaseType==6||releaseType==29){
+	 			releaseType=Integer.valueOf(releaseTypeString);	
 	 		}
+	 		
 	 		//TODO 新加就在这里设置
 	 		else {
 	 		return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());

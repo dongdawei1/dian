@@ -43,103 +43,51 @@ public class GetPublishingsServiceImpl implements GetPublishingsService {
 	private CityMapper cityMapper;
 	
 	
-	   @Autowired
-	   private NumberOfQueriesMapper numberOfQueriesMapper;
-	
-	@Override
-	public ServerResponse getMenuList(User user, Map<String,Object> params) {
-		long userId=user.getId(); 
-		String permissionid_string= params.get("permissionid").toString().trim() ;    
-		String currentPage_string= params.get("currentPage").toString().trim() ;    
-		String pageSize_string= params.get("pageSize").toString().trim() ;    
-	 	
-		int permissionid=0;
-		int currentPage=0;
-		int  pageSize=0;
-		
-	 	if(permissionid_string!=null && permissionid_string!="") {
-	    		permissionid=Integer.parseInt(permissionid_string);
-	 	}else {
-	 		 return ServerResponse.createByErrorMessage("菜单id输入有误");
-	 	}
-	 	
-	 	if(currentPage_string!=null && currentPage_string!="") {
-	 		currentPage=Integer.parseInt(currentPage_string);
-	 		if(currentPage<=0) {
-	 			 return ServerResponse.createByErrorMessage("页数不能小于0");
-	 		}
-	 		
- 	    } else {
- 	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
- 	    }
-	 	
-
-	 	if(pageSize_string!=null && pageSize_string!="") {
-	 		pageSize=Integer.parseInt(pageSize_string);
-	 		if(pageSize<=0) {
-	 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
-	 		}
- 	    } else {
- 	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
- 	    }
-	 	
-		//粮油code需要在PermissionCode中和数据库id保持一致
-	
-		if(permissionid ==PermissionCode.GRAINANDOIL.getCode() ) {
-		
-			return   	getGrainAndOilList(permissionid, userId,params,currentPage,pageSize);
-
-		}
-	
-		
-		else {
-			//如果不等于所有就不是此菜单
-		 return ServerResponse.createByErrorMessage("不存在的菜单");
-		}
-		
-	}
-
-	//菜单五已经实现 	
-	public ServerResponse getGrainAndOilList(Integer permissionid, long userId,Map<String,Object> params,int currentPage,
-		int  pageSize){
-
-	     
-	     
-			ServerResponse checkroleString=checkRoleAndcommodityType(permissionid,  userId);
-		
-			if(checkroleString.getMsg().equals("success")) {
-				
-				Page<GrainAndOil> grainAndOil_pagePage=new Page<GrainAndOil>();
-				grainAndOil_pagePage.setTotalno(grainAndOilMapper.getGrainAndOilPageno());
-				grainAndOil_pagePage.setPageSize(pageSize);
-				grainAndOil_pagePage.setCurrentPage(currentPage); //当前页
-				grainAndOil_pagePage.setDatas(grainAndOilMapper.getGrainAndOilList((currentPage-1)*pageSize,pageSize));
-				//在这里查询 TODO
-				return ServerResponse.createBySuccess(grainAndOil_pagePage);
-			}else {
-				
-				 return checkroleString;  
-			}
-	     
-			
-			
-		}
-		
-
-		
-		//校验
-	public  ServerResponse<String> checkRoleAndcommodityType(int permissionid ,long userId) {
-			  int isroleAndtype=0; 
-				//取得是总条数，后期可能会有一个用户多个角色的情况
-			
-			 isroleAndtype=tRolePermissionMapper.isrole(userId,permissionid);
-			 if(isroleAndtype<1) {
-				//检查用户有没有此菜单权限,role查 t_role_permission表 	
-				 return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());  
-			   }	
-	 
-			   return ServerResponse.createBySuccessMessage("success");	  		  
-		  }
+//	   @Autowired
+//	   private NumberOfQueriesMapper numberOfQueriesMapper;
+//	
+//	
+//	//菜单五已经实现 	
+//	public ServerResponse getGrainAndOilList(Integer permissionid, long userId,Map<String,Object> params,int currentPage,
+//		int  pageSize){
+//
+//	     
+//	     
+//			ServerResponse checkroleString=checkRoleAndcommodityType(permissionid,  userId);
+//		
+//			if(checkroleString.getMsg().equals("success")) {
+//				
+//				Page<GrainAndOil> grainAndOil_pagePage=new Page<GrainAndOil>();
+//				grainAndOil_pagePage.setTotalno(grainAndOilMapper.getGrainAndOilPageno());
+//				grainAndOil_pagePage.setPageSize(pageSize);
+//				grainAndOil_pagePage.setCurrentPage(currentPage); //当前页
+//				grainAndOil_pagePage.setDatas(grainAndOilMapper.getGrainAndOilList((currentPage-1)*pageSize,pageSize));
+//				//在这里查询 TODO
+//				return ServerResponse.createBySuccess(grainAndOil_pagePage);
+//			}else {
+//				
+//				 return checkroleString;  
+//			}
+//	     
+//			
+//			
+//		}
+//		
+//
+//		
+//		//校验
+//	public  ServerResponse<String> checkRoleAndcommodityType(int permissionid ,long userId) {
+//			  int isroleAndtype=0; 
+//				//取得是总条数，后期可能会有一个用户多个角色的情况
+//			
+//			 isroleAndtype=tRolePermissionMapper.isrole(userId,permissionid);
+//			 if(isroleAndtype<1) {
+//				//检查用户有没有此菜单权限,role查 t_role_permission表 	
+//				 return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());  
+//			   }	
+//	 
+//			   return ServerResponse.createBySuccessMessage("success");	  		  
+//		  }
 	
 	
 

@@ -119,6 +119,15 @@ public class CheckLand {
      				return ServerResponse.createByErrorMessage(meiyouquanxString);
      			}
             }
+     		else if(menu.equals("/home/foodAndGrain") ) {
+     			//  蔬菜/调料/水产禽蛋   拥有  4,5,6,29  蔬菜，粮油，调料，水产,
+     			if(role!=1 &&role!=4 ) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			
+            }
+     		
+     		
+     		
      		
      		else if(menu.equals("/home/release") ) {
      			if(role!=2 && role!=1) {
@@ -217,7 +226,13 @@ public class CheckLand {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);} 			
             }
      		
+     		else if(menu.equals("/home/foodAndGrain") ) {
+     			//  蔬菜/调料/水产禽蛋   拥有  4,5,6,29  蔬菜，粮油，调料，水产,
+     			if(role!=1 &&role!=2  &&role!=4 ) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      		
+     			
+            }
      		
      		
      		
@@ -390,7 +405,19 @@ public class CheckLand {
      			isButten.put("isSee", true);
      			
             }
-     		
+     		else if(menu.equals("/home/foodAndGrain") ) {
+     			//  蔬菜/调料/水产禽蛋   拥有  4,5,6,29  蔬菜，粮油，调料，水产,
+     			if(role!=1 &&role!=2  &&role!=4 ) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			if( role==1|| role==4) {
+     				isButten.put("isCreate", true);
+     			}else {
+     				isButten.put("isCreate", false);
+     			}
+     			isButten.put("isAuthentication", user.getIsAuthentication());
+     			isButten.put("isSee", true);
+     			
+            }
      		else if(menu.equals("/home/lease") ) {
      			if(role!=2&&role!=3&&role!=6&&role!=1&&role!=11) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}

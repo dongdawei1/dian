@@ -146,7 +146,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 		Resume resume=(Resume) BeanMapConvertUtil.convertMap(Resume.class, params);
 		resultCount=resumeMapper.examineResume(resume);
 	}else if(tabuleType==18) {	
-		//正常落库即可
+		//正常落库即可  和菜 共用一个
 		Equipment equipment=(Equipment) BeanMapConvertUtil.convertMap(Equipment.class, params);
 		resultCount=equipmentMapper.examineEquipment(equipment);
 	}
