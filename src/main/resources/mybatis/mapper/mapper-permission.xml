@@ -17,7 +17,7 @@
                 <!-- 新建用户时需要插入这张表  -->
                 where userid = #{id}
             )
-        )
+        ) ORDER BY serialNo 
     </select>
     
  

@@ -103,7 +103,7 @@ public class FoodAndGrainServiceImpl implements FoodAndGrainService {
 						 return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
 					}
 					int releaseType=Integer.valueOf(releaseTypeString);
-					if(releaseType!=4 &&releaseType!=5 &&releaseType!=6 &&releaseType!=29) {
+					if(releaseType!=4 &&releaseType!=5 &&releaseType!=6 &&releaseType!=29&&releaseType!=9&&releaseType!=11) {
 						 return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 					}
 					int count=0;
@@ -472,7 +472,7 @@ public class FoodAndGrainServiceImpl implements FoodAndGrainService {
 	 	Integer releaseType=null;
 	 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
 	 		releaseType =	Integer.valueOf(releaseTypeString);
-	 		if(releaseType!=4 &&releaseType!=5 &&releaseType!=6 &&releaseType!=29 ) {
+	 		if(releaseType!=4 &&releaseType!=5 &&releaseType!=6 &&releaseType!=29 &&releaseType!=9&&releaseType!=11 ) {
 	 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
 	 		}
 	 	}else {
@@ -536,7 +536,7 @@ public class FoodAndGrainServiceImpl implements FoodAndGrainService {
 	 	Integer releaseType=null;
 	 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
 	 		releaseType =	Integer.valueOf(releaseTypeString);
-	 		if(releaseType!=4 &&releaseType!=5 &&releaseType!=6 &&releaseType!=29) {
+	 		if(releaseType!=4 &&releaseType!=5 &&releaseType!=6 &&releaseType!=29&&releaseType!=9&&releaseType!=11) {
 	 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
 	 		}
 	 	}else {
@@ -655,7 +655,7 @@ public class FoodAndGrainServiceImpl implements FoodAndGrainService {
 	 	Integer releaseType=null;
 	 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
 	 		releaseType =	Integer.valueOf(releaseTypeString);
-	 		if(releaseType!=4 &&releaseType!=5 &&releaseType!=6 &&releaseType!=29) {
+	 		if(releaseType!=4 &&releaseType!=5 &&releaseType!=6 &&releaseType!=29&&releaseType!=9&&releaseType!=11) {
 	 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
 	 		}
 	 	}else {

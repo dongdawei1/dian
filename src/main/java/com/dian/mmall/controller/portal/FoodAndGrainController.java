@@ -161,7 +161,7 @@ private String StringPath="/home/foodAndGrain";
     }
     
     
-    //公开展示灭虫装修等列表
+    //公开列表
     
     @RequestMapping(value = "getFoodAndGrainPublicList",method = RequestMethod.POST)
     @ResponseBody
