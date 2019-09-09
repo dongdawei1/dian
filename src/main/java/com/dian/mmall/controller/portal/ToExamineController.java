@@ -27,6 +27,7 @@ import com.dian.mmall.service.release.MenuAndRenovationAndPestControlService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.service.release.RentService;
 import com.dian.mmall.service.release.ResumeService;
+import com.dian.mmall.service.release.WineAndTablewareService;
 import com.dian.mmall.util.CheckLand;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
@@ -161,8 +162,6 @@ public class ToExamineController {
     @RequestMapping(value = "adminEquipment",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Object> adminEquipment(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-    	
-    	
     	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
      	//检查是否有管理员权限
      	if(serverResponse.getStatus()!=0 ) {
@@ -172,6 +171,23 @@ public class ToExamineController {
     	return equipmentService.adminEquipment(params);
     	
     }
+    
+    @Autowired
+    private WineAndTablewareService wineAndTablewareService;
+    //获取待审核二手电器
+    @RequestMapping(value = "adminWineAndTableware",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> adminWineAndTableware(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+ 	
+    	return wineAndTablewareService.adminWineAndTableware(params);
+    	
+    }
+    
     @Autowired
     private FoodAndGrainService foodAndGrainService;
     //获取待审核米菜

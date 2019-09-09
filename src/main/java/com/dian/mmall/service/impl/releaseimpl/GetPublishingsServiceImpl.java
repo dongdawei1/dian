@@ -1,96 +1,19 @@
 package com.dian.mmall.service.impl.releaseimpl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.dian.mmall.common.PermissionCode;
-import com.dian.mmall.common.ResponseMessage;
-import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.CityMapper;
-import com.dian.mmall.dao.chaxuncishu.NumberOfQueriesMapper;
-import com.dian.mmall.dao.releaseDao.GrainAndOilMapper;
-import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
-import com.dian.mmall.dao.releaseDao.TRolePermissionMapper;
-import com.dian.mmall.pojo.Page;
-import com.dian.mmall.pojo.chaxuncishu.NumberOfQueries;
-import com.dian.mmall.pojo.commodity.GrainAndOil;
-import com.dian.mmall.pojo.tupian.Picture;
-import com.dian.mmall.pojo.user.User;
-import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.service.release.GetPublishingsService;
-import com.dian.mmall.util.AnnotationDealUtil;
-import com.dian.mmall.util.BeanMapConvertUtil;
-import com.dian.mmall.util.DateTimeUtil;
-import com.dian.mmall.util.EncrypDES;
-import com.dian.mmall.util.JsonUtil;
+
 @Service("getPublishingsService")
 public class GetPublishingsServiceImpl implements GetPublishingsService {
 	
-	@Autowired
-    private TRolePermissionMapper tRolePermissionMapper;
-	@Autowired  
-	private	GrainAndOilMapper grainAndOilMapper;
-	@Autowired
-	private ReleaseWelfareMapper releaseWelfareMapper;
 	
 	@Autowired
 	private CityMapper cityMapper;
 	
-	
-//	   @Autowired
-//	   private NumberOfQueriesMapper numberOfQueriesMapper;
-//	
-//	
-//	//菜单五已经实现 	
-//	public ServerResponse getGrainAndOilList(Integer permissionid, long userId,Map<String,Object> params,int currentPage,
-//		int  pageSize){
-//
-//	     
-//	     
-//			ServerResponse checkroleString=checkRoleAndcommodityType(permissionid,  userId);
-//		
-//			if(checkroleString.getMsg().equals("success")) {
-//				
-//				Page<GrainAndOil> grainAndOil_pagePage=new Page<GrainAndOil>();
-//				grainAndOil_pagePage.setTotalno(grainAndOilMapper.getGrainAndOilPageno());
-//				grainAndOil_pagePage.setPageSize(pageSize);
-//				grainAndOil_pagePage.setCurrentPage(currentPage); //当前页
-//				grainAndOil_pagePage.setDatas(grainAndOilMapper.getGrainAndOilList((currentPage-1)*pageSize,pageSize));
-//				//在这里查询 TODO
-//				return ServerResponse.createBySuccess(grainAndOil_pagePage);
-//			}else {
-//				
-//				 return checkroleString;  
-//			}
-//	     
-//			
-//			
-//		}
-//		
-//
-//		
-//		//校验
-//	public  ServerResponse<String> checkRoleAndcommodityType(int permissionid ,long userId) {
-//			  int isroleAndtype=0; 
-//				//取得是总条数，后期可能会有一个用户多个角色的情况
-//			
-//			 isroleAndtype=tRolePermissionMapper.isrole(userId,permissionid);
-//			 if(isroleAndtype<1) {
-//				//检查用户有没有此菜单权限,role查 t_role_permission表 	
-//				 return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());  
-//			   }	
-//	 
-//			   return ServerResponse.createBySuccessMessage("success");	  		  
-//		  }
-	
-	
-
 	 public String ctiy(String provinces_Id,String city_Id,String districtCounty_Id) {
 		
 		 if(provinces_Id==null || provinces_Id.equals("") || city_Id==null || city_Id.equals("")) {

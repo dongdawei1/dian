@@ -27,7 +27,6 @@ import com.dian.mmall.dao.chaxuncishu.NumberOfQueriesMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
 import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.chaxuncishu.NumberOfQueries;
-import com.dian.mmall.pojo.commodity.GrainAndOil;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;

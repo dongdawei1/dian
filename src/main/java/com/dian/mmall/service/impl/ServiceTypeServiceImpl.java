@@ -43,7 +43,8 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 	 		releaseType=Integer.valueOf(releaseTypeString);	
 	 		if(releaseType==18 || releaseType==33 ||releaseType==34) {
 	 		releaseType=18;
-	 		}else if(releaseType==4 || releaseType==5 ||releaseType==6||releaseType==29 ||releaseType==9 ||releaseType==11){
+	 		}else if(releaseType==4 || releaseType==5 ||releaseType==6||releaseType==29 ||releaseType==9 ||releaseType==11
+	 				||releaseType==7 ||releaseType==8){
 	 			releaseType=Integer.valueOf(releaseTypeString);	
 	 		}
 	 		

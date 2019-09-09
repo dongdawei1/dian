@@ -15,8 +15,10 @@ import com.dian.mmall.dao.releaseDao.MenuAndRenovationAndPestControlMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
 import com.dian.mmall.dao.releaseDao.RentMapper;
 import com.dian.mmall.dao.releaseDao.ResumeMapper;
+import com.dian.mmall.dao.releaseDao.WineAndTablewareMapper;
 import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.chuzufang.Rent;
+import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
@@ -42,6 +44,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private ServiceTypeMapper serviceTypeMapper;
 	@Autowired
 	private EquipmentMapper equipmentMapper;
+	@Autowired
+	private WineAndTablewareMapper wineAndTablewareMapper;
 	//全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
 	String	userId =params.get("userId").toString().trim();	
@@ -72,7 +76,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 	int tabuleType=Integer.valueOf(tabuleTypeString);
 	params.remove("tabuleType");
 	//先判断是否需要审批审批类型
-	if(tabuleType==18) {	
+	if(tabuleType==18 || tabuleType==7) {	
 		String isServiceTypeString=params.get("isServiceType").toString().trim();	
 		if(isServiceTypeString==null ||isServiceTypeString.contentEquals("")) {
 			return	ServerResponse.createByErrorMessage(ResponseMessage.fabuleixinbixuan.getMessage());
@@ -149,6 +153,10 @@ public class ToExamineServiceImpl implements ToExamineService {
 		//正常落库即可  和菜 共用一个
 		Equipment equipment=(Equipment) BeanMapConvertUtil.convertMap(Equipment.class, params);
 		resultCount=equipmentMapper.examineEquipment(equipment);
+	}else if(tabuleType==7) {	
+		//正常落库即可  和菜 共用一个
+		WineAndTableware wineAndTableware=(WineAndTableware) BeanMapConvertUtil.convertMap(WineAndTableware.class, params);
+		resultCount=wineAndTablewareMapper.examineEquipment(wineAndTableware);
 	}
 	
 	

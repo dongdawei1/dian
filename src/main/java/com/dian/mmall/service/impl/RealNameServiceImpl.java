@@ -20,7 +20,6 @@ import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.UserMapper;
 import com.dian.mmall.pojo.City;
 import com.dian.mmall.pojo.Page;
-import com.dian.mmall.pojo.commodity.GrainAndOil;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
