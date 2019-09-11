@@ -82,20 +82,24 @@ public class ToExamineServiceImpl implements ToExamineService {
 			return	ServerResponse.createByErrorMessage(ResponseMessage.fabuleixinbixuan.getMessage());
 			}    
 		int isServiceType=Integer.valueOf(isServiceTypeString);
-		if(authentiCationStatus==2) {
-			if(isServiceType==3) {
-				return	ServerResponse.createByErrorMessage(ResponseMessage.shenhefuwuleixin.getMessage());
-			}
-		}	
 		
 		String serviceTypeIdString=params.get("serviceTypeId").toString().trim();
 		if(serviceTypeIdString==null ||serviceTypeIdString.contentEquals("")) {
 			return	ServerResponse.createByErrorMessage(ResponseMessage.shangpinfuwuleixingidnull.getMessage());
 			} 
 		long serviceTypeId=Integer.valueOf(serviceTypeIdString);
+		if(authentiCationStatus==2) {
+			if(isServiceType==3) {
+				return	ServerResponse.createByErrorMessage(ResponseMessage.shenhefuwuleixin.getMessage());
+			}
+		}	
+		
+		
+		
 		int result=0;
 		//不管发布状态是否通过，只要服务类型通过就去更新服务类型库
-		if(isServiceType==2 || isServiceType==3) {	   
+		if(serviceTypeId!=-1) {
+		if( (isServiceType==2 || isServiceType==3) ) {	   
 			ServiceType serviceType=new ServiceType();
 			serviceType.setId(serviceTypeId);
 			serviceType.setAuthentiCationStatus(isServiceType);
@@ -114,7 +118,11 @@ public class ToExamineServiceImpl implements ToExamineService {
 				return	ServerResponse.createByErrorMessage(ResponseMessage.shangpinleixinchaxunshibai.getMessage());
 			}
 		}
-		
+		}else {
+			if( isServiceType==1 ||isServiceType==2 || authentiCationStatus==2 ) {
+					return	ServerResponse.createByErrorMessage(ResponseMessage.fuwuleixinIdcuowu.getMessage());	
+			}
+		}
 	}
 	
 	if(authentiCationStatus==2) {

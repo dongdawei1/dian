@@ -517,7 +517,7 @@ public ServerResponse<Object> adminWineAndTableware(Map<String, Object> params) 
 			ServiceType serviceType=serviceTypeList.get(a);
 			String serviceTypeName=serviceType.getServiceTypeName();
 			if(serviceTypeString.equals(serviceTypeName) && userId==serviceType.getCreateUserId() &&  serviceType.getAuthentiCationStatus()==1) {
-				re.setServiceType("(待审批的商品类型: )"+serviceTypeString);
+				re.setServiceType(Const.SERVICETYPEDAI+serviceTypeString);
 				re.setEvaluateid(serviceType.getId());
 				bo=true;
 			}else if(serviceTypeString.equals(serviceTypeName) &&  serviceType.getAuthentiCationStatus()==2) {
@@ -528,7 +528,7 @@ public ServerResponse<Object> adminWineAndTableware(Map<String, Object> params) 
 		}
 		if(bo==false) {
 			re.setEvaluateid(-1);
-			re.setServiceType("(不通过,商品类型不合规: )"+serviceTypeString);
+			re.setServiceType(Const.SERVICETYPENO+serviceTypeString);
 		}
 		list_equipment.add(re);
 	}

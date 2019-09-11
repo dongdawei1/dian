@@ -20,6 +20,7 @@ import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.RealNameService;
+import com.dian.mmall.service.ServiceTypeService;
 import com.dian.mmall.service.ToExamineService;
 import com.dian.mmall.service.release.EquipmentService;
 import com.dian.mmall.service.release.FoodAndGrainService;
@@ -41,7 +42,8 @@ public class ToExamineController {
 	
 	@Autowired  
 	private RealNameService realNameService;
-	
+	@Autowired
+	private ServiceTypeService serviceTypeService;
  
 	//获取待实名
     @RequestMapping(value = "getRealNameAll",method = RequestMethod.POST)
@@ -225,7 +227,25 @@ public class ToExamineController {
 
     } 
     
+	//创建服务名称
+    @RequestMapping(value = "admin_create_serviceType",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> admin_create_serviceType(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	//TODO只有管理员才能调用
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+    	
+     	User user = (User) serverResponse.getData();
+     	  if(user.getIsAuthentication()!=2) {
+       	   return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+          }
+   
+        
+        return serviceTypeService.admin_create_serviceType(user,params);
     
+    } 
     
     
 }

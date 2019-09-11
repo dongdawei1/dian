@@ -1,5 +1,7 @@
 package com.dian.mmall.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +12,7 @@ import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.ServiceTypeMapper;
 import com.dian.mmall.pojo.ServiceType;
+import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.ServiceTypeService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.LegalCheck;
@@ -19,7 +22,32 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
    private ServiceTypeMapper serviceTypeMapper;
 	
 	@Override
-	public ServerResponse<String> create_serviceType(long userId, Map<String, Object> params) {
+	public ServerResponse<String> create_serviceType(User user, Map<String, Object> params) {
+		return createServiceType(user, params,1);  //待审批
+	}
+	@Override
+	public ServerResponse<String> admin_create_serviceType(User user, Map<String, Object> params) {
+		
+		return createServiceType(user, params,2); //管理员加入
+	}
+	@Override
+	public ServerResponse<Object> get_serviceType(Integer releaseType,String serviceType,Long userId) {
+		if(releaseType>0&& releaseType<100) {
+			
+			if(serviceType!=null && !serviceType.equals("")) {
+				serviceType="%"+serviceType+"%";
+			}
+			
+			return ServerResponse.createBySuccess(serviceTypeMapper.get_serviceType(releaseType,serviceType,userId));
+		}else {
+	 		  return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+		}
+	}
+
+	
+   
+	
+	public ServerResponse<String> createServiceType(User user, Map<String, Object> params,int authentiCationStatus) {
 		
 		//判断非法输入
 		ServerResponse<String> serverResponse= LegalCheck.legalCheckFrom(params);
@@ -59,7 +87,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 	 	
 	 	String serviceTypeName= serverResponse.getMsg();
 	 	
-	 	ServerResponse<Object> serverResponse2=get_serviceType(releaseType, null, userId);
+	 	ServerResponse<Object> serverResponse2=get_serviceType(releaseType, null, user.getId());
 	 	if(serverResponse.getStatus()!=0) {	
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunyiyouleixshibai.getMessage());
 		}
@@ -75,8 +103,15 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 	 	ServiceType serviceType=new ServiceType();
 	 	serviceType.setReleaseType(releaseType);
 	 	serviceType.setServiceTypeName(serviceTypeName);
-	 	serviceType.setAuthentiCationStatus(1);
-	 	serviceType.setCreateUserId(userId);
+	 	serviceType.setAuthentiCationStatus(authentiCationStatus);
+	 	serviceType.setCreateUserId(user.getId());
+	 	
+	 	if(authentiCationStatus==2) {
+	 	serviceType.setExamineName(user.getUsername());
+	 	 SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
+		 String timeString=formatter.format(new Date());
+	 	serviceType.setExamineTime(timeString);
+	 	}
 		//{result=true, message=验证通过} 返回结果
 	 	Map<String, Object> checknullMap=AnnotationDealUtil.validate(serviceType);
 	 	if((boolean)checknullMap.get("result")==true && ((String)checknullMap.get("message")).equals("验证通过")) {
@@ -90,21 +125,5 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 	 	}else {
 	 		return ServerResponse.createByErrorMessage("系统异常稍后重试");
 	 	}
-	
 	}
-
-	@Override
-	public ServerResponse<Object> get_serviceType(Integer releaseType,String serviceType,Long userId) {
-		if(releaseType>0&& releaseType<100) {
-			
-			if(serviceType!=null && !serviceType.equals("")) {
-				serviceType="%"+serviceType+"%";
-			}
-			
-			return ServerResponse.createBySuccess(serviceTypeMapper.get_serviceType(releaseType,serviceType,userId));
-		}else {
-	 		  return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-		}
-	}
-
 }

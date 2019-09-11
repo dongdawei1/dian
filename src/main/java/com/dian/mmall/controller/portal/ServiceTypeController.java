@@ -39,7 +39,7 @@ public class ServiceTypeController {
           }
    
         
-        return serviceTypeService.create_serviceType(user.getId(),params);
+        return serviceTypeService.create_serviceType(user,params);
     
     }
 

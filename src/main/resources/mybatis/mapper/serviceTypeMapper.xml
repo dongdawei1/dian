@@ -9,9 +9,9 @@
        <!--创建用户成功返回非0  -->
      <insert id="create_serviceType" >
         insert into serviceType (
-            serviceTypeName,releaseType,authentiCationStatus,createUserId
+            serviceTypeName,releaseType,authentiCationStatus,createUserId,examineName,examineTime
         ) values (
-        #{serviceTypeName},#{releaseType},#{authentiCationStatus},#{createUserId}
+        #{serviceTypeName},#{releaseType},#{authentiCationStatus},#{createUserId},#{examineName},#{examineTime}
         )
     </insert>
 
@@ -36,7 +36,7 @@
     
      <update id="updatebyId" >
        update serviceType set  
-       authentiCationStatus=#{authentiCationStatus}
+       authentiCationStatus=#{authentiCationStatus}  ,examineName=#{examineName},examineTime=#{examineTime}
         where  id=#{id}
          <if test="authentiCationStatus ==3">and  authentiCationStatus =1   </if>  
     </update>
