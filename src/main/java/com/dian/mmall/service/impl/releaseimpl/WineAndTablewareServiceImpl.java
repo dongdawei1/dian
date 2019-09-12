@@ -24,6 +24,7 @@ import com.dian.mmall.dao.releaseDao.WineAndTablewareMapper;
 import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
+import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.shichang.FoodAndGrain;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
@@ -37,6 +38,7 @@ import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
+import com.dian.mmall.util.PictureUtil;
 import com.dian.mmall.util.SetBean;
 
 import lombok.extern.slf4j.Slf4j;
@@ -434,20 +436,159 @@ public ServerResponse<Object> get_userWineAndTableware_id(long userId, long id) 
 
 @Override
 public ServerResponse<Object> getWineAndTablewareTitleList(Map<String, Object> params) {
-	// TODO Auto-generated method stub
-	return null;
+	List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+	if(selectedOptions_list.size()==3) {
+	Integer	provincesId=selectedOptions_list.get(0);
+	Integer	cityId=selectedOptions_list.get(1);
+	Integer   districtCountyId=selectedOptions_list.get(2);
+	   //判断省市区id是否正确
+	String detailed="%"+cityMapper.checkeCity(provincesId,cityId,districtCountyId)+"%";
+ 		
+	
+	String releaseTitle= params.get("releaseTitle").toString().trim();
+	
+	if(releaseTitle!=null && !releaseTitle.equals("")) {
+		releaseTitle="%"+releaseTitle+"%";
+	}
+	
+	
+	String releaseTypeString = params.get("releaseType").toString().trim();
+ 	Integer releaseType=null;
+ 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
+ 		releaseType =	Integer.valueOf(releaseTypeString);
+ 		if(releaseType!=7 &&releaseType!=8 ) {
+ 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
+ 		}
+ 	}else {
+ 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());	
+ 	}
+	
+ 	
+ 	
+ 	
+      List<String> equipmentReleaseTitleList=wineAndTablewareMapper.getWineAndTablewareTitleList(releaseType,detailed,releaseTitle);
+	if(equipmentReleaseTitleList.size()==0) {
+		detailed="%"+cityMapper.checkeCityTuo(provincesId, cityId)+"%";
+		equipmentReleaseTitleList=wineAndTablewareMapper.getWineAndTablewareTitleList(releaseType,detailed,releaseTitle);
+	}
+      
+      return ServerResponse.createBySuccess(equipmentReleaseTitleList); 
+	
+      
+	}else {
+		return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+	}
 }
 
 @Override
 public ServerResponse<Object> getWineAndTablewarePublicList(Map<String, Object> params) {
-	// TODO Auto-generated method stub
-	return null;
+	String currentPage_string= params.get("currentPage").toString().trim() ;    
+	String pageSize_string= params.get("pageSize").toString().trim() ;    
+	int currentPage=0;
+	int  pageSize=0;
+ 	
+ 	if(currentPage_string!=null && currentPage_string!="") {
+ 		currentPage=Integer.parseInt(currentPage_string);
+ 		if(currentPage<=0) {
+ 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+ 		}
+ 		
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+	    }
+ 	
+ 	if(pageSize_string!=null && pageSize_string!="") {
+ 		pageSize=Integer.parseInt(pageSize_string);
+ 		if(pageSize<=0) {
+ 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+ 		}
+	    } else {
+	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+	    }
+	 	
+    
+	String releaseTypeString = params.get("releaseType").toString().trim();
+ 	Integer releaseType=null;
+ 	if(releaseTypeString!=null && !releaseTypeString.equals("")) {
+ 		releaseType =	Integer.valueOf(releaseTypeString);
+ 		if(releaseType!=7 &&releaseType!=8 ) {
+ 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());	
+ 		}
+ 	}else {
+ 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());	
+ 	}
+ 	
+ 	
+
+	List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+	if(selectedOptions_list.size()==3) {
+	Integer	provincesId=selectedOptions_list.get(0);
+	Integer	cityId=selectedOptions_list.get(1);
+	Integer   districtCountyId=selectedOptions_list.get(2);
+	   //判断省市区id是否正确
+	String detailed="%"+cityMapper.checkeCity(provincesId,cityId,districtCountyId)+"%";
+ 	
+	
+	String releaseTitle= params.get("releaseTitle").toString().trim();
+	
+	if(releaseTitle!=null && !releaseTitle.equals("")) {
+		releaseTitle="%"+releaseTitle+"%";
+	}
+	
+
+	
+	
+ 	Page<WineAndTableware> equipment_pagePage=new Page<WineAndTableware>();
+	
+ 	long zongtiaoshu=wineAndTablewareMapper.getWineAndTablewarePublicListNo(releaseType,detailed,releaseTitle);
+	
+ 	if(zongtiaoshu==0) {
+ 		detailed="%"+cityMapper.checkeCityTuo(provincesId, cityId)+"%";
+ 		zongtiaoshu=wineAndTablewareMapper.getWineAndTablewarePublicListNo(releaseType,detailed,releaseTitle);
+ 	}
+ 	
+	equipment_pagePage.setTotalno(zongtiaoshu);
+	equipment_pagePage.setPageSize(pageSize);
+	equipment_pagePage.setCurrentPage(currentPage); //当前页
+   //查询list
+ List<WineAndTableware>	equipmentList=wineAndTablewareMapper.getWineAndTablewarePublicList((currentPage-1)*pageSize,releaseType,pageSize,releaseTitle,detailed);
+ List<WineAndTableware>	setEquipmentList=new ArrayList<WineAndTableware>();
+ for(int i=0;i<equipmentList.size();i++) {
+	 WineAndTableware equipment=equipmentList.get(i);
+		List<Picture> listObj3	= JsonUtil.string2Obj(equipment.getPictureUrl(),List.class,Picture.class);
+		Picture picture = listObj3.get(0);
+		equipment.setPictureUrl(picture.getPictureUrl());
+		setEquipmentList.add(equipment);
+	}
+ 
+ equipment_pagePage.setDatas(setEquipmentList);
+	return ServerResponse.createBySuccess(equipment_pagePage);
+	}else {
+		return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+	}
 }
 
 @Override
 public ServerResponse<Object> getWineAndTablewareDetails(long id) {
-	// TODO Auto-generated method stub
-	return null;
+	 if(id<=0) {
+	   	 return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());	
+	   }
+  WineAndTableware equipment=wineAndTablewareMapper.getWineAndTablewareDetails( id);
+		if(equipment==null) {
+			 return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());	
+		}
+		equipment.setContact(EncrypDES.decryptPhone(equipment.getContact()));
+		//处理图片
+		equipment.setPictureUrl(PictureUtil.listToString(equipment.getPictureUrl()));
+		Map<String,Object> map=new HashMap<String, Object>();
+		Evaluate evaluate=new Evaluate();
+		if(equipment.getEvaluateid()!=0) {
+			evaluate=evaluateMapper.selectEvvaluateById(equipment.getEvaluateid());
+			
+		}
+		map.put("evaluate",evaluate);
+		map.put("result",equipment);	
+		return ServerResponse.createBySuccess(map);
 }
 @Override
 public ServerResponse<Object> adminWineAndTableware(Map<String, Object> params) {

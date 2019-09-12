@@ -28,5 +28,14 @@ public interface WineAndTablewareMapper {
 	int examineEquipment(WineAndTableware wineAndTableware);
 
 	WineAndTableware get_userWineAndTableware_id(long userId, long id);
+
+	List<String> getWineAndTablewareTitleList(Integer releaseType, String detailed, String releaseTitle);
+
+	long getWineAndTablewarePublicListNo(Integer releaseType, String detailed, String releaseTitle);
+
+	List<WineAndTableware> getWineAndTablewarePublicList(int pageLength, Integer releaseType, int pageSize, String releaseTitle,
+			String detailed);
+
+	WineAndTableware getWineAndTablewareDetails(long id);
 	
 }
