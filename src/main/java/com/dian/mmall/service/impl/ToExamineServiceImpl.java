@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.ServiceTypeMapper;
+import com.dian.mmall.dao.releaseDao.DepartmentStoreMapper;
 import com.dian.mmall.dao.releaseDao.EquipmentMapper;
 import com.dian.mmall.dao.releaseDao.MenuAndRenovationAndPestControlMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
@@ -18,6 +19,7 @@ import com.dian.mmall.dao.releaseDao.ResumeMapper;
 import com.dian.mmall.dao.releaseDao.WineAndTablewareMapper;
 import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.chuzufang.Rent;
+import com.dian.mmall.pojo.gongfu.DepartmentStore;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
 import com.dian.mmall.pojo.user.User;
@@ -46,6 +48,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private EquipmentMapper equipmentMapper;
 	@Autowired
 	private WineAndTablewareMapper wineAndTablewareMapper;
+	@Autowired
+	private DepartmentStoreMapper departmentStoreMapper;
 	//全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
 	String	userId =params.get("userId").toString().trim();	
@@ -76,7 +80,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 	int tabuleType=Integer.valueOf(tabuleTypeString);
 	params.remove("tabuleType");
 	//先判断是否需要审批审批类型
-	if(tabuleType==18 || tabuleType==7) {	
+	if(tabuleType==18 || tabuleType==7|| tabuleType==12) {	
 		String isServiceTypeString=params.get("isServiceType").toString().trim();	
 		if(isServiceTypeString==null ||isServiceTypeString.contentEquals("")) {
 			return	ServerResponse.createByErrorMessage(ResponseMessage.fabuleixinbixuan.getMessage());
@@ -165,6 +169,9 @@ public class ToExamineServiceImpl implements ToExamineService {
 		//正常落库即可  和菜 共用一个
 		WineAndTableware wineAndTableware=(WineAndTableware) BeanMapConvertUtil.convertMap(WineAndTableware.class, params);
 		resultCount=wineAndTablewareMapper.examineEquipment(wineAndTableware);
+	}else if(tabuleType==12){
+		DepartmentStore departmentStore=(DepartmentStore) BeanMapConvertUtil.convertMap(DepartmentStore.class, params);
+		resultCount=departmentStoreMapper.examineDepartmentStore(departmentStore);
 	}
 	
 	

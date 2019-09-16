@@ -32,7 +32,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 	}
 	@Override
 	public ServerResponse<Object> get_serviceType(Integer releaseType,String serviceType,Long userId) {
-		if(releaseType>0&& releaseType<100) {
+		if(releaseType>0&& releaseType<200) {
 			
 			if(serviceType!=null && !serviceType.equals("")) {
 				serviceType="%"+serviceType+"%";
@@ -72,7 +72,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 	 		if(releaseType==18 || releaseType==33 ||releaseType==34) {
 	 		releaseType=18;
 	 		}else if(releaseType==4 || releaseType==5 ||releaseType==6||releaseType==29 ||releaseType==9 ||releaseType==11
-	 				||releaseType==7 ||releaseType==8){
+	 				||releaseType==7 ||releaseType==8 ||releaseType==101||releaseType==102||releaseType==103||releaseType==104){
 	 			releaseType=Integer.valueOf(releaseTypeString);	
 	 		}
 	 		

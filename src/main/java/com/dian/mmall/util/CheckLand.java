@@ -96,10 +96,10 @@ public class CheckLand {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			
      		}//创建米面
-     		else if(menu.equals("/home/GrainAndOilPage")) {
-     			if(role!=1&&role!=4) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-     		}
+//     		else if(menu.equals("/home/GrainAndOilPage")) {
+//     			if(role!=1&&role!=4) {
+//             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+//     		}
      		else if(menu.equals("/home/lease") ) {
      			//店面1236 11（查看权限）   ，摊位 1456 11查看
      			if( role!=1&& role!=2&&role!=3&&role==6) {
@@ -131,27 +131,16 @@ public class CheckLand {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			
             }
+     		else if(menu.equals("/home/departmentStore") ) {
+     			// 工服
+     			if(role!=1 && role!=12 ) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      		
+            }
      		
      		
      		else if(menu.equals("/home/release") ) {
      			if(role!=2 && role!=1) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/kitchenUtensils") ) {
-     			if(role!=3&& role!=1) { //TODO 一下没有验证
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
-            	||	menu.equals("/home/clean") || menu.equals("/home/aquaticProduct")) {
-     			if(role!=4&& role!=5&& role!=1) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/wine") || menu.equals("/home/tableware")) {
-     			if(role!=5&& role!=1) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/renovation") || menu.equals("/home/pestControl") ||menu.equals("/home/menu") ) {
-     			if(role!=7&& role!=1) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/departmentStore") ) {
-     			if(role!=12&& role!=1) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else {
             	return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
@@ -204,10 +193,10 @@ public class CheckLand {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }
    		//查看职位创建米面
-     		else if(menu.equals("/home/GrainAndOilPage")) {
-     			if(role!=1&&role!=2&&role!=4) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-     		}//装修，灭虫广告菜谱查看权限	
+//     		else if(menu.equals("/home/GrainAndOilPage")) {
+//     			if(role!=1&&role!=2&&role!=4) {
+//             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+//     		}//装修，灭虫广告菜谱查看权限	
      		else if(menu.equals("/home/pestControl")|| menu.equals("/home/menu")||menu.equals("/home/renovation")||menu.equals("menuAndRenovationAndPestControl")) {
      			if(role!=12&&role!=1&&role!=2&&role!=6&&role!=7&&role!=3) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
@@ -244,31 +233,16 @@ public class CheckLand {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			
             }
-     		
+     		else if(menu.equals("/home/departmentStore") ) {
+     			// 工服
+     			if(role!=1 &&role!=2 && role!=3 && role!=4 &&role!=5 && role!=7 &&role!=11 &&role!=12 ) {
+             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+     			
+            }
      		
      		
      	else if(menu.equals("/home/release") ) {
             	if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/kitchenUtensils")) {
-     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=12) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }
-            
-     		//TODO 一下没有验证
-            
-            else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
-            	||	menu.equals("/home/clean") || menu.equals("/home/aquaticProduct")) {
-     			if(role!=4&& role!=5) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/wine") || menu.equals("/home/tableware")) {
-     			if(role!=5) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/renovation") || menu.equals("/home/pestControl") ||menu.equals("/home/menu") ) {
-     			if(role!=7) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/departmentStore") ) {
-     			if(role!=12) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else {
             	return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
@@ -365,17 +339,17 @@ public class CheckLand {
      			isButten.put("isAuthentication", user.getIsAuthentication());
      			isButten.put("isSee", true);
      		} //查看职位创建米面
-     		else if(menu.equals("/home/GrainAndOilPage")) {
-     			if(role!=1&&role!=2&&role!=4) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-     			if( role==1||  role==4) {
-     				isButten.put("isCreate", true);
-     			}else {
-     				isButten.put("isCreate", false);
-     			}
-     			isButten.put("isAuthentication", user.getIsAuthentication());
-     			isButten.put("isSee", true);
-     		}//店面出租创建
+//     		else if(menu.equals("/home/GrainAndOilPage")) {
+//     			if(role!=1&&role!=2&&role!=4) {
+//             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
+//     			if( role==1||  role==4) {
+//     				isButten.put("isCreate", true);
+//     			}else {
+//     				isButten.put("isCreate", false);
+//     			}
+//     			isButten.put("isAuthentication", user.getIsAuthentication());
+//     			isButten.put("isSee", true);
+//     		}//店面出租创建
      		else if(menu.equals("/home/lease") ) {
      			//店面1236 11（查看权限）   ，摊位 1456 11查看
      			if(role!=1 &&role!=2 &&role!=3&&role!=6&&role!=11) {
@@ -440,40 +414,27 @@ public class CheckLand {
      			isButten.put("isAuthentication", user.getIsAuthentication());
      			isButten.put("isSee", true);
             }
-     		
-     		
-     		
-     		
-     		
-     		else if(menu.equals("/home/lease") ) {
-     			if(role!=2&&role!=3&&role!=6&&role!=1&&role!=11) {
+     		else if(menu.equals("/home/departmentStore") ) {
+     			// 工服
+     			if(role!=1 &&role!=2 && role!=3 && role!=4 &&role!=5 && role!=7 &&role!=11 &&role!=12 ) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/release") ) {
+     			if( role==1|| role==12) {
+     				isButten.put("isCreate", true);
+     			}else {
+     				isButten.put("isCreate", false);
+     			}
+     			isButten.put("isAuthentication", user.getIsAuthentication());
+     			isButten.put("isSee", true);
+            }
+     		
+     		
+     		
+     		
+     		else if(menu.equals("/home/release") ) {
             	if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/kitchenUtensils")) {
-     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=12) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }
-            
-     		
-     		
-     		//TODO 一下没有验证
-            
-            else if(menu.equals("/home/vegetables") || menu.equals("/home/grainAndOil") || menu.equals("/home/seasoning")
-            	||	menu.equals("/home/clean") || menu.equals("/home/aquaticProduct")) {
-     			if(role!=4&& role!=5) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/wine") || menu.equals("/home/tableware")) {
-     			if(role!=5) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/renovation") || menu.equals("/home/pestControl") ||menu.equals("/home/menu") ) {
-     			if(role!=7) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else if(menu.equals("/home/departmentStore") ) {
-     			if(role!=12) {
-             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
-            }else {
+            else {
             	return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
             }
      		

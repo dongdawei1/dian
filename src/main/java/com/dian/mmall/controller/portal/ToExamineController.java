@@ -22,6 +22,7 @@ import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.service.ServiceTypeService;
 import com.dian.mmall.service.ToExamineService;
+import com.dian.mmall.service.release.DepartmentStoreService;
 import com.dian.mmall.service.release.EquipmentService;
 import com.dian.mmall.service.release.FoodAndGrainService;
 import com.dian.mmall.service.release.MenuAndRenovationAndPestControlService;
@@ -208,6 +209,23 @@ public class ToExamineController {
     	
     }
     
+    @Autowired
+	private DepartmentStoreService  departmentStoreService;
+    //获取待审核米菜
+    @RequestMapping(value = "adminDepartmentStore",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> adminDepartmentStore(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+    	
+    	
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+ 	
+    	return departmentStoreService.adminDepartmentStore(params);
+    	
+    }
     
     @Autowired
     private ToExamineService  toExamineService;
