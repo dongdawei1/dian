@@ -10,6 +10,6 @@ import com.dian.mmall.pojo.banner.DibuBunner;
 public interface BunnerMapper {
 
 
-	List<DibuBunner> getBunnerList(Integer role, Integer permissionid, Integer bunnerType);
+	List<DibuBunner> getBunnerList(Integer role, Integer permissionid, Integer bunnerType, String detailed, String date);
 
 }

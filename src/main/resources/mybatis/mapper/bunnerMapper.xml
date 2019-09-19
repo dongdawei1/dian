@@ -6,9 +6,12 @@
     
     <select id="getBunnerList" resultType="com.dian.mmall.pojo.banner.DibuBunner">
       select  tableName,tableId,url ,dibuBunnerbiaoti,introduceList,releaseType from dibubunner 
-      where  role=#{role}  and bunnerType=#{bunnerType}
+      where  role=#{role}  and bunnerType=#{bunnerType} and bunnerStatus=1 and 
+      startTime &lt;= #{date}  and endTime &gt;= #{date}
        <if test="permissionid!=null">and  permissionid=#{permissionid}  </if>  
+         <if test="detailed!=null">and  detailed  like #{detailed}  </if> 
        
+
       order by updateTime  desc  limit 2
       
     </select>

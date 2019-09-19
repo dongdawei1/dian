@@ -59,6 +59,10 @@
          <select id="getRealNameById"  resultType="com.dian.mmall.pojo.user.RealName">
         select addressDetailed,detailed,companyName from t_user_realname 
         where  authentiCationStatus=2 and id=#{id}  
-
     </select>
+        <select id="getDetailed"  resultType="String">
+        select detailed from t_user_realname 
+        where  authentiCationStatus!=3 and userId=#{userId}  
+    </select>
+    
 </mapper>

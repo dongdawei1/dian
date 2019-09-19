@@ -34,7 +34,7 @@ public class DibuBunnerController {
     	}
      	User user = (User) serverResponse.getData();   
      
-       return bunnerService.getBunnerList(user.getRole(),permissionid,bunnerType);
+       return bunnerService.getBunnerList(user.getRole(),permissionid,bunnerType,user.getId());
     
     }
 }

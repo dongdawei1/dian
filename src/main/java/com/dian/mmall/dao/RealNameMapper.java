@@ -32,4 +32,7 @@ public interface RealNameMapper {
 
 	RealName getRealNameById(long id);
 
+
+	String getDetailed(long userId);
+
 }

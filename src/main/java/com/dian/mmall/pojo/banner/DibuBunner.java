@@ -27,4 +27,14 @@ public class DibuBunner {
 	private Integer role;
 	private String releaseType;
 	
+	private String detailed; //城区
+	private Integer bunnerStatus; //状态 1进行中，2已结束
+	private String startTime; //活动开始时间
+	private String endTime; //活动结束时间
+	private String examineName; //创建人员
+	private String imgUrl; //图片地址
+	private String createTime; //活动创建时间
+	
+	
+	
 }
