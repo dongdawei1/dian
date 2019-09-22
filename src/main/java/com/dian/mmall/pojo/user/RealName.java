@@ -34,6 +34,8 @@ public class RealName {
 	 private String examineName;//审核人员
 	 private String examineTime;//审核时间
 	 private String companyName;//非必填，企业名称
+	 
+	 private Integer isReceipt;//是否接单  1默认值不接 2接单用户
 	@Override
 	public String toString() {
 		return "RealName [id=" + id + ", userId=" + userId + ", provincesId=" + provincesId + ", cityId=" + cityId

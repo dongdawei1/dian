@@ -305,7 +305,17 @@ public class RealNameServiceImpl implements RealNameService{
 		return ServerResponse.createByErrorMessage(ResponseMessage.meiyouchaxundaoshimingxinxi.getMessage());
 	}
 	
-	
+	@Override
+	public ServerResponse<Object> getUserRealName(User user) {
+		RealName realName=realNameMapper.getUserRealName(user.getId());
+		if(realName!=null) {
+		realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
+		realName.setExamineName(null);
+		realName.setExamineTime(null);
+		return ServerResponse.createBySuccess(realName);
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.meiyouchaxundaoshimingxinxi.getMessage());
+	}
 	
 	//重新实名updateRealName
 	
@@ -399,7 +409,7 @@ public class RealNameServiceImpl implements RealNameService{
 		 			realName.setDetailed(city);
 		 			realName.setUserName(user.getUsername());
 		 			//检查id是否已经存在
-		 			RealName realName1=realNameMapper.getRealName(userId);
+		 			RealName realName1=realNameMapper.getUserRealName(userId);
 		 			int resultCount=0;
 		 			
 				
@@ -419,7 +429,7 @@ public class RealNameServiceImpl implements RealNameService{
 		 				
 		 				//删除图片
 							try {
-								List<Picture> listObj4	= JsonUtil.list2Obj((ArrayList<Picture>)params.get("licenseUrl"),List.class,Picture.class);
+								List<Picture> listObj4	= JsonUtil.list2Obj((ArrayList<Picture>)params_map.get("licenseUrl"),List.class,Picture.class);
 						        for(int a=0;a<listObj4.size();a++) {
 						        Picture	picture=listObj4.get(a);
 						        	if(picture.getUseStatus()==2) {
@@ -893,4 +903,7 @@ public class RealNameServiceImpl implements RealNameService{
 			return 	ServerResponse.createByError()	;
 			}
 	}
+
+
+	
 }

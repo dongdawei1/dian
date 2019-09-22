@@ -106,6 +106,20 @@ public class RealNameController {
     }
     
     //获取实名信息
+    @RequestMapping(value = "getUserRealName",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> getUserRealName(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+    	}
+     	User user = (User) serverResponse1.getData();
+    	return realNameService.getUserRealName(user);
+    	
+    }
+    
+    //获取实名信息
     @RequestMapping(value = "getRealNameById",method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<Object> getRealNameById(HttpServletRequest httpServletRequest,@RequestParam long id){

@@ -19,4 +19,6 @@ public interface RealNameService {
 
 	ServerResponse<Object> getRealNameById(long id);
 
+	ServerResponse<Object> getUserRealName(User user);
+
 }

@@ -18,10 +18,15 @@
     <select id="getRealName" resultType="com.dian.mmall.pojo.user.RealName">
         select id,addressDetailed,contact ,consigneeName,
         email,detailed,eag,gender,companyName,provincesId,
+        cityId,districtCountyId,isReceipt
+        from t_user_realname where userId=#{userId}
+    </select>
+        <select id="getUserRealName" resultType="com.dian.mmall.pojo.user.RealName">
+        select id,addressDetailed,contact ,consigneeName,licenseUrl,
+        email,detailed,eag,gender,companyName,provincesId,
         cityId,districtCountyId
         from t_user_realname where userId=#{userId}
     </select>
-    
     
     <select id="isNewRealName"  resultType="int">
         select count(*) from t_user_realname where userId=#{userId}
