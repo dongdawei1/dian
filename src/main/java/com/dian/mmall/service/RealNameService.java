@@ -21,4 +21,7 @@ public interface RealNameService {
 
 	ServerResponse<Object> getUserRealName(User user);
 
+
+	ServerResponse<String> addOrder(User user, Map<String, Object> params);
+
 }

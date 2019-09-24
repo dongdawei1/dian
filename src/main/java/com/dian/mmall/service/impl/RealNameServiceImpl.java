@@ -25,6 +25,7 @@ import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IPictureService;
 import com.dian.mmall.service.RealNameService;
+import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
@@ -902,6 +903,26 @@ public class RealNameServiceImpl implements RealNameService{
 		}else {
 			return 	ServerResponse.createByError()	;
 			}
+	}
+
+
+	@Override
+	public ServerResponse<String> addOrder(User user, Map<String, Object> params) {
+		ServerResponse<Object> serverResponse= getRealName(user);
+		if(serverResponse.getStatus()==0){
+			RealName realName=(RealName) serverResponse.getData();
+			if(realName.getIsReceipt()==2||realName.getIsReceipt()==3) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.yishijiedian.getMessage());	
+			}
+			String addReceiptTime=DateTimeUtil.dateToAll();
+			int result=realNameMapper.addOrder(user.getId(),addReceiptTime);
+			if(result!=0) {
+				return ServerResponse.createBySuccess();
+			}
+			return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+		}else {
+		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshimingshixishibai.getMessage());	
+		}
 	}
 
 

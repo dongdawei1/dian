@@ -38,4 +38,7 @@ public interface RealNameMapper {
 
 	RealName getUserRealName(long id);
 
+
+	int addOrder(long userId,String addReceiptTime);
+
 }

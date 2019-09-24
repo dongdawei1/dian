@@ -36,6 +36,7 @@ public class RealName {
 	 private String companyName;//非必填，企业名称
 	 
 	 private Integer isReceipt;//是否接单  1默认值不接 2接单用户
+	 private String  addReceiptTime;
 	@Override
 	public String toString() {
 		return "RealName [id=" + id + ", userId=" + userId + ", provincesId=" + provincesId + ", cityId=" + cityId

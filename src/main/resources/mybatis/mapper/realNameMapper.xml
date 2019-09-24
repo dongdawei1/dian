@@ -45,6 +45,14 @@
         where userId=#{userId} 
     </update>
     
+         <!--用户申请成为接单用户  -->   
+    <update id="addOrder" >
+       update t_user_realname set  
+       isReceipt=3,addReceiptTime=#{addReceiptTime}
+        where userId=#{userId} 
+    </update>
+    
+    
     <!--审核分页总条数  --> 
         <select id="getRealNamePageno"  resultType="long">
         select count(*) from t_user_realname where authentiCationStatus in(1,3) 

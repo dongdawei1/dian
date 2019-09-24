@@ -134,4 +134,24 @@ public class RealNameController {
     	
     }
     
+    //重新用户实名
+    @RequestMapping(value = "addOrder",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> addOrder(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+    	//检查登陆
+    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+    	}
+     	User user = (User) serverResponse1.getData();
+     	if(user.getIsAuthentication()!=2 || (user.getRole()!=4 && user.getRole()!=1)) {
+     		return ServerResponse.createByErrorMessage(ResponseMessage.zhiyoushiming.getMessage());
+     	}
+    	
+    	return realNameService.addOrder(user,params);
+    }
+    
+    
+    
 }
