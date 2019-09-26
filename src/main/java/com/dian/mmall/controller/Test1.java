@@ -78,15 +78,19 @@ public static void main(String[] args) {
 //              System.out.println("Test1.main()"+c);
 //            }
 //        }
-	String str ="天津市/市辖区/和平区";
-    //获得第一个点的位置
-    int index=str.indexOf("/");
-    System.out.println(index);
-    //根据第一个点的位置 获得第二个点的位置
-    index=str.indexOf("/", index+1);
-    //根据第二个点的位置，截取 字符串。得到结果 result
-    String result=str.substring(0,index);
-    //输出结果
-    System.out.println(result);
+	String str ="[2019-09-24, 2019-09-27]";
+//    //获得第一个点的位置
+//    int index=str.indexOf("/");
+//    System.out.println(index);
+//    //根据第一个点的位置 获得第二个点的位置
+//    index=str.indexOf("/", index+1);
+//    //根据第二个点的位置，截取 字符串。得到结果 result
+//    String result=str.substring(0,index);
+//    //输出结果19-09-27
+//    System.out.println(result);
+	
+	System.out.println(str.length());
+	System.out.println(str.substring(1,11));
+	System.out.println(str.substring(13,23).trim());
 }
 }

@@ -598,8 +598,6 @@ public class RealNameServiceImpl implements RealNameService{
 	 	Page<RealName> realName_pagePage=new Page<RealName>();
 		
 	 	long zongtiaoshu=realNameMapper.getRealNamePageno(userName,contact);
-		int totalno=(int) Math.ceil((float)zongtiaoshu/pageSize);
-		
 //		System.out.println(grainAndOilMapper.getGrainAndOilPageno()+"   "+pageSize+"    "+
 //				 Math.ceil(grainAndOilMapper.getGrainAndOilPageno()/pageSize)	);
 		
@@ -923,6 +921,89 @@ public class RealNameServiceImpl implements RealNameService{
 		}else {
 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshimingshixishibai.getMessage());	
 		}
+	}
+
+   //管理员 获取待添加接单人员
+	@Override
+	public ServerResponse<Object> admin_select_addOrder(Map<String, Object> params) {
+//		 companyName:'',
+//         contact: '',
+//         currentPage: 1,
+//         pageSize: 20,//每页显示的数量
+//         value2: '',
+		
+		String currentPage_string= params.get("currentPage").toString().trim() ;    
+		String pageSize_string= params.get("pageSize").toString().trim() ;    
+		int currentPage=0;
+		int  pageSize=0;
+	 	
+	 	if(currentPage_string!=null && currentPage_string!="") {
+	 		currentPage=Integer.parseInt(currentPage_string);
+	 		if(currentPage<=0) {
+	 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+	 		}
+	 		
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+ 	    }
+	 	
+	 	if(pageSize_string!=null && pageSize_string!="") {
+	 		pageSize=Integer.parseInt(pageSize_string);
+	 		if(pageSize<=0) {
+	 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+	 		}
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+ 	    }
+		
+	 
+	 	String userName = params.get("userName").toString().trim();
+	 	String contact = params.get("contact").toString().trim();
+	 	if(contact.length()!=11 && contact!=null && !contact.equals("")) {
+	 		 return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
+	 	}	
+	 	if(contact.length()==11) {
+			contact = EncrypDES.encryptPhone(contact);
+		}
+
+		String value2=params.get("value2").toString().trim();
+		String statTimeString=null;
+		String endTimeString=null;
+		if(value2.length()==24) {
+			statTimeString=value2.substring(1,11).trim();
+     		endTimeString=value2.substring(13,23).trim()+" 23:59:59";
+		}
+		
+		String detailed=null;
+		List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+		if(selectedOptions_list.size()==3) {
+		Integer	provincesId=selectedOptions_list.get(0);
+		Integer	cityId=selectedOptions_list.get(1);
+		Integer   districtCountyId=selectedOptions_list.get(2);
+		   //判断省市区id是否正确
+		detailed=cityMapper.checkeCity(provincesId,cityId,districtCountyId);
+		}
+		
+	 	Page<RealName> realName_pagePage=new Page<RealName>();
+		
+	 	long zongtiaoshu=realNameMapper.admin_select_addOrderNo(userName,contact,statTimeString,endTimeString,detailed);
+
+		
+		realName_pagePage.setTotalno(zongtiaoshu);
+		realName_pagePage.setPageSize(pageSize);
+		realName_pagePage.setCurrentPage(currentPage); //当前页
+		
+	    List<RealName> list_realname  =	new ArrayList();
+	    List<RealName> list_srelnameall= realNameMapper.admin_select_addOrder((currentPage-1)*pageSize,pageSize,userName,contact,statTimeString,endTimeString,detailed);
+		for(RealName realName :list_srelnameall) {
+			realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
+			list_realname.add(realName);
+		}
+
+		realName_pagePage.setDatas(list_realname );
+		
+		
+		return  ServerResponse.createBySuccess(realName_pagePage);
 	}
 
 

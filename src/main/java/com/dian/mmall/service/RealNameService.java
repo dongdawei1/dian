@@ -24,4 +24,6 @@ public interface RealNameService {
 
 	ServerResponse<String> addOrder(User user, Map<String, Object> params);
 
+	ServerResponse<Object> admin_select_addOrder(Map<String, Object> params);
+
 }

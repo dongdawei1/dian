@@ -78,4 +78,24 @@
         where  authentiCationStatus!=3 and userId=#{userId}  
     </select>
     
+     <!--申请接单分页  --> 
+        <select id="admin_select_addOrderNo"  resultType="long">
+        select count(*) from t_user_realname where authentiCationStatus=2 and isReceipt=3 
+        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
+        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>   
+        <if test="detailed!=null and detailed.trim()!=''">and  detailed=#{detailed}   </if>  
+        <if test="statTimeString!=null and statTimeString.trim()!=''">and addReceiptTime  &gt;= #{statTimeString}  </if> 
+        <if test="endTimeString!=null and endTimeString.trim()!=''">and  addReceiptTime   &lt;= #{endTimeString}   </if>    
+    </select>
+    
+    <!--申请接单分页 --> 
+        <select id="admin_select_addOrder"  resultType="com.dian.mmall.pojo.user.RealName">
+        select id,userId,addressDetailed,contact,email,consigneeName,detailed,userName ,companyName,addReceiptTime from t_user_realname where  authentiCationStatus=2 and isReceipt in (3,4)   
+        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
+        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>
+        <if test="detailed!=null and detailed.trim()!=''">and  detailed=#{detailed}   </if> 
+        <if test="statTimeString!=null and statTimeString.trim()!=''">and addReceiptTime  &gt;= #{statTimeString}  </if> 
+        <if test="endTimeString!=null and endTimeString.trim()!=''">and  addReceiptTime   &lt;= #{endTimeString}   </if> 
+       order by  addReceiptTime limit #{pageLength}, #{pageSize}
+    </select>
 </mapper>
