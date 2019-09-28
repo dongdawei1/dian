@@ -90,7 +90,8 @@
     
     <!--申请接单分页 --> 
         <select id="admin_select_addOrder"  resultType="com.dian.mmall.pojo.user.RealName">
-        select id,userId,addressDetailed,contact,email,consigneeName,detailed,userName ,companyName,addReceiptTime from t_user_realname where  authentiCationStatus=2 and isReceipt in (3,4)   
+        select id,userId,addressDetailed,contact,email,consigneeName,detailed,userName ,companyName,addReceiptTime,isReceipt
+        from t_user_realname where  authentiCationStatus=2 and isReceipt=3   
         <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
         <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>
         <if test="detailed!=null and detailed.trim()!=''">and  detailed=#{detailed}   </if> 

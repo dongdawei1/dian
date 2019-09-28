@@ -2,6 +2,7 @@ package com.dian.mmall.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.dao.PeixunMapper;
 import com.dian.mmall.dao.ServiceTypeMapper;
 import com.dian.mmall.dao.releaseDao.DepartmentStoreMapper;
 import com.dian.mmall.dao.releaseDao.EquipmentMapper;
@@ -22,6 +24,7 @@ import com.dian.mmall.pojo.chuzufang.Rent;
 import com.dian.mmall.pojo.gongfu.DepartmentStore;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
+import com.dian.mmall.pojo.qianyue.Peixun;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
@@ -50,6 +53,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private WineAndTablewareMapper wineAndTablewareMapper;
 	@Autowired
 	private DepartmentStoreMapper departmentStoreMapper;
+	@Autowired
+	private PeixunMapper peixunMapper;
 	//全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
 	String	userId =params.get("userId").toString().trim();	
@@ -180,6 +185,42 @@ public class ToExamineServiceImpl implements ToExamineService {
 		return	ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
 	}
 		return	ServerResponse.createBySuccessMessage(ResponseMessage.shenpishenggong.getMessage());
+	}
+	
+	//查询培训地址
+	@Override
+	public ServerResponse<Object> getAddressDetailed(Map<String, Object> params) {
+		String detailed =params.get("detailed").toString().trim();
+		if(detailed==null || detailed.equals("")) {
+			return	ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+		}
+		
+		String addressDetailed =params.get("addressDetailed").toString().trim();
+		if(addressDetailed!=null && !addressDetailed.equals("")) {
+			addressDetailed="%"+addressDetailed+"%";
+		}
+		
+	    List<String>   addressDetailedList=	peixunMapper.getAddressDetailed(detailed,addressDetailed);
+		return ServerResponse.createBySuccess(addressDetailedList);
+	}
+    
+	//创建培训地址
+	@Override
+	public ServerResponse<String> createAddressDetailed(String username, Map<String, Object> params) {
+		Peixun peixun=new Peixun();
+		peixun.setAddressDetailed(params.get("addressDetailed").toString().trim());
+		peixun.setConsigneeName(params.get("consigneeName").toString().trim());
+		peixun.setContact(params.get("contact").toString().trim());
+		peixun.setDetailed(params.get("detailed").toString().trim());
+		peixun.setExamineName(username);
+		peixun.setExamineTime(DateTimeUtil.dateToAll());
+		int result=peixunMapper.createAddressDetailed(peixun);
+		if(result>0) {
+			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());	
+		}else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+		}
+
 	}
 
 }

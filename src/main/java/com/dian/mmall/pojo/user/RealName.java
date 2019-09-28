@@ -37,6 +37,10 @@ public class RealName {
 	 
 	 private Integer isReceipt;//是否接单  1默认值不接 2接单用户
 	 private String  addReceiptTime;
+	 
+	 private String  examineAddReceiptName;//添加管理员
+	 private String  commitAddReceiptName;//通知用户人员
+	 
 	@Override
 	public String toString() {
 		return "RealName [id=" + id + ", userId=" + userId + ", provincesId=" + provincesId + ", cityId=" + cityId

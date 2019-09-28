@@ -9,4 +9,10 @@ public interface ToExamineService {
 
 	ServerResponse<String> examineAll(User user, Map<String, Object> params);
 
+
+	ServerResponse<Object> getAddressDetailed(Map<String, Object> params);
+
+
+	ServerResponse<String> createAddressDetailed(String username, Map<String, Object> params);
+
 }

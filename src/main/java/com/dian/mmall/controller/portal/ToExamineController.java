@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dian.mmall.common.Const;
@@ -242,6 +243,35 @@ public class ToExamineController {
      	
      User user=	(User) serverResponse.getData();
  	 return toExamineService.examineAll(user,params);
+
+    } 
+    
+    //查询签约地址
+    @RequestMapping(value = "getAddressDetailed",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> getAddressDetailed( HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+		
+     	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+ 	 return toExamineService.getAddressDetailed(params);
+    } 
+    
+    //创建培训地址
+    @RequestMapping(value = "createAddressDetailed",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> createAddressDetailed( HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+		
+     	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+     	
+     User user=	(User) serverResponse.getData(); 
+ 	 return toExamineService.createAddressDetailed(user.getUsername(),params);
 
     } 
     
