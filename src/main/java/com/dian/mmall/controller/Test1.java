@@ -78,7 +78,7 @@ public static void main(String[] args) {
 //              System.out.println("Test1.main()"+c);
 //            }
 //        }
-	String str =null;
+	String str ="2019-09-17";
 //    //获得第一个点的位置
 //    int index=str.indexOf("/");
 //    System.out.println(index);
@@ -89,7 +89,7 @@ public static void main(String[] args) {
 //    //输出结果19-09-27
 //    System.out.println(result);
 	
-	System.out.println(str.length());
+	System.out.println(2>2);
 //	System.out.println(str.substring(1,11));
 //	System.out.println(str.substring(13,23).trim());
 }

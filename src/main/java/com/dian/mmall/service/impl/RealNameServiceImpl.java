@@ -930,8 +930,7 @@ public class RealNameServiceImpl implements RealNameService{
 //         contact: '',
 //         currentPage: 1,
 //         pageSize: 20,//每页显示的数量
-//         value2: '',
-		
+//         value2: '',		
 		String currentPage_string= params.get("currentPage").toString().trim() ;    
 		String pageSize_string= params.get("pageSize").toString().trim() ;    
 		int currentPage=0;
@@ -984,9 +983,16 @@ public class RealNameServiceImpl implements RealNameService{
 		detailed=cityMapper.checkeCity(provincesId,cityId,districtCountyId);
 		}
 		
+		
+		String isReceiptString=params.get("isReceipt").toString().trim();
+		Integer isReceipt=-1;
+		if(isReceiptString!=null && !isReceiptString.equals("")) {
+			isReceipt=Integer.valueOf(isReceiptString);
+		}
+		
 	 	Page<RealName> realName_pagePage=new Page<RealName>();
 		
-	 	long zongtiaoshu=realNameMapper.admin_select_addOrderNo(userName,contact,statTimeString,endTimeString,detailed);
+	 	long zongtiaoshu=realNameMapper.admin_select_addOrderNo(userName,contact,statTimeString,endTimeString,detailed,isReceipt);
 
 		
 		realName_pagePage.setTotalno(zongtiaoshu);
@@ -994,7 +1000,7 @@ public class RealNameServiceImpl implements RealNameService{
 		realName_pagePage.setCurrentPage(currentPage); //当前页
 		
 	    List<RealName> list_realname  =	new ArrayList();
-	    List<RealName> list_srelnameall= realNameMapper.admin_select_addOrder((currentPage-1)*pageSize,pageSize,userName,contact,statTimeString,endTimeString,detailed);
+	    List<RealName> list_srelnameall= realNameMapper.admin_select_addOrder((currentPage-1)*pageSize,pageSize,userName,contact,statTimeString,endTimeString,detailed,isReceipt);
 		for(RealName realName :list_srelnameall) {
 			realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
 			list_realname.add(realName);
@@ -1004,6 +1010,44 @@ public class RealNameServiceImpl implements RealNameService{
 		
 		
 		return  ServerResponse.createBySuccess(realName_pagePage);
+	}
+
+    //更新通知申请接单人员状态
+	@Override
+	public ServerResponse<String> admin_update_addOrder(String commitAddReceiptName, Map<String, Object> params) {
+		String isReceiptString=params.get("isReceipt").toString().trim();
+		if(isReceiptString==null || isReceiptString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shenhezhuangt.getMessage()) 	;
+		}
+		int result=0;
+		Integer isReceipt=Integer.valueOf(isReceiptString);
+		
+		String addReceiptTime=DateTimeUtil.dateToAll();
+		String idString=params.get("id").toString().trim();
+		if(idString==null || idString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shimingidbunengweikong.getMessage()) 	;
+		}
+		long id=Long.valueOf(idString);
+		if(isReceipt==4) {
+			//更新并创建
+			String qianyueTime=params.get("value1").toString().trim();
+			String qianyueDetailed=params.get("addressDetailed").toString().trim();
+			if(qianyueTime==null||qianyueDetailed==null||qianyueDetailed.equals("")||qianyueTime.equals("")) {
+				return  ServerResponse.createByErrorMessage(ResponseMessage.qianyueshijianhuodidianbunengkong.getMessage()); 	
+			}
+			result=	realNameMapper.admin_update_addOrder(id,addReceiptTime,qianyueDetailed,qianyueTime,isReceipt,commitAddReceiptName);
+		}else if(isReceipt==5) {
+			//更新
+		    result=	realNameMapper.admin_update_addOrder(id,addReceiptTime,null,null,isReceipt,commitAddReceiptName);
+		}else {
+			//直接返回
+			return  ServerResponse.createByErrorMessage(ResponseMessage.zhuantaicuowu.getMessage()); 	
+		}
+		
+		if(result>0) {
+			return  ServerResponse.createBySuccessMessage(ResponseMessage.caozuochenggong.getMessage());
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
 	}
 
 

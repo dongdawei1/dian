@@ -42,10 +42,13 @@ public interface RealNameMapper {
 	int addOrder(long userId,String addReceiptTime);
 
 
-	long admin_select_addOrderNo(String userName, String contact, String statTimeString, String endTimeString, String detailed);
+	long admin_select_addOrderNo(String userName, String contact, String statTimeString, String endTimeString, String detailed, Integer isReceipt);
 
 
 	List<RealName> admin_select_addOrder(int pageLength, int pageSize, String userName, String contact, String statTimeString,
-			String endTimeString, String detailed);
+			String endTimeString, String detailed, Integer isReceipt);
+
+
+	int admin_update_addOrder(long id, String addReceiptTime, String qianyueDetailed, String qianyueTime, Integer isReceipt, String commitAddReceiptName);
 
 }

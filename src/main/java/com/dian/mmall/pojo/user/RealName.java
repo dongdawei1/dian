@@ -40,7 +40,8 @@ public class RealName {
 	 
 	 private String  examineAddReceiptName;//添加管理员
 	 private String  commitAddReceiptName;//通知用户人员
-	 
+	 private String  qianyueTime;//预约线下签约时间
+	 private String  qianyueDetailed;//签约地址
 	@Override
 	public String toString() {
 		return "RealName [id=" + id + ", userId=" + userId + ", provincesId=" + provincesId + ", cityId=" + cityId

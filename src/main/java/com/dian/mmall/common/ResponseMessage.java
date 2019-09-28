@@ -101,7 +101,11 @@ public enum ResponseMessage {
 	shangpinleixinchaxunshibai("商品类型查询失败,重新选择：服务类型 "),
 	fuwuleixinIdcuowu("服务类型id不存在,只能选:新服务类型不通过和发布不通过"),
 	zhiyoushiming("只有实名的批发商户才能申请为接单商户"),
-	yishijiedian("已是接单商户或在审批中");
+	yishijiedian("已是接单商户或在审批中"),
+	shenhezhuangt("通知状态必须选择"),
+	zhuantaicuowu("通知状态错误,请重新选择"),
+	shimingidbunengweikong("实名id不能为空"),
+	qianyueshijianhuodidianbunengkong("签约时间或签约地点不能为空");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

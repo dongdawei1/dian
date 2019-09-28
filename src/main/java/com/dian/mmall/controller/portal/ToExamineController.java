@@ -307,4 +307,19 @@ public class ToExamineController {
         return realNameService.admin_select_addOrder(params);
         
     } 
+    
+  //更新待提交接单人员名单状态
+    @RequestMapping(value = "admin_update_addOrder",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> admin_update_addOrder(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	//TODO只有管理员才能调用
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+     	
+        User user=	(User) serverResponse.getData(); 
+        return realNameService.admin_update_addOrder(user.getUsername(),params);
+        
+    } 
 }

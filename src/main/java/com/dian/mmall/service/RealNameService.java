@@ -26,4 +26,6 @@ public interface RealNameService {
 
 	ServerResponse<Object> admin_select_addOrder(Map<String, Object> params);
 
+	ServerResponse<String> admin_update_addOrder(String commitAddReceiptName, Map<String, Object> params);
+
 }
