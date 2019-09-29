@@ -28,4 +28,6 @@ public interface RealNameService {
 
 	ServerResponse<String> admin_update_addOrder(String commitAddReceiptName, Map<String, Object> params);
 
+	ServerResponse<Object> admin_select_signingOrder(Map<String, Object> params);
+
 }

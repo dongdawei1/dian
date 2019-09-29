@@ -15,4 +15,7 @@ public interface ToExamineService {
 
 	ServerResponse<String> createAddressDetailed(String username, Map<String, Object> params);
 
+
+	ServerResponse<Object> getAccurateressDetailed(Map<String, Object> params);
+
 }

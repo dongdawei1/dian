@@ -1012,6 +1012,94 @@ public class RealNameServiceImpl implements RealNameService{
 		return  ServerResponse.createBySuccess(realName_pagePage);
 	}
 
+	
+	@Override
+	public ServerResponse<Object> admin_select_signingOrder(Map<String, Object> params) {
+
+		String currentPage_string= params.get("currentPage").toString().trim() ;    
+		String pageSize_string= params.get("pageSize").toString().trim() ;    
+		int currentPage=0;
+		int  pageSize=0;
+	 	
+	 	if(currentPage_string!=null && currentPage_string!="") {
+	 		currentPage=Integer.parseInt(currentPage_string);
+	 		if(currentPage<=0) {
+	 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+	 		}
+	 		
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+ 	    }
+	 	
+	 	if(pageSize_string!=null && pageSize_string!="") {
+	 		pageSize=Integer.parseInt(pageSize_string);
+	 		if(pageSize<=0) {
+	 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+	 		}
+ 	    } else {
+ 	    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+ 	    }
+		
+	 
+	 	String userName = params.get("userName").toString().trim();
+	 	String contact = params.get("contact").toString().trim();
+	 	if(contact.length()!=11 && contact!=null && !contact.equals("")) {
+	 		 return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
+	 	}	
+	 	if(contact.length()==11) {
+			contact = EncrypDES.encryptPhone(contact);
+		}
+
+		String value2=params.get("value2").toString().trim();
+		String statTimeString=null;
+		String endTimeString=null;
+		if(value2.length()==24) {
+			statTimeString=value2.substring(1,11).trim();
+     		endTimeString=value2.substring(13,23).trim()+" 23:59:59";
+		}
+		
+		String detailed=null;
+		List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+		if(selectedOptions_list.size()==3) {
+		Integer	provincesId=selectedOptions_list.get(0);
+		Integer	cityId=selectedOptions_list.get(1);
+		Integer   districtCountyId=selectedOptions_list.get(2);
+		   //判断省市区id是否正确
+		detailed=cityMapper.checkeCity(provincesId,cityId,districtCountyId);
+		}
+		
+		
+		String addressDetailed=params.get("addressDetailed").toString().trim();
+	    
+		String isReceiptString=params.get("isReceipt").toString().trim();
+		Integer isReceipt=-1;
+		if(isReceiptString!=null && !isReceiptString.equals("")) {
+			isReceipt=Integer.valueOf(isReceiptString);
+		}
+		
+	 	Page<RealName> realName_pagePage=new Page<RealName>();
+		
+	 	long zongtiaoshu=realNameMapper.admin_select_signingOrderNo(userName,contact,statTimeString,endTimeString,detailed,addressDetailed,isReceipt);
+
+		
+		realName_pagePage.setTotalno(zongtiaoshu);
+		realName_pagePage.setPageSize(pageSize);
+		realName_pagePage.setCurrentPage(currentPage); //当前页
+		
+	    List<RealName> list_realname  =	new ArrayList();
+	    List<RealName> list_srelnameall= realNameMapper.admin_select_signingOrder((currentPage-1)*pageSize,pageSize,userName,contact,statTimeString,endTimeString,detailed,addressDetailed,isReceipt);
+		for(RealName realName :list_srelnameall) {
+			realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
+			list_realname.add(realName);
+		}
+
+		realName_pagePage.setDatas(list_realname );
+		
+		
+		return  ServerResponse.createBySuccess(realName_pagePage);
+	}
+
+	
     //更新通知申请接单人员状态
 	@Override
 	public ServerResponse<String> admin_update_addOrder(String commitAddReceiptName, Map<String, Object> params) {
@@ -1050,6 +1138,8 @@ public class RealNameServiceImpl implements RealNameService{
 		return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
 	}
 
+
+	
 
 	
 }

@@ -259,6 +259,20 @@ public class ToExamineController {
  	 return toExamineService.getAddressDetailed(params);
     } 
     
+  //查询签约地址  条件和上边的冲突
+    @RequestMapping(value = "getAccurateressDetailed",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> getAccurateressDetailed( HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+		
+     	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+ 	 return toExamineService.getAccurateressDetailed(params);
+    } 
+    
+    
     //创建培训地址
     @RequestMapping(value = "createAddressDetailed",method = RequestMethod.POST)
     @ResponseBody
@@ -305,6 +319,19 @@ public class ToExamineController {
      		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
      	}
         return realNameService.admin_select_addOrder(params);
+        
+    } 
+    
+    //获取待签约接单人员名单
+    @RequestMapping(value = "admin_select_signingOrder",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> admin_select_signingOrder(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	//TODO只有管理员才能调用
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+        return realNameService.admin_select_signingOrder(params);
         
     } 
     

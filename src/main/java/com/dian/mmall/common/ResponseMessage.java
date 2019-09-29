@@ -105,7 +105,8 @@ public enum ResponseMessage {
 	shenhezhuangt("通知状态必须选择"),
 	zhuantaicuowu("通知状态错误,请重新选择"),
 	shimingidbunengweikong("实名id不能为空"),
-	qianyueshijianhuodidianbunengkong("签约时间或签约地点不能为空");
+	qianyueshijianhuodidianbunengkong("签约时间或签约地点不能为空"),
+	bixuxianxuanzedizhi("请先选择签约城市");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

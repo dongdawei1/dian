@@ -51,4 +51,12 @@ public interface RealNameMapper {
 
 	int admin_update_addOrder(long id, String addReceiptTime, String qianyueDetailed, String qianyueTime, Integer isReceipt, String commitAddReceiptName);
 
+
+	long admin_select_signingOrderNo(String userName, String contact, String statTimeString, String endTimeString,
+			String detailed, String addressDetailed, Integer isReceipt);
+
+
+	List<RealName> admin_select_signingOrder(int pageLength, int pageSize, String userName, String contact,
+			String statTimeString, String endTimeString, String detailed, String addressDetailed, Integer isReceipt);
+
 }

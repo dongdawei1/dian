@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.dao.CityMapper;
 import com.dian.mmall.dao.PeixunMapper;
 import com.dian.mmall.dao.ServiceTypeMapper;
 import com.dian.mmall.dao.releaseDao.DepartmentStoreMapper;
@@ -32,6 +33,8 @@ import com.dian.mmall.pojo.zhiwei.Resume;
 import com.dian.mmall.service.ToExamineService;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
+import com.dian.mmall.util.EncrypDES;
+import com.dian.mmall.util.JsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
@@ -55,6 +58,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private DepartmentStoreMapper departmentStoreMapper;
 	@Autowired
 	private PeixunMapper peixunMapper;
+	@Autowired
+	private CityMapper cityMapper;
 	//全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
 	String	userId =params.get("userId").toString().trim();	
@@ -204,6 +209,30 @@ public class ToExamineServiceImpl implements ToExamineService {
 		return ServerResponse.createBySuccess(addressDetailedList);
 	}
     
+	@Override
+	public ServerResponse<Object> getAccurateressDetailed(Map<String, Object> params) {
+	
+		
+	 	String detailed=null;
+		List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+		if(selectedOptions_list.size()==3) {
+		Integer	provincesId=selectedOptions_list.get(0);
+		Integer	cityId=selectedOptions_list.get(1);
+		Integer   districtCountyId=selectedOptions_list.get(2);
+		   //判断省市区id是否正确
+		detailed=cityMapper.checkeCity(provincesId,cityId,districtCountyId);
+		}
+		if(detailed==null) {
+			return	ServerResponse.createByErrorMessage(ResponseMessage.bixuxianxuanzedizhi.getMessage());
+		}
+		
+		params.put("detailed", detailed);
+		return getAddressDetailed(params);
+
+	}
+	
+	
+	
 	//创建培训地址
 	@Override
 	public ServerResponse<String> createAddressDetailed(String username, Map<String, Object> params) {
@@ -222,6 +251,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 		}
 
 	}
+
+	
 
 }
 
