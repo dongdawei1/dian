@@ -1140,6 +1140,18 @@ public class RealNameServiceImpl implements RealNameService{
 
 
 	
+	@Override
+	public ServerResponse<Object> admin_select_signingOrderById(long id) {
+		RealName realName=realNameMapper.admin_select_signingOrderById(id);
+		if(realName==null) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+		}
+		realName.setContact(EncrypDES.decryptPhone(realName.getContact()));	
+		return ServerResponse.createBySuccess(realName);
+	}
+
+
+	
 
 	
 }

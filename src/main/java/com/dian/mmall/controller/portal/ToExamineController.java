@@ -335,6 +335,24 @@ public class ToExamineController {
         
     } 
     
+    
+    //获取待签约接单人员名单根据id
+    @RequestMapping(value = "admin_select_signingOrderById",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> admin_select_signingOrderById(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	//TODO只有管理员才能调用
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+     	if(id<0) {
+     		return ServerResponse.createByErrorMessage(ResponseMessage.shimingidbunengweikong.getMessage());
+     	}
+     	
+        return realNameService.admin_select_signingOrderById(id);
+        
+    } 
+    
   //更新待提交接单人员名单状态
     @RequestMapping(value = "admin_update_addOrder",method = RequestMethod.POST)
     @ResponseBody

@@ -18,4 +18,7 @@ public interface ToExamineService {
 
 	ServerResponse<Object> getAccurateressDetailed(Map<String, Object> params);
 
+
+	ServerResponse<String> admin_create_orderUser(String examineName, Map<String, Object> params);
+
 }

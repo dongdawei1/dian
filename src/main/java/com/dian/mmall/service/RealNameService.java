@@ -30,4 +30,6 @@ public interface RealNameService {
 
 	ServerResponse<Object> admin_select_signingOrder(Map<String, Object> params);
 
+	ServerResponse<Object> admin_select_signingOrderById(long id);
+
 }

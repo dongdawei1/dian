@@ -59,4 +59,7 @@ public interface RealNameMapper {
 	List<RealName> admin_select_signingOrder(int pageLength, int pageSize, String userName, String contact,
 			String statTimeString, String endTimeString, String detailed, String addressDetailed, Integer isReceipt);
 
+
+	RealName admin_select_signingOrderById(long id);
+
 }
