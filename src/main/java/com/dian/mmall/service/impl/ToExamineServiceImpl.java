@@ -308,7 +308,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 		map.put("userId", userId);
 
 		String dateString = DateTimeUtil.dateToAll();
-		long realnameId = Long.valueOf(params.get("realnameId").toString().trim());
+		long realnameId = Long.valueOf(params.get("id").toString().trim());
 		RealName realName = realNameMapper.admin_select_signingOrderById(realnameId);
 		if (realName == null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouchaxundaoshimingxinxi.getMessage());
@@ -327,15 +327,25 @@ public class ToExamineServiceImpl implements ToExamineService {
 		if (serverContact.getStatus() != 0) {
 			return ServerResponse.createByErrorMessage(serverContact.getMsg());
 		}
+		
+		List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+		String detailed=null;
+		if(selectedOptions_list.size()==3) {
+		Integer	provincesId=selectedOptions_list.get(0);
+		Integer	cityId=selectedOptions_list.get(1);
+		Integer   districtCountyId=selectedOptions_list.get(2);
+	    detailed=cityMapper.checkeCity(provincesId,cityId,districtCountyId);
+		}
 		map.put("contact", EncrypDES.encryptPhone(contact));
 		map.put("consigneeName", params.get("consigneeName").toString().trim());
 		map.put("companyName", params.get("companyName").toString().trim());
 		map.put("addressDetailed", params.get("addressDetailed").toString().trim());
-		map.put("detailed", params.get("detailed").toString().trim());
-		map.put("delivery", Integer.valueOf(params.get("delivery").toString().trim()));
+		map.put("detailed", detailed);
+		map.put("delivery", params.get("delivery").toString().trim());
 		map.put("urgentContact", params.get("urgentContact").toString().trim());
 		map.put("urgentName", params.get("urgentName").toString().trim());
 		map.put("licenseUrl", params.get("licenseUrl").toString().trim());
+		
 		map.put("licenseEndTime", params.get("licenseEndTime").toString().trim());
 		map.put("healthyEndTime", params.get("healthyEndTime").toString().trim());
 		map.put("updateTime", dateString);

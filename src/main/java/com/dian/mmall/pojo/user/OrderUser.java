@@ -37,7 +37,7 @@ public class OrderUser {
 	private String detailed;// 省市区
 
 	@IsEmptyAnnotation(message = "送货范围不能为空")
-	private Integer delivery;// 送货范围 1 本区2 全市
+	private String delivery;// 送货范围 1 本区2 全市
 	private Integer servicFrequenc;// 交易次数
 	private long evaluateid;// 评价id
 

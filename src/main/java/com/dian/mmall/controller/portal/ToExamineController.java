@@ -367,4 +367,22 @@ public class ToExamineController {
         return realNameService.admin_update_addOrder(user.getUsername(),params);
         
     } 
+    
+    
+    
+    //更新待提交接单人员名单状态
+    @RequestMapping(value = "admin_create_orderUser",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> admin_create_orderUser(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	//TODO只有管理员才能调用
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+     	
+        User user=	(User) serverResponse.getData(); 
+        return toExamineService.admin_create_orderUser(user.getUsername(),params);
+        
+    } 
+    
 }
