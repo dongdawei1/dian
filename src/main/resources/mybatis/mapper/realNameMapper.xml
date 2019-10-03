@@ -142,6 +142,22 @@
         <if test="isReceipt==5">and   isReceipt in(3,4) </if>
     </update>
     
+            <!--设置成为接单用户  -->   
+    <update id="admin_set_addOrder" >
+       update t_user_realname set  isReceipt=#{isReceipt},examineAddReceiptName=#{examineAddReceiptName}
+        <if test="isReceipt==2"> 
+         ,addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},companyName=#{companyName}
+       </if>
+       <if test="isReceipt==6"> 
+         ,authentiCationFailure=#{authentiCationFailure}
+       </if>
+        where id=#{id} 
+    </update>
+    
+			
+		
+		
+
     
      <select id="admin_select_signingOrderById" resultType="com.dian.mmall.pojo.user.RealName">
         select id,userId,addressDetailed,contact ,consigneeName,

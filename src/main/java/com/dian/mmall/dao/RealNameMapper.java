@@ -62,4 +62,7 @@ public interface RealNameMapper {
 
 	RealName admin_select_signingOrderById(long id);
 
+
+	int admin_set_addOrder(RealName realName);
+
 }

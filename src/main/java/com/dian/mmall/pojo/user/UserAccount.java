@@ -20,7 +20,7 @@ public class UserAccount {
 
 	@IsEmptyAnnotation(message = "用户ID不能为空")
 	private long userId;
-	@IsEmptyAnnotation(message = "转账方式不能为空")
+
 	private String contact; // 收/送货联系方式
 	@IsEmptyAnnotation(message = "转账联系人姓名不能为空")
 	private String consigneeName; //转账人姓名
@@ -33,6 +33,7 @@ public class UserAccount {
 	private long outInAmount;//提现中金额
 	private long frozenAmount;//接单时冻结金额
 	private long availableAmount;//可用余额
-	
+	private String createTime;
+	private String updateTime;
 	
 }

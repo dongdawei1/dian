@@ -39,6 +39,7 @@ import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.pojo.zhiwei.Resume;
 import com.dian.mmall.service.ToExamineService;
+import com.dian.mmall.service.UserAccountService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
@@ -78,6 +79,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private RealNameMapper realNameMapper;
 	@Autowired
 	private OrderUserMapper orderUserMapper;
+	@Autowired
+	private UserAccountService userAccountService;
 
 	// 全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
@@ -271,37 +274,117 @@ public class ToExamineServiceImpl implements ToExamineService {
 	@Override
 	public ServerResponse<String> admin_create_orderUser(String examineName, Map<String, Object> params) {
 
-		ServerResponse<Object> serverResponse = check_evaluate(examineName, params, 1);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		String isReceipString = params.get("isReceipt").toString().trim();
+		if (isReceipString == null || isReceipString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.caozuoleixincuowu.getMessage());
 		}
-		Map<String, Object> map = (Map<String, Object>) serverResponse.getData();
-		map.put("authentiCationStatus", 1);
-		map.put("welfareStatus", 4);
+		Integer isReceipt = Integer.valueOf(isReceipString);
 
-		OrderUser orderUser = (OrderUser) BeanMapConvertUtil.convertMap(OrderUser.class, map);
-		// {result=true, message=验证通过} 返回结果
-		Map<String, Object> checknullMap = AnnotationDealUtil.validate(orderUser);
-		if ((boolean) checknullMap.get("result") == true && ((String) checknullMap.get("message")).equals("验证通过")) {
-			int count = orderUserMapper.admin_create_orderUser(orderUser);
-			if (count == 0) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+		if (isReceipt == 2) { // 通过
+
+			ServerResponse<Object> serverResponse = check_evaluate(examineName, params, 1);
+			if (serverResponse.getStatus() != 0) {
+				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 			}
-			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
-		} else if ((boolean) checknullMap.get("result") == false) {
-			return ServerResponse.createByErrorMessage((String) checknullMap.get("message"));
-		} else {
-			return ServerResponse.createByErrorMessage("系统异常稍后重试");
-		}
+			Map<String, Object> map = (Map<String, Object>) serverResponse.getData();
+			map.put("authentiCationStatus", 1);
+			map.put("welfareStatus", 4);
+			OrderUser orderUser = (OrderUser) BeanMapConvertUtil.convertMap(OrderUser.class, map);
+			// {result=true, message=验证通过} 返回结果
+			Map<String, Object> checknullMap = AnnotationDealUtil.validate(orderUser);
+			if ((boolean) checknullMap.get("result") == true && ((String) checknullMap.get("message")).equals("验证通过")) {
+				// 校验 账户信息
+				Map<String, Object> userAccount = new HashMap<String, Object>();
 
+				String accountName = params.get("accountName").toString().trim();
+				String bankCard = params.get("bankCard").toString().trim();
+				String alipay = params.get("alipay").toString().trim();
+
+				String availableAmount = params.get("availableAmount").toString().trim();
+
+				if ((bankCard == null || bankCard.equals("")) && (alipay == null || alipay.equals(""))) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.tuizhibaojinkaxinx.getMessage());
+				}
+
+				if (accountName == null || accountName.equals("")) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.zhanghuxingmingnull.getMessage());
+				}
+
+				if (availableAmount == null || availableAmount.equals("")) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinbunnegnull.getMessage());
+				}
+				long availableAmountLong = Long.valueOf(availableAmount);
+
+				if (availableAmountLong < 300) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinxioyue.getMessage());
+				}
+				userAccount.put("availableAmount", availableAmountLong);
+				userAccount.put("consigneeName", map.get("consigneeName"));
+				userAccount.put("bankCard", bankCard);
+				userAccount.put("alipay", alipay);
+				userAccount.put("createTime", map.get("updateTime"));
+				userAccount.put("realnameId", map.get("realnameId"));
+				userAccount.put("userId", map.get("userId"));
+
+				// 账户信息校验添加完成————————上
+
+				Map<String, Object> realNameMap = new HashMap<String, Object>();
+				realNameMap.put("addressDetailed", map.get("addressDetailed").toString());
+				realNameMap.put("companyName", map.get("companyName").toString());
+
+				realNameMap.put("consigneeName", map.get("consigneeName").toString());
+				realNameMap.put("contact", map.get("contact").toString());
+				realNameMap.put("examineAddReceiptName", examineName);
+				realNameMap.put("id", map.get("realnameId"));
+				realNameMap.put("isReceip", isReceipt);
+
+				RealName realName = (RealName) BeanMapConvertUtil.convertMap(RealName.class, realNameMap);
+
+				// 创建接单商户
+				int count = orderUserMapper.admin_create_orderUser(orderUser);
+				if (count == 0) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+				}
+				// 创建用户账户 新
+				ServerResponse<String> userAccountServiceResponse = userAccountService
+						.admin_create_userAccount(userAccount);
+
+				// 更新实名库
+
+				count = realNameMapper.admin_set_addOrder(realName);
+				// TODO创建流水
+
+				return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
+			} else if ((boolean) checknullMap.get("result") == false) {
+				return ServerResponse.createByErrorMessage((String) checknullMap.get("message"));
+			} else {
+				return ServerResponse.createByErrorMessage("系统异常稍后重试");
+			}
+		} else if (isReceipt == 6) { // 不通过
+			String authentiCationFailure = params.get("authentiCationFailure").toString().trim();
+			if (authentiCationFailure == null || authentiCationFailure.equals("")) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.ShiBaiYuanYinWeiKong.getMessage());
+			}
+			long realnameId = Long.valueOf(params.get("id").toString().trim());
+			RealName realName = new RealName();
+			realName.setId(realnameId);
+			realName.setAuthentiCationFailure(authentiCationFailure);
+			realName.setIsReceipt(isReceipt);
+			realName.setExamineAddReceiptName(examineName);
+			int count = realNameMapper.admin_set_addOrder(realName);
+			if (count != 0) {
+				return ServerResponse.createBySuccess();
+			}
+			return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.caozuoleixincuowu.getMessage());
+		}
 	}
 	// 各种校验
 
 	public ServerResponse<Object> check_evaluate(String examineName, Map<String, Object> params, int type) {
 		// type 1 新建，2为编辑
 		// 判断用户id与 tocken是否一致
-
-		System.out.println("________" + params.toString());
 		long userId = Long.valueOf(params.get("userId").toString().trim());
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -317,6 +400,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 		if (type == 1) {
 			map.put("createTime", dateString);
 			map.put("authentiCationStatus", 1);
+			map.put("branch", 100); // 新创建默认100分 以后减分
 
 		}
 
@@ -327,14 +411,15 @@ public class ToExamineServiceImpl implements ToExamineService {
 		if (serverContact.getStatus() != 0) {
 			return ServerResponse.createByErrorMessage(serverContact.getMsg());
 		}
-		
-		List<Integer> selectedOptions_list=JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
-		String detailed=null;
-		if(selectedOptions_list.size()==3) {
-		Integer	provincesId=selectedOptions_list.get(0);
-		Integer	cityId=selectedOptions_list.get(1);
-		Integer   districtCountyId=selectedOptions_list.get(2);
-	    detailed=cityMapper.checkeCity(provincesId,cityId,districtCountyId);
+
+		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
+				List.class);
+		String detailed = null;
+		if (selectedOptions_list.size() == 3) {
+			Integer provincesId = selectedOptions_list.get(0);
+			Integer cityId = selectedOptions_list.get(1);
+			Integer districtCountyId = selectedOptions_list.get(2);
+			detailed = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
 		}
 		map.put("contact", EncrypDES.encryptPhone(contact));
 		map.put("consigneeName", params.get("consigneeName").toString().trim());
@@ -342,10 +427,20 @@ public class ToExamineServiceImpl implements ToExamineService {
 		map.put("addressDetailed", params.get("addressDetailed").toString().trim());
 		map.put("detailed", detailed);
 		map.put("delivery", params.get("delivery").toString().trim());
-		map.put("urgentContact", params.get("urgentContact").toString().trim());
+
+		// 判断电话
+		String urgentContact = params.get("urgentContact").toString().trim();
+		// 判断手机号是否合法
+		if (urgentContact != null && !urgentContact.equals("")) {
+			serverContact = LegalCheck.legalCheckMobilePhone(urgentContact);
+			if (serverContact.getStatus() != 0) {
+				return ServerResponse.createByErrorMessage(serverContact.getMsg());
+			}
+			map.put("urgentContact", urgentContact);
+		}
 		map.put("urgentName", params.get("urgentName").toString().trim());
 		map.put("licenseUrl", params.get("licenseUrl").toString().trim());
-		
+
 		map.put("licenseEndTime", params.get("licenseEndTime").toString().trim());
 		map.put("healthyEndTime", params.get("healthyEndTime").toString().trim());
 		map.put("updateTime", dateString);

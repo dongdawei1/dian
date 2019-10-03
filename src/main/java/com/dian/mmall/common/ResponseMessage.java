@@ -106,7 +106,11 @@ public enum ResponseMessage {
 	zhuantaicuowu("通知状态错误,请重新选择"),
 	shimingidbunengweikong("实名id不能为空"),
 	qianyueshijianhuodidianbunengkong("签约时间或签约地点不能为空"),
-	bixuxianxuanzedizhi("请先选择签约城市");
+	bixuxianxuanzedizhi("请先选择签约城市"),
+	tuizhibaojinkaxinx("银行卡或者支付宝必填其一"),
+	zhanghuxingmingnull("账户所有人姓名不能为空"),
+	zhibaojinbunnegnull("质保金不能为空"),
+	zhibaojinxioyue("质保金不能小于300元");
    String message;
    ResponseMessage(String message){
 	   this.message=message;
