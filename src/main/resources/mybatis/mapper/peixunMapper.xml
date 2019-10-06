@@ -21,7 +21,10 @@
         <if test="addressDetailed!=null and addressDetailed.trim()!=''">and  addressDetailed like #{addressDetailed}   </if>   
      </select> 
     
-
+ 
+   
+   
+   
         <!-- 查看该实名城市下发布过服务的标题
      <select id="get_serviceTypeAll"  resultType="com.dian.mmall.pojo.ServiceType">
         select id, serviceTypeName,createUserId,authentiCationStatus from serviceType where  releaseType=#{releaseType} and   authentiCationStatus in(1,2)   

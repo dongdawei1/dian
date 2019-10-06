@@ -110,7 +110,9 @@ public enum ResponseMessage {
 	tuizhibaojinkaxinx("银行卡或者支付宝必填其一"),
 	zhanghuxingmingnull("账户所有人姓名不能为空"),
 	zhibaojinbunnegnull("质保金不能为空"),
-	zhibaojinxioyue("质保金不能小于300元");
+	zhibaojinxioyue("质保金不能小于300元"),
+	yijingshi("已经是接单用户,无法再次加入"),
+	gengxinyue("更新余额失败");
    String message;
    ResponseMessage(String message){
 	   this.message=message;

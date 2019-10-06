@@ -9,4 +9,8 @@ public interface OrderUserMapper {
 
 	int admin_create_orderUser(OrderUser orderUser);
 
+	OrderUser getOrderUserById(long userId);
+
+	int updateOrderUser(OrderUser orderUser);
+
 }

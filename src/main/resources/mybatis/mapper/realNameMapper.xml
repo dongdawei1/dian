@@ -146,7 +146,8 @@
     <update id="admin_set_addOrder" >
        update t_user_realname set  isReceipt=#{isReceipt},examineAddReceiptName=#{examineAddReceiptName}
         <if test="isReceipt==2"> 
-         ,addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},companyName=#{companyName}
+         ,addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},companyName=#{companyName},
+        detailed= #{detailed},districtCountyId=#{districtCountyId},cityId=#{cityId},provincesId=#{provincesId}
        </if>
        <if test="isReceipt==6"> 
          ,authentiCationFailure=#{authentiCationFailure}

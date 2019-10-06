@@ -4,51 +4,51 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dian.mmall.dao.OrderUserMapper">
 
-    
-    
-       <!--创建用户成功返回非0   -->
-     <insert id="admin_create_orderUser" >
-        insert into t_orderuser (
-            userId,realnameId,contact,consigneeName,companyName,addressDetailed,
-         detailed ,delivery  ,urgentContact,urgentName,licenseUrl,licenseEndTime,healthyEndTime,
-         userType,contractNo,createTime,authentiCationStatus,updateTime,examineTime,examineName,branch
-        ) values (
-        #{userId},#{realnameId},#{contact},#{consigneeName},#{companyName},#{addressDetailed},
-        #{detailed},#{delivery},#{urgentContact},#{urgentName},#{licenseUrl},#{licenseEndTime},#{healthyEndTime},
-        #{userType},#{contractNo},#{createTime},#{authentiCationStatus},#{updateTime},#{examineTime},#{examineName},#{branch}
-        )
-    </insert>
-   
-        <!-- 查看该实名城市下发布过服务的标题 
-     <select id="getAddressDetailed"  resultType="String">
-        select DISTINCT addressDetailed from peixun where  detailed=#{detailed}       
-        <if test="addressDetailed!=null and addressDetailed.trim()!=''">and  addressDetailed like #{addressDetailed}   </if>   
-     </select> 
-    -->
 
-        <!-- 查看该实名城市下发布过服务的标题
-     <select id="get_serviceTypeAll"  resultType="com.dian.mmall.pojo.ServiceType">
-        select id, serviceTypeName,createUserId,authentiCationStatus from serviceType where  releaseType=#{releaseType} and   authentiCationStatus in(1,2)   
-    </select> 
-    
-    <select id="selectbyId"  resultType="int">
-        select count(*) from serviceType where   authentiCationStatus=2 and id=#{id}  
-    </select> 
-    
-     <update id="updatebyId" >
-       update serviceType set  
-       authentiCationStatus=#{authentiCationStatus}  ,examineName=#{examineName},examineTime=#{examineTime}
-        where  id=#{id}
-         <if test="authentiCationStatus ==3">and  authentiCationStatus =1   </if>  
+
+	<!--创建用户成功返回非0 -->
+	<insert id="admin_create_orderUser">
+	insert into t_orderuser (
+	userId,realnameId,contact,consigneeName,companyName,addressDetailed,
+	detailed ,delivery
+	,urgentContact,urgentName,licenseUrl,licenseEndTime,healthyEndTime,
+	userType,contractNo,createTime,authentiCationStatus,updateTime,examineTime,examineName,branch
+	) values (
+	#{userId},#{realnameId},#{contact},#{consigneeName},#{companyName},#{addressDetailed},
+	#{detailed},#{delivery},#{urgentContact},#{urgentName},#{licenseUrl},#{licenseEndTime},#{healthyEndTime},
+	#{userType},#{contractNo},#{createTime},#{authentiCationStatus},#{updateTime},#{examineTime},#{examineName},#{branch}
+	)
+	</insert>
+
+	<select id="getOrderUserById"  resultType="com.dian.mmall.pojo.user.OrderUser">
+		select authentiCationStatus from t_orderuser where userId=#{userId}
+	</select>
+	
+	     <update id="updateOrderUser" >
+       update t_orderuser set  
+       authentiCationStatus=#{authentiCationStatus}  ,contact=#{contact},consigneeName=#{consigneeName},
+       companyName=#{companyName}  ,addressDetailed=#{addressDetailed},detailed=#{detailed},
+       delivery=#{delivery}  ,urgentContact=#{urgentContact},urgentName=#{urgentName},
+       licenseUrl=#{licenseUrl}  ,licenseEndTime=#{licenseEndTime},healthyEndTime=#{healthyEndTime},
+       userType=#{userType}  ,contractNo=#{contractNo},updateTime=#{createTime},
+       examineTime=#{examineTime}  ,examineName=#{examineName}
+        where  userId=#{userId}
     </update>
-    
-    <update id="deletebyId">
-     update serviceType set  
-       authentiCationStatus=4
-     where id!=#{id} 
-    and serviceTypeName=(select   serviceTypeName 
-    from (select b.serviceTypeName from serviceType b where b.id=#{id})a )
-    
-    </update>
-     -->
+
+
+	<!-- 查看该实名城市下发布过服务的标题 <select id="getAddressDetailed" resultType="String"> 
+		select DISTINCT addressDetailed from peixun where detailed=#{detailed} <if 
+		test="addressDetailed!=null and addressDetailed.trim()!=''">and addressDetailed 
+		like #{addressDetailed} </if> </select> -->
+
+	<!-- 查看该实名城市下发布过服务的标题 <select id="get_serviceTypeAll" resultType="com.dian.mmall.pojo.ServiceType"> 
+		select id, serviceTypeName,createUserId,authentiCationStatus from serviceType 
+		where releaseType=#{releaseType} and authentiCationStatus in(1,2) </select> 
+		<select id="selectbyId" resultType="int"> select count(*) from serviceType 
+		where authentiCationStatus=2 and id=#{id} </select> <update id="updatebyId" 
+		> update serviceType set authentiCationStatus=#{authentiCationStatus} ,examineName=#{examineName},examineTime=#{examineTime} 
+		where id=#{id} <if test="authentiCationStatus ==3">and authentiCationStatus 
+		=1 </if> </update> <update id="deletebyId"> update serviceType set authentiCationStatus=4 
+		where id!=#{id} and serviceTypeName=(select serviceTypeName from (select 
+		b.serviceTypeName from serviceType b where b.id=#{id})a ) </update> -->
 </mapper>

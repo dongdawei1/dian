@@ -313,20 +313,29 @@ public class ToExamineServiceImpl implements ToExamineService {
 				if (availableAmount == null || availableAmount.equals("")) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinbunnegnull.getMessage());
 				}
-				long availableAmountLong = Long.valueOf(availableAmount);
+				long availableAmountLong = Long.valueOf(availableAmount)* 100;
 
-				if (availableAmountLong < 300) {
+				if (availableAmountLong < 30000) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinxioyue.getMessage());
 				}
 				userAccount.put("availableAmount", availableAmountLong);
-				userAccount.put("consigneeName", map.get("consigneeName"));
+				userAccount.put("balance", availableAmountLong);
+				userAccount.put("consigneeName", accountName);
 				userAccount.put("bankCard", bankCard);
 				userAccount.put("alipay", alipay);
 				userAccount.put("createTime", map.get("updateTime"));
 				userAccount.put("realnameId", map.get("realnameId"));
-				userAccount.put("userId", map.get("userId"));
+				long userId= (long)map.get("userId");
+				userAccount.put("userId", userId);
 
 				// 账户信息校验添加完成————————上
+
+				List<Integer> selectedOptions_list = JsonUtil
+						.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+
+				Integer provincesId = selectedOptions_list.get(0);
+				Integer cityId = selectedOptions_list.get(1);
+				Integer districtCountyId = selectedOptions_list.get(2);
 
 				Map<String, Object> realNameMap = new HashMap<String, Object>();
 				realNameMap.put("addressDetailed", map.get("addressDetailed").toString());
@@ -336,25 +345,54 @@ public class ToExamineServiceImpl implements ToExamineService {
 				realNameMap.put("contact", map.get("contact").toString());
 				realNameMap.put("examineAddReceiptName", examineName);
 				realNameMap.put("id", map.get("realnameId"));
-				realNameMap.put("isReceip", isReceipt);
+				realNameMap.put("isReceipt", isReceipt);
+				realNameMap.put("detailed", map.get("detailed"));
+				realNameMap.put("provincesId", provincesId);
+				realNameMap.put("cityId", cityId);
+				realNameMap.put("districtCountyId", districtCountyId);
 
 				RealName realName = (RealName) BeanMapConvertUtil.convertMap(RealName.class, realNameMap);
 
-				// 创建接单商户
-				int count = orderUserMapper.admin_create_orderUser(orderUser);
-				if (count == 0) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+				OrderUser OrderUser1 = orderUserMapper.getOrderUserById(userId);
+				if (OrderUser1 == null) {
+					int count = orderUserMapper.admin_create_orderUser(orderUser);
+					if (count == 0) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+					}
+					// TODO创建流水
+				} else {
+					int authentiCationStatus = OrderUser1.getAuthentiCationStatus();
+					if (authentiCationStatus == 1) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.yijingshi.getMessage());
+					}
+					int count=orderUserMapper.updateOrderUser(orderUser);
+					if (count == 0) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
+					}
 				}
-				// 创建用户账户 新
-				ServerResponse<String> userAccountServiceResponse = userAccountService
-						.admin_create_userAccount(userAccount);
-
+				// 查看有无账户
+				int userAccountCount = userAccountService
+						.admin_select_userAccount_byId(userId);
+	          	if(userAccountCount==0) {
+	    			// 创建用户账户 新
+					ServerResponse<String> userAccountServiceResponse = userAccountService
+							.admin_create_userAccount(userAccount);
+	          	}else {
+					ServerResponse<String> userAccountServiceResponse = userAccountService
+							.admin_update_userAccount(userAccount);
+	          	}	
+				
+				
+				
+				
 				// 更新实名库
 
-				count = realNameMapper.admin_set_addOrder(realName);
-				// TODO创建流水
-
+				realNameMapper.admin_set_addOrder(realName);
+				
 				return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
+				
+				
+				
 			} else if ((boolean) checknullMap.get("result") == false) {
 				return ServerResponse.createByErrorMessage((String) checknullMap.get("message"));
 			} else {
@@ -436,7 +474,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (serverContact.getStatus() != 0) {
 				return ServerResponse.createByErrorMessage(serverContact.getMsg());
 			}
-			map.put("urgentContact", urgentContact);
+			map.put("urgentContact", EncrypDES.encryptPhone(urgentContact));
 		}
 		map.put("urgentName", params.get("urgentName").toString().trim());
 		map.put("licenseUrl", params.get("licenseUrl").toString().trim());
