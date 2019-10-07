@@ -21,6 +21,9 @@ public class Const {
   
     public static String  PATH_E_IMG="E:/img/";
     
+    
+    public static String  XITONGSHOUKUAN="系统收款账户";
+    
     public interface RedisCacheExtime{
         int REDIS_SESSION_EXTIME = 60 * 1200;//1200分钟
     }

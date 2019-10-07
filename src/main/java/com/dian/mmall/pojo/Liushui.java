@@ -24,13 +24,14 @@ public class Liushui {
 	private long amount;//金额分
 	
 	@IsEmptyAnnotation(message = "操作类型不能为空")
-	private String payment;	
+	private String payment;	  //	chongzhi("转入"),dongjie("冻结"),jiedong("解冻" ),zhuanchu("转出")
 	
 	@IsEmptyAnnotation(message = "交易类型不能为空")
-	private String transactionType;
+	private String transactionType;//zhibaojin("质保金")
 	
 	@IsEmptyAnnotation(message = "支付方式不能为空")
-	private String receiptsAndPayments;
+	private String receiptsAndPayments; 
+	//	yue("余额"),weixin("微信"),zhifubao("支付宝" ),yinhangka("银行卡"),xianxia("线下"),jizhang("记账")
 	
 	@IsEmptyAnnotation(message = "收款账户不能为空")
 	private String accountNo;
@@ -38,7 +39,7 @@ public class Liushui {
 	@IsEmptyAnnotation(message = "创建时间不能为空")
 	private String createTime;
 	
-	private long dingdanId; //订单ID
+	private String dingdanId; //订单ID
 	
 	private Integer liushuiStatus; // 1 初始，2 失败，3成功
 	

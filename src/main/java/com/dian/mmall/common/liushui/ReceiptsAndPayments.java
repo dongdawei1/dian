@@ -5,7 +5,8 @@ public enum ReceiptsAndPayments {
 	weixin("微信"),
 	zhifubao("支付宝" ),
 	yinhangka("银行卡"),
-	xianxia("线下");
+	xianxia("线下"),
+	jizhang("记账");
 	
   String receiptsAndPaymentsType;
   ReceiptsAndPayments(String receiptsAndPaymentsType){

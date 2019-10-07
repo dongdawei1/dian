@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dian.mmall.dao.LiushuiMapper">
+
+	<!--账户相关 -->
+	<!--创建用户成功返回非0 -->
+	<insert id="create_liushui">
+		insert into liushui (
+		userId,receivablesUserId,amount,payment,transactionType,
+		receiptsAndPayments,accountNo,liushuiStatus,createTime) values (
+		#{userId},#{receivablesUserId},#{amount},#{payment},#{transactionType},
+		#{receiptsAndPayments},#{accountNo},#{liushuiStatus},#{createTime})
+	</insert>
+
+	<!-- <select id="admin_select_userAccount_byId" resultType="int"> select 
+		count(*) from t_useraccount where userId=#{userId} </select> <select id="admin_select_userAccount" 
+		resultType="com.dian.mmall.pojo.user.UserAccount"> select userId,balance, 
+		outAmount,outInAmount,frozenAmount,availableAmount from t_useraccount where 
+		userId=#{userId} </select> <update id="update_userAccount"> update t_useraccount 
+		set updateTime=#{userAccount.createTime} <if test="type ==1"> ,realnameId=#{userAccount.realnameId} 
+		,balance=#{userAccount.balance}, availableAmount=#{userAccount.availableAmount} 
+		<if test="userAccount.consigneeName !=null and userAccount.consigneeName.trim()!=''">,consigneeName=#{userAccount.consigneeName}</if> 
+		<if test="userAccount.bankCard !=null and userAccount.bankCard.trim()!=''">,bankCard=#{userAccount.bankCard}</if> 
+		<if test="userAccount.alipay !=null and userAccount.alipay.trim()!=''">,alipay=#{userAccount.alipay}</if> 
+		</if> where userId=#{userAccount.userId} </update> -->
+
+
+	<!-- 查看该实名城市下发布过服务的标题 <select id="get_serviceTypeAll" resultType="com.dian.mmall.pojo.ServiceType"> 
+		select id, serviceTypeName,createUserId,authentiCationStatus from serviceType 
+		where releaseType=#{releaseType} and authentiCationStatus in(1,2) </select> 
+		<select id="selectbyId" resultType="int"> select count(*) from serviceType 
+		where authentiCationStatus=2 and id=#{id} </select> <update id="updatebyId" 
+		> update serviceType set authentiCationStatus=#{authentiCationStatus} ,examineName=#{examineName},examineTime=#{examineTime} 
+		where id=#{id} <if test="authentiCationStatus ==3">and authentiCationStatus 
+		=1 </if> </update> <update id="deletebyId"> update serviceType set authentiCationStatus=4 
+		where id!=#{id} and serviceTypeName=(select serviceTypeName from (select 
+		b.serviceTypeName from serviceType b where b.id=#{id})a ) </update> -->
+</mapper>

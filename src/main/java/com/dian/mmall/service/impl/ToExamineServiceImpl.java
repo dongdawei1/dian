@@ -10,9 +10,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.common.liushui.Payment;
+import com.dian.mmall.common.liushui.ReceiptsAndPayments;
+import com.dian.mmall.common.liushui.TransactionType;
 import com.dian.mmall.dao.CityMapper;
 import com.dian.mmall.dao.OrderUserMapper;
 import com.dian.mmall.dao.PeixunMapper;
@@ -25,6 +29,7 @@ import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
 import com.dian.mmall.dao.releaseDao.RentMapper;
 import com.dian.mmall.dao.releaseDao.ResumeMapper;
 import com.dian.mmall.dao.releaseDao.WineAndTablewareMapper;
+import com.dian.mmall.pojo.Liushui;
 import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.chuzufang.Rent;
 import com.dian.mmall.pojo.gongfu.DepartmentStore;
@@ -38,6 +43,7 @@ import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.pojo.zhiwei.Resume;
+import com.dian.mmall.service.LiushuiService;
 import com.dian.mmall.service.ToExamineService;
 import com.dian.mmall.service.UserAccountService;
 import com.dian.mmall.util.AnnotationDealUtil;
@@ -81,7 +87,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private OrderUserMapper orderUserMapper;
 	@Autowired
 	private UserAccountService userAccountService;
-
+	@Autowired
+	private LiushuiService liushuiService;
 	// 全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
 		String userId = params.get("userId").toString().trim();
@@ -313,7 +320,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 				if (availableAmount == null || availableAmount.equals("")) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinbunnegnull.getMessage());
 				}
-				long availableAmountLong = Long.valueOf(availableAmount)* 100;
+				long availableAmountLong = Long.valueOf(availableAmount) * 100;
 
 				if (availableAmountLong < 30000) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinxioyue.getMessage());
@@ -325,7 +332,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 				userAccount.put("alipay", alipay);
 				userAccount.put("createTime", map.get("updateTime"));
 				userAccount.put("realnameId", map.get("realnameId"));
-				long userId= (long)map.get("userId");
+				long userId = (long) map.get("userId");
 				userAccount.put("userId", userId);
 
 				// 账户信息校验添加完成————————上
@@ -359,40 +366,62 @@ public class ToExamineServiceImpl implements ToExamineService {
 					if (count == 0) {
 						return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
 					}
-					// TODO创建流水
 				} else {
 					int authentiCationStatus = OrderUser1.getAuthentiCationStatus();
 					if (authentiCationStatus == 1) {
 						return ServerResponse.createByErrorMessage(ResponseMessage.yijingshi.getMessage());
 					}
-					int count=orderUserMapper.updateOrderUser(orderUser);
+					int count = orderUserMapper.updateOrderUser(orderUser);
 					if (count == 0) {
 						return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
 					}
 				}
 				// 查看有无账户
-				int userAccountCount = userAccountService
-						.admin_select_userAccount_byId(userId);
-	          	if(userAccountCount==0) {
-	    			// 创建用户账户 新
-					ServerResponse<String> userAccountServiceResponse = userAccountService
-							.admin_create_userAccount(userAccount);
-	          	}else {
-					ServerResponse<String> userAccountServiceResponse = userAccountService
-							.admin_update_userAccount(userAccount);
-	          	}	
+				int userAccountCount = userAccountService.admin_select_userAccount_byId(userId);
+
+				ServerResponse<String> userAccountServiceResponse = null;
+				if (userAccountCount == 0) {
+					// 创建用户账户 新
+					userAccountServiceResponse = userAccountService.admin_create_userAccount(userAccount);
+
+				} else {
+					userAccountServiceResponse = userAccountService.admin_update_userAccount(userAccount);
+				}
+
+				if (userAccountServiceResponse != null) {
+					if (userAccountServiceResponse.getStatus() != 0) {
+						return ServerResponse.createByErrorMessage(userAccountServiceResponse.getMsg());
+					}
+				} else {
+					return ServerResponse.createByErrorMessage(ResponseMessage.yonghuzhanghu.getMessage());
+				}
+				// 创建流水
+				Liushui liushui = new Liushui();
+				liushui.setUserId(userId);
+				liushui.setReceivablesUserId(userId);
+				liushui.setAmount(availableAmountLong);
+				liushui.setPayment(Payment.chongzhi.getPayment());
+				liushui.setTransactionType(TransactionType.zhibaojin.getTransactionType());
+				liushui.setReceiptsAndPayments(ReceiptsAndPayments.xianxia.getReceiptsAndPayments());
+				liushui.setAccountNo(Const.XITONGSHOUKUAN); // 系统收款账户
+				liushui.setCreateTime(map.get("updateTime").toString());
+				// TODO 后期优化
+				liushui.setLiushuiStatus(1); // 1 初始，2 失败，3成功
+				userAccountServiceResponse = null;
+				userAccountServiceResponse= liushuiService.create_liushui(liushui);
 				
-				
-				
+				if (userAccountServiceResponse != null) {
+					if (userAccountServiceResponse.getStatus() != 0) {
+						return ServerResponse.createByErrorMessage(userAccountServiceResponse.getMsg());
+					}
+				} else {
+					return ServerResponse.createByErrorMessage(ResponseMessage.chuangjianliushuishibai.getMessage());
+				}
 				
 				// 更新实名库
-
 				realNameMapper.admin_set_addOrder(realName);
-				
 				return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
-				
-				
-				
+
 			} else if ((boolean) checknullMap.get("result") == false) {
 				return ServerResponse.createByErrorMessage((String) checknullMap.get("message"));
 			} else {

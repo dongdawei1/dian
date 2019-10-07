@@ -112,7 +112,9 @@ public enum ResponseMessage {
 	zhibaojinbunnegnull("质保金不能为空"),
 	zhibaojinxioyue("质保金不能小于300元"),
 	yijingshi("已经是接单用户,无法再次加入"),
-	gengxinyue("更新余额失败");
+	gengxinyue("更新余额失败"),
+	yonghuzhanghu("用户账户创建/更新失败"),
+	chuangjianliushuishibai("创建流水失败");
    String message;
    ResponseMessage(String message){
 	   this.message=message;
