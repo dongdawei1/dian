@@ -186,7 +186,7 @@ public class CheckLand {
           
           
      		if(menu.equals("/home/recruitWorkers") ) {
-     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
+     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12&&role!=12) {
          		return ServerResponse.createByErrorMessage(meiyouquanxString);}
          	}else if(menu.equals("/home/jobWanted") ) {//求职信息
      			if(role!=11&&role!=1&&role!=2&&role!=4&&role!=5) {
@@ -198,7 +198,7 @@ public class CheckLand {
 //             		return ServerResponse.createByErrorMessage(meiyouquanxString);}
 //     		}//装修，灭虫广告菜谱查看权限	
      		else if(menu.equals("/home/pestControl")|| menu.equals("/home/menu")||menu.equals("/home/renovation")||menu.equals("menuAndRenovationAndPestControl")) {
-     			if(role!=12&&role!=1&&role!=2&&role!=6&&role!=7&&role!=3) {
+     			if(role!=12&&role!=1&&role!=2&&role!=6&&role!=7&&role!=3&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      		}
      		else if(menu.equals("/home/lease") ) {
@@ -209,14 +209,14 @@ public class CheckLand {
             }//摊位出租创建
      		else if(menu.equals("/home/rentalBooth") ) {
      			//店面1236 11（查看权限）   ，摊位 1456 11查看
-     			if(role!=1 &&role!=4 &&role!=5&&role!=6&&role!=11) {
+     			if(role!=1 &&role!=4 &&role!=5&&role!=6&&role!=11&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			
             }
      		
      		else if(menu.equals("/home/equipment") ) {
      			//看电器1,2,3,4,5,6,7,12 （查看权限）   ， 1,3查看
-     			if(role!=1 &&role!=2 &&role!=3 &&role!=4 &&role!=5&&role!=6&&role!=7 &&role!=12) {
+     			if(role!=1 &&role!=2 &&role!=3 &&role!=4 &&role!=5&&role!=6&&role!=7 &&role!=12&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);} 			
             }
      		
@@ -242,7 +242,7 @@ public class CheckLand {
      		
      		
      	else if(menu.equals("/home/release") ) {
-            	if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
+            	if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }else {
             	return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
@@ -293,7 +293,7 @@ public class CheckLand {
          		return ServerResponse.createByErrorMessage(meiyouquanxString);}
          	}//职位查看和创建职位
      		else if(menu.equals("/home/recruitWorkers") || menu.equals("/home/releaseWelfare")) { //创建职位和和创建职位按键
-     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
+     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			if(role==2|| role==5 || role==1) {
      				isButten.put("isCreate", true);
@@ -305,7 +305,7 @@ public class CheckLand {
      			
             }//首页发布键
      		else if(menu.equals("/home/release")) {
-     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
+     			if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			if(role==2||  role==1) {
      				isButten.put("isCreate", true);
@@ -314,7 +314,7 @@ public class CheckLand {
      			}
      			isButten.put("isAuthentication", user.getIsAuthentication());
      			isButten.put("isSee", true);
-     		} //查看职位创建职位
+     		} //创建简历
      		else if(menu.equals("myJobWanted") ||menu.equals("/home/jobWanted")) {
      			if(role!=11&&role!=1&&role!=2&&role!=4&&role!=5) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
@@ -329,7 +329,7 @@ public class CheckLand {
      		 //查看职位创建灭虫  menuAndRenovationAndPestControl 我的发布灭虫装修广告在一个页面
      		///home/menu 广告
      		else if(menu.equals("/home/pestControl")|| menu.equals("/home/menu")||menu.equals("/home/renovation")||menu.equals("menuAndRenovationAndPestControl")) {
-     			if(role!=12&&role!=1&&role!=2&&role!=6&&role!=7&&role!=3) {
+     			if(role!=12&&role!=1&&role!=2&&role!=6&&role!=7&&role!=3&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			if( role==1||  role==7) {
      				isButten.put("isCreate", true);
@@ -352,7 +352,7 @@ public class CheckLand {
 //     		}//店面出租创建
      		else if(menu.equals("/home/lease") ) {
      			//店面1236 11（查看权限）   ，摊位 1456 11查看
-     			if(role!=1 &&role!=2 &&role!=3&&role!=6&&role!=11) {
+     			if(role!=1 &&role!=2 &&role!=3&&role!=6&&role!=11&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			if( role==1|| role==2||role==3||role==6) {
      				isButten.put("isCreate", true);
@@ -365,7 +365,7 @@ public class CheckLand {
             }//摊位出租创建
      		else if(menu.equals("/home/rentalBooth") ) {
      			//店面1236 11（查看权限）   ，摊位 1456 11查看
-     			if(role!=1 &&role!=4 &&role!=5&&role!=6&&role!=11) {
+     			if(role!=1 &&role!=4 &&role!=5&&role!=6&&role!=11&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			if( role==1|| role==4||role==5||role==6) {
      				isButten.put("isCreate", true);
@@ -378,7 +378,7 @@ public class CheckLand {
             }
      		else if(menu.equals("/home/equipment") ) {
      			//看电器1,2,3,4,5,6,7,12 （查看权限）   ， 1,3查看
-     			if(role!=1 &&role!=2 &&role!=3 &&role!=4 &&role!=5&&role!=6&&role!=7 &&role!=12) {
+     			if(role!=1 &&role!=2 &&role!=3 &&role!=4 &&role!=5&&role!=6&&role!=7 &&role!=12&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
      			if( role==1|| role==3) {
      				isButten.put("isCreate", true);
@@ -431,7 +431,7 @@ public class CheckLand {
      		
      		
      		else if(menu.equals("/home/release") ) {
-            	if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12) {
+            	if(role!=1&&role!=2&&role!=3&&role!=4&&role!=5&&role!=6&&role!=7&&role!=8&&role!=11&&role!=12&&role!=13) {
              		return ServerResponse.createByErrorMessage(meiyouquanxString);}
             }
             else {
