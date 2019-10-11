@@ -21,6 +21,8 @@ public static ServerResponse<String> setRole(Integer role){
 			return ServerResponse.createBySuccessMessage("测试账户");
 		}else if(role==7 ) {
 			return ServerResponse.createBySuccessMessage("装修广告灭虫");
+		}else if(role==13 ) {
+			return ServerResponse.createBySuccessMessage("批发商");
 		}
 		
 	}

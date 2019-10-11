@@ -309,6 +309,25 @@ public class ToExamineController {
     
     } 
     
+    //创建批发市场
+    @RequestMapping(value = "admin_create_wholesale",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> admin_create_wholesale(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	//TODO只有管理员才能调用
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+    	
+     	User user = (User) serverResponse.getData();
+     	//检查是否有管理员权限
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+        
+        return serviceTypeService.admin_create_serviceType(user,params);
+    
+    } 
   //获取待提交接单人员名单
     @RequestMapping(value = "admin_select_addOrder",method = RequestMethod.POST)
     @ResponseBody

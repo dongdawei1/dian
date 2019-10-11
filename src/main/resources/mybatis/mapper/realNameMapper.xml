@@ -18,13 +18,13 @@
     <select id="getRealName" resultType="com.dian.mmall.pojo.user.RealName">
         select id,addressDetailed,contact ,consigneeName,
         email,detailed,eag,gender,companyName,provincesId,
-        cityId,districtCountyId,isReceipt
+        cityId,districtCountyId,isReceipt,authentiCationStatus,authentiCationFailure
         from t_user_realname where userId=#{userId}
     </select>
         <select id="getUserRealName" resultType="com.dian.mmall.pojo.user.RealName">
         select id,addressDetailed,contact ,consigneeName,licenseUrl,
         email,detailed,eag,gender,companyName,provincesId,
-        cityId,districtCountyId
+        cityId,districtCountyId,authentiCationStatus,authentiCationFailure
         from t_user_realname where userId=#{userId}
     </select>
     

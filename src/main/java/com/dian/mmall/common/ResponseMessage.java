@@ -8,6 +8,7 @@ public enum ResponseMessage {
    YongHuMingBuKeYong("用户名不可用"),
    ZhuCeShiBai("注册失败"),
    gongsimingchengkong("公司/企业/个人名称不能为空"),
+   shichangming("市场名称不能为空"),
    ChuangJianYongHuShiBai("创建用户失败"),
    YanZhengMaCuoWu("验证码错误或失效"),
    YongHuMingMiMaGeShiCouWu("用户名或密码格式错误"),
@@ -114,7 +115,10 @@ public enum ResponseMessage {
 	yijingshi("已经是接单用户,无法再次加入"),
 	gengxinyue("更新余额失败"),
 	yonghuzhanghu("用户账户创建/更新失败"),
-	chuangjianliushuishibai("创建流水失败");
+	chuangjianliushuishibai("创建流水失败"),
+	lianxiren("联系人不能为空"),
+	dizhixiangq("地址详情不能为空")
+	;
    String message;
    ResponseMessage(String message){
 	   this.message=message;
