@@ -104,7 +104,7 @@ public class CheckLand {
 //     		}
 		else if (menu.equals("/home/lease")) {
 			// 店面1236 11（查看权限） ，摊位 1456 11查看
-			if (role != 1 && role != 2 && role != 3 && role == 6) {
+			if (role != 1 && role != 2 && role != 3 && role == 6&& role == 13) {
 				return ServerResponse.createByErrorMessage(meiyouquanxString);
 			}
 		} // 摊位出租创建
@@ -187,7 +187,7 @@ public class CheckLand {
 
 		if (menu.equals("/home/recruitWorkers")) {
 			if (role != 1 && role != 2 && role != 3 && role != 4 && role != 5 && role != 6 && role != 7 && role != 8
-					&& role != 11 && role != 12 && role != 12) {
+					&& role != 11 && role != 12 && role != 13) {
 				return ServerResponse.createByErrorMessage(meiyouquanxString);
 			}
 		} else if (menu.equals("/home/jobWanted")) {// 求职信息
@@ -207,7 +207,7 @@ public class CheckLand {
 			}
 		} else if (menu.equals("/home/lease")) {
 			// 店面1236 11（查看权限） ，摊位 1456 11查看
-			if (role != 1 && role != 2 && role != 3 && role != 6 && role != 11) {
+			if (role != 1 && role != 2 && role != 3 && role != 6 && role != 11 && role != 13) {
 				return ServerResponse.createByErrorMessage(meiyouquanxString);
 			}
 
