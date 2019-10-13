@@ -27,4 +27,6 @@ public class ServiceType {
 	
 	private String examineName;
 	private String examineTime;
+	
+	private String pictureUrl; //图片地址
 }

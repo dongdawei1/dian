@@ -11,7 +11,8 @@ public enum PictureNum {
 	dianqiheweixiu("电器维修二手",8),
 	zufangang("租房",8),
 	jiushui("酒水",8),
-	gongfubaihuo("工服百货",5);
+	gongfubaihuo("工服百货",5),
+	shucaishili("蔬菜示例",1);
 //	  LEASE("店面/窗口出租",14),
 //	   RENTALBOOTH("摊位出租转让",15),
 //	   JOBWANTED("求职专区",31);

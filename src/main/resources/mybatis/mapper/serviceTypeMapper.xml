@@ -9,9 +9,9 @@
        <!--创建用户成功返回非0  -->
      <insert id="create_serviceType" >
         insert into serviceType (
-            serviceTypeName,releaseType,authentiCationStatus,createUserId,examineName,examineTime
+            serviceTypeName,releaseType,authentiCationStatus,createUserId,examineName,examineTime,pictureUrl
         ) values (
-        #{serviceTypeName},#{releaseType},#{authentiCationStatus},#{createUserId},#{examineName},#{examineTime}
+        #{serviceTypeName},#{releaseType},#{authentiCationStatus},#{createUserId},#{examineName},#{examineTime},#{pictureUrl}
         )
     </insert>
 

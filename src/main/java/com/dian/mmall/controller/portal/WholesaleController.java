@@ -20,7 +20,7 @@ import com.dian.mmall.util.CheckLand;
 @RequestMapping("/api/wholesale/")
 public class WholesaleController {
 	
-	private String StringPath="/home/wholesale";
+	private String StringPath="/home/wholesaleMarket";
 	
 	@Autowired
 	private WholesaleService wholesaleService;

@@ -104,7 +104,7 @@ public class CheckLand {
 //     		}
 		else if (menu.equals("/home/lease")) {
 			// 店面1236 11（查看权限） ，摊位 1456 11查看
-			if (role != 1 && role != 2 && role != 3 && role == 6&& role == 13) {
+			if (role != 1 && role != 2 && role != 3 && role == 6 && role == 13) {
 				return ServerResponse.createByErrorMessage(meiyouquanxString);
 			}
 		} // 摊位出租创建
@@ -138,6 +138,12 @@ public class CheckLand {
 			}
 
 		}
+		// 创建批发市场权限
+				else if (menu.equals("/home/wholesaleMarket")) {
+					if (role != 1 && role != 13) {
+						return ServerResponse.createByErrorMessage(meiyouquanxString);
+					}
+				}
 
 		else if (menu.equals("/home/release")) {
 			if (role != 2 && role != 1) {
@@ -256,8 +262,8 @@ public class CheckLand {
 			}
 		}
 		// 查看批发市场权限
-		else if (menu.equals("/home/wholesale")) {
-			if (role != 1 && role != 13) {
+		else if (menu.equals("/home/wholesaleMarket")) {
+			if (role != 1 && role != 13&& role != 4) {
 				return ServerResponse.createByErrorMessage(meiyouquanxString);
 			}
 		} else {
@@ -458,7 +464,21 @@ public class CheckLand {
 					&& role != 11 && role != 12 && role != 13) {
 				return ServerResponse.createByErrorMessage(meiyouquanxString);
 			}
-		} else {
+		} else if (menu.equals("/home/wholesaleMarket")) {
+			// 工服
+			if (role != 1 && role != 13 && role != 4) {
+				return ServerResponse.createByErrorMessage(meiyouquanxString);
+			}
+			if (role == 1 || role == 13) {
+				isButten.put("isCreate", true);
+			} else {
+				isButten.put("isCreate", false);
+			}
+			isButten.put("isAuthentication", user.getIsAuthentication());
+			isButten.put("isSee", true);
+		}
+
+		else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 		}
 
