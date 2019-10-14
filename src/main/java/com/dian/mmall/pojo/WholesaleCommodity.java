@@ -65,7 +65,7 @@ public class WholesaleCommodity {
 	
 	@MaxSize(max=12, message="商品数量不能大于12字")
 	@IsEmptyAnnotation(message = "商品数量不能为空")
-	private long  commodityCountNo; // 
+	private long  commodityCountNo;  
 	
 	@MaxSize(max=12, message="商品预定数量不能大于12字")
 	@IsEmptyAnnotation(message = "商品预定数量不能为空")
@@ -73,7 +73,7 @@ public class WholesaleCommodity {
 	
 	@MaxSize(max=12, message="商品剩余数量不能大于12字")
 	@IsEmptyAnnotation(message = "商品剩余数量不能为空")
-	private long   commoditySurplusNo;
+	private long   commoditySurplusNo;//
 	
 	
 	@MaxSize(max=50, message="介绍不能大于50字")
@@ -85,16 +85,18 @@ public class WholesaleCommodity {
 	@IsEmptyAnnotation(message="图片不能为空") 
 	private String pictureUrl; //图片地址
 	
+	@IsEmptyAnnotation(message = "是否接受预定不能为空")
+	private Integer reserve;  //是否接受预定 1接受 2 不接受
+	
 	@IsEmptyAnnotation(message="送货方式不能为空") 
-	private Integer deliveryType;//1自取,2送货,3自取+送货4满免
+	private Integer deliveryType;//1自取  ,2送货,  3自取+送货  4满免
 	
 	@IsEmptyAnnotation(message="运费收取方式不能为空") 
 	private long deliveryCollect; //运费
 	@IsEmptyAnnotation(message = "报价开始时间")
 	private String startTime;// 已到货   当前时间，明天到货
 	
-	@IsEmptyAnnotation(message = "是否接受预定不能为空")
-	private Integer reserve;  //是否接受预定 1接受 2 不接受
+	
 	
 	@IsEmptyAnnotation(message = "报价结束时间")
 	private String endTime;// 结束时间 距离开始时间 不能大于2天

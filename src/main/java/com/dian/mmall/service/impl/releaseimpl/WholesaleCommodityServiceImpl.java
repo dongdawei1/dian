@@ -186,104 +186,148 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			// 判断省市区id是否正确
 
 			map.put("detailed", cityMapper.checkeCity(provincesId, cityId, districtCountyId));
-		}else {
+		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chengsshicuowo.getMessage());
 		}
-			map.put("serviceDetailed", params.get("serviceDetailed").toString().trim());
+		map.put("serviceDetailed", params.get("serviceDetailed").toString().trim());
 
-			String commodityPackingString = params.get("commodityPacking").toString().trim();
-			if (commodityPackingString == null || commodityPackingString.equals("")) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.baozhuangfangshikong.getMessage());
-			}
-			int commodityPacking = Integer.valueOf(commodityPackingString);
-			if (commodityPacking != 1 && commodityPacking != 2 && commodityPacking != 3) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.baozhuangfangshicuowo.getMessage());
-			}
+		String commodityPackingString = params.get("commodityPacking").toString().trim();
+		if (commodityPackingString == null || commodityPackingString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.baozhuangfangshikong.getMessage());
+		}
+		int commodityPacking = Integer.valueOf(commodityPackingString);
+		if (commodityPacking != 1 && commodityPacking != 2 && commodityPacking != 3) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.baozhuangfangshicuowo.getMessage());
+		}
 
-			map.put("commodityPacking", commodityPacking);
+		map.put("commodityPacking", commodityPacking);
 
 //		 specifi:2,//包装/规格  单位 散装,1 g,  2 kg ,3 ML,4 L ,  commoditySpecifications:'散装',//产品规格
-			String specifiString = params.get("specifi").toString().trim();
-			if (specifiString == null || specifiString.equals("")) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.danweikong.getMessage());
-			}
-			int specifi = Integer.valueOf(specifiString);
-			if (specifi == 1) {
-				specifiString = "g";
-			} else if (specifi == 2) {
-				specifiString = "kg";
-			} else if (specifi == 3) {
-				specifiString = "ML";
-			} else if (specifi == 4) {
-				specifiString = "L";
-			} else {
-				return ServerResponse.createByErrorMessage(ResponseMessage.baozhuangfangshicuowo.getMessage());
-			}
+		String specifiString = params.get("specifi").toString().trim();
+		if (specifiString == null || specifiString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.danweikong.getMessage());
+		}
+		int specifi = Integer.valueOf(specifiString);
+		if (specifi == 1) {
+			specifiString = "g";
+		} else if (specifi == 2) {
+			specifiString = "kg";
+		} else if (specifi == 3) {
+			specifiString = "ML";
+		} else if (specifi == 4) {
+			specifiString = "L";
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.baozhuangfangshicuowo.getMessage());
+		}
 
-			String commoditySpecifications = null;
-			boolean b = false;
-			if (commodityPacking != 1) {
-				String cationsString = params.get("cations").toString().trim();
-				if (cationsString == null || cationsString.equals("")) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.guigekong.getMessage());
-				}
-				b = LegalCheck.isNumericInt(cationsString);
-				if (b == false) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.guigecuowo.getMessage());
-				}
-				int cations = Integer.valueOf(cationsString);
-				commoditySpecifications = cations + specifiString;
+		String commoditySpecifications = null;
+		boolean b = false;
+		if (commodityPacking != 1) {
+			String cationsString = params.get("cations").toString().trim();
+			if (cationsString == null || cationsString.equals("")) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.guigekong.getMessage());
 			}
-
-			// 判断 选择的包装方式与单位是否统一
-			if (commodityPacking == 1) {
-				if (specifi != 2) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.danweiyubaozhuangbupipei.getMessage());
-				}
-				commoditySpecifications = "散装";
-			} else if (commodityPacking == 2) {
-				if (specifi != 2 && specifi != 1) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.danweiyubaozhuangbupipei.getMessage());
-				}
-			} else if (commodityPacking == 3) {
-				if (specifi != 3 && specifi != 4) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.danweiyubaozhuangbupipei.getMessage());
-				}
-			}
-			map.put("commoditySpecifications", commoditySpecifications);
-			// 单价
-			String commodityJiageString = params.get("commodityJiage").toString().trim();
-			if (commodityJiageString == null || commodityJiageString.equals("")) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.danjiakong.getMessage());
-			}
-			b = LegalCheck.isNumericFolse(commodityJiageString);
+			b = LegalCheck.isNumericInt(cationsString);
 			if (b == false) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.danjiacuowo.getMessage());
+				return ServerResponse.createByErrorMessage(ResponseMessage.guigecuowo.getMessage());
 			}
-			// 转成分
-			Float float1 = Float.valueOf(commodityJiageString) * 100;
-			long commodityJiage = float1.longValue();
-			map.put("commodityJiage", commodityJiage);
-			// 总数
-			String commodityCountNoString = params.get("commodityCountNo").toString().trim();
-			if (commodityCountNoString == null || commodityCountNoString.equals("")) {
+			int cations = Integer.valueOf(cationsString);
+			commoditySpecifications = cations + specifiString;
+		}
+
+		// 判断 选择的包装方式与单位是否统一
+		if (commodityPacking == 1) {
+			if (specifi != 2) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.danweiyubaozhuangbupipei.getMessage());
+			}
+			commoditySpecifications = "散装";
+		} else if (commodityPacking == 2) {
+			if (specifi != 2 && specifi != 1) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.danweiyubaozhuangbupipei.getMessage());
+			}
+		} else if (commodityPacking == 3) {
+			if (specifi != 3 && specifi != 4) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.danweiyubaozhuangbupipei.getMessage());
+			}
+		}
+		map.put("commoditySpecifications", commoditySpecifications);
+		// 单价
+		String commodityJiageString = params.get("commodityJiage").toString().trim();
+		if (commodityJiageString == null || commodityJiageString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.danjiakong.getMessage());
+		}
+		b = LegalCheck.isNumericFolse(commodityJiageString);
+		if (b == false) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.danjiacuowo.getMessage());
+		}
+		// 转成分
+		Float float1 = Float.valueOf(commodityJiageString) * 100;
+		long commodityJiage = float1.longValue();
+		map.put("commodityJiage", commodityJiage);
+		// 总数
+		String commodityCountNoString = params.get("commodityCountNo").toString().trim();
+		if (commodityCountNoString == null || commodityCountNoString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shuliangkong.getMessage());
+		}
+		b = LegalCheck.isNumericInt(commodityCountNoString);
+		if (b == false) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shuliangcuowo.getMessage());
+		}
+		long commodityCountNo = Integer.valueOf(commodityCountNoString);
+		map.put("commodityCountNo", commodityCountNo);
+		map.put("commodityReserveNo", 0);
+		map.put("commoditySurplusNo", commodityCountNo);
+		map.put("remarks", params.get("remarks").toString().trim());
+		map.put("serviceIntroduction", params.get("serviceIntroduction").toString().trim());
+
+		// 是否支持线上预定
+		String reserveString = params.get("reserve").toString().trim();
+		if (reserveString == null || reserveString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.zhichiyudingkong.getMessage());
+		}
+		b = LegalCheck.isNumericInt(reserveString);
+		if (b == false) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.zhichiyudingcuowo.getMessage());
+		}
+		int reserve = Integer.valueOf(reserveString);
+		if (reserve != 1 && reserve != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.zhichiyudingcuowo.getMessage());
+		}
+		map.put("reserve", reserve);
+
+		if (reserve == 1) {
+
+			String deliveryTypeString = params.get("deliveryType").toString().trim();
+			if (deliveryTypeString == null || deliveryTypeString.equals("")) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.shuliangkong.getMessage());
 			}
-			b = LegalCheck.isNumericInt(commodityCountNoString);
+			b = LegalCheck.isNumericInt(deliveryTypeString);
 			if (b == false) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.shuliangcuowo.getMessage());
+				return ServerResponse.createByErrorMessage(ResponseMessage.songhuokong.getMessage());
 			}
-			long commodityCountNo = Integer.valueOf(commodityCountNoString);
-			map.put("commodityCountNo", commodityCountNo);
-			map.put("commodityReserveNo", 0);
-			map.put("commoditySurplusNo", commodityCountNo);
-			map.put("remarks", params.get("remarks").toString().trim());
-			map.put("serviceIntroduction", params.get("serviceIntroduction").toString().trim());
+			// 送货方式 //1自取 ,2送货, 3自取+送货 4满免
+			int deliveryType = Integer.valueOf(deliveryTypeString);
+			if (deliveryType == 1) {
+				map.put("deliveryType", deliveryType); // 送货方式
+				map.put("deliveryCollect", 0);// 运费
+			} else {
+				// 运费
+				String deliveryCollectString = params.get("deliveryCollect").toString().trim();
+				if (deliveryCollectString == null || deliveryCollectString.equals("")) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.yunfeikong.getMessage());
+				}
+				b = LegalCheck.isNumericInt(deliveryCollectString);
+				if (b == false) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.yunfeicuowo.getMessage());
+				}
+			}
+		} else {
+			// 不支持线上预定
+			map.put("deliveryType", 1); // 送货方式
+			map.put("deliveryCollect", 0);// 运费
+		}
 
-			
-			
-			
-			return ServerResponse.createBySuccess(map);
-		
+		return ServerResponse.createBySuccess(map);
+
 	}
 }

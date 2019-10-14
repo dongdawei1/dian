@@ -131,8 +131,13 @@ public enum ResponseMessage {
 	danjiacuowo("单价输入错误"),
 	shuliangkong("数量不能为空"),
 	shuliangcuowo("数量输入错误"),
-	chengsshicuowo("城市不能为空")
-	
+	chengsshicuowo("城市不能为空"),
+	songhuokong("送货方式不能为空"),
+	songhuocuowo("送货方式选择错误"),
+	zhichiyudingkong("请选择是否支持线上预定"),
+	zhichiyudingcuowo("是否支持线上预定选择错误"),
+	yunfeikong("运费/或满减金额不能为空"),
+	yunfeicuowo("运费/或满减金额输入错误")
 	;
    String message;
    ResponseMessage(String message){
