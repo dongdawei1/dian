@@ -16,6 +16,7 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.ServiceTypeMapper;
 import com.dian.mmall.pojo.ServiceType;
+import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.ServiceTypeService;
@@ -189,6 +190,33 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 			return ServerResponse.createByErrorMessage((String) checknullMap.get("message"));
 		} else {
 			return ServerResponse.createByErrorMessage("系统异常稍后重试");
+		}
+	}
+
+	//带示例图片的商品名
+	@Override
+	public ServerResponse<Object> get_serviceTypeUrl(Integer releaseType, String serviceType, long userId) {
+		if (releaseType > 0 && releaseType < 200) {
+
+			if (serviceType != null && !serviceType.equals("")) {
+				serviceType = "%" + serviceType + "%";
+			}
+
+			List<ServiceType> list = serviceTypeMapper.get_serviceTypeUrl(releaseType, serviceType);
+
+			for (int i = 0; i < list.size(); i++) {
+				ServiceType serviceType2 = list.get(i);
+				if (serviceType2.getPictureUrl() != null) {
+
+					List<Picture> listObj3 = JsonUtil.string2Obj(serviceType2.getPictureUrl(), List.class,
+							Picture.class);
+					serviceType2.setPictureUrl(listObj3.get(0).getPictureUrl());
+					list.set(i, serviceType2);
+				}
+			}
+			return ServerResponse.createBySuccess(list);
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
 		}
 	}
 }

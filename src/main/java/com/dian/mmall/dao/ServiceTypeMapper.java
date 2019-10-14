@@ -21,4 +21,8 @@ public interface ServiceTypeMapper {
 
 	int selectbyId(long id);
 
+	List<ServiceType> get_serviceTypeUrl(Integer releaseType, String serviceType);
+
+	int getserviceTypeNameCount(String serviceType, int authentiCationStatus);
+
 }

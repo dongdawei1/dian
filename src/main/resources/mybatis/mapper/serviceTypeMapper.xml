@@ -21,9 +21,13 @@
      <if test="serviceType!=null and serviceType.trim()!=''">and  serviceTypeName like #{serviceType}   </if>  
      
      and (authentiCationStatus=2  or (createUserId=#{userId} and authentiCationStatus=1))  
-   
     </select> 
     
+    
+       <select id="get_serviceTypeUrl"  resultType="com.dian.mmall.pojo.ServiceType">
+        select id, serviceTypeName,pictureUrl from serviceType where  releaseType=#{releaseType}   and authentiCationStatus=2  
+     <if test="serviceType!=null and serviceType.trim()!=''">and  serviceTypeName like #{serviceType}   </if>  
+    </select> 
     
         <!-- 查看该实名城市下发布过服务的标题 -->
      <select id="get_serviceTypeAll"  resultType="com.dian.mmall.pojo.ServiceType">
@@ -33,7 +37,11 @@
     <select id="selectbyId"  resultType="int">
         select count(*) from serviceType where   authentiCationStatus=2 and id=#{id}  
     </select> 
-    
+     
+     <select id="getserviceTypeNameCount"  resultType="int">
+        select count(*) from serviceType where   authentiCationStatus=#{authentiCationStatus} and serviceType=#{serviceType}  
+    </select> 
+     
      <update id="updatebyId" >
        update serviceType set  
        authentiCationStatus=#{authentiCationStatus}  ,examineName=#{examineName},examineTime=#{examineTime}

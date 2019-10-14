@@ -117,7 +117,22 @@ public enum ResponseMessage {
 	yonghuzhanghu("用户账户创建/更新失败"),
 	chuangjianliushuishibai("创建流水失败"),
 	lianxiren("联系人不能为空"),
-	dizhixiangq("地址详情不能为空")
+	dizhixiangq("地址详情不能为空"),
+	shangpinmingkong("商品名不能为空"),
+	shangpinchaxunshibai("商品名查询失败"),
+	baozhuangfangshikong("包装方式不能为空"),
+	baozhuangfangshicuowo("包装方式选择错误"),
+	danweikong("单位不能为空"),
+	danweicuowo("单位不存在"),
+	danweiyubaozhuangbupipei("选择的单位与包装不匹配"),
+	guigekong("包装规格不能为空"),
+	guigecuowo("包装规格输入错误"),
+	danjiakong("单价不能为空"),
+	danjiacuowo("单价输入错误"),
+	shuliangkong("数量不能为空"),
+	shuliangcuowo("数量输入错误"),
+	chengsshicuowo("城市不能为空")
+	
 	;
    String message;
    ResponseMessage(String message){

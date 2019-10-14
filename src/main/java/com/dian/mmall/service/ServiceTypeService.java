@@ -23,4 +23,7 @@ public interface ServiceTypeService {
 	ServerResponse<String> create_serviceType(User user, Map<String, Object> params);
 	ServerResponse<String> admin_create_serviceType(User user, Map<String, Object> params);
 
+
+	ServerResponse<Object> get_serviceTypeUrl(Integer releaseType, String serviceType, long id);
+
 }

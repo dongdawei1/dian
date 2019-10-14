@@ -48,7 +48,6 @@ public class ServiceTypeController {
     @RequestMapping(value = "get_serviceType",method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<Object> get_serviceType(HttpServletRequest httpServletRequest,@RequestParam Integer releaseType ,@RequestParam(value = "serviceType", required = false ) String serviceType){
-    	System.out.println("ServiceTypeController.get_serviceType()33__"+serviceType);
     	//检查登陆
     	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
     	if(serverResponse.getStatus()!=0) {
@@ -62,4 +61,21 @@ public class ServiceTypeController {
     
     }
 
+    
+    //获取服务名称
+    @RequestMapping(value = "get_serviceTypeUrl",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> get_serviceTypeUrl(HttpServletRequest httpServletRequest,@RequestParam Integer releaseType ,@RequestParam(value = "serviceType", required = false ) String serviceType){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+     	  if(user.getIsAuthentication()!=2) {
+       	   return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+          }
+        return serviceTypeService.get_serviceTypeUrl(releaseType,serviceType,user.getId());
+    
+    }
 }

@@ -1,5 +1,6 @@
 package com.dian.mmall.util;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
@@ -98,5 +99,28 @@ public class LegalCheck {
 			return ServerResponse.createBySuccessMessage(ResponseMessage.ShuRuHeFa.getMessage());
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
+	}
+
+	// 判断是不是整数
+	public static boolean isNumericFolse(String str) {
+
+		//正数，最多两位小数
+		Pattern pattern = Pattern.compile("^[+]?(([1-9]\\d*[.]?)|(0.))(\\d{0,2})?$");
+		return pattern.matcher(str).matches();
+
+	}
+
+	public static boolean isNumericInt(String string) {
+		//正整数 不含0
+		Pattern pattern = Pattern.compile("^[\\d&&[^0]]{1}$");
+		return pattern.matcher(string).matches();
+	}
+
+	public static void main(String[] args) {
+		System.out.println(isNumericInt("1"));
+		Float float1=Float.valueOf("0.22")*100;
+		
+	    long	commodityJiage=float1.longValue(); 
+	    System.out.println(commodityJiage);
 	}
 }
