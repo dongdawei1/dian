@@ -8,9 +8,11 @@ import org.joda.time.format.DateTimeFormatter;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by geely
@@ -77,12 +79,90 @@ public class DateTimeUtil {
         return dateTime.toString(STANDARD_FORMAT);
     }
     
+    
+    /**
+	 * 判断是否是过去的日期
+	 * @param str输入的日期
+	 * @return 
+	 * @return
+	 */
+	public static ServerResponse<Object> isPastDate(String str ,int type){
+		
+        boolean flag=false;
+		Date nowDate = new Date();
+		Date pastDate = null;
+		//格式化日期
+		SimpleDateFormat sdf = new SimpleDateFormat(STANDARD_FORMAT, Locale.CHINA);
+		//在日期字符串非空时执行
+		if (str != null && !"".equals(str)) {
+			try {
+				//将字符串转为日期格式，如果此处字符串为非合法日期就会抛出异常。
+				pastDate = sdf.parse(str);
+				//调用Date里面的before方法来做判断
+				flag = pastDate.before(nowDate);
+				if (flag) {
+					//System.out.println("该日期早于今日");
+					return ServerResponse.createBySuccess(!flag);
+				}else {
+					//System.out.println("该日期晚于今日");
+					return ServerResponse.createBySuccess(!flag);
+				}
+			} catch (ParseException e) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqicuowo.getMessage());
+			}
+		}else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqikong.getMessage());
+		}
+		
+	}
+	
+  
+	   /**
+		 * 判断是否晚与传入的日期
+		 * @param str输入的日期
+		 * @return 
+		 * @return
+		 */
+		public static ServerResponse<Object> dateCompare(String str ,int length){
+			
+	        boolean flag=false;
+			
+		
+			Date pastDate = null;
+			//格式化日期
+			SimpleDateFormat sdf = new SimpleDateFormat(STANDARD_FORMAT, Locale.CHINA);
+			
+			//在日期字符串非空时执行
+			if (str != null && !"".equals(str)) {
+				try {
+					Date nowDate =sdf.parse(a_few_days_later(length));
+					//将字符串转为日期格式，如果此处字符串为非合法日期就会抛出异常。
+					pastDate = sdf.parse(str);
+					//调用Date里面的before方法来做判断
+					flag = pastDate.before(nowDate);
+					if (flag) {
+					//	System.out.println("该日期早于指定日期");
+						return ServerResponse.createBySuccess(flag);
+					}else {
+					//	System.out.println("该日期晚于指定日期");
+						return ServerResponse.createBySuccess(flag);
+					}
+				} catch (ParseException e) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqicuowo.getMessage());
+				}
+			}else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqikong.getMessage());
+			}
+			
+		}
+	
+    
     public static void main(String[] args) {
     	a_few_days_later(20);
-    	System.out.println(DateTimeUtil.dateToDay());
+    	System.out.println(dateCompare("2020-01-01 11:11:11",1));
         System.out.println(DateTimeUtil.dateToStr(new Date(),"yyyy-MM-dd HH:mm:ss"));
         System.out.println(DateTimeUtil.strToDate("2010-01-01 11:11:11","yyyy-MM-dd HH:mm:ss"));
-
+ 
     }
 
 

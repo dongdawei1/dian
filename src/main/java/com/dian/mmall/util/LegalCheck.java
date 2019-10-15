@@ -104,23 +104,37 @@ public class LegalCheck {
 	// 判断是不是整数
 	public static boolean isNumericFolse(String str) {
 
-		//正数，最多两位小数
+		// 正数，最多两位小数
 		Pattern pattern = Pattern.compile("^[+]?(([1-9]\\d*[.]?)|(0.))(\\d{0,2})?$");
 		return pattern.matcher(str).matches();
 
 	}
 
 	public static boolean isNumericInt(String string) {
-		//正整数 不含0
-		Pattern pattern = Pattern.compile("^[\\d&&[^0]]{1}$");
+		// 正整数 不含0
+		Pattern pattern = Pattern.compile("^([1-9]\\d*|0)$");
+		if(!string.equals("0")) {
+		// Regex reg=new Regex("^([1-9]\\d*|0)$");
 		return pattern.matcher(string).matches();
+		}
+		return false;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(isNumericInt("1"));
-		Float float1=Float.valueOf("0.22")*100;
+	// 整数含0
+	public static ServerResponse<Object> isNumericInthan0(String str) {
+		if((str.matches("[0-9]+"))&&(Integer.parseInt(str)>0)) {
+	            //如果以上条件成立，则str是正整数，可以将str转为int类型，得到一个正整数n
+	                return ServerResponse.createBySuccess( Integer.parseInt(str));
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.yunfeicuowo.getMessage());
+	}
 		
-	    long	commodityJiage=float1.longValue(); 
-	    System.out.println(commodityJiage);
+
+
+	public static void main(String[] args) {
+		Float float1 = Float.valueOf("0.22") * 100;
+   
+		long commodityJiage = float1.longValue();
+		System.out.println(isNumericInt("0"));
 	}
 }

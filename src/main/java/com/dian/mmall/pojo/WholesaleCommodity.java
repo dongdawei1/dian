@@ -93,6 +93,7 @@ public class WholesaleCommodity {
 	
 	@IsEmptyAnnotation(message="运费收取方式不能为空") 
 	private long deliveryCollect; //运费
+	
 	@IsEmptyAnnotation(message = "报价开始时间")
 	private String startTime;// 已到货   当前时间，明天到货
 	

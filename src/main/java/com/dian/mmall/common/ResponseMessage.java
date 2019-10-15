@@ -137,7 +137,13 @@ public enum ResponseMessage {
 	zhichiyudingkong("请选择是否支持线上预定"),
 	zhichiyudingcuowo("是否支持线上预定选择错误"),
 	yunfeikong("运费/或满减金额不能为空"),
-	yunfeicuowo("运费/或满减金额输入错误")
+	yunfeicuowo("运费/或满减金额输入错误"),
+	jiageyouxiaoqicuowo("价格有效期选择错误"),
+	jiageyouxiaoqikong("价格有效期不能为空"),
+	jiagekaishicuowo("价格开始时间不能小于当前时间"),
+	jiagekaishiyaozai("价格开始时间不能大于"),
+	jiagejieshucuowo("价格结束时间不能小于当前时间"),
+	jiagejieshuyaozai("价格结束时间不能大于"),
 	;
    String message;
    ResponseMessage(String message){

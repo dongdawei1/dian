@@ -170,7 +170,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (serviceType == null || serviceType.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinmingkong.getMessage());
 		}
-		count = serviceTypeMapper.getserviceTypeNameCount(serviceType, 2);
+		count = serviceTypeMapper.getserviceTypeNameCount(releaseType,serviceType, 2);
 		if (count == 0) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinchaxunshibai.getMessage());
 		}
@@ -189,7 +189,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chengsshicuowo.getMessage());
 		}
-		map.put("serviceDetailed", params.get("serviceDetailed").toString().trim());
+		map.put("addressDetailed", params.get("addressDetailed").toString().trim());
 
 		String commodityPackingString = params.get("commodityPacking").toString().trim();
 		if (commodityPackingString == null || commodityPackingString.equals("")) {
@@ -207,6 +207,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (specifiString == null || specifiString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.danweikong.getMessage());
 		}
+		System.out.println(params.toString());
 		int specifi = Integer.valueOf(specifiString);
 		if (specifi == 1) {
 			specifiString = "g";
@@ -294,7 +295,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			return ServerResponse.createByErrorMessage(ResponseMessage.zhichiyudingcuowo.getMessage());
 		}
 		map.put("reserve", reserve);
-
+		// 判断非法输入
+		ServerResponse<Object> serverResponseObject = null;
 		if (reserve == 1) {
 
 			String deliveryTypeString = params.get("deliveryType").toString().trim();
@@ -316,9 +318,14 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				if (deliveryCollectString == null || deliveryCollectString.equals("")) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.yunfeikong.getMessage());
 				}
-				b = LegalCheck.isNumericInt(deliveryCollectString);
-				if (b == false) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.yunfeicuowo.getMessage());
+				serverResponseObject = LegalCheck.isNumericInthan0(deliveryCollectString);
+				if (serverResponseObject.getStatus() == 0) {
+					int deliveryCollect = (int) serverResponseObject.getData() * 100;
+					map.put("deliveryType", deliveryType); // 送货方式
+					map.put("deliveryCollect", deliveryCollect);// 运费
+
+				} else {
+					return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
 				}
 			}
 		} else {
@@ -327,6 +334,68 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			map.put("deliveryCollect", 0);// 运费
 		}
 
+		// 开始日期
+		List<String> startend_list = JsonUtil.list2Obj((List<String>)params.get("value1"), List.class,String.class);
+		if (startend_list.size() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqicuowo.getMessage());
+		}
+		String startTime = startend_list.get(0);
+
+		serverResponseObject = DateTimeUtil.isPastDate(startTime, 1);
+		if (serverResponseObject.getStatus() == 0) {
+			if ((boolean) serverResponseObject.getData()) {
+				// TODO 开始时间要在 蔬菜 2天内
+				int length = 2;
+				serverResponseObject = DateTimeUtil.dateCompare(startTime, length);
+				if (serverResponseObject.getStatus() == 0) {
+					if ((boolean) serverResponseObject.getData()) {
+						map.put("startTime", startTime);
+					} else {
+						return ServerResponse
+								.createByErrorMessage(ResponseMessage.jiagekaishiyaozai.getMessage() + length + "天");
+					}
+
+				} else {
+					return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
+				}
+
+			} else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.jiagekaishicuowo.getMessage());
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
+		}
+		// 结束日期
+		String endTime = startend_list.get(1);
+		serverResponseObject = DateTimeUtil.isPastDate(startTime, 1);
+		if (serverResponseObject.getStatus() == 0) {
+			if ((boolean) serverResponseObject.getData()) {
+				// TODO 结束时间要在 蔬菜 3天内 其他15天
+				int length = 15;
+				if (releaseType == 4) {
+					length = 3;
+				}
+				serverResponseObject = DateTimeUtil.dateCompare(startTime, length);
+				if (serverResponseObject.getStatus() == 0) {
+					if ((boolean) serverResponseObject.getData()) {
+						map.put("endTime", endTime);
+					} else {
+						return ServerResponse
+								.createByErrorMessage(ResponseMessage.jiagejieshuyaozai.getMessage() + length + "天");
+					}
+
+				} else {
+					return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
+				}
+
+			} else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.jiagejieshucuowo.getMessage());
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
+		}
 		return ServerResponse.createBySuccess(map);
 
 	}

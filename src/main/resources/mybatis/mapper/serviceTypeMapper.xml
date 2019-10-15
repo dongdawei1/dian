@@ -38,8 +38,12 @@
         select count(*) from serviceType where   authentiCationStatus=2 and id=#{id}  
     </select> 
      
+     	
+
      <select id="getserviceTypeNameCount"  resultType="int">
-        select count(*) from serviceType where   authentiCationStatus=#{authentiCationStatus} and serviceType=#{serviceType}  
+        select count(*) from serviceType where  
+         authentiCationStatus=#{authentiCationStatus} and serviceTypeName=#{serviceType}  
+         and releaseType=#{releaseType}
     </select> 
      
      <update id="updatebyId" >
