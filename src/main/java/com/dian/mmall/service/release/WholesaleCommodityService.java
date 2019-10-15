@@ -9,4 +9,7 @@ public interface WholesaleCommodityService {
 
 	ServerResponse<String> create_wholesaleCommodity(User user, Map<String, Object> params);
 
+
+	ServerResponse<Object> get_wholesaleCommodity_serviceType(long userId, Map<String, Object> params);
+
 }

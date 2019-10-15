@@ -2,40 +2,59 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dian.mmall.dao.releaseDao.WholesaleCommodityMapper">
-   
-     <!--发布过的条数  -->
-     <select id="countNum" resultType="int">
-        select count(*) from shichang_wholesaleCommodity where welfareStatus!=3  and releaseType=#{releaseType} and userId =#{userId}
-    </select>
-         
-          <!--创建用户成功返回非0  -->
-     <insert id="create_wholesaleCommodity"  >
-        insert into shichang_wholesaleCommodity (
-        userId,releaseType,updateTime,createTime,pictureUrl,realNameId,
-        serviceType,releaseTitle,
-        detailed,addressDetailed,commodityPacking,
-        commoditySpecifications,
-        commodityJiage,
-        commodityCountNo,commodityReserveNo,commoditySurplusNo,
-        remarks,serviceIntroduction,
-        reserve,deliveryType,deliveryCollect,
-        startTime,endTime,authentiCationStatus,welfareStatus
-        
-        ) values (
-            #{userId},  #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
-            #{realNameId},#{serviceType},#{releaseTitle},
-            #{detailed},#{addressDetailed},
-            #{commodityPacking},
-            #{commoditySpecifications},#{commodityJiage},
-            #{commodityCountNo},#{commodityReserveNo},#{commoditySurplusNo},
-            #{remarks},#{serviceIntroduction},
-            #{reserve},#{deliveryType},#{deliveryCollect},
-            #{startTime},#{endTime},#{authentiCationStatus},#{welfareStatus}
-        )
-    </insert><!-- countNum -->
-    
-    
-  
-    
+<mapper
+	namespace="com.dian.mmall.dao.releaseDao.WholesaleCommodityMapper">
+
+	<!--发布过的条数 -->
+	<select id="countNum" resultType="int">
+		select count(*) from
+		shichang_wholesaleCommodity where welfareStatus!=3 and
+		releaseType=#{releaseType} and userId =#{userId}
+	</select>
+
+	<!--创建用户成功返回非0 -->
+	<insert id="create_wholesaleCommodity">
+		insert into shichang_wholesaleCommodity (
+		userId,releaseType,updateTime,createTime,pictureUrl,realNameId,
+		serviceType,releaseTitle,
+		detailed,addressDetailed,commodityPacking,
+		commoditySpecifications,
+		commodityJiage,
+		commodityCountNo,commodityReserveNo,commoditySurplusNo,
+		remarks,serviceIntroduction,
+		reserve,deliveryType,deliveryCollect,
+		startTime,endTime,authentiCationStatus,welfareStatus
+
+		) values (
+		#{userId}, #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
+		#{realNameId},#{serviceType},#{releaseTitle},
+		#{detailed},#{addressDetailed},
+		#{commodityPacking},
+		#{commoditySpecifications},#{commodityJiage},
+		#{commodityCountNo},#{commodityReserveNo},#{commoditySurplusNo},
+		#{remarks},#{serviceIntroduction},
+		#{reserve},#{deliveryType},#{deliveryCollect},
+		#{startTime},#{endTime},#{authentiCationStatus},#{welfareStatus}
+		)
+	</insert><!-- countNum -->
+
+
+
+	<select id="get_wholesaleCommodity_serviceType"
+		resultType="String">
+		select DISTINCT serviceType from shichang_wholesaleCommodity
+		where
+		releaseType=#{releaseType} 
+		<if test="type==2">and userId= #{userId}  and welfareStatus in(1,2,4,5) </if>
+		<if test="type==1">and welfareStatus = 1  and startTime &lt; #{dateString}  and endTime &gt; #{dateString}   </if>
+		<if test="welfareStatus!=0">and welfareStatus= #{welfareStatus}   </if>
+		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
+		<if test="commodityType==1">and welfareStatus in(1,2)  and startTime &lt; #{dateString}  and endTime &gt; #{dateString} </if>
+		<if test="commodityType==2">and (welfareStatus =5 or  endTime &lt; #{dateString}  )</if>
+		<if test="commodityType==3">and welfareStatus in(1,2)    and startTime &gt; #{dateString}</if>
+		
+	</select>
+
+
+
 </mapper>

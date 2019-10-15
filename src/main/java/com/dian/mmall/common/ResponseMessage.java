@@ -89,6 +89,7 @@ public enum ResponseMessage {
 	chaxunshimingshixishibai("查询实名信息失败"),
 	benditupianbucunzai("本地图片不存在"),
 	chaxunleixingbunnegweikong("查询类型不能为空"),
+	chaxunleixingbunnegweicuowo("查询类型不存在"),
 	mianjibunnegweikong("面积不能为空"),
 	mianjibuhefa("面积为大于1小于1万的整数"),
 	mianjicuowu("面积输入错误"),

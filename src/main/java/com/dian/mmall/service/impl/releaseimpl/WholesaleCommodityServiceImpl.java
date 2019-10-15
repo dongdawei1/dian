@@ -374,9 +374,9 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				// TODO 结束时间要在 蔬菜 3天内 其他15天
 				int length = 15;
 				if (releaseType == 4) {
-					length = 3;
+					length = 4;
 				}
-				serverResponseObject = DateTimeUtil.dateCompare(startTime, length);
+				serverResponseObject = DateTimeUtil.dateCompare(endTime, length);
 				if (serverResponseObject.getStatus() == 0) {
 					if ((boolean) serverResponseObject.getData()) {
 						map.put("endTime", endTime);
@@ -398,5 +398,57 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		return ServerResponse.createBySuccess(map);
 
+	}
+
+	@Override
+	public ServerResponse<Object> get_wholesaleCommodity_serviceType(long userId, Map<String, Object> params) {
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		if (releaseTypeString == null || releaseTypeString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
+		}
+		//类型
+		int releaseType = Integer.valueOf(releaseTypeString);
+		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+		}
+		
+		String welfareStatusString= params.get("welfareStatus").toString().trim();
+		//发布状态
+		int welfareStatus = 0;
+		if (welfareStatusString != null && !welfareStatusString.equals("")) {
+			welfareStatus=Integer.valueOf(welfareStatusString);
+		}
+		//商品名
+		String serviceType= params.get("serviceType").toString().trim();
+		if (serviceType != null && !serviceType.equals("")) {
+			serviceType="%"+serviceType+"%";
+		}
+		//是否在价格有效期
+//		  <el-option label="价格有效期内" value="1"></el-option>
+//          <el-option label="价格有效期已结束" value="2"></el-option>
+//          <el-option label="价格有效期未开始" value="3"></el-option>
+		
+		String commodityTypeString=params.get("commodityType").toString().trim();
+		int commodityType=0;
+		if (commodityTypeString != null && !commodityTypeString.equals("")) {
+			commodityType=Integer.valueOf(commodityTypeString);
+			if(commodityType!=1 && commodityType!=2 && commodityType!=3) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqicuowo.getMessage());
+			}
+		}
+		
+		//1公开，2自己发布过的
+		String typeString=params.get("type").toString().trim();
+		if (typeString == null || typeString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
+		}
+		int type=Integer.valueOf(typeString);
+		if(type!=1 && type!=2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweicuowo.getMessage());
+		}
+		
+		String dateString=DateTimeUtil.dateToAll();
+		
+		return ServerResponse.createBySuccess(wholesaleCommodityMapper.get_wholesaleCommodity_serviceType(userId,type,commodityType,dateString,releaseType,serviceType,welfareStatus));
 	}
 }
