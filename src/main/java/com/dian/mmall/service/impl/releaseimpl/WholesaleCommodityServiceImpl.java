@@ -17,6 +17,7 @@ import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.ServiceTypeMapper;
 import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.dao.releaseDao.WholesaleCommodityMapper;
+import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.tupian.Picture;
@@ -170,7 +171,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (serviceType == null || serviceType.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinmingkong.getMessage());
 		}
-		count = serviceTypeMapper.getserviceTypeNameCount(releaseType,serviceType, 2);
+		count = serviceTypeMapper.getserviceTypeNameCount(releaseType, serviceType, 2);
 		if (count == 0) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinchaxunshibai.getMessage());
 		}
@@ -335,7 +336,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 
 		// 开始日期
-		List<String> startend_list = JsonUtil.list2Obj((List<String>)params.get("value1"), List.class,String.class);
+		List<String> startend_list = JsonUtil.list2Obj((List<String>) params.get("value1"), List.class, String.class);
 		if (startend_list.size() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqicuowo.getMessage());
 		}
@@ -406,49 +407,199 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (releaseTypeString == null || releaseTypeString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
 		}
-		//类型
+		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
 		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 		}
-		
-		String welfareStatusString= params.get("welfareStatus").toString().trim();
-		//发布状态
+
+		String welfareStatusString = params.get("welfareStatus").toString().trim();
+		// 发布状态
 		int welfareStatus = 0;
 		if (welfareStatusString != null && !welfareStatusString.equals("")) {
-			welfareStatus=Integer.valueOf(welfareStatusString);
+			welfareStatus = Integer.valueOf(welfareStatusString);
 		}
-		//商品名
-		String serviceType= params.get("serviceType").toString().trim();
+		// 商品名
+		String serviceType = params.get("serviceType").toString().trim();
 		if (serviceType != null && !serviceType.equals("")) {
-			serviceType="%"+serviceType+"%";
+			serviceType = "%" + serviceType + "%";
 		}
-		//是否在价格有效期
+		// 是否在价格有效期
 //		  <el-option label="价格有效期内" value="1"></el-option>
 //          <el-option label="价格有效期已结束" value="2"></el-option>
 //          <el-option label="价格有效期未开始" value="3"></el-option>
-		
-		String commodityTypeString=params.get("commodityType").toString().trim();
-		int commodityType=0;
+
+		String commodityTypeString = params.get("commodityType").toString().trim();
+		int commodityType = 0;
 		if (commodityTypeString != null && !commodityTypeString.equals("")) {
-			commodityType=Integer.valueOf(commodityTypeString);
-			if(commodityType!=1 && commodityType!=2 && commodityType!=3) {
+			commodityType = Integer.valueOf(commodityTypeString);
+			if (commodityType != 1 && commodityType != 2 && commodityType != 3) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqicuowo.getMessage());
 			}
 		}
-		
-		//1公开，2自己发布过的
-		String typeString=params.get("type").toString().trim();
+
+		// 1公开，2自己发布过的
+		String typeString = params.get("type").toString().trim();
 		if (typeString == null || typeString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
 		}
-		int type=Integer.valueOf(typeString);
-		if(type!=1 && type!=2) {
+		int type = Integer.valueOf(typeString);
+		if (type != 1 && type != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweicuowo.getMessage());
 		}
-		
-		String dateString=DateTimeUtil.dateToAll();
-		
-		return ServerResponse.createBySuccess(wholesaleCommodityMapper.get_wholesaleCommodity_serviceType(userId,type,commodityType,dateString,releaseType,serviceType,welfareStatus));
+
+		String dateString = DateTimeUtil.dateToAll();
+
+		return ServerResponse.createBySuccess(wholesaleCommodityMapper.get_wholesaleCommodity_serviceType(userId, type,
+				commodityType, dateString, releaseType, serviceType, welfareStatus));
+	}
+
+	@Override
+	public ServerResponse<Object> get_myWholesaleCommodity_list(long userId, Map<String, Object> params) {
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		if (releaseTypeString == null || releaseTypeString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
+		}
+		// 类型
+		int releaseType = Integer.valueOf(releaseTypeString);
+		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+		}
+
+		String welfareStatusString = params.get("welfareStatus").toString().trim();
+		// 发布状态
+		int welfareStatus = 0;
+		if (welfareStatusString != null && !welfareStatusString.equals("")) {
+			welfareStatus = Integer.valueOf(welfareStatusString);
+		}
+		// 商品名
+		String serviceType = params.get("serviceType").toString().trim();
+		if (serviceType != null && !serviceType.equals("")) {
+			serviceType = "%" + serviceType + "%";
+		}
+		// 是否在价格有效期
+//		  <el-option label="价格有效期内" value="1"></el-option>
+//          <el-option label="价格有效期已结束" value="2"></el-option>
+//          <el-option label="价格有效期未开始" value="3"></el-option>
+
+		String commodityTypeString = params.get("commodityType").toString().trim();
+		int commodityType = 0;
+		if (commodityTypeString != null && !commodityTypeString.equals("")) {
+			commodityType = Integer.valueOf(commodityTypeString);
+			if (commodityType != 1 && commodityType != 2 && commodityType != 3) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqicuowo.getMessage());
+			}
+		}
+
+		// 1公开，2自己发布过的
+		String typeString = params.get("type").toString().trim();
+		if (typeString == null || typeString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
+		}
+		int type = Integer.valueOf(typeString);
+		if (type != 1 && type != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweicuowo.getMessage());
+		}
+
+		String dateString = DateTimeUtil.dateToAll();
+		String currentPage_string = params.get("currentPage").toString().trim();
+		String pageSize_string = params.get("pageSize").toString().trim();
+		int currentPage = 0;
+		int pageSize = 0;
+
+		if (currentPage_string != null && currentPage_string != "") {
+			currentPage = Integer.parseInt(currentPage_string);
+			if (currentPage <= 0) {
+				return ServerResponse.createByErrorMessage("页数不能小于0");
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入页数");
+		}
+
+		if (pageSize_string != null && pageSize_string != "") {
+			pageSize = Integer.parseInt(pageSize_string);
+			if (pageSize <= 0) {
+				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+			}
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		}
+
+		Page<WholesaleCommodity> equipment_pagePage = new Page<WholesaleCommodity>();
+
+		long zongtiaoshu = wholesaleCommodityMapper.get_myWholesaleCommodityNo(userId, type, commodityType, dateString,
+				releaseType, serviceType, welfareStatus);
+
+		equipment_pagePage.setTotalno(zongtiaoshu);
+		equipment_pagePage.setPageSize(pageSize);
+		equipment_pagePage.setCurrentPage(currentPage); // 当前页
+		if (zongtiaoshu == 0) {
+			equipment_pagePage.setDatas(null);
+			return ServerResponse.createBySuccess(equipment_pagePage);
+		}
+		// 查询list
+		List<WholesaleCommodity> equipmentList = wholesaleCommodityMapper.get_myWholesaleCommodity_list(
+				(currentPage - 1) * pageSize, pageSize, userId, type, commodityType, dateString, releaseType,
+				serviceType, welfareStatus);
+
+		// isValidity
+//		  <el-option label="价格有效期内" value="1"></el-option>
+//      <el-option label="价格有效期已结束" value="2"></el-option>
+//      <el-option label="价格有效期未开始
+		for (int a = 0; a < equipmentList.size(); a++) {
+			WholesaleCommodity aaCommodity = equipmentList.get(a);
+			int getWelfareStatus = aaCommodity.getWelfareStatus();
+			if (getWelfareStatus == 1 || getWelfareStatus == 2) {
+				if (commodityType != 0) {
+					if (commodityType == 1) {
+						aaCommodity.setIsValidity("显示中-价格有效期内");
+						equipmentList.set(a, aaCommodity);
+					} else if (commodityType == 2) {
+						aaCommodity.setIsValidity("未显示-价格有效期已结束");
+						equipmentList.set(a, aaCommodity);
+					} else if (commodityType == 3) {
+						aaCommodity.setIsValidity("未显示-价格有效期未开始");
+						equipmentList.set(a, aaCommodity);
+					}
+				} else {
+					String startTime = aaCommodity.getStartTime();
+					String endTime = aaCommodity.getEndTime();
+
+					ServerResponse<Object> serverResponseObject = DateTimeUtil.isPastDate(endTime, 0);
+					if (serverResponseObject.getStatus() == 0) {
+						if ((boolean) serverResponseObject.getData()) {
+							// 结束时间晚于现在
+							serverResponseObject = DateTimeUtil.isPastDate(startTime, 0);
+							if ((boolean) serverResponseObject.getData()) {
+								// 开始时间晚于现在 未开始
+								aaCommodity.setIsValidity("未显示-价格有效期未开始");
+								equipmentList.set(a, aaCommodity);
+							} else {
+								// 开始时间早于现在 进行中
+								aaCommodity.setIsValidity("显示中-价格有效期内");
+								equipmentList.set(a, aaCommodity);
+							}
+						} else {
+							// 结束时间晚于现在 已结束
+							aaCommodity.setIsValidity("未显示-价格有效期已结束");
+							equipmentList.set(a, aaCommodity);
+						}
+
+					}
+
+				}
+			} else if (getWelfareStatus == 4) {
+				aaCommodity.setIsValidity("未显示-待审核未发布");
+				equipmentList.set(a, aaCommodity);
+			} else if (getWelfareStatus == 5 || commodityType == 2) {
+				aaCommodity.setIsValidity("未显示-价格有效期已结束");
+				equipmentList.set(a, aaCommodity);
+			}
+		}
+
+		equipment_pagePage.setDatas(equipmentList);
+		return ServerResponse.createBySuccess(equipment_pagePage);
+
 	}
 }

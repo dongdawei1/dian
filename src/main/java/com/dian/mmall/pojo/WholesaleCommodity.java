@@ -116,4 +116,5 @@ public class WholesaleCommodity {
 	private String authentiCationFailure; //审核失败原因
 	private String examineName;
 	private String examineTime;
+	private String isValidity;
 }

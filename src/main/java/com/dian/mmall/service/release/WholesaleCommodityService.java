@@ -12,4 +12,7 @@ public interface WholesaleCommodityService {
 
 	ServerResponse<Object> get_wholesaleCommodity_serviceType(long userId, Map<String, Object> params);
 
+
+	ServerResponse<Object> get_myWholesaleCommodity_list(long userId, Map<String, Object> params);
+
 }

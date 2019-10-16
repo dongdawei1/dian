@@ -16,4 +16,10 @@ public interface WholesaleCommodityMapper {
 	List<String> get_wholesaleCommodity_serviceType(long userId, int type, int commodityType, String dateString,
 			int releaseType, String serviceType, int welfareStatus);
 
+	long get_myWholesaleCommodityNo(long userId, int type, int commodityType, String dateString, int releaseType,
+			String serviceType, int welfareStatus);
+
+	List<WholesaleCommodity> get_myWholesaleCommodity_list(int pageLength, int pageSize, long userId, int type,
+			int commodityType, String dateString, int releaseType, String serviceType, int welfareStatus);
+
 }

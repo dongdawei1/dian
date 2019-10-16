@@ -65,5 +65,24 @@ public class WholesaleCommodityController {
     
     }
     
+    @RequestMapping(value = "get_myWholesaleCommodity_list",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<Object> get_myWholesaleCommodity_list(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	params.put("StringPath", StringPath);
+     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+        
+        return wholesaleCommodityService.get_myWholesaleCommodity_list(user.getId(),params);
     
+    }
 }

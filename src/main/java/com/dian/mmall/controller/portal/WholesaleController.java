@@ -46,4 +46,7 @@ public class WholesaleController {
 		return wholesaleService.getwholesale(params);
 
 	}
+	
+	
+	
 }
