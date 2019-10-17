@@ -79,7 +79,7 @@ public class WholesaleCommodity {
 	@MaxSize(max=50, message="介绍不能大于50字")
 	@IsEmptyAnnotation(message="介绍不能为空")
 	private String serviceIntroduction; 
-	
+	@MaxSize(max=30, message="备注不能大于30字")
 	private String	remarks;  //备注 30字以内
 	
 	@IsEmptyAnnotation(message="图片不能为空") 
@@ -117,4 +117,5 @@ public class WholesaleCommodity {
 	private String examineName;
 	private String examineTime;
 	private String isValidity;
+	private String redundancy;//保留字段
 }
