@@ -145,6 +145,8 @@ public enum ResponseMessage {
 	jiagekaishiyaozai("价格开始时间不能大于"),
 	jiagejieshucuowo("价格结束时间不能小于当前时间"),
 	jiagejieshuyaozai("价格结束时间不能大于"),
+	chaxunleixinkong("查询类型不能为空"),
+	chaxunzhuangtcuowo("查询状态错误"),
 	;
    String message;
    ResponseMessage(String message){

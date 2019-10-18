@@ -139,11 +139,16 @@ public class CheckLand {
 
 		}
 		// 创建批发市场权限
-				else if (menu.equals("/home/wholesaleMarket")) {
-					if (role != 1 && role != 13) {
-						return ServerResponse.createByErrorMessage(meiyouquanxString);
-					}
-				}
+		else if (menu.equals("/home/wholesaleMarket")) {
+			if (role != 1 && role != 13) {
+				return ServerResponse.createByErrorMessage(meiyouquanxString);
+			}
+		} else if (menu.equals("/home/order")) {
+			// 工服
+			if (role != 1 && role != 13 && role != 4) {
+				return ServerResponse.createByErrorMessage(meiyouquanxString);
+			}
+		}
 
 		else if (menu.equals("/home/release")) {
 			if (role != 2 && role != 1) {
@@ -263,9 +268,15 @@ public class CheckLand {
 		}
 		// 查看批发市场权限
 		else if (menu.equals("/home/wholesaleMarket")) {
-			if (role != 1 && role != 13&& role != 4) {
+			if (role != 1 && role != 13 && role != 4) {
 				return ServerResponse.createByErrorMessage(meiyouquanxString);
 			}
+		} else if (menu.equals("/home/order")) {
+			// 工服
+			if (role != 1 && role != 13 && role != 4) {
+				return ServerResponse.createByErrorMessage(meiyouquanxString);
+			}
+
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 		}
@@ -465,11 +476,23 @@ public class CheckLand {
 				return ServerResponse.createByErrorMessage(meiyouquanxString);
 			}
 		} else if (menu.equals("/home/wholesaleMarket")) {
-			// 工服
+			// 批发
 			if (role != 1 && role != 13 && role != 4) {
 				return ServerResponse.createByErrorMessage(meiyouquanxString);
 			}
 			if (role == 1 || role == 13) {
+				isButten.put("isCreate", true);
+			} else {
+				isButten.put("isCreate", false);
+			}
+			isButten.put("isAuthentication", user.getIsAuthentication());
+			isButten.put("isSee", true);
+		} else if (menu.equals("/home/order")) {
+			// 工服
+			if (role != 1 && role != 13 && role != 4) {
+				return ServerResponse.createByErrorMessage(meiyouquanxString);
+			}
+			if (role == 1 || role == 13 || role == 4) {
 				isButten.put("isCreate", true);
 			} else {
 				isButten.put("isCreate", false);

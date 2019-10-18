@@ -14,7 +14,8 @@ import com.dian.mmall.service.PermissionService;
 
 @Service
 public class PermissionServiceImpl implements PermissionService {
-
+    
+	
 	@Autowired
 	private PermissionMapper permissionDao;
 

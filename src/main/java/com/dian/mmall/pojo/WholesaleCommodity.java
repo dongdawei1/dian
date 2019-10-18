@@ -1,5 +1,6 @@
 package com.dian.mmall.pojo;
 
+import com.dian.mmall.pojo.gongyong.IsButten;
 import com.dian.mmall.util.checknullandmax.IsEmptyAnnotation;
 import com.dian.mmall.util.checknullandmax.MaxSize;
 import com.dian.mmall.util.checknullandmax.MinSize;
@@ -117,5 +118,5 @@ public class WholesaleCommodity {
 	private String examineName;
 	private String examineTime;
 	private String isValidity;
-	private String redundancy;//保留字段
+	private IsButten isButten;//保留字段
 }

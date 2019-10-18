@@ -44,7 +44,6 @@ public class Order {
 	@IsEmptyAnnotation(message="送货方式不能为空") 
 	private Integer deliveryType;//1自取  ,2送货,  3自取+送货  4满免
 	
-	@IsEmptyAnnotation(message="运费收取方式不能为空") 
 	private long deliveryCollect; //运费
 	@MaxSize(max=100, message="送货地址不能大于100字")
 	private String  addressDetailed; //送货地址
@@ -67,8 +66,9 @@ public class Order {
 	
 	@IsEmptyAnnotation(message="订单状态不能为空") 
 	private Integer orderStatus;
-	private Integer payStatus; //3代付款，4支付成功，5,取消支付，初始0
 	//1购买者下单,2批发者确认，3关单，4取/送货 ，5待评价，6评价完成
+	private Integer payStatus; //3代付款，4支付成功，5,取消支付，初始0
+	
 	
 	
 

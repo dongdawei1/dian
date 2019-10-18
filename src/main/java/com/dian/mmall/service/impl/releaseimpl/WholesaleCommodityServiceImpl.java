@@ -19,10 +19,12 @@ import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.dao.releaseDao.WholesaleCommodityMapper;
 import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.WholesaleCommodity;
+import com.dian.mmall.pojo.gongyong.IsButten;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.service.OrderService;
 import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
@@ -51,6 +53,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 	private EvaluateMapper evaluateMapper;
 	@Autowired
 	private WholesaleCommodityMapper wholesaleCommodityMapper;
+	@Autowired
+	private OrderService orderService;
 
 	@Override
 	public ServerResponse<String> create_wholesaleCommodity(User user, Map<String, Object> params) {
@@ -547,6 +551,12 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 //		  <el-option label="价格有效期内" value="1"></el-option>
 //      <el-option label="价格有效期已结束" value="2"></el-option>
 //      <el-option label="价格有效期未开始
+
+		IsButten isButten = new IsButten();
+
+		ServerResponse<Object> serverResponse = null;
+
+		int orderStatus_count = 0;
 		for (int a = 0; a < equipmentList.size(); a++) {
 			WholesaleCommodity aaCommodity = equipmentList.get(a);
 			int getWelfareStatus = aaCommodity.getWelfareStatus();
@@ -554,12 +564,53 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				if (commodityType != 0) {
 					if (commodityType == 1) {
 						aaCommodity.setIsValidity("显示中-价格有效期内");
-						equipmentList.set(a, aaCommodity);
+						
+						// 查询有无未送货的订单
+//						 private boolean isDisplayEdit = false; //编辑键
+//						 private boolean isDisplayHide = false; //隐藏键
+//						 private boolean isDisplayRelease = false; //发布键
+//						 private boolean isDisplayRefresh = false; //刷新键
+//						 private boolean isDisplayDelete = false; //删除键
+						serverResponse = orderService.get_conduct_order(userId, releaseType,
+								aaCommodity.getServiceType(), 0);
+						if (serverResponse.getStatus() == 0) {
+							orderStatus_count = (int) serverResponse.getData();
+							if (orderStatus_count != 0) {
+								// 如果没有显示
+								isButten.setDisplayRefresh(true);
+								aaCommodity.setIsButten(isButten);
+							} else {
+								isButten.setDisplayEdit(true);
+								if (aaCommodity.getWelfareStatus() == 1) {
+									// WelfareStatus=2隐藏中 1发布中
+									isButten.setDisplayHide(true);
+								} else {
+									//显示发布键
+									isButten.setDisplayRelease(true);
+								}
+								isButten.setDisplayRefresh(true);
+								isButten.setDisplayDelete(true);
+								aaCommodity.setIsButten(isButten);
+							}
+							equipmentList.set(a, aaCommodity);
+
+						} else {
+							return serverResponse;
+						}
+
 					} else if (commodityType == 2) {
 						aaCommodity.setIsValidity("未显示-价格有效期已结束");
+						
+						//只显示编辑键
+						isButten.setDisplayEdit(true);
+						aaCommodity.setIsButten(isButten);
 						equipmentList.set(a, aaCommodity);
 					} else if (commodityType == 3) {
 						aaCommodity.setIsValidity("未显示-价格有效期未开始");
+						
+						isButten.setDisplayDelete(true);
+						isButten.setDisplayEdit(true);
+						aaCommodity.setIsButten(isButten);
 						equipmentList.set(a, aaCommodity);
 					}
 				} else {
@@ -574,15 +625,48 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 							if ((boolean) serverResponseObject.getData()) {
 								// 开始时间晚于现在 未开始
 								aaCommodity.setIsValidity("未显示-价格有效期未开始");
+								
+								isButten.setDisplayDelete(true);
+								isButten.setDisplayEdit(true);
+								aaCommodity.setIsButten(isButten);
 								equipmentList.set(a, aaCommodity);
 							} else {
 								// 开始时间早于现在 进行中
 								aaCommodity.setIsValidity("显示中-价格有效期内");
-								equipmentList.set(a, aaCommodity);
+								
+								serverResponse = orderService.get_conduct_order(userId, releaseType,
+										aaCommodity.getServiceType(), 0);
+								if (serverResponse.getStatus() == 0) {
+									orderStatus_count = (int) serverResponse.getData();
+									if (orderStatus_count != 0) {
+										// 如果没有显示
+										isButten.setDisplayRefresh(true);
+										aaCommodity.setIsButten(isButten);
+									} else {
+										isButten.setDisplayEdit(true);
+										if (aaCommodity.getWelfareStatus() == 1) {
+											// WelfareStatus=2隐藏中 1发布中
+											isButten.setDisplayHide(true);
+										} else {
+											//显示发布键
+											isButten.setDisplayRelease(true);
+										}
+										isButten.setDisplayRefresh(true);
+										isButten.setDisplayDelete(true);
+										aaCommodity.setIsButten(isButten);
+									}
+									equipmentList.set(a, aaCommodity);
+								} else {
+									return serverResponse;
+								}
 							}
 						} else {
 							// 结束时间晚于现在 已结束
 							aaCommodity.setIsValidity("未显示-价格有效期已结束");
+							
+							//只显示编辑键
+							isButten.setDisplayEdit(true);
+							aaCommodity.setIsButten(isButten);
 							equipmentList.set(a, aaCommodity);
 						}
 
@@ -591,10 +675,18 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				}
 			} else if (getWelfareStatus == 4) {
 				aaCommodity.setIsValidity("未显示-待审核未发布");
+				isButten.setDisplayDelete(true);
+				isButten.setDisplayEdit(true);
+				aaCommodity.setIsButten(isButten);
 				equipmentList.set(a, aaCommodity);
 			} else if (getWelfareStatus == 5 || commodityType == 2) {
 				aaCommodity.setIsValidity("未显示-价格有效期已结束");
+				//只显示编辑键
+				isButten.setDisplayEdit(true);
+				aaCommodity.setIsButten(isButten);
+				
 				equipmentList.set(a, aaCommodity);
+				
 			}
 		}
 
