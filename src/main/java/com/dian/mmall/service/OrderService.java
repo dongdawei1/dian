@@ -8,7 +8,7 @@ public interface OrderService {
 
 	ServerResponse<String> create_wholesaleCommodity_order(long userId, Map<String, Object> params);
 	//进行中的订单
-	ServerResponse<Object> get_conduct_order(long userId,int releaseType,String serviceType,int orderStatus);
+	ServerResponse<Object> get_conduct_order(long wholesaleCommodityId,int orderStatus);
 	
 
 }

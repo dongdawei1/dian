@@ -20,20 +20,15 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public ServerResponse<Object> get_conduct_order(long userId, int releaseType, String serviceType,int orderStatus) {
-		if(userId<0) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.baozhuangfangshicuowo.getMessage());
+	public ServerResponse<Object> get_conduct_order(long wholesaleCommodityId, int orderStatus) {
+		if(wholesaleCommodityId<0) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinidcuowo.getMessage());
 		}
-		if(releaseType<0) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixinkong.getMessage());
-		}
-		if(serviceType==null ||serviceType.equals("")) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinmingkong.getMessage());
-		}
+		
 		if(orderStatus<0 || orderStatus>10) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunzhuangtcuowo.getMessage());
 		}
-		return  ServerResponse.createBySuccess(orderMapper.get_conduct_order(userId,releaseType,serviceType,orderStatus));
+		return  ServerResponse.createBySuccess(orderMapper.get_conduct_order(wholesaleCommodityId,orderStatus));
 	}
 
 }

@@ -65,4 +65,7 @@ public interface RealNameMapper {
 
 	int admin_set_addOrder(RealName realName);
 
+
+	RealName admin_select_realNameByContact(String contact);
+
 }

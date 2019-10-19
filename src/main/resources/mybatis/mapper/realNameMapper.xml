@@ -166,4 +166,12 @@
         cityId,districtCountyId
         from t_user_realname where id=#{id}  and isReceipt in(6,4)  and authentiCationStatus=2
     </select>
+    
+        <select id="admin_select_realNameByContact" resultType="com.dian.mmall.pojo.user.RealName">
+        select id,userId,addressDetailed,contact ,consigneeName,
+        detailed,companyName,provincesId,
+        cityId,districtCountyId
+        from t_user_realname where contact=#{contact} 
+    </select>
+
 </mapper>

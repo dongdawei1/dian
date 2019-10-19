@@ -4,11 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dian.mmall.dao.OrderMapper">
 	<select id="get_conduct_order" resultType="int">
-		select count(*) from order where
-		userId=#{userId} and releaseType=#{releaseType}
-		and serviceType=#{serviceType}
-		<if test="orderStatus==0">and orderStatus in (1,2,4)   </if>
-		<if test="orderStatus!=0"> and orderStatus=#{orderStatus}   </if>
+		select count(*) from orderform where
+		wholesaleCommodityId=#{wholesaleCommodityId} 
+		<if test="orderStatus==0">and `orderStatus` in (1,2,4)   </if>
+		<if test="orderStatus!=0"> and `orderStatus`=#{orderStatus}   </if>
 
 	</select>
 

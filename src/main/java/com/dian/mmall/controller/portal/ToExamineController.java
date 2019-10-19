@@ -30,6 +30,7 @@ import com.dian.mmall.service.release.MenuAndRenovationAndPestControlService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.service.release.RentService;
 import com.dian.mmall.service.release.ResumeService;
+import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.service.release.WineAndTablewareService;
 import com.dian.mmall.util.CheckLand;
 import com.dian.mmall.util.CookieUtil;
@@ -212,7 +213,7 @@ public class ToExamineController {
     
     @Autowired
 	private DepartmentStoreService  departmentStoreService;
-    //获取待审核米菜
+    //获取待审核米菜 零售
     @RequestMapping(value = "adminDepartmentStore",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Object> adminDepartmentStore(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
@@ -227,6 +228,24 @@ public class ToExamineController {
     	return departmentStoreService.adminDepartmentStore(params);
     	
     }
+    
+    @Autowired
+ 	private WholesaleCommodityService wholesaleCommodityService;
+     //获取待审核米菜 批发
+     @RequestMapping(value = "adminWholesaleCommodity",method = RequestMethod.POST)
+     @ResponseBody
+     public ServerResponse<Object> adminWholesaleCommodity(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
+     	
+     	
+     	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+      	//检查是否有管理员权限
+      	if(serverResponse.getStatus()!=0 ) {
+      		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+      	}
+  	
+     	return wholesaleCommodityService.adminWholesaleCommodity(params);
+     	
+     }
     
     @Autowired
     private ToExamineService  toExamineService;

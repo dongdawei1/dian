@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
@@ -18,9 +19,11 @@ import com.dian.mmall.dao.ServiceTypeMapper;
 import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.dao.releaseDao.WholesaleCommodityMapper;
 import com.dian.mmall.pojo.Page;
+import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.gongyong.IsButten;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
+import com.dian.mmall.pojo.shichang.FoodAndGrain;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
@@ -552,44 +555,42 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 //      <el-option label="价格有效期已结束" value="2"></el-option>
 //      <el-option label="价格有效期未开始
 
-		IsButten isButten = new IsButten();
-
 		ServerResponse<Object> serverResponse = null;
 
 		int orderStatus_count = 0;
 		for (int a = 0; a < equipmentList.size(); a++) {
+			IsButten isButten = new IsButten();
 			WholesaleCommodity aaCommodity = equipmentList.get(a);
 			int getWelfareStatus = aaCommodity.getWelfareStatus();
 			if (getWelfareStatus == 1 || getWelfareStatus == 2) {
 				if (commodityType != 0) {
 					if (commodityType == 1) {
 						aaCommodity.setIsValidity("显示中-价格有效期内");
-						
+
 						// 查询有无未送货的订单
 //						 private boolean isDisplayEdit = false; //编辑键
 //						 private boolean isDisplayHide = false; //隐藏键
 //						 private boolean isDisplayRelease = false; //发布键
 //						 private boolean isDisplayRefresh = false; //刷新键
 //						 private boolean isDisplayDelete = false; //删除键
-						serverResponse = orderService.get_conduct_order(userId, releaseType,
-								aaCommodity.getServiceType(), 0);
+						serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 0);
 						if (serverResponse.getStatus() == 0) {
 							orderStatus_count = (int) serverResponse.getData();
 							if (orderStatus_count != 0) {
 								// 如果没有显示
-								isButten.setDisplayRefresh(true);
+								isButten.setRefresh(true);
 								aaCommodity.setIsButten(isButten);
 							} else {
-								isButten.setDisplayEdit(true);
+								isButten.setEdit(true);
 								if (aaCommodity.getWelfareStatus() == 1) {
 									// WelfareStatus=2隐藏中 1发布中
-									isButten.setDisplayHide(true);
+									isButten.setHide(true);
 								} else {
-									//显示发布键
-									isButten.setDisplayRelease(true);
+									// 显示发布键
+									isButten.setRelease(true);
 								}
-								isButten.setDisplayRefresh(true);
-								isButten.setDisplayDelete(true);
+								isButten.setRefresh(true);
+								isButten.setDelete(true);
 								aaCommodity.setIsButten(isButten);
 							}
 							equipmentList.set(a, aaCommodity);
@@ -600,16 +601,16 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 					} else if (commodityType == 2) {
 						aaCommodity.setIsValidity("未显示-价格有效期已结束");
-						
-						//只显示编辑键
-						isButten.setDisplayEdit(true);
+
+						// 只显示编辑键
+						isButten.setEdit(true);
 						aaCommodity.setIsButten(isButten);
 						equipmentList.set(a, aaCommodity);
 					} else if (commodityType == 3) {
 						aaCommodity.setIsValidity("未显示-价格有效期未开始");
-						
-						isButten.setDisplayDelete(true);
-						isButten.setDisplayEdit(true);
+
+						isButten.setDelete(true);
+						isButten.setEdit(true);
 						aaCommodity.setIsButten(isButten);
 						equipmentList.set(a, aaCommodity);
 					}
@@ -625,34 +626,33 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 							if ((boolean) serverResponseObject.getData()) {
 								// 开始时间晚于现在 未开始
 								aaCommodity.setIsValidity("未显示-价格有效期未开始");
-								
-								isButten.setDisplayDelete(true);
-								isButten.setDisplayEdit(true);
+
+								isButten.setDelete(true);
+								isButten.setEdit(true);
 								aaCommodity.setIsButten(isButten);
 								equipmentList.set(a, aaCommodity);
 							} else {
 								// 开始时间早于现在 进行中
 								aaCommodity.setIsValidity("显示中-价格有效期内");
-								
-								serverResponse = orderService.get_conduct_order(userId, releaseType,
-										aaCommodity.getServiceType(), 0);
+
+								serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 0);
 								if (serverResponse.getStatus() == 0) {
 									orderStatus_count = (int) serverResponse.getData();
 									if (orderStatus_count != 0) {
 										// 如果没有显示
-										isButten.setDisplayRefresh(true);
+										isButten.setRefresh(true);
 										aaCommodity.setIsButten(isButten);
 									} else {
-										isButten.setDisplayEdit(true);
+										isButten.setEdit(true);
 										if (aaCommodity.getWelfareStatus() == 1) {
 											// WelfareStatus=2隐藏中 1发布中
-											isButten.setDisplayHide(true);
+											isButten.setHide(true);
 										} else {
-											//显示发布键
-											isButten.setDisplayRelease(true);
+											// 显示发布键
+											isButten.setRelease(true);
 										}
-										isButten.setDisplayRefresh(true);
-										isButten.setDisplayDelete(true);
+										isButten.setRefresh(true);
+										isButten.setDelete(true);
 										aaCommodity.setIsButten(isButten);
 									}
 									equipmentList.set(a, aaCommodity);
@@ -663,9 +663,9 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 						} else {
 							// 结束时间晚于现在 已结束
 							aaCommodity.setIsValidity("未显示-价格有效期已结束");
-							
-							//只显示编辑键
-							isButten.setDisplayEdit(true);
+
+							// 只显示编辑键
+							isButten.setEdit(true);
 							aaCommodity.setIsButten(isButten);
 							equipmentList.set(a, aaCommodity);
 						}
@@ -675,23 +675,103 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				}
 			} else if (getWelfareStatus == 4) {
 				aaCommodity.setIsValidity("未显示-待审核未发布");
-				isButten.setDisplayDelete(true);
-				isButten.setDisplayEdit(true);
+				isButten.setDelete(true);
+				isButten.setEdit(true);
 				aaCommodity.setIsButten(isButten);
 				equipmentList.set(a, aaCommodity);
 			} else if (getWelfareStatus == 5 || commodityType == 2) {
 				aaCommodity.setIsValidity("未显示-价格有效期已结束");
-				//只显示编辑键
-				isButten.setDisplayEdit(true);
+				// 只显示编辑键
+				isButten.setEdit(true);
 				aaCommodity.setIsButten(isButten);
-				
+
 				equipmentList.set(a, aaCommodity);
-				
+
 			}
 		}
 
 		equipment_pagePage.setDatas(equipmentList);
 		return ServerResponse.createBySuccess(equipment_pagePage);
 
+	}
+
+	@Override
+	public ServerResponse<Object> adminWholesaleCommodity(Map<String, Object> params) {
+		String currentPage_string = params.get("currentPage").toString().trim();
+		String pageSize_string = params.get("pageSize").toString().trim();
+		int currentPage = 0;
+		int pageSize = 0;
+
+		if (currentPage_string != null && currentPage_string != "") {
+			currentPage = Integer.parseInt(currentPage_string);
+			if (currentPage <= 0) {
+				return ServerResponse.createByErrorMessage("页数不能小于0");
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入页数");
+		}
+
+		if (pageSize_string != null && pageSize_string != "") {
+			pageSize = Integer.parseInt(pageSize_string);
+			if (pageSize <= 0) {
+				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+			}
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		}
+
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		Integer releaseType = null;
+		if (releaseTypeString != null && !releaseTypeString.equals("")) {
+			releaseType = Integer.valueOf(releaseTypeString);
+			if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 29 && releaseType != 9) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+			}
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
+		}
+
+		String contact = params.get("contact").toString().trim();
+		if (contact.length() != 11 && contact != null && !contact.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.ShouJiHaoBuHeFa.getMessage());
+		}
+		if (contact.length() == 11) {
+			contact = EncrypDES.encryptPhone(contact);
+		}
+
+		String companyName = params.get("companyName").toString().trim();
+		String detailed =null;
+		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
+				List.class);
+		if (selectedOptions_list.size() == 3) {
+			Integer provincesId = selectedOptions_list.get(0);
+			Integer cityId = selectedOptions_list.get(1);
+			Integer districtCountyId = selectedOptions_list.get(2);
+			// 判断省市区id是否正确
+			detailed = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+		}
+
+		Page<WholesaleCommodity> equipment_pagePage = new Page<WholesaleCommodity>();
+		long zongtiaoshu = 0;
+		List<WholesaleCommodity> list_equipmentall = null;
+		
+		System.out.println("contact"+contact+"detailed"+detailed+"companyName"+companyName);
+		if ((contact.equals("") || contact == null) && ( detailed == null || detailed.equals("") )
+				&& (companyName.equals("") || companyName == null)) {
+			zongtiaoshu = wholesaleCommodityMapper.adminWholesaleCommodity_no(0, releaseType);
+			list_equipmentall = wholesaleCommodityMapper.adminWholesaleCommodity((currentPage - 1) * pageSize, pageSize,
+					0, releaseType);
+		} else {
+			zongtiaoshu = wholesaleCommodityMapper.adminWholesaleCommodity_no_realName(contact,companyName,detailed , releaseType);
+			list_equipmentall = wholesaleCommodityMapper.adminWholesaleCommodity_realName((currentPage - 1) * pageSize, pageSize,
+					contact,companyName,detailed ,releaseType);
+		}
+
+		equipment_pagePage.setTotalno(zongtiaoshu);
+		equipment_pagePage.setPageSize(pageSize);
+		equipment_pagePage.setCurrentPage(currentPage); // 当前页
+		equipment_pagePage.setDatas(list_equipmentall);
+		return ServerResponse.createBySuccess(equipment_pagePage);
 	}
 }

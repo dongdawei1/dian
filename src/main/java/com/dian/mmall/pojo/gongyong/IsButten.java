@@ -12,11 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class IsButten {
-	private boolean isDisplayEdit = false; // 编辑键
-	private boolean isDisplayHide = false; // 隐藏键
-	private boolean isDisplayRelease = false; // 发布键
-	private boolean isDisplayRefresh = false; // 刷新键
-	private boolean isDisplayDelete = false; // 删除键
+	private boolean edit = false; // 编辑键
+	private boolean hide = false; // 隐藏键
+	private boolean release = false; // 发布键
+	private boolean refresh = false; // 刷新键
+	private boolean delete = false; // 删除键
 	private boolean transaction = false; // 在线交易
-
 }

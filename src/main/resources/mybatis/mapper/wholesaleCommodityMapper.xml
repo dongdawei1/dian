@@ -63,8 +63,7 @@
 
 	</select>
 
- 	<select id="get_myWholesaleCommodityNo"
-		resultType="long">
+	<select id="get_myWholesaleCommodityNo" resultType="long">
 		select count(*) from shichang_wholesaleCommodity
 		where
 		releaseType=#{releaseType}
@@ -85,10 +84,10 @@
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
 
 	</select>
-  
-  	<select id="get_myWholesaleCommodity_list"
+
+	<select id="get_myWholesaleCommodity_list"
 		resultType="com.dian.mmall.pojo.WholesaleCommodity">
-		select 
+		select
 		id,userId,releaseType,updateTime,createTime,pictureUrl,realNameId,
 		serviceType,releaseTitle,
 		detailed,addressDetailed,commodityPacking,
@@ -99,7 +98,7 @@
 		reserve,deliveryType,deliveryCollect,
 		startTime,endTime,authentiCationStatus,welfareStatus,
 		servicFrequenc,evaluateid
-		 from shichang_wholesaleCommodity
+		from shichang_wholesaleCommodity
 		where
 		releaseType=#{releaseType}
 		<if test="type==2">
@@ -117,8 +116,76 @@
 		<if test="type==1">and welfareStatus = 1 and startTime &lt; #{dateString} and
 			endTime &gt; #{dateString}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
-       order by  updateTime desc
-        limit #{pageLength}, #{pageSize}
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
 	</select>
+
+
+	<!-- 审核分页总条数 -->
+	<select id="adminWholesaleCommodity_no" resultType="long">
+		select count(*) from shichang_wholesaleCommodity where
+		authentiCationStatus in(1,3) and releaseType=#{releaseType}
+		<!-- <if test="userId!=0">and userId=#{userId} </if> -->
+	</select>
+
+	<!-- 审核分页 -->
+
+	<select id="adminWholesaleCommodity"
+		resultType="com.dian.mmall.pojo.WholesaleCommodity">
+		select id,userId,releaseType,serviceType,
+		releaseTitle,detailed,addressDetailed,commodityPacking,commoditySpecifications,
+		commodityJiage,commodityCountNo,serviceIntroduction,
+		remarks,pictureUrl,deliveryType,deliveryCollect,
+		startTime,endTime,reserve,createTime,updateTime,
+		welfareStatus,authentiCationStatus,authentiCationFailure,
+		examineName  
+		from shichang_wholesaleCommodity
+		where authentiCationStatus in(1,3) and releaseType=#{releaseType}
+		order by startTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+
+	<!-- 审核分页总条数 -->
+	<select id="adminWholesaleCommodity_no_realName"
+		resultType="long">
+		select count(*) from shichang_wholesaleCommodity where
+		authentiCationStatus in(1,3) and releaseType=#{releaseType}
+		and userId in(
+		select userId from t_user_realname
+		where isReceipt=2
+		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
+		<if test="companyName!=null and companyName.trim()!=''">and companyName=#{companyName}   </if>
+		<if test="detailed!=null and detailed.trim()!=''">and detailed=#{detailed}   </if>
+		)
+	</select>
+
+	<!-- 审核分页 -->
+
+	<select id="adminWholesaleCommodity_realName"
+		resultType="com.dian.mmall.pojo.WholesaleCommodity">
+		select id,userId,releaseType,serviceType,
+		releaseTitle,detailed,addressDetailed,commodityPacking,commoditySpecifications,
+		commodityJiage,commodityCountNo,serviceIntroduction,
+		remarks,pictureUrl,deliveryType,deliveryCollect,
+		startTime,endTime,reserve,createTime,updateTime,
+		welfareStatus,authentiCationStatus,authentiCationFailure,
+		examineName
+		from shichang_wholesaleCommodity
+		where authentiCationStatus in(1,3) and releaseType=#{releaseType}
+		and userId in(
+		select userId from t_user_realname
+		where isReceipt=2
+		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
+		<if test="companyName!=null and companyName.trim()!=''">and companyName=#{companyName}   </if>
+		<if test="detailed!=null and detailed.trim()!=''">and detailed=#{detailed}   </if>
+		)
+		order by startTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+
+
+
 
 </mapper>
