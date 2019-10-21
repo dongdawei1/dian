@@ -119,6 +119,8 @@ public class RealNameController {
     	
     }
     
+    
+    
     //获取实名信息
     @RequestMapping(value = "getRealNameById",method = RequestMethod.GET)
     @ResponseBody
@@ -133,7 +135,20 @@ public class RealNameController {
     	return realNameService.getRealNameById(id);
     	
     }
-    
+    //获取实名信息
+    @RequestMapping(value = "getRealNameByuserId",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> getRealNameByuserId(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+    	}
+  
+     	
+    	return realNameService.getRealNameByuserId(id);
+    	
+    }
     //重新用户实名
     @RequestMapping(value = "addOrder",method = RequestMethod.POST)
     @ResponseBody

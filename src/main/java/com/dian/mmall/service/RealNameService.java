@@ -34,4 +34,6 @@ public interface RealNameService {
 	
 	ServerResponse<Object> admin_select_realNameByContact(String contact);
 
+	ServerResponse<Object> getRealNameByuserId(long id);
+
 }

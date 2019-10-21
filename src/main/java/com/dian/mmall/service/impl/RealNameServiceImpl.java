@@ -1221,4 +1221,18 @@ public class RealNameServiceImpl implements RealNameService {
 		}
 	}
 
+	@Override
+	public ServerResponse<Object> getRealNameByuserId(long id) {
+		if (id > 0) {
+			RealName realName = realNameMapper.getRealNameByuserId(id);
+			if (realName != null) {
+				return ServerResponse.createBySuccess(realName);
+			} else {
+				return ServerResponse.createByError();
+			}
+		} else {
+			return ServerResponse.createByError();
+		}
+	}
+
 }

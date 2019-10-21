@@ -68,4 +68,7 @@ public interface RealNameMapper {
 
 	RealName admin_select_realNameByContact(String contact);
 
+
+	RealName getRealNameByuserId(long userId);
+
 }
