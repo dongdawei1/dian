@@ -28,9 +28,11 @@ import com.dian.mmall.dao.releaseDao.MenuAndRenovationAndPestControlMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
 import com.dian.mmall.dao.releaseDao.RentMapper;
 import com.dian.mmall.dao.releaseDao.ResumeMapper;
+import com.dian.mmall.dao.releaseDao.WholesaleCommodityMapper;
 import com.dian.mmall.dao.releaseDao.WineAndTablewareMapper;
 import com.dian.mmall.pojo.Liushui;
 import com.dian.mmall.pojo.ServiceType;
+import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.chuzufang.Rent;
 import com.dian.mmall.pojo.gongfu.DepartmentStore;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
@@ -89,6 +91,9 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private UserAccountService userAccountService;
 	@Autowired
 	private LiushuiService liushuiService;
+	
+	@Autowired
+	private WholesaleCommodityMapper wholesaleCommodityMapper;
 	// 全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
 		String userId = params.get("userId").toString().trim();
@@ -212,6 +217,10 @@ public class ToExamineServiceImpl implements ToExamineService {
 			DepartmentStore departmentStore = (DepartmentStore) BeanMapConvertUtil.convertMap(DepartmentStore.class,
 					params);
 			resultCount = departmentStoreMapper.examineDepartmentStore(departmentStore);
+		}else if (tabuleType == 35) {
+			WholesaleCommodity  wholesaleCommodity= (WholesaleCommodity) BeanMapConvertUtil.convertMap(WholesaleCommodity.class,
+					params);
+			resultCount = wholesaleCommodityMapper.examineWholesaleCommodity(wholesaleCommodity);
 		}
 
 		if (resultCount == 0) {

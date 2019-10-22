@@ -7,7 +7,7 @@
 		select count(*) from orderform where
 		wholesaleCommodityId=#{wholesaleCommodityId} 
 		<if test="orderStatus==0">and `orderStatus` in (1,2,4)   </if>
-		<if test="orderStatus!=0"> and `orderStatus`=#{orderStatus}   </if>
+		<!--  <if test="orderStatus==99"> and `orderStatus` in (1,2,4)   </if>-->
 
 	</select>
 

@@ -32,4 +32,7 @@ public interface WholesaleCommodityMapper {
 	List<WholesaleCommodity> adminWholesaleCommodity_realName(int pageLength, int pageSize, String contact, String companyName,
 			String detailed, Integer releaseType);
 
+
+	int examineWholesaleCommodity(WholesaleCommodity wholesaleCommodity);
+
 }

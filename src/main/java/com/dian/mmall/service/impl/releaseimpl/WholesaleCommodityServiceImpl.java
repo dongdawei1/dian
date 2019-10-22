@@ -573,12 +573,14 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 //						 private boolean isDisplayRelease = false; //发布键
 //						 private boolean isDisplayRefresh = false; //刷新键
 //						 private boolean isDisplayDelete = false; //删除键
+						// 判断有无未到终态的订单
 						serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 0);
 						if (serverResponse.getStatus() == 0) {
 							orderStatus_count = (int) serverResponse.getData();
 							if (orderStatus_count != 0) {
-								// 如果没有显示
+								// 如果有,显示刷新键
 								isButten.setRefresh(true);
+								isButten.setOrder(true);
 								aaCommodity.setIsButten(isButten);
 							} else {
 								isButten.setEdit(true);
@@ -591,6 +593,13 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 								}
 								isButten.setRefresh(true);
 								isButten.setDelete(true);
+								serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
+								if (serverResponse.getStatus() == 0) {
+									orderStatus_count = (int) serverResponse.getData();
+									if (orderStatus_count > 0) {
+										isButten.setOrder(true);
+									}
+								}
 								aaCommodity.setIsButten(isButten);
 							}
 							equipmentList.set(a, aaCommodity);
@@ -604,6 +613,15 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 						// 只显示编辑键
 						isButten.setEdit(true);
+						// 判断有无订单全部
+						serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
+						if (serverResponse.getStatus() == 0) {
+							orderStatus_count = (int) serverResponse.getData();
+							if (orderStatus_count > 0) {
+								isButten.setOrder(true);
+							}
+						}
+
 						aaCommodity.setIsButten(isButten);
 						equipmentList.set(a, aaCommodity);
 					} else if (commodityType == 3) {
@@ -641,6 +659,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 									if (orderStatus_count != 0) {
 										// 如果没有显示
 										isButten.setRefresh(true);
+										isButten.setOrder(true);
 										aaCommodity.setIsButten(isButten);
 									} else {
 										isButten.setEdit(true);
@@ -653,6 +672,13 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 										}
 										isButten.setRefresh(true);
 										isButten.setDelete(true);
+										serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
+										if (serverResponse.getStatus() == 0) {
+											orderStatus_count = (int) serverResponse.getData();
+											if (orderStatus_count > 0) {
+												isButten.setOrder(true);
+											}
+										}
 										aaCommodity.setIsButten(isButten);
 									}
 									equipmentList.set(a, aaCommodity);
@@ -666,6 +692,13 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 							// 只显示编辑键
 							isButten.setEdit(true);
+							serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
+							if (serverResponse.getStatus() == 0) {
+								orderStatus_count = (int) serverResponse.getData();
+								if (orderStatus_count > 0) {
+									isButten.setOrder(true);
+								}
+							}
 							aaCommodity.setIsButten(isButten);
 							equipmentList.set(a, aaCommodity);
 						}
@@ -683,6 +716,14 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				aaCommodity.setIsValidity("未显示-价格有效期已结束");
 				// 只显示编辑键
 				isButten.setEdit(true);
+				serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
+				if (serverResponse.getStatus() == 0) {
+					orderStatus_count = (int) serverResponse.getData();
+					if (orderStatus_count > 0) {
+						isButten.setOrder(true);
+					}
+				}
+
 				aaCommodity.setIsButten(isButten);
 
 				equipmentList.set(a, aaCommodity);
@@ -741,7 +782,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 
 		String companyName = params.get("companyName").toString().trim();
-		String detailed =null;
+		String detailed = null;
 		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
 				List.class);
 		if (selectedOptions_list.size() == 3) {
@@ -755,17 +796,17 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		Page<WholesaleCommodity> equipment_pagePage = new Page<WholesaleCommodity>();
 		long zongtiaoshu = 0;
 		List<WholesaleCommodity> list_equipmentall = null;
-		
-		System.out.println("contact"+contact+"detailed"+detailed+"companyName"+companyName);
-		if ((contact.equals("") || contact == null) && ( detailed == null || detailed.equals("") )
+
+		if ((contact.equals("") || contact == null) && (detailed == null || detailed.equals(""))
 				&& (companyName.equals("") || companyName == null)) {
 			zongtiaoshu = wholesaleCommodityMapper.adminWholesaleCommodity_no(0, releaseType);
 			list_equipmentall = wholesaleCommodityMapper.adminWholesaleCommodity((currentPage - 1) * pageSize, pageSize,
 					0, releaseType);
 		} else {
-			zongtiaoshu = wholesaleCommodityMapper.adminWholesaleCommodity_no_realName(contact,companyName,detailed , releaseType);
-			list_equipmentall = wholesaleCommodityMapper.adminWholesaleCommodity_realName((currentPage - 1) * pageSize, pageSize,
-					contact,companyName,detailed ,releaseType);
+			zongtiaoshu = wholesaleCommodityMapper.adminWholesaleCommodity_no_realName(contact, companyName, detailed,
+					releaseType);
+			list_equipmentall = wholesaleCommodityMapper.adminWholesaleCommodity_realName((currentPage - 1) * pageSize,
+					pageSize, contact, companyName, detailed, releaseType);
 		}
 
 		equipment_pagePage.setTotalno(zongtiaoshu);

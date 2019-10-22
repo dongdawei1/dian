@@ -183,7 +183,14 @@
 		order by startTime desc
 		limit #{pageLength}, #{pageSize}
 	</select>
-
+   <!-- 审核  -->  
+    
+       <update id="examineWholesaleCommodity" >
+       update shichang_wholesaleCommodity set  
+       authentiCationStatus=#{authentiCationStatus},authentiCationFailure=#{authentiCationFailure},examineTime=#{examineTime},examineName=#{examineName},
+       welfareStatus=#{welfareStatus}
+        where userId=#{userId}  and id=#{id}
+    </update>
 
 
 
