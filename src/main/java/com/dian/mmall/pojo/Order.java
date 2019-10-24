@@ -24,6 +24,8 @@ public class Order {
 	
 	private long evaluateid;//评价ID
 	
+	@IsEmptyAnnotation(message = "商品类型不能为空")
+	private Integer releaseType;
 	
 	@MaxSize(max=12, message="商品原单价不能大于12位")
 	@IsEmptyAnnotation(message = "商品原单价不能为空")
@@ -68,8 +70,8 @@ public class Order {
 	private Integer orderStatus;
 	//1购买者下单,2批发者确认，3关单，4取/送货 ，5待评价，6评价完成
 	private Integer payStatus; //3代付款，4支付成功，5,取消支付，初始0
-	
-	
+	@IsEmptyAnnotation(message="商品快照不能为空")
+	private String commoditySnapshot;   //下单时的商品详情除地址
 	
 
 }

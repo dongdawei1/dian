@@ -96,7 +96,8 @@
 		commodityCountNo,commodityReserveNo,commoditySurplusNo,
 		remarks,serviceIntroduction,
 		reserve,deliveryType,deliveryCollect,
-		startTime,endTime,authentiCationStatus,welfareStatus,
+		startTime,endTime,authentiCationStatus,authentiCationFailure,
+		welfareStatus,
 		servicFrequenc,evaluateid
 		from shichang_wholesaleCommodity
 		where
