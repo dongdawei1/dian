@@ -35,4 +35,8 @@ public interface WholesaleCommodityMapper {
 
 	int examineWholesaleCommodity(WholesaleCommodity wholesaleCommodity);
 
+	int checkout_count(long id, long userId);
+
+	int operation_userWholesaleCommodity(long id, int type, String updateTime);
+
 }

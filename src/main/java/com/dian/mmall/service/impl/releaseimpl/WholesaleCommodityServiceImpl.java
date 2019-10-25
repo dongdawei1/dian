@@ -1,6 +1,8 @@
 package com.dian.mmall.service.impl.releaseimpl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +29,14 @@ import com.dian.mmall.pojo.shichang.FoodAndGrain;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 import com.dian.mmall.service.OrderService;
 import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
+import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
 import com.dian.mmall.util.SetBean;
@@ -565,8 +569,15 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			if (getWelfareStatus == 1 || getWelfareStatus == 2) {
 				if (commodityType != 0) {
 					if (commodityType == 1) {
-						aaCommodity.setIsValidity("显示中-价格有效期内");
 
+						if (getWelfareStatus == 1) {
+							aaCommodity.setIsValidity("显示中-价格有效期内");
+							isButten.setHide(true);
+						} else {
+							aaCommodity.setIsValidity("隐藏中-价格有效期内");
+							isButten.setRelease(true);
+
+						}
 						// 查询有无未送货的订单
 //						 private boolean isDisplayEdit = false; //编辑键
 //						 private boolean isDisplayHide = false; //隐藏键
@@ -584,13 +595,6 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 								aaCommodity.setIsButten(isButten);
 							} else {
 								isButten.setEdit(true);
-								if (aaCommodity.getWelfareStatus() == 1) {
-									// WelfareStatus=2隐藏中 1发布中
-									isButten.setHide(true);
-								} else {
-									// 显示发布键
-									isButten.setRelease(true);
-								}
 								isButten.setRefresh(true);
 								isButten.setDelete(true);
 								serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
@@ -814,5 +818,119 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		equipment_pagePage.setCurrentPage(currentPage); // 当前页
 		equipment_pagePage.setDatas(list_equipmentall);
 		return ServerResponse.createBySuccess(equipment_pagePage);
+	}
+
+	@Override
+	public ServerResponse<String> operation_userWholesaleCommodity(long userId, Map<String, Object> params) {
+		String type = params.get("type").toString().trim();
+
+		String idString = params.get("id").toString().trim();
+		long id = 0;
+		if (type != null && !type.equals("") && idString != null && !idString.equals("")) {
+			int type_int = Integer.valueOf(type);
+			if (type_int < 1 || type_int > 6) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+			}
+
+			id = Long.valueOf(idString);
+
+			int result = wholesaleCommodityMapper.checkout_count(id, userId);
+			if (result == 0) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.shangpinchaxunkong.getMessage());
+			}
+
+			String updateTime = DateTimeUtil.dateToAll();
+			if (type_int == 1 || type_int == 3 || type_int == 4) {
+
+				result = wholesaleCommodityMapper.operation_userWholesaleCommodity(id, type_int, updateTime);
+			} else if (type_int == 5) {
+
+				synchronized (this) {
+					ServerResponse<Object> serverResponse = orderService.get_conduct_order(id, 0);
+					if (serverResponse.getStatus() == 0) {
+						result = (int) serverResponse.getData();
+						if (result != 0) {
+							return ServerResponse
+									.createByErrorMessage(ResponseMessage.shangpinyoudingdanbunnegchan.getMessage());
+						}else {
+							result = wholesaleCommodityMapper.operation_userWholesaleCommodity(id, type_int, updateTime);
+						}
+					}else {
+						return ServerResponse
+								.createByErrorMessage(serverResponse.getMsg());
+					}
+
+					
+				}
+
+			}
+
+			else if (type_int == 6) {
+
+//				ServerResponse<Object> serverResponse = get_userequipment_id(userIdLong, idLong);
+//				if (serverResponse.getStatus() != 0) {
+//					return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+//				}
+//				Equipment equipment = (Equipment) serverResponse.getData();
+//
+//				// 检查图片
+//				ServerResponse<String> serverResponseString = setPictureUrl(
+//						(ArrayList<Picture>) params.get("pictureUrl"), equipment.getPictureUrl());
+//				if (serverResponseString.getStatus() != 0) {
+//					return serverResponseString;
+//				}
+//				// 检查其他输入
+//				serverResponse = check_evaluate(user, params, 2);
+//				if (serverResponse.getStatus() != 0) {
+//					return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+//				}
+//
+//				Map<String, Object> map = (Map<String, Object>) serverResponse.getData();
+//				map.put("createTime", equipment.getCreateTime());
+//				map.put("id", equipment.getId());
+//				map.put("pictureUrl", serverResponseString.getMsg());
+//				map.put("authentiCationStatus", 1);
+//				map.put("welfareStatus", 4);
+//
+//				Equipment equipment_create = (Equipment) BeanMapConvertUtil.convertMap(Equipment.class, map);
+//				// {result=true, message=验证通过} 返回结果
+//				Map<String, Object> checknullMap = AnnotationDealUtil.validate(equipment_create);
+//				if ((boolean) checknullMap.get("result") == true
+//						&& ((String) checknullMap.get("message")).equals("验证通过")) {
+//					result = equipmentMapper.update_equipment(equipment_create);
+//
+//					if (result > 0) {
+//						try {
+//							List<Picture> listObj4 = JsonUtil.list2Obj((ArrayList<Picture>) params.get("pictureUrl"),
+//									List.class, Picture.class);
+//							for (int a = 0; a < listObj4.size(); a++) {
+//								Picture picture = listObj4.get(a);
+//								if (picture.getUseStatus() == 2) {
+//									FileControl.deleteFile(Const.PATH_E_IMG + picture.getUserName());
+//									pictureMapper.updatePicture(picture.getId());
+//
+//								}
+//							}
+//						} catch (Exception e) {
+//							// TODO: handle exception
+//						}
+//					}
+//
+//				} else if ((boolean) checknullMap.get("result") == false) {
+//					return ServerResponse.createByErrorMessage((String) checknullMap.get("message"));
+//				} else {
+//					return ServerResponse.createByErrorMessage("系统异常稍后重试");
+//				}
+			}
+
+			if (result == 0) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.caozuoshibai.getMessage());
+			}
+
+			return ServerResponse.createBySuccessMessage(ResponseMessage.caozuochenggong.getMessage());
+
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+		}
 	}
 }

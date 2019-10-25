@@ -18,4 +18,7 @@ public interface WholesaleCommodityService {
 
 	ServerResponse<Object> adminWholesaleCommodity(Map<String, Object> params);
 
+
+	ServerResponse<String> operation_userWholesaleCommodity(long userId, Map<String, Object> params);
+
 }

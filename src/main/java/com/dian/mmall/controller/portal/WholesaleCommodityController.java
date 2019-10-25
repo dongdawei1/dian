@@ -22,7 +22,7 @@ public class WholesaleCommodityController {
 	private String StringPath="/home/wholesaleMarket";
 	@Autowired
 	private WholesaleCommodityService  wholesaleCommodityService;
-	//批发
+	//批发创建
     @RequestMapping(value = "create_wholesaleCommodity",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> create_wholesaleCommodity(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
@@ -85,4 +85,25 @@ public class WholesaleCommodityController {
         return wholesaleCommodityService.get_myWholesaleCommodity_list(user.getId(),params);
     
     }
+
+  //批发操作列
+    @RequestMapping(value = "operation_userWholesaleCommodity",method = RequestMethod.POST)
+    @ResponseBody
+   public ServerResponse<String> operation_userWholesaleCommodity(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	params.put("StringPath", StringPath);
+     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return serverResponse1;
+    	}
+   
+        
+        return wholesaleCommodityService.operation_userWholesaleCommodity(user.getId(),params);
+   }
 }

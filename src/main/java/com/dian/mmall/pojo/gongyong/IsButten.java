@@ -17,6 +17,6 @@ public class IsButten {
 	private boolean release = false; // 发布键
 	private boolean refresh = false; // 刷新键
 	private boolean delete = false; // 删除键
-	private boolean order = false; // 删除键
+	private boolean order = false; // 查看订单键
 	private boolean transaction = false; // 在线交易
 }
