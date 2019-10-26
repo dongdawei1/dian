@@ -39,4 +39,8 @@ public interface WholesaleCommodityMapper {
 
 	int operation_userWholesaleCommodity(long id, int type, String updateTime);
 
+	WholesaleCommodity get_userWholesaleCommodity_id(long userId, long id);
+
+	int update_wholesaleCommodity(WholesaleCommodity wholesaleCommodity_create);
+
 }

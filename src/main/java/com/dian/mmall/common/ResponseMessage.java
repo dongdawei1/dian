@@ -149,7 +149,9 @@ public enum ResponseMessage {
 	chaxunzhuangtcuowo("查询状态错误"),
 	shangpinidcuowo("商品ID有误"),
 	shangpinchaxunkong("商品查询失败"),
-	shangpinyoudingdanbunnegchan("有进行中的订单不允许删除")
+	shangpinyoudingdanbunnegchan("有进行中的订单不允许删除"),
+	shangpinyoudingdanbunenggai("有进行中的订单不允许编辑"),
+	shangpinleixingheming("商品名和商品类型不能修改"),
 	;
    String message;
    ResponseMessage(String message){

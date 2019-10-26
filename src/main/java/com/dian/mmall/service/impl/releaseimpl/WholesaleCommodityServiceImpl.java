@@ -65,7 +65,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 	@Override
 	public ServerResponse<String> create_wholesaleCommodity(User user, Map<String, Object> params) {
-		ServerResponse<Object> serverResponse = check_evaluate(user, params, 1);
+		ServerResponse<Object> serverResponse = check_evaluate(user.getId(), params, 1);
 		if (serverResponse.getStatus() != 0) {
 			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
@@ -90,21 +90,15 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 	}
 
-	public ServerResponse<Object> check_evaluate(User currentUser, Map<String, Object> params, int type) {
+	public ServerResponse<Object> check_evaluate(long userId, Map<String, Object> params, int type) {
 		// type 1 新建，2为编辑
 		// 判断用户id与 tocken是否一致
-		// 判断是否实名
-		if (currentUser.getIsAuthentication() != 2) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
-		}
 
 		// 判断非法输入
 		ServerResponse<String> serverResponse = LegalCheck.legalCheckFrom(params);
 		if (serverResponse.getStatus() != 0) {
 			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
-
-		long userId = currentUser.getId();
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("userId", userId);
@@ -171,7 +165,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 
 		// 判断实名信息是否正确
-		RealName realName = realNameMapper.getRealName(currentUser.getId());
+		RealName realName = realNameMapper.getRealName(userId);
 		if (realName != null) {
 			map.put("realNameId", realName.getId());
 		} else {
@@ -202,6 +196,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			return ServerResponse.createByErrorMessage(ResponseMessage.chengsshicuowo.getMessage());
 		}
 		map.put("addressDetailed", params.get("addressDetailed").toString().trim());
+		map.put("selectedOptions", params.get("selectedOptions").toString().trim());
 
 		String commodityPackingString = params.get("commodityPacking").toString().trim();
 		if (commodityPackingString == null || commodityPackingString.equals("")) {
@@ -219,33 +214,22 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (specifiString == null || specifiString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.danweikong.getMessage());
 		}
-		System.out.println(params.toString());
 		int specifi = Integer.valueOf(specifiString);
-		if (specifi == 1) {
-			specifiString = "g";
-		} else if (specifi == 2) {
-			specifiString = "kg";
-		} else if (specifi == 3) {
-			specifiString = "ML";
-		} else if (specifi == 4) {
-			specifiString = "L";
-		} else {
-			return ServerResponse.createByErrorMessage(ResponseMessage.baozhuangfangshicuowo.getMessage());
+		if (specifi < 0 || specifi > 4) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.danweicuowo.getMessage());
 		}
+		map.put("specifi", specifi);
 
-		String commoditySpecifications = null;
+	
 		boolean b = false;
+		float cations = 0;
 		if (commodityPacking != 1) {
 			String cationsString = params.get("cations").toString().trim();
 			if (cationsString == null || cationsString.equals("")) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.guigekong.getMessage());
 			}
-			b = LegalCheck.isNumericInt(cationsString);
-			if (b == false) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.guigecuowo.getMessage());
-			}
-			int cations = Integer.valueOf(cationsString);
-			commoditySpecifications = cations + specifiString;
+
+			cations = Float.valueOf(cationsString);
 		}
 
 		// 判断 选择的包装方式与单位是否统一
@@ -253,7 +237,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			if (specifi != 2) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.danweiyubaozhuangbupipei.getMessage());
 			}
-			commoditySpecifications = "散装";
+
 		} else if (commodityPacking == 2) {
 			if (specifi != 2 && specifi != 1) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.danweiyubaozhuangbupipei.getMessage());
@@ -263,7 +247,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				return ServerResponse.createByErrorMessage(ResponseMessage.danweiyubaozhuangbupipei.getMessage());
 			}
 		}
-		map.put("commoditySpecifications", commoditySpecifications);
+		map.put("cations", cations);
 		// 单价
 		String commodityJiageString = params.get("commodityJiage").toString().trim();
 		if (commodityJiageString == null || commodityJiageString.equals("")) {
@@ -852,75 +836,84 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 						if (result != 0) {
 							return ServerResponse
 									.createByErrorMessage(ResponseMessage.shangpinyoudingdanbunnegchan.getMessage());
-						}else {
-							result = wholesaleCommodityMapper.operation_userWholesaleCommodity(id, type_int, updateTime);
+						} else {
+							result = wholesaleCommodityMapper.operation_userWholesaleCommodity(id, type_int,
+									updateTime);
 						}
-					}else {
-						return ServerResponse
-								.createByErrorMessage(serverResponse.getMsg());
+					} else {
+						return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 					}
 
-					
 				}
 
 			}
 
 			else if (type_int == 6) {
 
-//				ServerResponse<Object> serverResponse = get_userequipment_id(userIdLong, idLong);
-//				if (serverResponse.getStatus() != 0) {
-//					return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//				}
-//				Equipment equipment = (Equipment) serverResponse.getData();
-//
-//				// 检查图片
-//				ServerResponse<String> serverResponseString = setPictureUrl(
-//						(ArrayList<Picture>) params.get("pictureUrl"), equipment.getPictureUrl());
-//				if (serverResponseString.getStatus() != 0) {
-//					return serverResponseString;
-//				}
-//				// 检查其他输入
-//				serverResponse = check_evaluate(user, params, 2);
-//				if (serverResponse.getStatus() != 0) {
-//					return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//				}
-//
-//				Map<String, Object> map = (Map<String, Object>) serverResponse.getData();
-//				map.put("createTime", equipment.getCreateTime());
-//				map.put("id", equipment.getId());
-//				map.put("pictureUrl", serverResponseString.getMsg());
-//				map.put("authentiCationStatus", 1);
-//				map.put("welfareStatus", 4);
-//
-//				Equipment equipment_create = (Equipment) BeanMapConvertUtil.convertMap(Equipment.class, map);
-//				// {result=true, message=验证通过} 返回结果
-//				Map<String, Object> checknullMap = AnnotationDealUtil.validate(equipment_create);
-//				if ((boolean) checknullMap.get("result") == true
-//						&& ((String) checknullMap.get("message")).equals("验证通过")) {
-//					result = equipmentMapper.update_equipment(equipment_create);
-//
-//					if (result > 0) {
-//						try {
-//							List<Picture> listObj4 = JsonUtil.list2Obj((ArrayList<Picture>) params.get("pictureUrl"),
-//									List.class, Picture.class);
-//							for (int a = 0; a < listObj4.size(); a++) {
-//								Picture picture = listObj4.get(a);
-//								if (picture.getUseStatus() == 2) {
-//									FileControl.deleteFile(Const.PATH_E_IMG + picture.getUserName());
-//									pictureMapper.updatePicture(picture.getId());
-//
-//								}
-//							}
-//						} catch (Exception e) {
-//							// TODO: handle exception
-//						}
-//					}
-//
-//				} else if ((boolean) checknullMap.get("result") == false) {
-//					return ServerResponse.createByErrorMessage((String) checknullMap.get("message"));
-//				} else {
-//					return ServerResponse.createByErrorMessage("系统异常稍后重试");
-//				}
+				WholesaleCommodity wholesaleCommodity = wholesaleCommodityMapper.get_userWholesaleCommodity_id(userId,
+						id);
+
+				if (wholesaleCommodity == null) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+				}
+
+				// 检查图片
+				ServerResponse<String> serverResponseString = setPictureUrl(
+						(ArrayList<Picture>) params.get("pictureUrl"), wholesaleCommodity.getPictureUrl());
+				if (serverResponseString.getStatus() != 0) {
+					return serverResponseString;
+				}
+				// 检查其他输入
+				ServerResponse<Object> serverResponse = check_evaluate(userId, params, 2);
+				if (serverResponse.getStatus() != 0) {
+					return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+				}
+
+				Map<String, Object> map = (Map<String, Object>) serverResponse.getData();
+				map.put("createTime", wholesaleCommodity.getCreateTime());
+				map.put("id", wholesaleCommodity.getId());
+				map.put("pictureUrl", serverResponseString.getMsg());
+				map.put("authentiCationStatus", 1);
+				map.put("welfareStatus", 4);
+
+				WholesaleCommodity wholesaleCommodity_create = (WholesaleCommodity) BeanMapConvertUtil
+						.convertMap(WholesaleCommodity.class, map);
+
+				// {result=true, message=验证通过} 返回结果
+				Map<String, Object> checknullMap = AnnotationDealUtil.validate(wholesaleCommodity_create);
+				if ((boolean) checknullMap.get("result") == true
+						&& ((String) checknullMap.get("message")).equals("验证通过")) {
+					if (wholesaleCommodity_create.getReleaseType() != wholesaleCommodity.getReleaseType()
+							|| wholesaleCommodity_create.getServiceType() != wholesaleCommodity.getServiceType()) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.shangpinleixingheming.getMessage());
+					}
+
+					result = wholesaleCommodityMapper.update_wholesaleCommodity(wholesaleCommodity_create);
+
+					if (result > 0) {
+						try {
+							List<Picture> listObj4 = JsonUtil.list2Obj((ArrayList<Picture>) params.get("pictureUrl"),
+									List.class, Picture.class);
+							for (int a = 0; a < listObj4.size(); a++) {
+								Picture picture = listObj4.get(a);
+								if (picture.getUseStatus() == 2) {
+									FileControl.deleteFile(Const.PATH_E_IMG + picture.getUserName());
+									pictureMapper.updatePicture(picture.getId());
+
+								}
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+
+				} else if ((boolean) checknullMap.get("result") == false) {
+					return ServerResponse.createByErrorMessage((String) checknullMap.get("message"));
+				} else {
+					return ServerResponse.createByErrorMessage("系统异常稍后重试");
+				}
+			} else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.caozuoleixincuowu.getMessage());
 			}
 
 			if (result == 0) {
@@ -931,6 +924,79 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+		}
+	}
+
+	// 编辑时检查图片并重新赋值
+	public ServerResponse<String> setPictureUrl(Object object, String PictureUrl) {
+		// 前端传入
+		List<Picture> listObj3 = JsonUtil.list2Obj((ArrayList<Picture>) object, List.class, Picture.class);
+		// 数据库查询
+		List<Picture> listObj4 = JsonUtil.string2Obj(PictureUrl, List.class, Picture.class);
+		if (listObj3.size() == 0 || listObj4.size() == 0) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());
+		}
+		List<Picture> listObjCun = new ArrayList<Picture>();
+
+		// 处理编辑后
+		for (int a3 = 0; a3 < listObj3.size(); a3++) {
+			Picture picture = listObj3.get(a3);
+			long id3 = picture.getId();
+			int useStatus = picture.getUseStatus();
+			if (useStatus == 1) {
+				// 1上传更新为3使用
+				pictureMapper.updatePictureUse(id3);
+				picture.setUseStatus(3);
+				listObjCun.add(picture);
+			} else if (useStatus == 3) {
+
+				boolean fanduanshifouweiyijingchunli = false;
+
+				for (int a4 = 0; a4 < listObj4.size(); a4++) {
+					if (id3 == listObj4.get(a4).getId()) {
+						listObjCun.add(picture);
+						fanduanshifouweiyijingchunli = true;
+						break;
+					}
+				}
+				if (fanduanshifouweiyijingchunli == false) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.benditupianbucunzai.getMessage());
+				}
+			}
+		}
+		if (listObjCun.size() > 0) {
+			return ServerResponse.createBySuccessMessage(JsonUtil.obj2StringPretty(listObjCun));
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());
+
+	}
+
+	@Override
+	public ServerResponse<Object> get_userWholesaleCommodity_id(long userId, long id) {
+		if (id <= 0) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+		}
+		WholesaleCommodity wholesaleCommodity = wholesaleCommodityMapper.get_userWholesaleCommodity_id(userId, id);
+
+		if (wholesaleCommodity == null) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+		}
+		wholesaleCommodity.setAuthentiCationFailure(wholesaleCommodity.getCations() + "");
+		ServerResponse<Object> serverResponse = orderService.get_conduct_order(id, 0);
+		if (serverResponse.getStatus() == 0) {
+			int orderStatus_count = (int) serverResponse.getData();
+			if (orderStatus_count != 0) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.shangpinyoudingdanbunenggai.getMessage());
+			}
+
+			List<Integer> selectedOptions_list = JsonUtil.string2Obj(wholesaleCommodity.getSelectedOptions(),
+					List.class);
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("data", wholesaleCommodity);
+			map.put("selectedOptions", selectedOptions_list);
+			return ServerResponse.createBySuccess(map);
+		} else {
+			return serverResponse;
 		}
 	}
 }

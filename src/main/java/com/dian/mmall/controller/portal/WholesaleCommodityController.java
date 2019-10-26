@@ -1,5 +1,6 @@
 package com.dian.mmall.controller.portal;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.WholesaleCommodityService;
@@ -102,8 +105,28 @@ public class WholesaleCommodityController {
     	if(serverResponse1.getStatus()!=0) {
     		return serverResponse1;
     	}
-   
-        
         return wholesaleCommodityService.operation_userWholesaleCommodity(user.getId(),params);
    }
+    
+//商户根据id获取详请编辑
+	
+    @RequestMapping(value = "get_userWholesaleCommodity_id",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> get_userWholesaleCommodity_id(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();   
+     	//检查权限
+     	Map<String, Object> params=new HashMap<String, Object>();
+     	params.put("StringPath", StringPath);
+     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return  ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+    	}
+       return wholesaleCommodityService.get_userWholesaleCommodity_id(user.getId(),id);
+    
+    }
 }

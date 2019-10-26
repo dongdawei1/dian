@@ -18,26 +18,26 @@
 		userId,releaseType,updateTime,createTime,pictureUrl,realNameId,
 		serviceType,releaseTitle,
 		detailed,addressDetailed,commodityPacking,
-		commoditySpecifications,
+		cations,specifi,
 		commodityJiage,
 		commodityCountNo,commodityReserveNo,commoditySurplusNo,
 		remarks,serviceIntroduction,
 		reserve,deliveryType,deliveryCollect,
-		startTime,endTime,authentiCationStatus,welfareStatus
+		startTime,endTime,authentiCationStatus,welfareStatus,selectedOptions
 
 		) values (
 		#{userId}, #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
 		#{realNameId},#{serviceType},#{releaseTitle},
 		#{detailed},#{addressDetailed},
 		#{commodityPacking},
-		#{commoditySpecifications},#{commodityJiage},
+		#{cations},#{specifi},#{commodityJiage},
 		#{commodityCountNo},#{commodityReserveNo},#{commoditySurplusNo},
 		#{remarks},#{serviceIntroduction},
 		#{reserve},#{deliveryType},#{deliveryCollect},
-		#{startTime},#{endTime},#{authentiCationStatus},#{welfareStatus}
+		#{startTime},#{endTime},#{authentiCationStatus},#{welfareStatus},
+		#{selectedOptions}
 		)
 	</insert><!-- countNum -->
-
 
 
 	<select id="get_wholesaleCommodity_serviceType"
@@ -91,7 +91,7 @@
 		id,userId,releaseType,updateTime,createTime,pictureUrl,realNameId,
 		serviceType,releaseTitle,
 		detailed,addressDetailed,commodityPacking,
-		commoditySpecifications,
+		cations,specifi,
 		commodityJiage,
 		commodityCountNo,commodityReserveNo,commoditySurplusNo,
 		remarks,serviceIntroduction,
@@ -135,7 +135,7 @@
 	<select id="adminWholesaleCommodity"
 		resultType="com.dian.mmall.pojo.WholesaleCommodity">
 		select id,userId,releaseType,serviceType,
-		releaseTitle,detailed,addressDetailed,commodityPacking,commoditySpecifications,
+		releaseTitle,detailed,addressDetailed,commodityPacking,cations,specifi,
 		commodityJiage,commodityCountNo,serviceIntroduction,
 		remarks,pictureUrl,deliveryType,deliveryCollect,
 		startTime,endTime,reserve,createTime,updateTime,
@@ -170,7 +170,7 @@
 	<select id="adminWholesaleCommodity_realName"
 		resultType="com.dian.mmall.pojo.WholesaleCommodity">
 		select id,userId,releaseType,serviceType,
-		releaseTitle,detailed,addressDetailed,commodityPacking,commoditySpecifications,
+		releaseTitle,detailed,addressDetailed,commodityPacking,cations,specifi,
 		commodityJiage,commodityCountNo,serviceIntroduction,
 		remarks,pictureUrl,deliveryType,deliveryCollect,
 		startTime,endTime,reserve,createTime,updateTime,
@@ -219,6 +219,39 @@
 		<if test="type==3 "> and welfareStatus=1</if>
 		<if test="type==4 "> and welfareStatus=2</if>
 	</update>
+
+
+	<select id="get_userWholesaleCommodity_id"
+		resultType="com.dian.mmall.pojo.WholesaleCommodity">
+		select id,userId,releaseType,serviceType,
+		releaseTitle,detailed,addressDetailed,commodityPacking,cations,specifi,
+		commodityJiage,commodityCountNo,serviceIntroduction,
+		remarks,pictureUrl,deliveryType,deliveryCollect,
+		startTime,endTime,reserve,selectedOptions
+		from shichang_wholesaleCommodity
+		where
+		userId=#{userId} and id=#{id}
+	</select>
+	
+	
+		<!--创建用户成功返回非0 -->
+	<update id="update_wholesaleCommodity">
+		update shichang_wholesaleCommodity set
+		updateTime= #{updateTime},pictureUrl= #{pictureUrl},
+		realNameId=#{realNameId},releaseTitle=#{releaseTitle},
+		detailed=#{detailed},addressDetailed=#{addressDetailed},
+		commodityPacking=#{commodityPacking},
+		cations=#{cations},specifi=#{specifi},commodityJiage=#{commodityJiage},
+		commodityCountNo=#{commodityCountNo},commodityReserveNo=#{commodityReserveNo},
+		commoditySurplusNo=#{commoditySurplusNo},
+		remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},
+		reserve=#{reserve},deliveryType=#{deliveryType},deliveryCollect=#{deliveryCollect},
+		startTime=#{startTime},endTime=#{endTime},authentiCationStatus=#{authentiCationStatus},
+		welfareStatus=#{welfareStatus},
+		selectedOptions=#{selectedOptions},authentiCationFailure=#{authentiCationFailure}
+		where id=#{id}
+	</update><!-- countNum -->
+
 
 
 </mapper>
