@@ -227,7 +227,7 @@
 		releaseTitle,detailed,addressDetailed,commodityPacking,cations,specifi,
 		commodityJiage,commodityCountNo,serviceIntroduction,
 		remarks,pictureUrl,deliveryType,deliveryCollect,
-		startTime,endTime,reserve,selectedOptions
+		startTime,endTime,reserve,selectedOptions,createTime
 		from shichang_wholesaleCommodity
 		where
 		userId=#{userId} and id=#{id}

@@ -314,14 +314,14 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				if (deliveryCollectString == null || deliveryCollectString.equals("")) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.yunfeikong.getMessage());
 				}
-				serverResponseObject = LegalCheck.isNumericInthan0(deliveryCollectString);
-				if (serverResponseObject.getStatus() == 0) {
-					int deliveryCollect = (int) serverResponseObject.getData() * 100;
+				b = LegalCheck.isNumericFolse(deliveryCollectString);
+				if (b) {
+					int deliveryCollect = (int) (float1.valueOf(deliveryCollectString) * 100);
 					map.put("deliveryType", deliveryType); // 送货方式
 					map.put("deliveryCollect", deliveryCollect);// 运费
 
 				} else {
-					return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
+					return ServerResponse.createByErrorMessage(ResponseMessage.yunfeicuowo.getMessage());
 				}
 			}
 		} else {
@@ -581,6 +581,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 								isButten.setEdit(true);
 								isButten.setRefresh(true);
 								isButten.setDelete(true);
+								//查看有无结束订单
 								serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
 								if (serverResponse.getStatus() == 0) {
 									orderStatus_count = (int) serverResponse.getData();
@@ -599,14 +600,17 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 					} else if (commodityType == 2) {
 						aaCommodity.setIsValidity("未显示-价格有效期已结束");
 
-						// 只显示编辑键
-						isButten.setEdit(true);
+						
 						// 判断有无订单全部
 						serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
 						if (serverResponse.getStatus() == 0) {
 							orderStatus_count = (int) serverResponse.getData();
 							if (orderStatus_count > 0) {
 								isButten.setOrder(true);
+							}else {
+								// 只显示编辑键
+								isButten.setDelete(true);
+								isButten.setEdit(true);
 							}
 						}
 
@@ -656,6 +660,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 											isButten.setHide(true);
 										} else {
 											// 显示发布键
+											isButten.setDelete(true);
 											isButten.setRelease(true);
 										}
 										isButten.setRefresh(true);
@@ -678,13 +683,16 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 							// 结束时间晚于现在 已结束
 							aaCommodity.setIsValidity("未显示-价格有效期已结束");
 
-							// 只显示编辑键
-							isButten.setEdit(true);
+							
 							serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
 							if (serverResponse.getStatus() == 0) {
 								orderStatus_count = (int) serverResponse.getData();
 								if (orderStatus_count > 0) {
 									isButten.setOrder(true);
+								}else {
+									// 只显示编辑键
+									isButten.setDelete(true);
+									isButten.setEdit(true);
 								}
 							}
 							aaCommodity.setIsButten(isButten);
@@ -702,13 +710,16 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				equipmentList.set(a, aaCommodity);
 			} else if (getWelfareStatus == 5 || commodityType == 2) {
 				aaCommodity.setIsValidity("未显示-价格有效期已结束");
-				// 只显示编辑键
-				isButten.setEdit(true);
+			
 				serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
 				if (serverResponse.getStatus() == 0) {
 					orderStatus_count = (int) serverResponse.getData();
 					if (orderStatus_count > 0) {
 						isButten.setOrder(true);
+					}else {
+						// 只显示编辑键
+						isButten.setDelete(true);
+						isButten.setEdit(true);
 					}
 				}
 
@@ -883,10 +894,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				Map<String, Object> checknullMap = AnnotationDealUtil.validate(wholesaleCommodity_create);
 				if ((boolean) checknullMap.get("result") == true
 						&& ((String) checknullMap.get("message")).equals("验证通过")) {
-					if (wholesaleCommodity_create.getReleaseType() != wholesaleCommodity.getReleaseType()
-							|| wholesaleCommodity_create.getServiceType() != wholesaleCommodity.getServiceType()) {
-						return ServerResponse.createByErrorMessage(ResponseMessage.shangpinleixingheming.getMessage());
-					}
+					
+					
 
 					result = wholesaleCommodityMapper.update_wholesaleCommodity(wholesaleCommodity_create);
 
