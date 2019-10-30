@@ -152,6 +152,7 @@ public enum ResponseMessage {
 	shangpinyoudingdanbunnegchan("有进行中的订单不允许删除"),
 	shangpinyoudingdanbunenggai("有进行中的订单不允许编辑"),
 	shangpinleixingheming("商品名和商品类型不能修改"),
+	shichangsuozaichengqukong("市场所在城区不能为空")
 	;
    String message;
    ResponseMessage(String message){

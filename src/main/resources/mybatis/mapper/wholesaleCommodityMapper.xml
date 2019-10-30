@@ -62,7 +62,26 @@
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
 
 	</select>
-
+  
+  	<select id="wholesaleCommodity_serviceType"
+		resultType="String">
+		select DISTINCT serviceType from shichang_wholesaleCommodity
+		where
+		releaseType=#{releaseType}  
+		and userId in(
+		select userId from t_user_realname where  authentiCationStatus=2 and detailed=#{selectedOptions}
+		)
+		
+		and welfareStatus=1 and  startTime &lt; #{createTime} and endTime &gt; #{createTime}
+		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
+		
+		<if test="companyName!=null and companyName.trim()!=''">and userId in(
+		select userId from t_user_realname where  authentiCationStatus=2 and companyName=#{companyName}
+		)   </if>
+	
+	</select>
+  
+  
 	<select id="get_myWholesaleCommodityNo" resultType="long">
 		select count(*) from shichang_wholesaleCommodity
 		where

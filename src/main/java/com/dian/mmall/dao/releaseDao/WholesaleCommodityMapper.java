@@ -43,4 +43,7 @@ public interface WholesaleCommodityMapper {
 
 	int update_wholesaleCommodity(WholesaleCommodity wholesaleCommodity_create);
 
+	List<String> wholesaleCommodity_serviceType(int releaseType, String selectedOptions, String serviceType,
+			String companyName, String createTime);
+
 }

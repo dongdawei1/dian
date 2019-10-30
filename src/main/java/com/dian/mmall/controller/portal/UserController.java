@@ -141,22 +141,19 @@ public class UserController {
 	public ServerResponse<String>  captcha(HttpServletResponse response , @RequestParam String uuid) {
 		String base64PicCodeImage;
 		String getPicCode;
-		System.out.println("UserController.captcha()"+uuid);
 		
 		try {
 			base64PicCodeImage = CheckPicCode.encodeBase64ImgCode();
 			getPicCode=CheckPicCode.getPicCode();
-			
-			System.out.println(getPicCode);
 
 			if(base64PicCodeImage != null  && getPicCode!=null){
 				
 				if( RedisShardedPoolUtil.exists(uuid)) {
 			     //根据ip把验证码放到数据库
 					RedisShardedPoolUtil.del(uuid);
-					RedisShardedPoolUtil.setEx(uuid,getPicCode,8*10);
+					RedisShardedPoolUtil.setEx(uuid,getPicCode,8*40);
 				}else {
-					RedisShardedPoolUtil.setEx(uuid,getPicCode,8*10);
+					RedisShardedPoolUtil.setEx(uuid,getPicCode,8*40);
 				}
 				
 				

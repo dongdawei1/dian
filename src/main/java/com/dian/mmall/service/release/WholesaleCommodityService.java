@@ -24,4 +24,7 @@ public interface WholesaleCommodityService {
 
 	ServerResponse<Object> get_userWholesaleCommodity_id(long userId, long id);
 
+
+	ServerResponse<Object> wholesaleCommodity_serviceType( Map<String, Object> params);
+
 }

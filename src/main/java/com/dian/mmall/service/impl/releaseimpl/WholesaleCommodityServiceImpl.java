@@ -448,7 +448,52 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		return ServerResponse.createBySuccess(wholesaleCommodityMapper.get_wholesaleCommodity_serviceType(userId, type,
 				commodityType, dateString, releaseType, serviceType, welfareStatus));
 	}
+   
+	
+	
+	@Override
+	public ServerResponse<Object> wholesaleCommodity_serviceType(Map<String, Object> params) {
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		if (releaseTypeString == null || releaseTypeString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
+		}
+		// 类型
+		int releaseType = Integer.valueOf(releaseTypeString);
+		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+		}
+      
+		
+		
+		String selectedOptions= null;
+	    
+		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
+				List.class);
+		if (selectedOptions_list.size() == 3) {
+			Integer provincesId = selectedOptions_list.get(0);
+			Integer cityId = selectedOptions_list.get(1);
+			Integer districtCountyId = selectedOptions_list.get(2);
+			// 判断省市区id是否正确
 
+			selectedOptions= cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+		}
+		
+		if(selectedOptions==null || selectedOptions.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shichangsuozaichengqukong.getMessage());
+		}
+		// 商品名
+		String serviceType = params.get("serviceType").toString().trim();
+		if (serviceType != null && !serviceType.equals("")) {
+			serviceType = "%" + serviceType + "%";
+		}
+
+		String companyName = params.get("companyName").toString().trim();
+		String createTime = DateTimeUtil.dateToAll();
+		return ServerResponse.createBySuccess(wholesaleCommodityMapper.wholesaleCommodity_serviceType(
+				 releaseType,selectedOptions, serviceType, companyName,createTime));
+	}
+	
+	
 	@Override
 	public ServerResponse<Object> get_myWholesaleCommodity_list(long userId, Map<String, Object> params) {
 		String releaseTypeString = params.get("releaseType").toString().trim();
@@ -1008,4 +1053,6 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			return serverResponse;
 		}
 	}
+
+	
 }
