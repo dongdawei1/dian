@@ -273,4 +273,48 @@
 
 
 
+  <!-- 公开列表 开始-->
+
+	<select id="getWholesaleCommodityPublicListNo" resultType="long">
+		select count(*) 
+		from shichang_wholesaleCommodity
+	
+		where 
+		
+		releaseType=#{releaseType}  
+		and userId in(
+		select userId from t_user_realname where  authentiCationStatus=2 and detailed=#{selectedOptions}
+		)
+		and
+		welfareStatus=1 and  startTime &lt; #{createTime} and endTime &gt; #{createTime} 
+		
+		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
+		<if test="companyName!=null and companyName.trim()!=''">and userId in(
+		select userId from t_user_realname where  authentiCationStatus=2 and companyName=#{companyName}
+		)   </if>		
+	</select>
+
+	<select id="getWholesaleCommodityPublicList"
+		resultType="com.dian.mmall.pojo.WholesaleCommodity">
+		select id,releaseType,serviceType,
+		releaseTitle,commodityPacking,commodityJiage,commoditySurplusNo,
+		reserve,specifi,cations,pictureUrl
+		from shichang_wholesaleCommodity
+		where 
+		releaseType=#{releaseType}  
+		and userId in(
+		select userId from t_user_realname where  authentiCationStatus=2 and detailed=#{selectedOptions}
+		)
+		and
+		welfareStatus=1 and  startTime &lt; #{createTime} and endTime &gt; #{createTime} 
+			<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
+		
+		<if test="companyName!=null and companyName.trim()!=''">and userId in(
+		select userId from t_user_realname where  authentiCationStatus=2 and companyName=#{companyName}
+		)   </if>	
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+  <!-- 公开列表 结束-->
+
 </mapper>

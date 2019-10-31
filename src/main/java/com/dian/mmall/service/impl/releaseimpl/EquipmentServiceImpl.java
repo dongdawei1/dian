@@ -477,7 +477,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 	}
 	
 	//编辑时检查图片并重新赋值
-		public ServerResponse<String> setPictureUrl(Object object,String PictureUrl){
+	public ServerResponse<String> setPictureUrl(Object object,String PictureUrl){
 			 //前端传入
 			List<Picture> listObj3	= JsonUtil.list2Obj((ArrayList<Picture>) object,List.class,Picture.class);
 		    //数据库查询
@@ -524,7 +524,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
 
 		@Override
-		public ServerResponse<Object> getequipmentList(Map<String, Object> params) {
+	public ServerResponse<Object> getequipmentList(Map<String, Object> params) {
 			// TODO Auto-generated method stub
 			return null;
 		}

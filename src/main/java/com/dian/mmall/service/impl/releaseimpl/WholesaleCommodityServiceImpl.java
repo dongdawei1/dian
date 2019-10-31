@@ -1054,5 +1054,92 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 	}
 
+	@Override
+	public ServerResponse<Object> getWholesaleCommodityPublicList(Map<String, Object> params) {
+		String currentPage_string= params.get("currentPage").toString().trim() ;    
+		String pageSize_string= params.get("pageSize").toString().trim() ;    
+		int currentPage=0;
+		int  pageSize=0;
+	 	
+	 	if(currentPage_string!=null && currentPage_string!="") {
+	 		currentPage=Integer.parseInt(currentPage_string);
+	 		if(currentPage<=0) {
+	 			 return ServerResponse.createByErrorMessage("页数不能小于0");
+	 		}
+	 		
+		    } else {
+		    	 return ServerResponse.createByErrorMessage("请正确输入页数");
+		    }
+	 	
+	 	if(pageSize_string!=null && pageSize_string!="") {
+	 		pageSize=Integer.parseInt(pageSize_string);
+	 		if(pageSize<=0) {
+	 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+	 		}
+		    } else {
+		    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		    }
+		
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		if (releaseTypeString == null || releaseTypeString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
+		}
+		// 类型
+		int releaseType = Integer.valueOf(releaseTypeString);
+		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+		}
+      
+		
+		
+		String selectedOptions= null;
+	    
+		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
+				List.class);
+		if (selectedOptions_list.size() == 3) {
+			Integer provincesId = selectedOptions_list.get(0);
+			Integer cityId = selectedOptions_list.get(1);
+			Integer districtCountyId = selectedOptions_list.get(2);
+			// 判断省市区id是否正确
+
+			selectedOptions= cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+		}
+		
+		if(selectedOptions==null || selectedOptions.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shichangsuozaichengqukong.getMessage());
+		}
+		// 商品名
+		String serviceType = params.get("serviceType").toString().trim();
+		if (serviceType != null && !serviceType.equals("")) {
+			serviceType = "%" + serviceType + "%";
+		}
+
+		String companyName = params.get("companyName").toString().trim();
+		String createTime = DateTimeUtil.dateToAll();
+		
+		
+	 	
+	 	Page<WholesaleCommodity> equipment_pagePage=new Page<WholesaleCommodity>();
+		
+	 	long zongtiaoshu=wholesaleCommodityMapper.getWholesaleCommodityPublicListNo(releaseType,selectedOptions, serviceType, companyName,createTime);
+		
+		equipment_pagePage.setTotalno(zongtiaoshu);
+		equipment_pagePage.setPageSize(pageSize);
+		equipment_pagePage.setCurrentPage(currentPage); //当前页
+		
+
+	    List<WholesaleCommodity> list_equipmentall=  wholesaleCommodityMapper.getWholesaleCommodityPublicList((currentPage-1)*pageSize,pageSize,releaseType,selectedOptions, serviceType, companyName,createTime);
+		
+	    for(int i=0;i<list_equipmentall.size();i++) {
+	    	WholesaleCommodity equipment=list_equipmentall.get(i);
+				List<Picture> listObj3	= JsonUtil.string2Obj(equipment.getPictureUrl(),List.class,Picture.class);
+				Picture picture = listObj3.get(0);
+				equipment.setPictureUrl(picture.getPictureUrl());
+				list_equipmentall.set(i, equipment);
+			}
+	    equipment_pagePage.setDatas(list_equipmentall);
+		return ServerResponse.createBySuccess(equipment_pagePage);
+	}
+
 	
 }
