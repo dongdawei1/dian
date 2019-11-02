@@ -52,4 +52,6 @@ public interface WholesaleCommodityMapper {
 	List<WholesaleCommodity> getWholesaleCommodityPublicList(int pageLength, int pageSize, int releaseType,
 			String selectedOptions, String serviceType, String companyName, String createTime);
 
+	WholesaleCommodity getWholesaleCommodityPublicId(long id);
+
 }

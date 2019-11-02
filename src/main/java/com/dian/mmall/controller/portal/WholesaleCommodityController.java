@@ -176,5 +176,28 @@ public class WholesaleCommodityController {
     	return wholesaleCommodityService.getWholesaleCommodityPublicList(params);
     	
     }
+   //公开展示灭虫装修等列表
+    
+    @RequestMapping(value = "getWholesaleCommodityPublicId",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> getWholesaleCommodityPublicId(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData(); 
+     	//检查权限
+     	Map<String, Object> params= new HashMap<String, Object>();
+     	params.put("StringPath", StringPath);
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+    	if(serverResponse1.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
+    	}
+ 	
+    	return wholesaleCommodityService.getWholesaleCommodityPublicId(id);
+    	
+    }
 
 }

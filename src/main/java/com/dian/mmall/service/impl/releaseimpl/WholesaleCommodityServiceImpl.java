@@ -25,12 +25,14 @@ import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.gongyong.IsButten;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
+import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.shichang.FoodAndGrain;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 import com.dian.mmall.service.OrderService;
+import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
@@ -39,6 +41,7 @@ import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
+import com.dian.mmall.util.PictureUtil;
 import com.dian.mmall.util.SetBean;
 import com.dian.mmall.util.checknullandmax.IsEmptyAnnotation;
 import com.dian.mmall.util.checknullandmax.MaxSize;
@@ -62,6 +65,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 	private WholesaleCommodityMapper wholesaleCommodityMapper;
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private RealNameService realNameService;
 
 	@Override
 	public ServerResponse<String> create_wholesaleCommodity(User user, Map<String, Object> params) {
@@ -220,7 +225,6 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		map.put("specifi", specifi);
 
-	
 		boolean b = false;
 		float cations = 0;
 		if (commodityPacking != 1) {
@@ -448,9 +452,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		return ServerResponse.createBySuccess(wholesaleCommodityMapper.get_wholesaleCommodity_serviceType(userId, type,
 				commodityType, dateString, releaseType, serviceType, welfareStatus));
 	}
-   
-	
-	
+
 	@Override
 	public ServerResponse<Object> wholesaleCommodity_serviceType(Map<String, Object> params) {
 		String releaseTypeString = params.get("releaseType").toString().trim();
@@ -462,11 +464,9 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 		}
-      
-		
-		
-		String selectedOptions= null;
-	    
+
+		String selectedOptions = null;
+
 		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
 				List.class);
 		if (selectedOptions_list.size() == 3) {
@@ -475,10 +475,10 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			Integer districtCountyId = selectedOptions_list.get(2);
 			// 判断省市区id是否正确
 
-			selectedOptions= cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+			selectedOptions = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
 		}
-		
-		if(selectedOptions==null || selectedOptions.equals("")) {
+
+		if (selectedOptions == null || selectedOptions.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shichangsuozaichengqukong.getMessage());
 		}
 		// 商品名
@@ -489,11 +489,10 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 		String companyName = params.get("companyName").toString().trim();
 		String createTime = DateTimeUtil.dateToAll();
-		return ServerResponse.createBySuccess(wholesaleCommodityMapper.wholesaleCommodity_serviceType(
-				 releaseType,selectedOptions, serviceType, companyName,createTime));
+		return ServerResponse.createBySuccess(wholesaleCommodityMapper.wholesaleCommodity_serviceType(releaseType,
+				selectedOptions, serviceType, companyName, createTime));
 	}
-	
-	
+
 	@Override
 	public ServerResponse<Object> get_myWholesaleCommodity_list(long userId, Map<String, Object> params) {
 		String releaseTypeString = params.get("releaseType").toString().trim();
@@ -626,7 +625,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 								isButten.setEdit(true);
 								isButten.setRefresh(true);
 								isButten.setDelete(true);
-								//查看有无结束订单
+								// 查看有无结束订单
 								serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
 								if (serverResponse.getStatus() == 0) {
 									orderStatus_count = (int) serverResponse.getData();
@@ -645,14 +644,13 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 					} else if (commodityType == 2) {
 						aaCommodity.setIsValidity("未显示-价格有效期已结束");
 
-						
 						// 判断有无订单全部
 						serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
 						if (serverResponse.getStatus() == 0) {
 							orderStatus_count = (int) serverResponse.getData();
 							if (orderStatus_count > 0) {
 								isButten.setOrder(true);
-							}else {
+							} else {
 								// 只显示编辑键
 								isButten.setDelete(true);
 								isButten.setEdit(true);
@@ -728,13 +726,12 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 							// 结束时间晚于现在 已结束
 							aaCommodity.setIsValidity("未显示-价格有效期已结束");
 
-							
 							serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
 							if (serverResponse.getStatus() == 0) {
 								orderStatus_count = (int) serverResponse.getData();
 								if (orderStatus_count > 0) {
 									isButten.setOrder(true);
-								}else {
+								} else {
 									// 只显示编辑键
 									isButten.setDelete(true);
 									isButten.setEdit(true);
@@ -755,13 +752,13 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				equipmentList.set(a, aaCommodity);
 			} else if (getWelfareStatus == 5 || commodityType == 2) {
 				aaCommodity.setIsValidity("未显示-价格有效期已结束");
-			
+
 				serverResponse = orderService.get_conduct_order(aaCommodity.getId(), 9);
 				if (serverResponse.getStatus() == 0) {
 					orderStatus_count = (int) serverResponse.getData();
 					if (orderStatus_count > 0) {
 						isButten.setOrder(true);
-					}else {
+					} else {
 						// 只显示编辑键
 						isButten.setDelete(true);
 						isButten.setEdit(true);
@@ -939,8 +936,6 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				Map<String, Object> checknullMap = AnnotationDealUtil.validate(wholesaleCommodity_create);
 				if ((boolean) checknullMap.get("result") == true
 						&& ((String) checknullMap.get("message")).equals("验证通过")) {
-					
-					
 
 					result = wholesaleCommodityMapper.update_wholesaleCommodity(wholesaleCommodity_create);
 
@@ -1056,30 +1051,30 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 	@Override
 	public ServerResponse<Object> getWholesaleCommodityPublicList(Map<String, Object> params) {
-		String currentPage_string= params.get("currentPage").toString().trim() ;    
-		String pageSize_string= params.get("pageSize").toString().trim() ;    
-		int currentPage=0;
-		int  pageSize=0;
-	 	
-	 	if(currentPage_string!=null && currentPage_string!="") {
-	 		currentPage=Integer.parseInt(currentPage_string);
-	 		if(currentPage<=0) {
-	 			 return ServerResponse.createByErrorMessage("页数不能小于0");
-	 		}
-	 		
-		    } else {
-		    	 return ServerResponse.createByErrorMessage("请正确输入页数");
-		    }
-	 	
-	 	if(pageSize_string!=null && pageSize_string!="") {
-	 		pageSize=Integer.parseInt(pageSize_string);
-	 		if(pageSize<=0) {
-	 			 return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
-	 		}
-		    } else {
-		    	 return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
-		    }
-		
+		String currentPage_string = params.get("currentPage").toString().trim();
+		String pageSize_string = params.get("pageSize").toString().trim();
+		int currentPage = 0;
+		int pageSize = 0;
+
+		if (currentPage_string != null && currentPage_string != "") {
+			currentPage = Integer.parseInt(currentPage_string);
+			if (currentPage <= 0) {
+				return ServerResponse.createByErrorMessage("页数不能小于0");
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入页数");
+		}
+
+		if (pageSize_string != null && pageSize_string != "") {
+			pageSize = Integer.parseInt(pageSize_string);
+			if (pageSize <= 0) {
+				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+			}
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		}
+
 		String releaseTypeString = params.get("releaseType").toString().trim();
 		if (releaseTypeString == null || releaseTypeString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
@@ -1089,11 +1084,9 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 		}
-      
-		
-		
-		String selectedOptions= null;
-	    
+
+		String selectedOptions = null;
+
 		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
 				List.class);
 		if (selectedOptions_list.size() == 3) {
@@ -1102,10 +1095,10 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			Integer districtCountyId = selectedOptions_list.get(2);
 			// 判断省市区id是否正确
 
-			selectedOptions= cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+			selectedOptions = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
 		}
-		
-		if(selectedOptions==null || selectedOptions.equals("")) {
+
+		if (selectedOptions == null || selectedOptions.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shichangsuozaichengqukong.getMessage());
 		}
 		// 商品名
@@ -1116,30 +1109,60 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 		String companyName = params.get("companyName").toString().trim();
 		String createTime = DateTimeUtil.dateToAll();
-		
-		
-	 	
-	 	Page<WholesaleCommodity> equipment_pagePage=new Page<WholesaleCommodity>();
-		
-	 	long zongtiaoshu=wholesaleCommodityMapper.getWholesaleCommodityPublicListNo(releaseType,selectedOptions, serviceType, companyName,createTime);
-		
+
+		Page<WholesaleCommodity> equipment_pagePage = new Page<WholesaleCommodity>();
+
+		long zongtiaoshu = wholesaleCommodityMapper.getWholesaleCommodityPublicListNo(releaseType, selectedOptions,
+				serviceType, companyName, createTime);
+
 		equipment_pagePage.setTotalno(zongtiaoshu);
 		equipment_pagePage.setPageSize(pageSize);
-		equipment_pagePage.setCurrentPage(currentPage); //当前页
-		
+		equipment_pagePage.setCurrentPage(currentPage); // 当前页
 
-	    List<WholesaleCommodity> list_equipmentall=  wholesaleCommodityMapper.getWholesaleCommodityPublicList((currentPage-1)*pageSize,pageSize,releaseType,selectedOptions, serviceType, companyName,createTime);
-		
-	    for(int i=0;i<list_equipmentall.size();i++) {
-	    	WholesaleCommodity equipment=list_equipmentall.get(i);
-				List<Picture> listObj3	= JsonUtil.string2Obj(equipment.getPictureUrl(),List.class,Picture.class);
-				Picture picture = listObj3.get(0);
-				equipment.setPictureUrl(picture.getPictureUrl());
-				list_equipmentall.set(i, equipment);
-			}
-	    equipment_pagePage.setDatas(list_equipmentall);
+		List<WholesaleCommodity> list_equipmentall = wholesaleCommodityMapper.getWholesaleCommodityPublicList(
+				(currentPage - 1) * pageSize, pageSize, releaseType, selectedOptions, serviceType, companyName,
+				createTime);
+
+		for (int i = 0; i < list_equipmentall.size(); i++) {
+			WholesaleCommodity equipment = list_equipmentall.get(i);
+			List<Picture> listObj3 = JsonUtil.string2Obj(equipment.getPictureUrl(), List.class, Picture.class);
+			Picture picture = listObj3.get(0);
+			equipment.setPictureUrl(picture.getPictureUrl());
+			list_equipmentall.set(i, equipment);
+		}
+		equipment_pagePage.setDatas(list_equipmentall);
 		return ServerResponse.createBySuccess(equipment_pagePage);
 	}
 
-	
+	@Override
+	public ServerResponse<Object> getWholesaleCommodityPublicId(long id) {
+		if (id <= 0) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+		}
+		WholesaleCommodity wholesaleCommodity = wholesaleCommodityMapper.getWholesaleCommodityPublicId(id);
+		if (wholesaleCommodity != null) {
+			ServerResponse<Object> serverResponse = realNameService
+					.getRealNameByIdContact(wholesaleCommodity.getRealNameId());
+			if (serverResponse.getStatus() != 0) {
+				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+			}
+			wholesaleCommodity.setPictureUrl(PictureUtil.listToString(wholesaleCommodity.getPictureUrl()));
+			RealName realName = (RealName) serverResponse.getData();
+			
+			Evaluate evaluate=new Evaluate();
+			if(wholesaleCommodity.getEvaluateid()!=0) {
+				evaluate=evaluateMapper.selectEvvaluateById(wholesaleCommodity.getEvaluateid());
+				
+			}
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("wholesaleCommodity", wholesaleCommodity);
+			map.put("realName", realName);
+			map.put("evaluate",evaluate);
+			return ServerResponse.createBySuccess(map);
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+		}
+
+	}
+
 }

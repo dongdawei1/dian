@@ -962,6 +962,21 @@ public class RealNameServiceImpl implements RealNameService {
 	}
 
 	@Override
+	public ServerResponse<Object> getRealNameByIdContact(long id) {
+		if (id > 0) {
+			RealName realName = realNameMapper.getRealNameByIdContact(id);
+			if (realName != null) {
+				realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
+				return ServerResponse.createBySuccess(realName);
+			} else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());
+			}
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());
+		}
+	}
+	
+	@Override
 	public ServerResponse<String> addOrder(User user, Map<String, Object> params) {
 		ServerResponse<Object> serverResponse = getRealName(user);
 		if (serverResponse.getStatus() == 0) {
@@ -1234,5 +1249,7 @@ public class RealNameServiceImpl implements RealNameService {
 			return ServerResponse.createByError();
 		}
 	}
+
+	
 
 }

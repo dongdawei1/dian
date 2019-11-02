@@ -316,5 +316,16 @@
 		limit #{pageLength}, #{pageSize}
 	</select>
   <!-- 公开列表 结束-->
-
+    
+  <select id="getWholesaleCommodityPublicId"
+		resultType="com.dian.mmall.pojo.WholesaleCommodity">
+		select id,userId,releaseType,serviceType,
+		releaseTitle,detailed,addressDetailed,commodityPacking,cations,specifi,
+		commodityJiage,commoditySurplusNo,serviceIntroduction,
+		remarks,pictureUrl,deliveryType,deliveryCollect,
+		startTime,endTime,reserve,createTime,
+		evaluateid,servicFrequenc,realNameId
+		from shichang_wholesaleCommodity
+		where id=#{id}
+	</select>
 </mapper>

@@ -46,7 +46,6 @@ public class BunnerServiceImpl implements BunnerService {
 		
 			        //获得第一个点的位置
 			        int index=detailed.indexOf("/");
-			        System.out.println(index);
 			        //根据第一个点的位置 获得第二个点的位置
 			        index=detailed.indexOf("/", index+1);
 			        //根据第二个点的位置，截取 字符串。得到结果 result

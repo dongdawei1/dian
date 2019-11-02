@@ -78,6 +78,10 @@
         select addressDetailed,detailed,companyName from t_user_realname 
         where  authentiCationStatus=2 and userId=#{userId}  
     </select>
+       <select id="getRealNameByIdContact"  resultType="com.dian.mmall.pojo.user.RealName">
+        select addressDetailed,detailed,companyName,consigneeName,contact from t_user_realname 
+        where  authentiCationStatus=2 and id=#{id}  
+    </select>
     
     
         <select id="getDetailed"  resultType="String">

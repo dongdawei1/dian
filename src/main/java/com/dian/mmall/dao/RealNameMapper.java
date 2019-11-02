@@ -71,4 +71,7 @@ public interface RealNameMapper {
 
 	RealName getRealNameByuserId(long userId);
 
+
+	RealName getRealNameByIdContact(long id);
+
 }
