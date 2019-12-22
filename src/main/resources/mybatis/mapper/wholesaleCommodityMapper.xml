@@ -326,6 +326,47 @@
 		startTime,endTime,reserve,createTime,
 		evaluateid,servicFrequenc,realNameId
 		from shichang_wholesaleCommodity
-		where id=#{id}
+		where id=#{id}  and welfareStatus=1
 	</select>
+	
+	
+	
+	
+	 <!-- 公开列表 开始-->
+
+	<select id="getWholesaleCommodityBoolean" resultType="int">
+		select count(*) 
+		from shichang_wholesaleCommodity
+	
+		where 
+	welfareStatus=1 and 
+	
+	addressDetailed=#{addressDetailed} and 
+	cations=#{cations} and 
+	commodityPacking=#{commodityPacking} and 
+	deliveryCollect=#{deliveryCollect} and 
+	deliveryType=#{deliveryType} and 
+	detailed=#{detailed} and 
+	id=#{id} and 
+	releaseTitle=#{releaseTitle} and 
+	releaseType=#{releaseType} and 
+	reserve=#{reserve} and 
+	serviceType=#{serviceType} and 
+	specifi=#{specifi}	 and 
+	commoditySurplusNo &lt;  #{commodityReserveNo} and
+	startTime &lt;   #{updateTime} and
+	endTime   &gt;   #{updateTime} 
+	</select>
+	
+	
+	
+	  <select id="getWholesalecommodity"
+		resultType="com.dian.mmall.pojo.WholesaleCommodity">
+		select serviceType,commodityPacking ,cations,specifi 
+		from shichang_wholesaleCommodity
+		where selectedOptions  like #{selectedOptions}  and releaseType=#{releaseType} and authentiCationStatus=2
+	   GROUP BY serviceType,commodityPacking ,cations,specifi  
+	   order  by serviceType
+	</select>
+	
 </mapper>

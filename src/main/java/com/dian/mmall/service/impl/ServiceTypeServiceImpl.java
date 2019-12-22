@@ -71,7 +71,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 		if (serverResponse.getStatus() != 0) {
 			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
-
+//PurchaseCreateOrder.vue
 //	      <el-radio :label="33" >电器/设备出售</el-radio>
 //          <el-radio :label="34" >二手电器/设备出售</el-radio>
 //          <el-radio :label="18" >维修电器/设备</el-radio>

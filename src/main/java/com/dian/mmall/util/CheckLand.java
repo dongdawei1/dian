@@ -499,6 +499,14 @@ public class CheckLand {
 			}
 			isButten.put("isAuthentication", user.getIsAuthentication());
 			isButten.put("isSee", true);
+		} else if (menu.equals("/home/purchaseCreateOrder")) {
+			// 工服
+			if (role != 1 && role != 2) {
+				return ServerResponse.createByErrorMessage(meiyouquanxString);
+			}
+			isButten.put("isCreate", true);
+			isButten.put("isAuthentication", user.getIsAuthentication());
+			isButten.put("isSee", true);
 		}
 
 		else {

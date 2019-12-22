@@ -54,7 +54,7 @@ public class WholesaleCommodity {
 
 	@MaxSize(max = 40, message = "商品规格不能大于40字")
 	@IsEmptyAnnotation(message = "包装规格不能为空") // ok
-	private float cations; // kg ,g, L ,ML
+	private double cations; // kg ,g, L ,ML
 	// specifi:2,//包装/规格 单位 散装, kg ,g, L ,ML, commoditySpecifications:'散装',//产品规格
 	// cations:0,//包装/规格 输入框
 

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.dian.mmall.pojo.WholesaleCommodity;
+import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 
 @Mapper
 public interface WholesaleCommodityMapper {
@@ -53,5 +54,9 @@ public interface WholesaleCommodityMapper {
 			String selectedOptions, String serviceType, String companyName, String createTime);
 
 	WholesaleCommodity getWholesaleCommodityPublicId(long id);
+
+	int getWholesaleCommodityBoolean(WholesaleCommodity wholesaleCommodity);
+
+	List<WholesaleCommodity> getWholesalecommodity(String selectedOptions,int releaseType);
 
 }

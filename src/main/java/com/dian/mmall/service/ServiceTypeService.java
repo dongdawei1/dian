@@ -25,5 +25,5 @@ public interface ServiceTypeService {
 
 
 	ServerResponse<Object> get_serviceTypeUrl(Integer releaseType, String serviceType, long id);
-
+	
 }

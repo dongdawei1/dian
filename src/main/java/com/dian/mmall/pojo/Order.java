@@ -26,6 +26,8 @@ public class Order {
 	
 	@IsEmptyAnnotation(message = "商品类型不能为空")
 	private Integer releaseType;
+	@IsEmptyAnnotation(message = "菜单id不能为空")
+	private Integer permissionId;
 	
 	@MaxSize(max=12, message="商品原单价不能大于12位")
 	@IsEmptyAnnotation(message = "商品原单价不能为空")

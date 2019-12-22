@@ -5,12 +5,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.javassist.expr.NewArray;
 import org.json.JSONObject;
 
@@ -24,6 +27,72 @@ import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer.FromDecim
 
 public class Test1 {
 public static void main(String[] args) {
+	  String tel = "13";
+      System.out.println(tel.matches("1[358][29]\\d{8}"));
+	
+      System.out.println(tel.matches("\\d{3,18}") + "  svvvvs");
+	String test33="1dd";
+	  System.out.println(test33.matches("[^234]+(.*)") + "  svvvvs");
+
+	  
+	//判断是不是以什么开头  ，中间包含什么字符，以什么结尾的
+	   test33="1this is test";
+	  System.out.println(test33.matches(".*(iq).*[t]$") + "  svvvvs"); //true
+	  
+	//利用 Apache 的 Commons Lang 库：
+  //import org.apache.commons.lang.StringUtils;
+	int count = StringUtils.countMatches("232323323", "23");
+	//或用 Spring Framework 提供的接口：
+System.out.println("Test1.main()"+count);
+	//int occurrence = StringUtils.countOccurrencesOf("<主串>", "<子串>");
+	
+	  String string="dde2e3e4ewe5ewe5e5eewe";
+	  
+	  
+	  System.out.println("Test1.main()"+string.indexOf("5e"));
+	  System.out.println("Test1.main()"+string.substring(11,11+"5e".length()));
+	  
+	  
+	  string=string.replace("//D*", "ddd");
+	  
+	
+	  System.out.println("Test1.main()"+string);
+	  System.out.println("Test1.main()"+string.length());
+	  List _first=new ArrayList();
+      _first.add("jim");
+      _first.add("tom");
+      _first.add("jack");
+      //集合二
+      
+      System.out.println(_first.size());
+      List _second=new ArrayList();
+      _second.add("jack");
+      _second.add("happy");
+      _second.add("sun");
+      _second.add("good");
+      Collection exists=new ArrayList(_second);
+      Collection notexists=new ArrayList(_second);
+      exists.removeAll(_first); //把 exists 中和_first 中重复的删除
+      System.out.println("_second中不存在于_set中的："+exists);
+      notexists.removeAll(exists); //把notexists 
+          //中和exists一样的删除 ,notexists==exists ,剩余的部分就是 和_first相同的
+      System.out.println("_second中存在于_set中的："+notexists); 
+      Collection _first1=new ArrayList(_first);
+      _first1.removeAll(notexists);   
+      System.out.println("_first1中不存在于_set中的："+_first1);
+      
+//      _second中不存在于_set中的：[happy, sun, good]
+//    		  _second中存在于_set中的：[jack]
+//	
+	
+	int a=1;
+	System.out.println(2+a++);
+
+	System.out.println(a);
+	
+	
+	
+	
 	//Integer  gender=Integer.valueOf("rr");
 	//System.out.println(gender);
 	
@@ -90,7 +159,35 @@ public static void main(String[] args) {
 //    System.out.println(result);
 	
 	System.out.println(2>2);
+	String aString1="123456";
+	System.out.println(new StringBuffer(aString1).reverse());
+	
+	String aString="abuuba";
+	
+	StringBuffer sb = new StringBuffer(aString);
+	sb.reverse();// 将Str中的字符串倒置
+  
+	if(sb.toString().equals(aString)) {
+		System.out.println("Test1.main()"+aString);
+	}else {
+		System.out.println("Test1.main()");
+	}
+	
+	
+	//test("ABC","1#A13");
 //	System.out.println(str.substring(1,11));
 //	System.out.println(str.substring(13,23).trim());
 }
+public static void test(String event, String eventDesc){
+    Integer c = 0;
+    if(event.equals("ABC")){
+        String num1 = eventDesc.split("#")[0];
+        System.out.println(num1);
+        String num2 = eventDesc.split("#")[1];
+        System.out.println(num2);
+        c = Integer.parseInt(num1) + Integer.parseInt(num2);
+    }
+    System.out.println(c);
+}
+
 }

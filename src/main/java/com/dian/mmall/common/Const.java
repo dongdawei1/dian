@@ -20,12 +20,14 @@ public class Const {
     public static final String TOKEN_PREFIX = "token_";
   
     public static String  PATH_E_IMG="E:/img/";
-    
+    public static String  MY_C0MMONMENU="myCommonMenu";
+    public static String  ALL_C0MMONMENU="allCommonMenu";
     
     public static String  XITONGSHOUKUAN="系统收款账户";
     
     public interface RedisCacheExtime{
         int REDIS_SESSION_EXTIME = 60 * 1200;//1200分钟
+        int REDIS_SESSION_CommonMenu = 60 * 3600;//3600分钟
     }
     public interface ProductListOrderBy{
         //没有导入jar包   暂时没有实现

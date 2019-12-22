@@ -24,6 +24,7 @@ import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.gongyong.IsButten;
+import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.shichang.FoodAndGrain;
@@ -1163,6 +1164,25 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
 		}
 
+	}
+
+	@Override
+	public ServerResponse<Object> getWholesaleCommodityBoolean(WholesaleCommodity wholesaleCommodity) {
+	 int a=  wholesaleCommodityMapper.getWholesaleCommodityBoolean(wholesaleCommodity);
+		if(a==0) {
+			return ServerResponse.createByError();
+		}
+		return ServerResponse.createBySuccess();
+	}
+
+	@Override
+	public ServerResponse<Object> getWholesalecommodity(String selectedOptions,int releaseType) {
+		List<WholesaleCommodity> allCommonMenu=wholesaleCommodityMapper.getWholesalecommodity(selectedOptions,releaseType);
+	    if(allCommonMenu.size()==0) {
+	    	allCommonMenu=wholesaleCommodityMapper.getWholesalecommodity("%110000, 110100%",releaseType);
+	    }
+	    
+	    return ServerResponse.createBySuccess(allCommonMenu);
 	}
 
 }
