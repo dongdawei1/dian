@@ -73,16 +73,16 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 		}
 		// 根据用户 省市，默认北京， 查询redis中是否有保存
 		RealName realName = null;
-		String provinces_city = null;
-		ServerResponse<Object> serverResponse = realNameService.getRealName(user);
-		if (serverResponse.getStatus() == 0) {
-			realName = (RealName) serverResponse.getData();
-			provinces_city = Const.MY_C0MMONMENU + realName.getProvincesId() + "_" + realName.getCityId();
-		}
-
-		if (provinces_city == null) {
-			provinces_city = Const.MY_C0MMONMENU + "110000_110100"; // 默认北京
-		}
+		String provinces_city = Const.MY_C0MMONMENU + "110000_110100";
+//		ServerResponse<Object> serverResponse = realNameService.getRealName(user);
+//		if (serverResponse.getStatus() == 0) {
+//			realName = (RealName) serverResponse.getData();
+//			provinces_city = Const.MY_C0MMONMENU + realName.getProvincesId() + "_" + realName.getCityId();
+//		}
+//
+//		if (provinces_city == null) {
+//			provinces_city = Const.MY_C0MMONMENU + "110000_110100"; // 默认北京
+//		}
 		List<CommonMenuWholesalecommodity> allCommonMenu = null;
 		// 查找redis中有没有
 		String redis_all_commonMenu = RedisShardedPoolUtil.get(provinces_city);
@@ -94,7 +94,8 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 			// redis中没有，数据库查找，并存到redis中
 			
 			// 查询该城市下全部菜单,如果空返回北京%110000, 110100%'
-			String selectedOptions = "%" + realName.getProvincesId() + ", " + realName.getCityId() + "%";
+			String selectedOptions = "%110000, 110100%";
+			//TODO   selectedOptions此字段没有用目前是在 jerdis中写死的   全部查询北京
 			ServerResponse<Object> onbResponse = wholesaleCommodityService.getWholesalecommodity(selectedOptions,
 					releaseType);
 
@@ -109,6 +110,29 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 				commonMenuWholesalecommodity.setCations(wholesaleCommodity_list.get(i).getCations());
 				commonMenuWholesalecommodity.setSpecifi(wholesaleCommodity_list.get(i).getSpecifi());
 				commonMenuWholesalecommodity.setCommodityPacking(wholesaleCommodity_list.get(i).getCommodityPacking());
+				
+				if(wholesaleCommodity_list.get(i).getCommodityPacking()==1){
+					commonMenuWholesalecommodity.setCommodityPackingName("散装");
+					commonMenuWholesalecommodity.setSpecifi_cations("--");
+					commonMenuWholesalecommodity.setSpecifiName("kg");
+                  }else if(wholesaleCommodity_list.get(i).getCommodityPacking()==2){
+                	  commonMenuWholesalecommodity.setCommodityPackingName("袋装");
+                	  commonMenuWholesalecommodity.setSpecifiName("袋");
+                    if(wholesaleCommodity_list.get(i).getSpecifi()==1){
+                    	commonMenuWholesalecommodity.setSpecifi_cations(wholesaleCommodity_list.get(i).getCations()+"g/袋");
+                    }else if(wholesaleCommodity_list.get(i).getSpecifi()==2){
+                    	commonMenuWholesalecommodity.setSpecifi_cations(wholesaleCommodity_list.get(i).getCations()+"Kg/袋");
+                    }
+                  }else if(wholesaleCommodity_list.get(i).getCommodityPacking()==3){
+                	  commonMenuWholesalecommodity.setCommodityPackingName("瓶/桶装");
+                	  commonMenuWholesalecommodity.setSpecifiName("瓶/桶");
+                    if(wholesaleCommodity_list.get(i).getSpecifi()==3){
+                    	commonMenuWholesalecommodity.setSpecifi_cations(wholesaleCommodity_list.get(i).getCations()+"ML/瓶/桶");
+                    }else if(wholesaleCommodity_list.get(i).getSpecifi()==4){
+                    	commonMenuWholesalecommodity.setSpecifi_cations(wholesaleCommodity_list.get(i).getCations()+"L/瓶/桶");
+                    }
+                  }
+				
 				allCommonMenu.add(commonMenuWholesalecommodity);
 			}
 

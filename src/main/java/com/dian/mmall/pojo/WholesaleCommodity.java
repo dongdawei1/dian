@@ -52,9 +52,8 @@ public class WholesaleCommodity {
 	@IsEmptyAnnotation(message = "包装单位不能为空")
 	private Integer specifi; // 散装, kg ,g, L ,ML,
 
-	@MaxSize(max = 40, message = "商品规格不能大于40字")
-	@IsEmptyAnnotation(message = "包装规格不能为空") // ok
-	private double cations; // kg ,g, L ,ML
+	@MaxSize(max = 8, message = "商品规格不能大于8字")
+	private String cations; // kg ,g, L ,ML
 	// specifi:2,//包装/规格 单位 散装, kg ,g, L ,ML, commoditySpecifications:'散装',//产品规格
 	// cations:0,//包装/规格 输入框
 
@@ -115,5 +114,7 @@ public class WholesaleCommodity {
 	private String examineTime;
 	private String isValidity;
 	private IsButten isButten;// 保留字段
+	@IsEmptyAnnotation(message = "实名城市不能为空")
+	private String serviceDetailed;
 
 }

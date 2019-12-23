@@ -132,9 +132,12 @@ public class LegalCheck {
 
 
 	public static void main(String[] args) {
-		Float float1 = Float.valueOf("0.22") * 100;
-   
-		long commodityJiage = float1.longValue();
-		System.out.println(isNumericInt("0"));
+		//Float float1 = Float.valueOf("0.22") * 100;
+       String float1="12";
+		//long commodityJiage = float1.longValue();
+		System.out.println(isNumericFolse(float1));
+		
+		
+		
 	}
 }

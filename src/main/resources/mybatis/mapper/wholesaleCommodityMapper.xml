@@ -23,7 +23,7 @@
 		commodityCountNo,commodityReserveNo,commoditySurplusNo,
 		remarks,serviceIntroduction,
 		reserve,deliveryType,deliveryCollect,
-		startTime,endTime,authentiCationStatus,welfareStatus,selectedOptions
+		startTime,endTime,authentiCationStatus,welfareStatus,selectedOptions,serviceDetailed
 
 		) values (
 		#{userId}, #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
@@ -35,7 +35,7 @@
 		#{remarks},#{serviceIntroduction},
 		#{reserve},#{deliveryType},#{deliveryCollect},
 		#{startTime},#{endTime},#{authentiCationStatus},#{welfareStatus},
-		#{selectedOptions}
+		#{selectedOptions},#{serviceDetailed}
 		)
 	</insert><!-- countNum -->
 
@@ -67,11 +67,8 @@
 		resultType="String">
 		select DISTINCT serviceType from shichang_wholesaleCommodity
 		where
-		releaseType=#{releaseType}  
-		and userId in(
-		select userId from t_user_realname where  authentiCationStatus=2 and detailed=#{selectedOptions}
-		)
-		
+		releaseType=#{releaseType} 
+		and serviceDetailed  like #{selectedOptions}	
 		and welfareStatus=1 and  startTime &lt; #{createTime} and endTime &gt; #{createTime}
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
 		
@@ -267,7 +264,7 @@
 		reserve=#{reserve},deliveryType=#{deliveryType},deliveryCollect=#{deliveryCollect},
 		startTime=#{startTime},endTime=#{endTime},authentiCationStatus=#{authentiCationStatus},
 		welfareStatus=#{welfareStatus},
-		selectedOptions=#{selectedOptions},authentiCationFailure=#{authentiCationFailure}
+		selectedOptions=#{selectedOptions},authentiCationFailure=#{authentiCationFailure},serviceDetailed=#{serviceDetailed}
 		where id=#{id}
 	</update><!-- countNum -->
 
@@ -282,9 +279,7 @@
 		where 
 		
 		releaseType=#{releaseType}  
-		and userId in(
-		select userId from t_user_realname where  authentiCationStatus=2 and detailed=#{selectedOptions}
-		)
+		and  serviceDetailed =#{selectedOptions}
 		and
 		welfareStatus=1 and  startTime &lt; #{createTime} and endTime &gt; #{createTime} 
 		
@@ -302,9 +297,7 @@
 		from shichang_wholesaleCommodity
 		where 
 		releaseType=#{releaseType}  
-		and userId in(
-		select userId from t_user_realname where  authentiCationStatus=2 and detailed=#{selectedOptions}
-		)
+		and  serviceDetailed =#{selectedOptions}
 		and
 		welfareStatus=1 and  startTime &lt; #{createTime} and endTime &gt; #{createTime} 
 			<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
@@ -364,7 +357,8 @@
 		resultType="com.dian.mmall.pojo.WholesaleCommodity">
 		select serviceType,commodityPacking ,cations,specifi 
 		from shichang_wholesaleCommodity
-		where selectedOptions  like #{selectedOptions}  and releaseType=#{releaseType} and authentiCationStatus=2
+		where  serviceDetailed='北京市/市辖区/东城区'  
+		  and releaseType=#{releaseType} and authentiCationStatus=2
 	   GROUP BY serviceType,commodityPacking ,cations,specifi  
 	   order  by serviceType
 	</select>
