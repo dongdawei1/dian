@@ -376,8 +376,8 @@
 		select serviceType,commodityPacking ,cations,specifi
 		from
 		shichang_wholesaleCommodity
-		where serviceDetailed='北京市/市辖区/东城区'
-		and
+		where
+		
 		releaseType=#{releaseType} and authentiCationStatus=2
 		GROUP BY
 		serviceType,commodityPacking ,cations,specifi
@@ -387,7 +387,7 @@
 
 
 	<select id="getCommodityJiage" resultType="int">
-		select commodityPacking
+		select commodityJiage  
 		from shichang_wholesaleCommodity
 		where
 		releaseType=#{releaseType}

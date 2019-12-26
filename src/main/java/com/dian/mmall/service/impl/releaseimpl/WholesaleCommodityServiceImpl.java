@@ -1203,14 +1203,12 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 	public List<Integer> getCommodityJiage(WholesaleCommodity wholesaleCommodity) {
 		
 		List<Integer> list=wholesaleCommodityMapper.getCommodityJiage( wholesaleCommodity) ;
-		if(list==null) {
-			System.out.println("没有找到这个list9999999999999999999999");
+		if(list.size()==0) {
 			String serviceDetailed =wholesaleCommodity.getServiceDetailed();
 			
 		    Matcher slashMatcher = Pattern.compile("/").matcher(serviceDetailed);
 		    int mIdx = 0;
 		    while(slashMatcher.find()) {
-		        System.out.println(slashMatcher.group());
 		        mIdx++;
 		        if(mIdx == 2){
 		            break;
@@ -1220,7 +1218,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		    serviceDetailed=serviceDetailed.substring(0, mIdx)+"%";	
 			wholesaleCommodity.setServiceDetailed(serviceDetailed);
 			list=wholesaleCommodityMapper.getCommodityJiage( wholesaleCommodity) ;
-			if(list==null) {
+			if(list.size()==0) {
 				wholesaleCommodity.setServiceDetailed(null);
 				list=wholesaleCommodityMapper.getCommodityJiage( wholesaleCommodity) ;
 			}

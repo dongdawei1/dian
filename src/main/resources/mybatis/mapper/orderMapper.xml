@@ -5,27 +5,27 @@
 <mapper namespace="com.dian.mmall.dao.OrderMapper">
 	<select id="get_conduct_order" resultType="int">
 		select count(*) from orderform where
-		wholesaleCommodityId=#{wholesaleCommodityId} 
+		wholesaleCommodityId=#{wholesaleCommodityId}
 		<if test="orderStatus==0">and `orderStatus` in (1,2,4)   </if>
-		<!--  <if test="orderStatus==99"> and `orderStatus` in (1,2,4)   </if>-->
+		<!-- <if test="orderStatus==99"> and `orderStatus` in (1,2,4) </if> -->
 
 	</select>
 
 
- 	<!--创建用户成功返回非0 -->
+	<!--创建用户成功返回非0 -->
 	<insert id="create_order">
-	insert into orderform (
-	purchaseUserId,saleUserId,wholesaleCommodityId,evaluateid,commodityJiage,commodityCountNo,
-	commodityZongJiage ,reserve
-	,deliveryType,deliveryCollect,addressDetailed,giveTakeTime,remarks,
-	createTime,confirmTime,paymentTime,guanShanTime,guanShanReason,collectTime,orderStatus,payStatus,
-	commoditySnapshot,releaseType,permissionId,guaranteeMoney,yesGuaranteeMoney,balanceMoney
-	) values (
-	#{purchaseUserId},#{saleUserId},#{wholesaleCommodityId},#{evaluateid},#{commodityJiage},#{commodityCountNo},
-	#{commodityZongJiage},#{reserve},
-	#{deliveryType},#{deliveryCollect},#{addressDetailed},#{giveTakeTime},#{remarks},
-	#{createTime},#{confirmTime},#{paymentTime},#{guanShanTime},#{guanShanReason},#{collectTime},#{orderStatus},#{payStatus},
-	#{commoditySnapshot},#{releaseType},#{permissionId},#{guaranteeMoney},#{yesGuaranteeMoney},#{balanceMoney}
-	)
+		insert into orderform (
+		purchaseUserId,saleUserId,wholesaleCommodityId,evaluateid,commodityJiage,commodityCountNo,
+		commodityZongJiage ,reserve
+		,deliveryType,deliveryCollect,addressDetailed,giveTakeTime,remarks,
+		createTime,confirmTime,paymentTime,guanShanTime,guanShanReason,collectTime,orderStatus,payStatus,
+		commoditySnapshot,releaseType,permissionId,guaranteeMoney,yesGuaranteeMoney,balanceMoney
+		) values (
+		#{purchaseUserId},#{saleUserId},#{wholesaleCommodityId},#{evaluateid},#{commodityJiage},#{commodityCountNo},
+		#{commodityZongJiage},#{reserve},
+		#{deliveryType},#{deliveryCollect},#{addressDetailed},#{giveTakeTime},#{remarks},
+		#{createTime},#{confirmTime},#{paymentTime},#{guanShanTime},#{guanShanReason},#{collectTime},#{orderStatus},#{payStatus},
+		#{commoditySnapshot},#{releaseType},#{permissionId},#{guaranteeMoney},#{yesGuaranteeMoney},#{balanceMoney}
+		)
 	</insert>
 </mapper>

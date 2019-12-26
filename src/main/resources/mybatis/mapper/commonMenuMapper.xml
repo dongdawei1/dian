@@ -2,12 +2,29 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dian.mmall.dao.goumaidingdan.CommonMenuMapper">
-     
-         
-     <!--根据id查  -->
-     <select id="getCommonMenu" resultType="com.dian.mmall.pojo.goumaidingdan.CommonMenu">
-        select servicetypeId from common_menu where userId=#{id}
-    </select>
-    
+<mapper
+	namespace="com.dian.mmall.dao.goumaidingdan.CommonMenuMapper">
+
+
+	<!--根据id查 -->
+	<select id="getCommonMenu"
+		resultType="com.dian.mmall.pojo.goumaidingdan.CommonMenu">
+		select servicetypeId from common_menu where userId=#{id}
+	</select>
+
+	<!--创建用户成功返回非0 -->
+	<insert id="createCommonMenu">
+		insert into common_menu (
+		userId,servicetypeId
+		) values
+		(
+		#{userId},#{servicetypeId}
+		)
+	</insert>
+
+	<update id="updateCommonMenu">
+		update common_menu set
+		servicetypeId=#{servicetypeId}
+		where userId=#{userId}
+	</update>
 </mapper>

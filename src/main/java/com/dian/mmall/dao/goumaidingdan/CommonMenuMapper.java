@@ -9,4 +9,8 @@ public interface CommonMenuMapper {
 
 	CommonMenu getCommonMenu(long id);
 
+	void createCommonMenu(CommonMenu commonMenu);
+
+	void updateCommonMenu(CommonMenu commonMenu);
+
 }

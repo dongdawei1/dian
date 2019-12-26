@@ -18,6 +18,7 @@ import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.OrderService;
+import com.dian.mmall.service.PurchaseCreateOrderVoService;
 import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
@@ -34,7 +35,8 @@ public class OrderServiceImpl implements OrderService {
 	private RealNameMapper realNameMapper;
 	@Autowired
 	private WholesaleCommodityService wholesaleCommodityService;
-
+	@Autowired
+	private PurchaseCreateOrderVoService purchaseCreateOrderVoService;
 	@Override
 	public synchronized ServerResponse<String> create_wholesaleCommodity_order(long userId,
 			Map<String, Object> params) {
@@ -100,7 +102,6 @@ public class OrderServiceImpl implements OrderService {
 
 			String giveTakeTime = params.get("giveTakeTime").toString().trim();
 			String newdateString = DateTimeUtil.dateToAll();
-			// dateCompare("2019-12-29 11:11:11",2)
 			ServerResponse<Object> serverResponseObject = DateTimeUtil.dateCompare(giveTakeTime, 3);
 			if (serverResponseObject.getStatus() == 0) {
 				if ((boolean) serverResponseObject.getData()) {
@@ -126,7 +127,12 @@ public class OrderServiceImpl implements OrderService {
 						String commodityJiage=params.get("commodityJiage").toString().trim();
 						int commodityJiage_int=0;
 						if(commodityJiage!=null && !commodityJiage.equals("")) {
-							commodityJiage_int=Integer.parseInt(commodityJiage);
+							try {
+								commodityJiage_int=Integer.parseInt(commodityJiage);
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+							
 						}
 						order.setCommodityJiage(commodityJiage_int*100);
 						order.setYesGuaranteeMoney(0);
@@ -139,6 +145,8 @@ public class OrderServiceImpl implements OrderService {
 						// TODO 成功 调用push接口发送站内信
 
 						// TODO 调vo接口创建 /更新 redis的常用菜单
+						int isCommonMenu=Integer.parseInt(params.get("isCommonMenu").toString().trim());
+						purchaseCreateOrderVoService.createMyCommonMenu(user, listObj4,isCommonMenu);
 						return null;
 					} else {
 						// 送货日期小于今天
@@ -193,8 +201,7 @@ public class OrderServiceImpl implements OrderService {
 			commodityJiage = create_order_average(wholesaleCommodity);
 			count += commodityJiage * Float.parseFloat(commonMenuWholesalecommodity.getNumber());
 		}
-		
-		return ServerResponse.createBySuccessMessage(Math.ceil((count / 100)) + "");
+		return ServerResponse.createBySuccessMessage((int)Math.ceil((count / 100)) + "");
 	}
 
 	// 计算平均价格
