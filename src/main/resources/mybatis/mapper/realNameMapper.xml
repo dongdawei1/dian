@@ -3,186 +3,212 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dian.mmall.dao.RealNameMapper">
-  
-    
-    
-   <!--创建用户成功返回非0  -->
-     <insert id="newRealName"  >
-        insert into t_user_realname (
-            userId, provincesId, cityId, districtCountyId,addressDetailed,contact,consigneeName, authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender,userName,userType,examineName,examineTime,companyName
-        ) values (
-            #{userId}, #{provincesId}, #{cityId}, #{districtCountyId},#{addressDetailed},#{contact}, #{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed},#{eag},#{gender},#{userName},#{userType},#{examineName},#{examineTime},#{companyName}
-        )
-    </insert>
-     
-    <select id="getRealName" resultType="com.dian.mmall.pojo.user.RealName">
-        select id,addressDetailed,contact ,consigneeName,
-        email,detailed,eag,gender,companyName,provincesId,
-        cityId,districtCountyId,isReceipt,authentiCationStatus,authentiCationFailure
-        from t_user_realname where userId=#{userId}
-    </select>
-        <select id="getUserRealName" resultType="com.dian.mmall.pojo.user.RealName">
-        select id,addressDetailed,contact ,consigneeName,licenseUrl,
-        email,detailed,eag,gender,companyName,provincesId,
-        cityId,districtCountyId,authentiCationStatus,authentiCationFailure
-        from t_user_realname where userId=#{userId}
-    </select>
-    
-    <select id="isNewRealName"  resultType="int">
-        select count(*) from t_user_realname where userId=#{userId}
-    </select>
-        <!--重新发起用户实名  -->   
-    <update id="updateRealName" >
-       update t_user_realname set  
-       provincesId=#{provincesId},cityId=#{cityId},districtCountyId=#{districtCountyId},addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},
-       authentiCationStatus=#{authentiCationStatus},email=#{email},licenseUrl=#{licenseUrl},detailed=#{detailed},updateTime=#{updateTime},eag=#{eag},gender=#{gender},companyName=#{companyName}
-        where id=#{id} 
-    </update>
-        <!--审批用户实名  -->   
-    <update id="examineRealName" >
-       update t_user_realname set  
-       authentiCationStatus=#{authentiCationStatus},authentiCationFailure=#{authentiCationFailure},examineTime=#{examineTime},examineName=#{examineName}
-        where userId=#{userId} 
-    </update>
-    
-         <!--用户申请成为接单用户  -->   
-    <update id="addOrder" >
-       update t_user_realname set  
-       isReceipt=3,addReceiptTime=#{addReceiptTime}
-        where userId=#{userId} 
-    </update>
-    
-    
-    <!--审核分页总条数  --> 
-        <select id="getRealNamePageno"  resultType="long">
-        select count(*) from t_user_realname where authentiCationStatus in(1,3) 
-        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
-        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>      
-    </select>
-   
-    <!--审核分页待审批 --> 
-        <select id="getRealNameAll"  resultType="com.dian.mmall.pojo.user.RealName">
-        select * from t_user_realname where  authentiCationStatus in(1,3)   
-        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
-        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>
-       order by  createTime limit #{pageLength}, #{pageSize}
-    </select>
-    
-     
-         <select id="getRealNameById"  resultType="com.dian.mmall.pojo.user.RealName">
-        select addressDetailed,detailed,companyName from t_user_realname 
-        where  authentiCationStatus=2 and id=#{id}  
-    </select>
-    
-        <select id="getRealNameByuserId"  resultType="com.dian.mmall.pojo.user.RealName">
-        select addressDetailed,detailed,companyName from t_user_realname 
-        where  authentiCationStatus=2 and userId=#{userId}  
-    </select>
-       <select id="getRealNameByIdContact"  resultType="com.dian.mmall.pojo.user.RealName">
-        select addressDetailed,detailed,companyName,consigneeName,contact from t_user_realname 
-        where  authentiCationStatus=2 and id=#{id}  
-    </select>
-    
-    
-        <select id="getDetailed"  resultType="String">
-        select detailed from t_user_realname 
-        where  authentiCationStatus!=3 and userId=#{userId}  
-    </select>
-    
-     <!--申请接单分页  --> 
-        <select id="admin_select_addOrderNo"  resultType="long">
-        select count(*) from t_user_realname where authentiCationStatus=2 and isReceipt in(3,4)
-        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
-        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>   
-        <if test="detailed!=null and detailed.trim()!=''">and  detailed=#{detailed}   </if>  
-        <if test="statTimeString!=null and statTimeString.trim()!=''">and addReceiptTime  &gt;= #{statTimeString}  </if> 
-        <if test="endTimeString!=null and endTimeString.trim()!=''">and  addReceiptTime   &lt;= #{endTimeString}   </if>    
-        <if test="isReceipt!=-1">and  isReceipt=#{isReceipt}   </if>  
-      
-    </select>
-    
-    <!--申请接单分页 --> 
-        <select id="admin_select_addOrder"  resultType="com.dian.mmall.pojo.user.RealName">
-        select id,userId,addressDetailed,contact,email,consigneeName,detailed,userName ,companyName,addReceiptTime,isReceipt,
-        qianyueTime,qianyueDetailed
-        from t_user_realname where  authentiCationStatus=2 and isReceipt in(3,4) 
-        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
-        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>
-        <if test="detailed!=null and detailed.trim()!=''">and  detailed=#{detailed}   </if> 
-        <if test="statTimeString!=null and statTimeString.trim()!=''">and addReceiptTime  &gt;= #{statTimeString}  </if> 
-        <if test="endTimeString!=null and endTimeString.trim()!=''">and  addReceiptTime   &lt;= #{endTimeString}   </if> 
-        <if test="isReceipt!=-1">and  isReceipt=#{isReceipt}   </if> 
-       order by  addReceiptTime limit #{pageLength}, #{pageSize}
-    </select>
-    
-    
-       <!--待签约分页  --> 
-        <select id="admin_select_signingOrderNo"  resultType="long">
-        select count(*) from t_user_realname where authentiCationStatus=2 and isReceipt in (4,6)
-        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
-        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>   
-        <if test="detailed!=null and detailed.trim()!=''">and  detailed=#{detailed}   </if>  
-        <if test="statTimeString!=null and statTimeString.trim()!=''">and addReceiptTime  &gt;= #{statTimeString}  </if> 
-        <if test="endTimeString!=null and endTimeString.trim()!=''">and  addReceiptTime   &lt;= #{endTimeString}   </if>    
-        <if test="addressDetailed!=null and addressDetailed.trim()!=''">and  addressDetailed=#{addressDetailed}   </if>   
-         <if test="isReceipt!=-1">and  isReceipt=#{isReceipt}   </if> 
-    </select>
-    
-    <!--待签约分页 --> 
-        <select id="admin_select_signingOrder"  resultType="com.dian.mmall.pojo.user.RealName">
-        select id,userId,addressDetailed,contact,email,consigneeName,detailed,userName ,companyName,addReceiptTime,isReceipt,
-        qianyueTime,qianyueDetailed
-        from t_user_realname where  authentiCationStatus=2 and isReceipt in (4,6)
-        <if test="userName!=null and userName.trim()!=''">and  userName=#{userName}   </if>
-        <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>
-        <if test="detailed!=null and detailed.trim()!=''">and  detailed=#{detailed}   </if> 
-        <if test="statTimeString!=null and statTimeString.trim()!=''">and qianyueTime  &gt;= #{statTimeString}  </if> 
-        <if test="endTimeString!=null and endTimeString.trim()!=''">and  qianyueTime   &lt;= #{endTimeString}   </if> 
-        <if test="addressDetailed!=null and addressDetailed.trim()!=''">and  qianyueDetailed=#{addressDetailed}   </if> 
-        <if test="isReceipt!=-1">and  isReceipt=#{isReceipt}   </if> 
-       order by  addReceiptTime limit #{pageLength}, #{pageSize}
-    </select>
-    
-    
-          <!--更新申请接单用户状态  -->   
-    <update id="admin_update_addOrder" >
-       update t_user_realname set  
-       isReceipt=#{isReceipt},addReceiptTime=#{addReceiptTime},commitAddReceiptName=#{commitAddReceiptName}
-        <if test="isReceipt==4">,qianyueDetailed=#{qianyueDetailed},qianyueTime=#{qianyueTime}   </if>
-        where id=#{id} 
-        <if test="isReceipt==5">and   isReceipt in(3,4) </if>
-    </update>
-    
-            <!--设置成为接单用户  -->   
-    <update id="admin_set_addOrder" >
-       update t_user_realname set  isReceipt=#{isReceipt},examineAddReceiptName=#{examineAddReceiptName}
-        <if test="isReceipt==2"> 
-         ,addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},companyName=#{companyName},
-        detailed= #{detailed},districtCountyId=#{districtCountyId},cityId=#{cityId},provincesId=#{provincesId}
-       </if>
-       <if test="isReceipt==6"> 
-         ,authentiCationFailure=#{authentiCationFailure}
-       </if>
-        where id=#{id} 
-    </update>
-    
-			
-		
-		
 
-    
-     <select id="admin_select_signingOrderById" resultType="com.dian.mmall.pojo.user.RealName">
-        select id,userId,addressDetailed,contact ,consigneeName,
-        detailed,companyName,provincesId,
-        cityId,districtCountyId
-        from t_user_realname where id=#{id}  and isReceipt in(6,4)  and authentiCationStatus=2
-    </select>
-    
-        <select id="admin_select_realNameByContact" resultType="com.dian.mmall.pojo.user.RealName">
-        select id,userId,addressDetailed,contact ,consigneeName,
-        detailed,companyName,provincesId,
-        cityId,districtCountyId
-        from t_user_realname where contact=#{contact} 
-    </select>
+
+
+	<!--创建用户成功返回非0 -->
+	<insert id="newRealName">
+		insert into t_user_realname (
+		userId, provincesId, cityId,
+		districtCountyId,addressDetailed,contact,consigneeName,
+		authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender,userName,userType,examineName,examineTime,companyName
+		) values (
+		#{userId}, #{provincesId}, #{cityId},
+		#{districtCountyId},#{addressDetailed},#{contact},
+		#{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed},#{eag},#{gender},#{userName},#{userType},#{examineName},#{examineTime},#{companyName}
+		)
+	</insert>
+
+	<select id="getRealName"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select id,addressDetailed,contact ,consigneeName,
+		email,detailed,eag,gender,companyName,provincesId,
+		cityId,districtCountyId,isReceipt,authentiCationStatus,authentiCationFailure
+		from t_user_realname where userId=#{userId}
+	</select>
+	<select id="getUserRealName"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select id,addressDetailed,contact ,consigneeName,licenseUrl,
+		email,detailed,eag,gender,companyName,provincesId,
+		cityId,districtCountyId,authentiCationStatus,authentiCationFailure
+		from t_user_realname where userId=#{userId}
+	</select>
+
+	<select id="isNewRealName" resultType="int">
+		select count(*) from t_user_realname where userId=#{userId}
+	</select>
+	<!--重新发起用户实名 -->
+	<update id="updateRealName">
+		update t_user_realname set
+		provincesId=#{provincesId},cityId=#{cityId},districtCountyId=#{districtCountyId},addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},
+		authentiCationStatus=#{authentiCationStatus},email=#{email},licenseUrl=#{licenseUrl},detailed=#{detailed},updateTime=#{updateTime},eag=#{eag},gender=#{gender},companyName=#{companyName}
+		where id=#{id}
+	</update>
+	<!--审批用户实名 -->
+	<update id="examineRealName">
+		update t_user_realname set
+		authentiCationStatus=#{authentiCationStatus},authentiCationFailure=#{authentiCationFailure},examineTime=#{examineTime},examineName=#{examineName}
+		where userId=#{userId}
+	</update>
+
+	<!--用户申请成为接单用户 -->
+	<update id="addOrder">
+		update t_user_realname set
+		isReceipt=3,addReceiptTime=#{addReceiptTime}
+		where userId=#{userId}
+	</update>
+
+
+	<!--审核分页总条数 -->
+	<select id="getRealNamePageno" resultType="long">
+		select count(*) from t_user_realname where authentiCationStatus
+		in(1,3)
+		<if test="userName!=null and userName.trim()!=''">and userName=#{userName}   </if>
+		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
+	</select>
+
+	<!--审核分页待审批 -->
+	<select id="getRealNameAll"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select * from t_user_realname where authentiCationStatus in(1,3)
+		<if test="userName!=null and userName.trim()!=''">and userName=#{userName}   </if>
+		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
+		order by createTime limit #{pageLength}, #{pageSize}
+	</select>
+
+
+	<select id="getRealNameById"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select addressDetailed,detailed,companyName from t_user_realname
+		where authentiCationStatus=2 and id=#{id}
+	</select>
+
+	<select id="getRealNameByuserId"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select addressDetailed,detailed,companyName from t_user_realname
+		where authentiCationStatus=2 and userId=#{userId}
+	</select>
+	<select id="getRealNameByIdContact"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select addressDetailed,detailed,companyName,consigneeName,contact from
+		t_user_realname
+		where authentiCationStatus=2 and id=#{id}
+	</select>
+
+
+	<select id="getDetailed" resultType="String">
+		select detailed from t_user_realname
+		where authentiCationStatus!=3 and userId=#{userId}
+	</select>
+
+	<!--申请接单分页 -->
+	<select id="admin_select_addOrderNo" resultType="long">
+		select count(*) from t_user_realname where authentiCationStatus=2 and
+		isReceipt in(3,4)
+		<if test="userName!=null and userName.trim()!=''">and userName=#{userName}   </if>
+		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
+		<if test="detailed!=null and detailed.trim()!=''">and detailed=#{detailed}   </if>
+		<if test="statTimeString!=null and statTimeString.trim()!=''">and addReceiptTime &gt;= #{statTimeString}  </if>
+		<if test="endTimeString!=null and endTimeString.trim()!=''">and addReceiptTime &lt;= #{endTimeString}   </if>
+		<if test="isReceipt!=-1">and isReceipt=#{isReceipt}   </if>
+
+	</select>
+
+	<!--申请接单分页 -->
+	<select id="admin_select_addOrder"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select
+		id,userId,addressDetailed,contact,email,consigneeName,detailed,userName
+		,companyName,addReceiptTime,isReceipt,
+		qianyueTime,qianyueDetailed
+		from t_user_realname where authentiCationStatus=2 and isReceipt in(3,4)
+		<if test="userName!=null and userName.trim()!=''">and userName=#{userName}   </if>
+		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
+		<if test="detailed!=null and detailed.trim()!=''">and detailed=#{detailed}   </if>
+		<if test="statTimeString!=null and statTimeString.trim()!=''">and addReceiptTime &gt;= #{statTimeString}  </if>
+		<if test="endTimeString!=null and endTimeString.trim()!=''">and addReceiptTime &lt;= #{endTimeString}   </if>
+		<if test="isReceipt!=-1">and isReceipt=#{isReceipt}   </if>
+		order by addReceiptTime limit #{pageLength}, #{pageSize}
+	</select>
+
+
+	<!--待签约分页 -->
+	<select id="admin_select_signingOrderNo" resultType="long">
+		select count(*) from t_user_realname where authentiCationStatus=2 and
+		isReceipt in (4,6)
+		<if test="userName!=null and userName.trim()!=''">and userName=#{userName}   </if>
+		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
+		<if test="detailed!=null and detailed.trim()!=''">and detailed=#{detailed}   </if>
+		<if test="statTimeString!=null and statTimeString.trim()!=''">and addReceiptTime &gt;= #{statTimeString}  </if>
+		<if test="endTimeString!=null and endTimeString.trim()!=''">and addReceiptTime &lt;= #{endTimeString}   </if>
+		<if test="addressDetailed!=null and addressDetailed.trim()!=''">and addressDetailed=#{addressDetailed}   </if>
+		<if test="isReceipt!=-1">and isReceipt=#{isReceipt}   </if>
+	</select>
+
+	<!--待签约分页 -->
+	<select id="admin_select_signingOrder"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select
+		id,userId,addressDetailed,contact,email,consigneeName,detailed,userName
+		,companyName,addReceiptTime,isReceipt,
+		qianyueTime,qianyueDetailed
+		from t_user_realname where authentiCationStatus=2 and isReceipt in (4,6)
+		<if test="userName!=null and userName.trim()!=''">and userName=#{userName}   </if>
+		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
+		<if test="detailed!=null and detailed.trim()!=''">and detailed=#{detailed}   </if>
+		<if test="statTimeString!=null and statTimeString.trim()!=''">and qianyueTime &gt;= #{statTimeString}  </if>
+		<if test="endTimeString!=null and endTimeString.trim()!=''">and qianyueTime &lt;= #{endTimeString}   </if>
+		<if test="addressDetailed!=null and addressDetailed.trim()!=''">and qianyueDetailed=#{addressDetailed}   </if>
+		<if test="isReceipt!=-1">and isReceipt=#{isReceipt}   </if>
+		order by addReceiptTime limit #{pageLength}, #{pageSize}
+	</select>
+
+
+	<!--更新申请接单用户状态 -->
+	<update id="admin_update_addOrder">
+		update t_user_realname set
+		isReceipt=#{isReceipt},addReceiptTime=#{addReceiptTime},commitAddReceiptName=#{commitAddReceiptName}
+		<if test="isReceipt==4">,qianyueDetailed=#{qianyueDetailed},qianyueTime=#{qianyueTime}
+		</if>
+		where id=#{id}
+		<if test="isReceipt==5">and isReceipt in(3,4) </if>
+	</update>
+
+	<!--设置成为接单用户 -->
+	<update id="admin_set_addOrder">
+		update t_user_realname set
+		isReceipt=#{isReceipt},examineAddReceiptName=#{examineAddReceiptName}
+		<if test="isReceipt==2">
+			,addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},companyName=#{companyName},
+			detailed=
+			#{detailed},districtCountyId=#{districtCountyId},cityId=#{cityId},provincesId=#{provincesId}
+		</if>
+		<if test="isReceipt==6">
+			,authentiCationFailure=#{authentiCationFailure}
+		</if>
+		where id=#{id}
+	</update>
+
+
+
+
+
+
+	<select id="admin_select_signingOrderById"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select id,userId,addressDetailed,contact ,consigneeName,
+		detailed,companyName,provincesId,
+		cityId,districtCountyId
+		from t_user_realname where id=#{id} and isReceipt in(6,4) and
+		authentiCationStatus=2
+	</select>
+
+	<select id="admin_select_realNameByContact"
+		resultType="com.dian.mmall.pojo.user.RealName">
+		select id,userId,addressDetailed,contact ,consigneeName,
+		detailed,companyName,provincesId,
+		cityId,districtCountyId
+		from t_user_realname where contact=#{contact}
+	</select>
 
 </mapper>

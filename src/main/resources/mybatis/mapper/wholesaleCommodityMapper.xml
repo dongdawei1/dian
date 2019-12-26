@@ -26,7 +26,8 @@
 		startTime,endTime,authentiCationStatus,welfareStatus,selectedOptions,serviceDetailed
 
 		) values (
-		#{userId}, #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
+		#{userId}, #{releaseType}, #{updateTime},
+		#{createTime},#{pictureUrl},
 		#{realNameId},#{serviceType},#{releaseTitle},
 		#{detailed},#{addressDetailed},
 		#{commodityPacking},
@@ -62,23 +63,26 @@
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
 
 	</select>
-  
-  	<select id="wholesaleCommodity_serviceType"
-		resultType="String">
+
+	<select id="wholesaleCommodity_serviceType" resultType="String">
 		select DISTINCT serviceType from shichang_wholesaleCommodity
 		where
-		releaseType=#{releaseType} 
-		and serviceDetailed  like #{selectedOptions}	
-		and welfareStatus=1 and  startTime &lt; #{createTime} and endTime &gt; #{createTime}
+		releaseType=#{releaseType}
+		and serviceDetailed like #{selectedOptions}
+		and welfareStatus=1 and startTime &lt; #{createTime} and endTime &gt;
+		#{createTime}
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
-		
+
 		<if test="companyName!=null and companyName.trim()!=''">and userId in(
-		select userId from t_user_realname where  authentiCationStatus=2 and companyName=#{companyName}
-		)   </if>
-	
+			select userId from t_user_realname where
+			authentiCationStatus=2 and
+			companyName=#{companyName}
+			)
+		</if>
+
 	</select>
-  
-  
+
+
 	<select id="get_myWholesaleCommodityNo" resultType="long">
 		select count(*) from shichang_wholesaleCommodity
 		where
@@ -244,16 +248,18 @@
 		commodityJiage,commodityCountNo,serviceIntroduction,
 		remarks,pictureUrl,deliveryType,deliveryCollect,
 		startTime,endTime,reserve,selectedOptions,createTime
-		from shichang_wholesaleCommodity
+		from
+		shichang_wholesaleCommodity
 		where
 		userId=#{userId} and id=#{id}
 	</select>
-	
-	
-		<!--创建用户成功返回非0 -->
+
+
+	<!--创建用户成功返回非0 -->
 	<update id="update_wholesaleCommodity">
 		update shichang_wholesaleCommodity set
-		updateTime= #{updateTime},pictureUrl= #{pictureUrl},
+		updateTime=
+		#{updateTime},pictureUrl= #{pictureUrl},
 		realNameId=#{realNameId},releaseTitle=#{releaseTitle},
 		detailed=#{detailed},addressDetailed=#{addressDetailed},
 		commodityPacking=#{commodityPacking},
@@ -270,23 +276,28 @@
 
 
 
-  <!-- 公开列表 开始-->
+	<!-- 公开列表 开始 -->
 
 	<select id="getWholesaleCommodityPublicListNo" resultType="long">
-		select count(*) 
+		select count(*)
 		from shichang_wholesaleCommodity
-	
-		where 
-		
-		releaseType=#{releaseType}  
-		and  serviceDetailed =#{selectedOptions}
+
+		where
+
+		releaseType=#{releaseType}
+		and serviceDetailed =#{selectedOptions}
 		and
-		welfareStatus=1 and  startTime &lt; #{createTime} and endTime &gt; #{createTime} 
-		
+		welfareStatus=1 and startTime
+		&lt; #{createTime} and endTime &gt;
+		#{createTime}
+
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
 		<if test="companyName!=null and companyName.trim()!=''">and userId in(
-		select userId from t_user_realname where  authentiCationStatus=2 and companyName=#{companyName}
-		)   </if>		
+			select userId from t_user_realname where
+			authentiCationStatus=2 and
+			companyName=#{companyName}
+			)
+		</if>
 	</select>
 
 	<select id="getWholesaleCommodityPublicList"
@@ -295,22 +306,27 @@
 		releaseTitle,commodityPacking,commodityJiage,commoditySurplusNo,
 		reserve,specifi,cations,pictureUrl
 		from shichang_wholesaleCommodity
-		where 
-		releaseType=#{releaseType}  
-		and  serviceDetailed =#{selectedOptions}
+		where
+		releaseType=#{releaseType}
+		and serviceDetailed =#{selectedOptions}
 		and
-		welfareStatus=1 and  startTime &lt; #{createTime} and endTime &gt; #{createTime} 
-			<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
-		
+		welfareStatus=1 and startTime
+		&lt; #{createTime} and endTime &gt;
+		#{createTime}
+		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
+
 		<if test="companyName!=null and companyName.trim()!=''">and userId in(
-		select userId from t_user_realname where  authentiCationStatus=2 and companyName=#{companyName}
-		)   </if>	
+			select userId from t_user_realname where
+			authentiCationStatus=2 and
+			companyName=#{companyName}
+			)
+		</if>
 		order by updateTime desc
 		limit #{pageLength}, #{pageSize}
 	</select>
-  <!-- 公开列表 结束-->
-    
-  <select id="getWholesaleCommodityPublicId"
+	<!-- 公开列表 结束 -->
+
+	<select id="getWholesaleCommodityPublicId"
 		resultType="com.dian.mmall.pojo.WholesaleCommodity">
 		select id,userId,releaseType,serviceType,
 		releaseTitle,detailed,addressDetailed,commodityPacking,cations,specifi,
@@ -319,48 +335,78 @@
 		startTime,endTime,reserve,createTime,
 		evaluateid,servicFrequenc,realNameId
 		from shichang_wholesaleCommodity
-		where id=#{id}  and welfareStatus=1
+		where id=#{id} and welfareStatus=1
 	</select>
-	
-	
-	
-	
-	 <!-- 公开列表 开始-->
+
+
+
+
+	<!-- 公开列表 开始 -->
 
 	<select id="getWholesaleCommodityBoolean" resultType="int">
-		select count(*) 
+		select
+		count(*)
 		from shichang_wholesaleCommodity
-	
-		where 
-	welfareStatus=1 and 
-	
-	addressDetailed=#{addressDetailed} and 
-	cations=#{cations} and 
-	commodityPacking=#{commodityPacking} and 
-	deliveryCollect=#{deliveryCollect} and 
-	deliveryType=#{deliveryType} and 
-	detailed=#{detailed} and 
-	id=#{id} and 
-	releaseTitle=#{releaseTitle} and 
-	releaseType=#{releaseType} and 
-	reserve=#{reserve} and 
-	serviceType=#{serviceType} and 
-	specifi=#{specifi}	 and 
-	commoditySurplusNo &lt;  #{commodityReserveNo} and
-	startTime &lt;   #{updateTime} and
-	endTime   &gt;   #{updateTime} 
+
+		where
+		welfareStatus=1 and
+
+		addressDetailed=#{addressDetailed} and
+		cations=#{cations} and
+		commodityPacking=#{commodityPacking} and
+		deliveryCollect=#{deliveryCollect} and
+		deliveryType=#{deliveryType} and
+		detailed=#{detailed} and
+		id=#{id} and
+		releaseTitle=#{releaseTitle} and
+		releaseType=#{releaseType} and
+		reserve=#{reserve} and
+		serviceType=#{serviceType} and
+		specifi=#{specifi} and
+		commoditySurplusNo &lt; #{commodityReserveNo} and
+		startTime &lt;
+		#{updateTime} and
+		endTime &gt; #{updateTime}
 	</select>
-	
-	
-	
-	  <select id="getWholesalecommodity"
+
+
+
+	<select id="getWholesalecommodity"
 		resultType="com.dian.mmall.pojo.WholesaleCommodity">
-		select serviceType,commodityPacking ,cations,specifi 
-		from shichang_wholesaleCommodity
-		where  serviceDetailed='北京市/市辖区/东城区'  
-		  and releaseType=#{releaseType} and authentiCationStatus=2
-	   GROUP BY serviceType,commodityPacking ,cations,specifi  
-	   order  by serviceType
+		select serviceType,commodityPacking ,cations,specifi
+		from
+		shichang_wholesaleCommodity
+		where serviceDetailed='北京市/市辖区/东城区'
+		and
+		releaseType=#{releaseType} and authentiCationStatus=2
+		GROUP BY
+		serviceType,commodityPacking ,cations,specifi
+		order by serviceType
 	</select>
-	
+
+
+
+	<select id="getCommodityJiage" resultType="int">
+		select commodityPacking
+		from shichang_wholesaleCommodity
+		where
+		releaseType=#{releaseType}
+		and authentiCationStatus=2
+		and
+		commodityPacking=#{commodityPacking}
+		and serviceType=#{serviceType}
+		<if test="commodityPacking!=1">
+			and specifi=#{specifi}
+			and cations=#{cations}
+		</if>
+
+		<if test="serviceDetailed!=null and serviceDetailed!=''">
+			and serviceDetailed like #{serviceDetailed}
+		</if>
+		<if test="serviceDetailed==null ">
+			and serviceDetailed='北京市/市辖区/东城区'
+		</if>
+
+	</select>
+
 </mapper>

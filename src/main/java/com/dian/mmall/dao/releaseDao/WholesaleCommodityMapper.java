@@ -59,4 +59,6 @@ public interface WholesaleCommodityMapper {
 
 	List<WholesaleCommodity> getWholesalecommodity(String selectedOptions,int releaseType);
 
+	List<Integer> getCommodityJiage(WholesaleCommodity wholesaleCommodity);
+
 }

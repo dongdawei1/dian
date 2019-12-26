@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -1046,7 +1048,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (wholesaleCommodity == null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
 		}
-		wholesaleCommodity.setAuthentiCationFailure(wholesaleCommodity.getCations() + "");
+		wholesaleCommodity.setAuthentiCationFailure(wholesaleCommodity.getCations());
 		ServerResponse<Object> serverResponse = orderService.get_conduct_order(id, 0);
 		if (serverResponse.getStatus() == 0) {
 			int orderStatus_count = (int) serverResponse.getData();
@@ -1196,5 +1198,36 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 				releaseType);
 		return ServerResponse.createBySuccess(allCommonMenu);
 	}
+
+	@Override
+	public List<Integer> getCommodityJiage(WholesaleCommodity wholesaleCommodity) {
+		
+		List<Integer> list=wholesaleCommodityMapper.getCommodityJiage( wholesaleCommodity) ;
+		if(list==null) {
+			System.out.println("没有找到这个list9999999999999999999999");
+			String serviceDetailed =wholesaleCommodity.getServiceDetailed();
+			
+		    Matcher slashMatcher = Pattern.compile("/").matcher(serviceDetailed);
+		    int mIdx = 0;
+		    while(slashMatcher.find()) {
+		        System.out.println(slashMatcher.group());
+		        mIdx++;
+		        if(mIdx == 2){
+		            break;
+		        }
+		    }
+		    mIdx =slashMatcher.start();
+		    serviceDetailed=serviceDetailed.substring(0, mIdx)+"%";	
+			wholesaleCommodity.setServiceDetailed(serviceDetailed);
+			list=wholesaleCommodityMapper.getCommodityJiage( wholesaleCommodity) ;
+			if(list==null) {
+				wholesaleCommodity.setServiceDetailed(null);
+				list=wholesaleCommodityMapper.getCommodityJiage( wholesaleCommodity) ;
+			}
+		}	
+		return list;
+	}
+
+	
 
 }

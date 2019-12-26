@@ -160,8 +160,8 @@ public class DateTimeUtil {
 		
 		
     public static void main(String[] args) {
-    	a_few_days_later(0);
-    	System.out.println(dateToAll());
+    	//dateCompare(0);ServerResponse [status=0, msg=null, data=true]
+    	System.out.println(isPastDate("2019-12-24 16:11:11",1));
         System.out.println(DateTimeUtil.dateToStr(new Date(),"yyyy-MM-dd HH:mm:ss"));
         System.out.println(DateTimeUtil.strToDate("2010-01-01 11:11:11","yyyy-MM-dd HH:mm:ss"));
  

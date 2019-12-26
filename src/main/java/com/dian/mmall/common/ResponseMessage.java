@@ -154,6 +154,11 @@ public enum ResponseMessage {
 	shangpinleixingheming("商品名和商品类型不能修改"),
 	shichangsuozaichengqukong("市场所在城区不能为空"),
 	chaxunshangpinshibai("查询商品失败"),
+	songhuoriqiyouwu("送货日期输入错误"),
+	songhuoriqizhinnegsantiannei("送货日期只能是三天内"),
+	songhuoriqibunnegxiaoyujint("送货日期不能小于今天"),
+	chuangjiandingdanshibai("创建订单落库失败"),
+	dingdanbunnegweikong("采购列表不能为空"),
 	;
    String message;
    ResponseMessage(String message){

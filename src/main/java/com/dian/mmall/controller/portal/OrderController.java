@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.OrderService;
@@ -42,6 +43,48 @@ public class OrderController {
    
         
         return orderService.create_wholesaleCommodity_order(user.getId(),params);
+    
+    }
+    
+  //商户发布采购订单 预估价格
+    @RequestMapping(value = "create_order_evaluation",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> create_order_evaluation(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	
+     	if(user.getRole()!=1 && user.getRole()!=2 ) {
+     		return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+     	}
+   
+        
+        return orderService.create_order_evaluation(user,params);
+    
+    }
+    
+	//商户发布采购订单
+    @RequestMapping(value = "create_purchase_order",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> create_purchase_order(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	
+     	if(user.getRole()!=1 && user.getRole()!=2 ) {
+     		return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+     	}
+   
+        
+        return orderService.create_purchase_order(user,params);
     
     }
 }

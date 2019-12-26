@@ -14,23 +14,22 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Order {
 	private long id;
-	@IsEmptyAnnotation(message = "销售商户ID不能为空")
-	private long saleUserId; 
-	@IsEmptyAnnotation(message = "购买者ID不能为空")
-	private long purchaseUserId; 	
-	@IsEmptyAnnotation(message = "商品ID不能为空")
+
+	private long saleUserId; //销售商户ID
+
+	private long purchaseUserId; //购买商户ID
+	
 	private long wholesaleCommodityId;
 	
 	
 	private long evaluateid;//评价ID
 	
-	@IsEmptyAnnotation(message = "商品类型不能为空")
+	
 	private Integer releaseType;
-	@IsEmptyAnnotation(message = "菜单id不能为空")
+
 	private Integer permissionId;
 	
 	@MaxSize(max=12, message="商品原单价不能大于12位")
-	@IsEmptyAnnotation(message = "商品原单价不能为空")
 	private long  commodityJiage; // 
 	
 	@MaxSize(max=12, message="订单数量不能大于12字")
@@ -38,12 +37,11 @@ public class Order {
 	private long  commodityCountNo;  
 	
 	@MaxSize(max=20, message="商品总价不能大于20位")
-	@IsEmptyAnnotation(message = "商品总价不能为空")
 	private long  commodityZongJiage; // 
 	
 	
 	@IsEmptyAnnotation(message = "购买方式不能为空")
-	private Integer reserve;  //是否接受预定 1预定 2 在线支付
+	private Integer reserve;  //是否接受预定 1预定 2 在线支付 3采购订单
 	
 	@IsEmptyAnnotation(message="送货方式不能为空") 
 	private Integer deliveryType;//1自取  ,2送货,  3自取+送货  4满免
@@ -70,10 +68,13 @@ public class Order {
 	
 	@IsEmptyAnnotation(message="订单状态不能为空") 
 	private Integer orderStatus;
-	//1购买者下单,2批发者确认，3关单，4取/送货 ，5待评价，6评价完成
+	//1购买者下单,2批发者确认，3关单，4取/送货 ，5待评价，6评价完成 ，11发布采购订单 ，12抢单成功更新销售商户ID 13发布者确认  ，16 确认收货
 	private Integer payStatus; //3代付款，4支付成功，5,取消支付，初始0
 	@IsEmptyAnnotation(message="商品快照不能为空")
 	private String commoditySnapshot;   //下单时的商品详情除地址
 	
-
+	private long  guaranteeMoney;//保障金
+	private Integer  yesGuaranteeMoney;//是否支付了保证金 0未支付，1已支付
+	private long  balanceMoney;//待支付金额 
+	
 }

@@ -1,10 +1,14 @@
 package com.dian.mmall.service.release;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.WholesaleCommodity;
+import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 import com.dian.mmall.pojo.user.User;
+
+import ch.qos.logback.core.status.Status;
 
 public interface WholesaleCommodityService {
 
@@ -37,4 +41,6 @@ public interface WholesaleCommodityService {
 	ServerResponse<Object> getWholesaleCommodityBoolean(WholesaleCommodity wholesaleCommodity);
 	
 	ServerResponse<Object> getWholesalecommodity(String selectedOptions,int releaseType);
+
+	 List<Integer> getCommodityJiage(WholesaleCommodity wholesaleCommodity);
 }

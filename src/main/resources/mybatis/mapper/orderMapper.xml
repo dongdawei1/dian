@@ -11,4 +11,21 @@
 
 	</select>
 
+
+ 	<!--创建用户成功返回非0 -->
+	<insert id="create_order">
+	insert into orderform (
+	purchaseUserId,saleUserId,wholesaleCommodityId,evaluateid,commodityJiage,commodityCountNo,
+	commodityZongJiage ,reserve
+	,deliveryType,deliveryCollect,addressDetailed,giveTakeTime,remarks,
+	createTime,confirmTime,paymentTime,guanShanTime,guanShanReason,collectTime,orderStatus,payStatus,
+	commoditySnapshot,releaseType,permissionId,guaranteeMoney,yesGuaranteeMoney,balanceMoney
+	) values (
+	#{purchaseUserId},#{saleUserId},#{wholesaleCommodityId},#{evaluateid},#{commodityJiage},#{commodityCountNo},
+	#{commodityZongJiage},#{reserve},
+	#{deliveryType},#{deliveryCollect},#{addressDetailed},#{giveTakeTime},#{remarks},
+	#{createTime},#{confirmTime},#{paymentTime},#{guanShanTime},#{guanShanReason},#{collectTime},#{orderStatus},#{payStatus},
+	#{commoditySnapshot},#{releaseType},#{permissionId},#{guaranteeMoney},#{yesGuaranteeMoney},#{balanceMoney}
+	)
+	</insert>
 </mapper>
