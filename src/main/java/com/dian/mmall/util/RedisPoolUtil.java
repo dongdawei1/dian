@@ -148,6 +148,40 @@ public class RedisPoolUtil {
     }
     
 
+    public static Set<String> keys(String key){
+        Jedis jedis = null;
+        Set<String> result = null;
+        try {
+            jedis = RedisPool.getJedis();
+            result = jedis.keys(key);;
+        } catch (Exception e) {
+            log.error("del key:{} error",key,e);
+            RedisPool.returnBrokenResource(jedis);
+            return result;
+        }
+        RedisPool.returnResource(jedis);
+        return result;
+       
+    }
+    
+    public static long pttl(String key){
+    	//当 key 不存在时，返回 -2 。 当 key 存在但没有设置剩余生存时间时，返回 -1 。 否则，以毫秒为单位，返回 key 的剩余生存时间。
+        Jedis jedis = null;
+        long result =-5;
+        try {
+            jedis = RedisPool.getJedis();
+            result = jedis.pttl(key);;
+        } catch (Exception e) {
+            log.error("del key:{} error",key,e);
+            RedisPool.returnBrokenResource(jedis);
+            return result;
+        }
+        RedisPool.returnResource(jedis);
+        return result;
+       
+    }
+    
+    
     public static void main(String[] args) {
         Jedis jedis = RedisPool.getJedis();
 
@@ -163,12 +197,18 @@ public class RedisPoolUtil {
 
         Set<String> keyes=   jedis.keys("*");
         for(String key : keyes) {
-        	System.out.println(key +"ddd");
+        	System.out.println(key +"<--ddd");
         	String userJsonStr=RedisShardedPoolUtil.get(key);
         	
-        	System.out.println(userJsonStr);
+        	System.out.println( "userJsonStr-->"+  userJsonStr);
+        	
+        	System.out.println( "jedis.pttl(key)-->"+  jedis.pttl(key));
         	
         }
+        
+        
+        System.out.println( "jedis.pttl(key)-->"+keyes.size());
+        System.out.println( "jedis.pttl(key)-->");
 
     //    RedisShardedPoolUtil.del("keyTest");
 

@@ -1,6 +1,7 @@
 package com.dian.mmall.controller.portal;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -87,4 +88,26 @@ public class OrderController {
         return orderService.create_purchase_order(user,params);
     
     }
+    
+	//商户今天发布的采购订单
+    @RequestMapping(value = "get_conduct_purchase_order",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> get_conduct_purchase_order(HttpServletRequest httpServletRequest){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	
+     	if(user.getRole()!=1 && user.getRole()!=2 ) {
+     		return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+     	}
+   
+        
+        return orderService.get_conduct_purchase_order(user);
+    
+    }
+    
 }

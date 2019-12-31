@@ -12,6 +12,5 @@ public interface OrderService {
 	ServerResponse<Object> get_conduct_order(long wholesaleCommodityId,int orderStatus);
 	ServerResponse<String> create_purchase_order(User user, Map<String, Object> params);
 	ServerResponse<String> create_order_evaluation(User user, Map<String, Object> params);
-	
-
+	ServerResponse<Object> get_conduct_purchase_order(User user);
 }

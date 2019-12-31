@@ -28,4 +28,29 @@
 		#{commoditySnapshot},#{releaseType},#{permissionId},#{guaranteeMoney},#{yesGuaranteeMoney},#{balanceMoney}
 		)
 	</insert>
+	<select id="getId" resultType="long">
+		select id from orderform where
+		purchaseUserId=#{purchaseUserId}
+		and createTime=#{createTime}
+		and
+		orderStatus=#{orderStatus}
+	</select>
+
+	<select id="get_shut_orders"
+		resultType="com.dian.mmall.pojo.Order">
+		select * from orderform where
+		purchaseUserId=#{purchaseUserId}
+		and
+		createTime between #{between} and #{and}
+		and reserve=3
+		<if test="type == 2">
+			and orderStatus not IN
+			<foreach item="item" index="index"
+				collection="orderStatus_liStrings" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+
 </mapper>

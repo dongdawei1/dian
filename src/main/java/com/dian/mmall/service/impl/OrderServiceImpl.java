@@ -3,17 +3,21 @@ package com.dian.mmall.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.OrderMapper;
 import com.dian.mmall.dao.RealNameMapper;
+import com.dian.mmall.dao.goumaidingdan.OrderCommonOfferMapper;
 import com.dian.mmall.pojo.Order;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
+import com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
@@ -24,6 +28,8 @@ import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.JsonUtil;
+import com.dian.mmall.util.RedisPoolUtil;
+import com.dian.mmall.util.RedisShardedPoolUtil;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +43,8 @@ public class OrderServiceImpl implements OrderService {
 	private WholesaleCommodityService wholesaleCommodityService;
 	@Autowired
 	private PurchaseCreateOrderVoService purchaseCreateOrderVoService;
+	@Autowired
+	private OrderCommonOfferMapper orderCommonOfferMapper;
 	@Override
 	public synchronized ServerResponse<String> create_wholesaleCommodity_order(long userId,
 			Map<String, Object> params) {
@@ -122,19 +130,18 @@ public class OrderServiceImpl implements OrderService {
 						order.setCreateTime(newdateString);
 						order.setOrderStatus(11);
 						order.setPayStatus(0);
-						System.out.println(JsonUtil.obj2StringPretty(listObj4));
 						order.setCommoditySnapshot(JsonUtil.obj2StringPretty(listObj4));
-						String commodityJiage=params.get("commodityJiage").toString().trim();
-						int commodityJiage_int=0;
-						if(commodityJiage!=null && !commodityJiage.equals("")) {
+						String commodityJiage = params.get("commodityJiage").toString().trim();
+						int commodityJiage_int = 0;
+						if (commodityJiage != null && !commodityJiage.equals("")) {
 							try {
-								commodityJiage_int=Integer.parseInt(commodityJiage);
+								commodityJiage_int = Integer.parseInt(commodityJiage);
 							} catch (Exception e) {
 								// TODO: handle exception
 							}
-							
+
 						}
-						order.setCommodityJiage(commodityJiage_int*100);
+						order.setCommodityJiage(commodityJiage_int * 100);
 						order.setYesGuaranteeMoney(0);
 						int resout = orderMapper.create_order(order);
 
@@ -142,12 +149,21 @@ public class OrderServiceImpl implements OrderService {
 							return ServerResponse
 									.createByErrorMessage(ResponseMessage.chuangjiandingdanshibai.getMessage());
 						}
+
+						long id = orderMapper.getId(order);
+						order.setId(id);
+						order.setCommodityJiage(commodityJiage_int);
+						// 把订单存放在redis中
+						String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + id;
+
+						RedisShardedPoolUtil.setEx(keyString, JsonUtil.obj2StringPretty(order),
+								Const.RedisCacheExtime.REDIS_ORDER_TIME);
 						// TODO 成功 调用push接口发送站内信
 
-						// TODO 调vo接口创建 /更新 redis的常用菜单
-						int isCommonMenu=Integer.parseInt(params.get("isCommonMenu").toString().trim());
-						purchaseCreateOrderVoService.createMyCommonMenu(user, listObj4,isCommonMenu);
-						return null;
+						// 调vo接口创建 /更新 redis的常用菜单
+						int isCommonMenu = Integer.parseInt(params.get("isCommonMenu").toString().trim());
+						purchaseCreateOrderVoService.createMyCommonMenu(user, listObj4, isCommonMenu);
+						return ServerResponse.createBySuccess();
 					} else {
 						// 送货日期小于今天
 						return ServerResponse
@@ -201,7 +217,7 @@ public class OrderServiceImpl implements OrderService {
 			commodityJiage = create_order_average(wholesaleCommodity);
 			count += commodityJiage * Float.parseFloat(commonMenuWholesalecommodity.getNumber());
 		}
-		return ServerResponse.createBySuccessMessage((int)Math.ceil((count / 100)) + "");
+		return ServerResponse.createBySuccessMessage((int) Math.ceil((count / 100)) + "");
 	}
 
 	// 计算平均价格
@@ -215,4 +231,93 @@ public class OrderServiceImpl implements OrderService {
 		return (int) commodityJiage / length;
 	}
 
+	@Override
+	public ServerResponse<Object> get_conduct_purchase_order(User user) {
+
+		String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + "*";
+
+		Set<String> keySet = RedisPoolUtil.keys(keyString);
+
+		List<Order> orders = new ArrayList<Order>();
+
+		String between = DateTimeUtil.betweenAnd(1);
+		String and = DateTimeUtil.betweenAnd(2);
+		if (keySet.size() == 0) {
+			// 查询数据库有无关单的数据
+
+			orders = orderMapper.get_shut_orders(user.getId(), between, and, null,0);
+			if (orders.size() == 0) {
+				return null;
+			}
+			for (Order order : orders) {
+				if (order.getOrderStatus() == 11) {
+					// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
+					orders.add(guanShanReason(order));
+				} else if (order.getOrderStatus() == 12 || order.getOrderStatus() == 13) {
+					order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
+					// guanShanReason 抢单成功的order_common_offer
+					orders.add(getOrderCommonOffer(order));
+				}
+			}
+
+			return ServerResponse.createBySuccess(orders);
+
+		} else {
+			List<String> orderStatus_liStrings = new ArrayList<String>();
+			for (String key : keySet) {
+
+				long pttl = RedisPoolUtil.pttl(key);
+				if (pttl > (15 * 60 - 20) * 1000) {
+					String orderJsonStr = RedisPoolUtil.get(key);
+					Order order = JsonUtil.string2Obj(orderJsonStr, Order.class);
+					orderStatus_liStrings.add(order.getId() + "");
+					// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
+					orders.add(guanShanReason(order));
+				}
+			}
+
+			List<Order> orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings,2);
+			if (orders_notin.size() > 0) {
+				for (Order order : orders_notin) {
+					if (order.getOrderStatus() == 11) {
+						// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
+						orders.add(guanShanReason(order));
+					} else if (order.getOrderStatus() == 12 || order.getOrderStatus() == 13) {
+						order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
+						// guanShanReason 抢单成功的order_common_offer
+						orders.add(getOrderCommonOffer(order));
+					}
+				}
+			}
+
+			return ServerResponse.createBySuccess(orders);
+
+		}
+
+	}
+
+	public Order guanShanReason(Order order) {
+		// guanShanReason 把报价的集合放到这个字段中 ，要处理状态 commodStatus ==0 的 预创建的多个
+		List<OrderCommonOffer>  orderCommonOffer_list=orderCommonOfferMapper.getInitial(order.getId());
+		if(orderCommonOffer_list.size()>0) {
+			for(int a=0;a<orderCommonOffer_list.size();a++) {
+				OrderCommonOffer offer=orderCommonOffer_list.get(a);
+				offer.setCommodityZongJiage(offer.getCommodityZongJiage()/100);
+				if(offer.getOldOrNew()!=0 && offer.getRecommend() !=0) {
+					offer.setSaleCompanyName("--");
+				}
+				orderCommonOffer_list.add(a, offer);
+			}
+		}
+		// guanShanReason
+		order.setGuanShanReason(JsonUtil.obj2StringPretty(orderCommonOffer_list));
+		return order;
+	}
+
+	public Order getOrderCommonOffer(Order order) {
+		// guanShanReason 给名字 地址即可 commodStatus ==1 的 成功
+		OrderCommonOffer orderCommonOffer=orderCommonOfferMapper.getSuccess(order.getId(),order.getSaleUserId());
+		order.setGuanShanReason(JsonUtil.obj2StringPretty(orderCommonOffer));
+		return order;
+	}
 }

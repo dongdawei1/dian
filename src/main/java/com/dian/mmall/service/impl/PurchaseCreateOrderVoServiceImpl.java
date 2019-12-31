@@ -36,7 +36,7 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 	@Override
 	public ServerResponse<Object> getPurchaseCreateOrderVo(User user) {
 		int releaseType = 4;
-		String keyString = Const.MY_C0MMONMENU + user.getId() + "_" + user.getUsername();
+		String keyString = Const.MY_C0MMONMENU + "_" + user.getUsername()+ "_"+ user.getId() ;
 		String myCommonMenuJsonStr = RedisShardedPoolUtil.get(keyString);
 		List<CommonMenuWholesalecommodity> myCommonMenu_list = null;
 
@@ -143,16 +143,15 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 		purchaseCreateOrderVo.setAllCommonMenu(allCommonMenu);
 		return ServerResponse.createBySuccess(purchaseCreateOrderVo);
 	}
-  
-	//我的常用菜单  存贮或更新
+
+	// 我的常用菜单 存贮或更新
 	@Override
 	public void createMyCommonMenu(User user, List<CommonMenuWholesalecommodity> listObj4, int isCommonMenu) {
 		// TODO Auto-generated method stub 0是redis中没有 1是有
-		String keyString = Const.MY_C0MMONMENU + user.getId() + "_" + user.getUsername();
+		String keyString = Const.MY_C0MMONMENU + "_" + user.getUsername()+ "_"+ user.getId() ;
 		CommonMenu commonMenu = new CommonMenu();
 		commonMenu.setUserId(user.getId());
-		
-		String servicetypeId=null;
+		String servicetypeId = null;
 		if (isCommonMenu == 0) {
 			// 创建
 			for (int a = 0; a < listObj4.size(); a++) {
@@ -162,8 +161,6 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 				commonMenuWholesalecommodity.setPlacing(false);
 				listObj4.set(a, commonMenuWholesalecommodity);
 			}
-
-
 			servicetypeId = JsonUtil.obj2StringPretty(listObj4);
 			commonMenu.setServicetypeId(servicetypeId);
 			// 落库
@@ -196,7 +193,6 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 							bo = true;
 						}
 					}
-
 				}
 				if (bo == false) {
 					my.setNumber(null);
@@ -206,10 +202,11 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 				}
 				bo = false;
 			}
-			
+
 			servicetypeId = JsonUtil.obj2StringPretty(redismyCommonMenu);
 			commonMenu.setServicetypeId(servicetypeId);
 			RedisShardedPoolUtil.getSet(keyString, servicetypeId);
+			RedisShardedPoolUtil.expire(keyString, Const.RedisCacheExtime.REDIS_SESSION_CommonMenu);
 			// 落库
 			commonMenuMapper.updateCommonMenu(commonMenu);
 		}

@@ -164,6 +164,8 @@ public class JsonUtil {
 //        log.info("==================");
 //
         log.info(userListStr);
+        log.info(JsonUtil.obj2StringPretty(u2));
+        
 //
 //
 //        List<User> userListObj1 = JsonUtil.string2Obj(userListStr, new TypeReference<List<User>>() {
