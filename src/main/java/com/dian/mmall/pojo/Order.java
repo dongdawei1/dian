@@ -73,8 +73,8 @@ public class Order {
 	@IsEmptyAnnotation(message="商品快照不能为空")
 	private String commoditySnapshot;   //下单时的商品详情除地址
 	
-	private long  guaranteeMoney;//保障金
+	private String  guaranteeMoney;//保障金
 	private Integer  yesGuaranteeMoney;//是否支付了保证金 0未支付，1已支付
-	private long  balanceMoney;//待支付金额 
+	private String  balanceMoney;//待支付金额 
 	
 }

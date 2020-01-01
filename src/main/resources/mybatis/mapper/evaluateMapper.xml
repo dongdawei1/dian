@@ -14,4 +14,12 @@
         select * from evaluate where id=#{id}
     </select>
     
+    <!--根据id查  -->
+     <select id="selectEvvaluateByUserId" resultType="com.dian.mmall.pojo.pingjia.Evaluate">
+        select * from evaluate where
+         userId=#{userId}   
+         and permissionid=-1
+         and releaseid=-1
+    </select>
+    
 </mapper>

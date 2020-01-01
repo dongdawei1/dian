@@ -1,6 +1,7 @@
 package com.dian.mmall.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,10 +15,13 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.OrderMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.goumaidingdan.OrderCommonOfferMapper;
+import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.pojo.Order;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 import com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer;
+import com.dian.mmall.pojo.goumaidingdan.PurchaseSeeOrderVo;
+import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
@@ -45,6 +49,10 @@ public class OrderServiceImpl implements OrderService {
 	private PurchaseCreateOrderVoService purchaseCreateOrderVoService;
 	@Autowired
 	private OrderCommonOfferMapper orderCommonOfferMapper;
+
+	@Autowired
+	private EvaluateMapper evaluateMapper;
+
 	@Override
 	public synchronized ServerResponse<String> create_wholesaleCommodity_order(long userId,
 			Map<String, Object> params) {
@@ -242,29 +250,44 @@ public class OrderServiceImpl implements OrderService {
 
 		String between = DateTimeUtil.betweenAnd(1);
 		String and = DateTimeUtil.betweenAnd(2);
+
+		PurchaseSeeOrderVo purchaseSeeOrderVo = null;
+
+		List<PurchaseSeeOrderVo> listPurchaseSeeOrderVo = null;
+
 		if (keySet.size() == 0) {
 			// 查询数据库有无关单的数据
 
-			orders = orderMapper.get_shut_orders(user.getId(), between, and, null,0);
-			if (orders.size() == 0) {
-				return null;
-			}
-			for (Order order : orders) {
-				if (order.getOrderStatus() == 11) {
-					// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
-					orders.add(guanShanReason(order));
-				} else if (order.getOrderStatus() == 12 || order.getOrderStatus() == 13) {
-					order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
-					// guanShanReason 抢单成功的order_common_offer
-					orders.add(getOrderCommonOffer(order));
-				}
+			orders = orderMapper.get_shut_orders(user.getId(), between, and, null, 0);
+
+			int leng = orders.size();
+			if (leng == 0) {
+				return ServerResponse.createBySuccess();
 			}
 
-			return ServerResponse.createBySuccess(orders);
+			purchaseSeeOrderVo = new PurchaseSeeOrderVo();
+			listPurchaseSeeOrderVo = new ArrayList<PurchaseSeeOrderVo>();
+			for (int a = 0; a < leng; a++) {
+				
+				Order order = orders.get(a);
+				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = setPurchaseSeeOrderVo(order);
+                if(purchaseSeeOrderVo_sub.getVoSocket()==0) {
+                	purchaseSeeOrderVo.setVoSocket(0);
+                }
+				
+				listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
+				purchaseSeeOrderVo_sub = null;
+			}
 
 		} else {
+
+			purchaseSeeOrderVo = new PurchaseSeeOrderVo();
+			listPurchaseSeeOrderVo = new ArrayList<PurchaseSeeOrderVo>();
+
+			// 获取redis中存在的id
 			List<String> orderStatus_liStrings = new ArrayList<String>();
 			for (String key : keySet) {
+				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
 
 				long pttl = RedisPoolUtil.pttl(key);
 				if (pttl > (15 * 60 - 20) * 1000) {
@@ -272,52 +295,123 @@ public class OrderServiceImpl implements OrderService {
 					Order order = JsonUtil.string2Obj(orderJsonStr, Order.class);
 					orderStatus_liStrings.add(order.getId() + "");
 					// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
-					orders.add(guanShanReason(order));
+					// 开启长连接
+					purchaseSeeOrderVo.setVoSocket(0);
+					purchaseSeeOrderVo_sub.setVoSocket(0);
+					purchaseSeeOrderVo_sub.setOrderStatuName("报价中");
+					purchaseSeeOrderVo_sub.setOrderStatu11(true);
+					purchaseSeeOrderVo_sub.setVoOrder(order);
+					purchaseSeeOrderVo_sub.setMapOrderCommonOffer(guanShanReason(order.getId()));
+					// 刚发布的没有抢单报价
+					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
+
 				}
 			}
-
-			List<Order> orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings,2);
+			// 添加不在redis中的订单
+			List<Order> orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings,
+					2);
 			if (orders_notin.size() > 0) {
 				for (Order order : orders_notin) {
-					if (order.getOrderStatus() == 11) {
-						// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
-						orders.add(guanShanReason(order));
-					} else if (order.getOrderStatus() == 12 || order.getOrderStatus() == 13) {
-						order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
-						// guanShanReason 抢单成功的order_common_offer
-						orders.add(getOrderCommonOffer(order));
-					}
+					PurchaseSeeOrderVo purchaseSeeOrderVo_sub = setPurchaseSeeOrderVo(order);
+	                if(purchaseSeeOrderVo_sub.getVoSocket()==0) {
+	                	purchaseSeeOrderVo.setVoSocket(0);
+	                }
+					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
+					purchaseSeeOrderVo_sub = null;
+					
 				}
 			}
 
-			return ServerResponse.createBySuccess(orders);
-
 		}
 
+		purchaseSeeOrderVo.setListPurchaseSeeOrderVo(listPurchaseSeeOrderVo);
+		return ServerResponse.createBySuccess(purchaseSeeOrderVo);
 	}
 
-	public Order guanShanReason(Order order) {
+	public Map<OrderCommonOffer, Evaluate> guanShanReason(long orderId) {
+		Map<OrderCommonOffer, Evaluate> map = new HashMap<OrderCommonOffer, Evaluate>();
+
 		// guanShanReason 把报价的集合放到这个字段中 ，要处理状态 commodStatus ==0 的 预创建的多个
-		List<OrderCommonOffer>  orderCommonOffer_list=orderCommonOfferMapper.getInitial(order.getId());
-		if(orderCommonOffer_list.size()>0) {
-			for(int a=0;a<orderCommonOffer_list.size();a++) {
-				OrderCommonOffer offer=orderCommonOffer_list.get(a);
-				offer.setCommodityZongJiage(offer.getCommodityZongJiage()/100);
-				if(offer.getOldOrNew()!=0 && offer.getRecommend() !=0) {
+		List<OrderCommonOffer> orderCommonOffer_list = orderCommonOfferMapper.getInitial(orderId);
+		int leng = orderCommonOffer_list.size();
+		if (leng > 0) {
+			for (int a = 0; a < leng; a++) {
+				OrderCommonOffer offer = orderCommonOffer_list.get(a);
+				offer.setCommodityZongJiage(offer.getCommodityZongJiage() / 100);
+				if (offer.getOldOrNew() != 0 && offer.getRecommend() != 0) {
 					offer.setSaleCompanyName("--");
 				}
-				orderCommonOffer_list.add(a, offer);
+
+				Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(offer.getSaleUserId());
+				// orderCommonOffer_list.set(a, offer);
+				map.put(offer, evaluate);
 			}
 		}
-		// guanShanReason
-		order.setGuanShanReason(JsonUtil.obj2StringPretty(orderCommonOffer_list));
-		return order;
+		return map;
 	}
 
-	public Order getOrderCommonOffer(Order order) {
+	public Map<OrderCommonOffer, Evaluate> getOrderCommonOffer(long orderId, long saleUserId) {
+
+		Map<OrderCommonOffer, Evaluate> map = new HashMap<OrderCommonOffer, Evaluate>();
 		// guanShanReason 给名字 地址即可 commodStatus ==1 的 成功
-		OrderCommonOffer orderCommonOffer=orderCommonOfferMapper.getSuccess(order.getId(),order.getSaleUserId());
-		order.setGuanShanReason(JsonUtil.obj2StringPretty(orderCommonOffer));
-		return order;
+		OrderCommonOffer orderCommonOffer = orderCommonOfferMapper.getSuccess(orderId, saleUserId);
+		Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(saleUserId);
+		map.put(orderCommonOffer, evaluate);
+		return map;
+	}
+	
+	
+	public PurchaseSeeOrderVo  setPurchaseSeeOrderVo(Order order) {
+		int orderStatus = order.getOrderStatus();
+		PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
+		if (orderStatus == 11) {
+			// 开启长连接
+			purchaseSeeOrderVo_sub.setVoSocket(0);
+			purchaseSeeOrderVo_sub.setOrderStatuName("报价中");
+			purchaseSeeOrderVo_sub.setOrderStatu11(true);
+			purchaseSeeOrderVo_sub.setVoOrder(order);
+			purchaseSeeOrderVo_sub.setMapOrderCommonOffer(guanShanReason(order.getId()));
+			// 刚发布的没有抢单报价
+			// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
+			// orders.set(a, guanShanReason(order));
+
+		} else {
+
+			if (orderStatus == 3) {
+				purchaseSeeOrderVo_sub.setOrderStatuName("手动关单");
+				purchaseSeeOrderVo_sub.setOrderStatu3(true);
+				purchaseSeeOrderVo_sub.setMapOrderCommonOffer(null);
+			} else if (orderStatus == 17) {
+				purchaseSeeOrderVo_sub.setOrderStatuName("无接单关单");
+				purchaseSeeOrderVo_sub.setOrderStatu17(true);
+				purchaseSeeOrderVo_sub.setMapOrderCommonOffer(null);
+			} else {
+				if (orderStatus == 4) {
+					purchaseSeeOrderVo_sub.setOrderStatuName("待收货");
+					purchaseSeeOrderVo_sub.setOrderStatu4(true);
+				} else if (orderStatus == 5) {
+					purchaseSeeOrderVo_sub.setOrderStatuName("待评价");
+					purchaseSeeOrderVo_sub.setOrderStatu5(true);
+				}else if (orderStatus == 6) {
+					purchaseSeeOrderVo_sub.setOrderStatuName("已完成");
+					purchaseSeeOrderVo_sub.setOrderStatu6(true);
+				}else if (orderStatus == 12) {
+					purchaseSeeOrderVo_sub.setOrderStatuName("待支付保障金");
+					purchaseSeeOrderVo_sub.setOrderStatu12(true);
+				}else if (orderStatus == 13) {
+					purchaseSeeOrderVo_sub.setOrderStatuName("待送货");
+					purchaseSeeOrderVo_sub.setOrderStatu13(true);
+				}else if (orderStatus == 16) {
+					purchaseSeeOrderVo_sub.setOrderStatuName("确认收货");
+					purchaseSeeOrderVo_sub.setOrderStatu16(true);
+				}
+				order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
+				purchaseSeeOrderVo_sub
+						.setMapOrderCommonOffer(getOrderCommonOffer(order.getId(), order.getSaleUserId()));
+			}
+			purchaseSeeOrderVo_sub.setVoOrder(order);
+		}
+		
+		return purchaseSeeOrderVo_sub;
 	}
 }

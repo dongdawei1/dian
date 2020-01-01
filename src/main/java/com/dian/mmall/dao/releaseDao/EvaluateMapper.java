@@ -12,5 +12,5 @@ public interface EvaluateMapper {
 	int create_evaluate(Evaluate evaluate);//TODO
 
 	Evaluate selectEvvaluateById(long evaluateid);
-
+	Evaluate selectEvvaluateByUserId(long userId);
 }

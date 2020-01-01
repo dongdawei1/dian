@@ -1,6 +1,7 @@
 package com.dian.mmall.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.javassist.expr.NewArray;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -25,6 +26,7 @@ public class DateTimeUtil {
 	// Date->str
 	public static final String STANDARD_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final String STANDARD_DATA = "yyyy-MM-dd";
+
 	public static Date strToDate(String dateTimeStr, String formatStr) {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(formatStr);
 		DateTime dateTime = dateTimeFormatter.parseDateTime(dateTimeStr);
@@ -80,14 +82,13 @@ public class DateTimeUtil {
 
 	public static String betweenAnd(int type) {
 
-		DateTime dateTime = new DateTime(new Date());
-
 		if (type == 1) {
-			return dateTime.toString(STANDARD_DATA)+" 00:00:00";
-		} else if (type == 2) {
-			return dateTime.toString(STANDARD_DATA)+" 23:59:59";
+			DateTime dateTime = new DateTime(strToDate(a_few_days_later(-2)));
+			return dateTime.toString(STANDARD_DATA) + " 00:00:00";
 		}
-		return dateTime.toString(STANDARD_FORMAT);
+		DateTime dateTime = new DateTime(new Date());
+		return dateTime.toString(STANDARD_DATA) + " 23:59:59";
+
 	}
 
 	/**
@@ -167,9 +168,17 @@ public class DateTimeUtil {
 	}
 
 	public static void main(String[] args) {
+
+		DateTime dateTime = new DateTime(strToDate(a_few_days_later(-2)));
+		dateTime.toString("yyyy-MM-dd");
+		System.out.println(dateTime.toString("yyyy-MM-dd"));
 		// dateCompare(0);ServerResponse [status=0, msg=null, data=true]
 		System.out.println(DateTimeUtil.betweenAnd(1));
-		System.out.println(DateTimeUtil.dateToStr(new Date(), "yyyy-MM-dd HH:mm:ss"));
+
+		System.out.println(strToDate(a_few_days_later(-2)).toString());
+
+		// Wed Jan 01 10:20:59 CST 2020
+		System.out.println(new Date());
 		System.out.println(DateTimeUtil.strToDate("2010-01-01 11:11:11", "yyyy-MM-dd HH:mm:ss"));
 
 	}
