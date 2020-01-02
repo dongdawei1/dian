@@ -20,6 +20,7 @@ import com.dian.mmall.pojo.Order;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 import com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer;
+import com.dian.mmall.pojo.goumaidingdan.OrderCommonOfferEvaluateVo;
 import com.dian.mmall.pojo.goumaidingdan.PurchaseSeeOrderVo;
 import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.tupian.Picture;
@@ -268,13 +269,13 @@ public class OrderServiceImpl implements OrderService {
 			purchaseSeeOrderVo = new PurchaseSeeOrderVo();
 			listPurchaseSeeOrderVo = new ArrayList<PurchaseSeeOrderVo>();
 			for (int a = 0; a < leng; a++) {
-				
+
 				Order order = orders.get(a);
 				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = setPurchaseSeeOrderVo(order);
-                if(purchaseSeeOrderVo_sub.getVoSocket()==0) {
-                	purchaseSeeOrderVo.setVoSocket(0);
-                }
-				
+				if (purchaseSeeOrderVo_sub.getVoSocket() == 0) {
+					purchaseSeeOrderVo.setVoSocket(0);
+				}
+
 				listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
 				purchaseSeeOrderVo_sub = null;
 			}
@@ -290,9 +291,12 @@ public class OrderServiceImpl implements OrderService {
 				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
 
 				long pttl = RedisPoolUtil.pttl(key);
+				System.out.println("pttl_____" + pttl);
+				System.out.println("pttl_____" + (15 * 60 - 20) * 1000);
 				if (pttl > (15 * 60 - 20) * 1000) {
 					String orderJsonStr = RedisPoolUtil.get(key);
 					Order order = JsonUtil.string2Obj(orderJsonStr, Order.class);
+
 					orderStatus_liStrings.add(order.getId() + "");
 					// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
 					// 开启长连接
@@ -301,24 +305,31 @@ public class OrderServiceImpl implements OrderService {
 					purchaseSeeOrderVo_sub.setOrderStatuName("报价中");
 					purchaseSeeOrderVo_sub.setOrderStatu11(true);
 					purchaseSeeOrderVo_sub.setVoOrder(order);
-					purchaseSeeOrderVo_sub.setMapOrderCommonOffer(guanShanReason(order.getId()));
+					purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(guanShanReason(order.getId()));
 					// 刚发布的没有抢单报价
 					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
 
 				}
 			}
 			// 添加不在redis中的订单
-			List<Order> orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings,
-					2);
+			List<Order> orders_notin = new ArrayList<Order>();
+
+			if (orderStatus_liStrings.size() > 0) {
+				orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings, 2);
+
+			} else {
+				orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings, 1);
+			}
+
 			if (orders_notin.size() > 0) {
 				for (Order order : orders_notin) {
 					PurchaseSeeOrderVo purchaseSeeOrderVo_sub = setPurchaseSeeOrderVo(order);
-	                if(purchaseSeeOrderVo_sub.getVoSocket()==0) {
-	                	purchaseSeeOrderVo.setVoSocket(0);
-	                }
+					if (purchaseSeeOrderVo_sub.getVoSocket() == 0) {
+						purchaseSeeOrderVo.setVoSocket(0);
+					}
 					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
 					purchaseSeeOrderVo_sub = null;
-					
+
 				}
 			}
 
@@ -328,8 +339,8 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createBySuccess(purchaseSeeOrderVo);
 	}
 
-	public Map<OrderCommonOffer, Evaluate> guanShanReason(long orderId) {
-		Map<OrderCommonOffer, Evaluate> map = new HashMap<OrderCommonOffer, Evaluate>();
+	public List<OrderCommonOfferEvaluateVo> guanShanReason(long orderId) {
+		List<OrderCommonOfferEvaluateVo> listOrderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
 
 		// guanShanReason 把报价的集合放到这个字段中 ，要处理状态 commodStatus ==0 的 预创建的多个
 		List<OrderCommonOffer> orderCommonOffer_list = orderCommonOfferMapper.getInitial(orderId);
@@ -344,24 +355,30 @@ public class OrderServiceImpl implements OrderService {
 
 				Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(offer.getSaleUserId());
 				// orderCommonOffer_list.set(a, offer);
-				map.put(offer, evaluate);
+				OrderCommonOfferEvaluateVo orderCommonOfferEvaluateVo = new OrderCommonOfferEvaluateVo();
+				orderCommonOfferEvaluateVo.setEvaluate(evaluate);
+				orderCommonOfferEvaluateVo.setOrderCommonOffer(offer);
+				listOrderCommonOfferEvaluateVo.add(orderCommonOfferEvaluateVo);
 			}
 		}
-		return map;
+		return listOrderCommonOfferEvaluateVo;
 	}
 
-	public Map<OrderCommonOffer, Evaluate> getOrderCommonOffer(long orderId, long saleUserId) {
+	public List<OrderCommonOfferEvaluateVo> getOrderCommonOffer(long orderId, long saleUserId) {
 
-		Map<OrderCommonOffer, Evaluate> map = new HashMap<OrderCommonOffer, Evaluate>();
+		List<OrderCommonOfferEvaluateVo> listOrderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
 		// guanShanReason 给名字 地址即可 commodStatus ==1 的 成功
 		OrderCommonOffer orderCommonOffer = orderCommonOfferMapper.getSuccess(orderId, saleUserId);
 		Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(saleUserId);
-		map.put(orderCommonOffer, evaluate);
-		return map;
+
+		OrderCommonOfferEvaluateVo orderCommonOfferEvaluateVo = new OrderCommonOfferEvaluateVo();
+		orderCommonOfferEvaluateVo.setEvaluate(evaluate);
+		orderCommonOfferEvaluateVo.setOrderCommonOffer(orderCommonOffer);
+		listOrderCommonOfferEvaluateVo.add(orderCommonOfferEvaluateVo);
+		return listOrderCommonOfferEvaluateVo;
 	}
-	
-	
-	public PurchaseSeeOrderVo  setPurchaseSeeOrderVo(Order order) {
+
+	public PurchaseSeeOrderVo setPurchaseSeeOrderVo(Order order) {
 		int orderStatus = order.getOrderStatus();
 		PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
 		if (orderStatus == 11) {
@@ -369,8 +386,7 @@ public class OrderServiceImpl implements OrderService {
 			purchaseSeeOrderVo_sub.setVoSocket(0);
 			purchaseSeeOrderVo_sub.setOrderStatuName("报价中");
 			purchaseSeeOrderVo_sub.setOrderStatu11(true);
-			purchaseSeeOrderVo_sub.setVoOrder(order);
-			purchaseSeeOrderVo_sub.setMapOrderCommonOffer(guanShanReason(order.getId()));
+			purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(guanShanReason(order.getId()));
 			// 刚发布的没有抢单报价
 			// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
 			// orders.set(a, guanShanReason(order));
@@ -380,11 +396,11 @@ public class OrderServiceImpl implements OrderService {
 			if (orderStatus == 3) {
 				purchaseSeeOrderVo_sub.setOrderStatuName("手动关单");
 				purchaseSeeOrderVo_sub.setOrderStatu3(true);
-				purchaseSeeOrderVo_sub.setMapOrderCommonOffer(null);
+				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(null);
 			} else if (orderStatus == 17) {
 				purchaseSeeOrderVo_sub.setOrderStatuName("无接单关单");
 				purchaseSeeOrderVo_sub.setOrderStatu17(true);
-				purchaseSeeOrderVo_sub.setMapOrderCommonOffer(null);
+				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(null);
 			} else {
 				if (orderStatus == 4) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("待收货");
@@ -392,26 +408,27 @@ public class OrderServiceImpl implements OrderService {
 				} else if (orderStatus == 5) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("待评价");
 					purchaseSeeOrderVo_sub.setOrderStatu5(true);
-				}else if (orderStatus == 6) {
+				} else if (orderStatus == 6) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("已完成");
 					purchaseSeeOrderVo_sub.setOrderStatu6(true);
-				}else if (orderStatus == 12) {
+				} else if (orderStatus == 12) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("待支付保障金");
 					purchaseSeeOrderVo_sub.setOrderStatu12(true);
-				}else if (orderStatus == 13) {
+				} else if (orderStatus == 13) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("待送货");
 					purchaseSeeOrderVo_sub.setOrderStatu13(true);
-				}else if (orderStatus == 16) {
+				} else if (orderStatus == 16) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("确认收货");
 					purchaseSeeOrderVo_sub.setOrderStatu16(true);
 				}
 				order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
 				purchaseSeeOrderVo_sub
-						.setMapOrderCommonOffer(getOrderCommonOffer(order.getId(), order.getSaleUserId()));
+						.setListOrderCommonOfferEvaluateVo(getOrderCommonOffer(order.getId(), order.getSaleUserId()));
 			}
-			purchaseSeeOrderVo_sub.setVoOrder(order);
 		}
-		
+
+		order.setCommodityJiage(order.getCommodityJiage() / 100);
+		purchaseSeeOrderVo_sub.setVoOrder(order);
 		return purchaseSeeOrderVo_sub;
 	}
 }

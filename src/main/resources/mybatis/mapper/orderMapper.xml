@@ -43,8 +43,8 @@
 		and
 		createTime between #{between} and #{and}
 		and reserve=3
-		<if test="type == 2">
-			and orderStatus not IN
+		<if test="type == 2">  <!-- 没有做空判断调用时需要判断，传入相应的type 否则会报错 -->
+			and id not IN
 			<foreach item="item" index="index"
 				collection="orderStatus_liStrings" open="(" separator="," close=")">
 				#{item}

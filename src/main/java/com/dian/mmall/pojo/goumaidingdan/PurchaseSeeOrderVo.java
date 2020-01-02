@@ -36,7 +36,7 @@ public class PurchaseSeeOrderVo {
 	private boolean orderStatu16=false;
 	private boolean orderStatu17=false;
 	
-	private Map<OrderCommonOffer, Evaluate>     mapOrderCommonOffer;  
+	private List<OrderCommonOfferEvaluateVo>     listOrderCommonOfferEvaluateVo;  
 	//11是抢单列表，其他只有一个或没有 ,一个抢单，对应一条  评价	
 	private Integer voSocket=1 ; //0开启长连接  ，
 	
