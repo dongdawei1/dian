@@ -13,4 +13,7 @@ public interface EvaluateMapper {
 
 	Evaluate selectEvvaluateById(long evaluateid);
 	Evaluate selectEvvaluateByUserId(long userId);
+
+
+	
 }

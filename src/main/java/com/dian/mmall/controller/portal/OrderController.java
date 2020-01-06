@@ -109,5 +109,24 @@ public class OrderController {
         return orderService.get_conduct_purchase_order(user);
     
     }
+	//商户发布采购订单
+    @RequestMapping(value = "operation_purchase_order",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> operation_purchase_order(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	
+     	if(user.getRole()!=1 && user.getRole()!=2 ) {
+     		return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+     	}
+   
+        
+        return orderService.operation_purchase_order(user,params);
     
+    }
 }

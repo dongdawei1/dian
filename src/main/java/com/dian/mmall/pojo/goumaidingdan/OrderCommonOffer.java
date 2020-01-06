@@ -26,4 +26,10 @@ public class OrderCommonOffer {
 	
 	private String createTime;
 	private String updateTime;
+	
+	private String contact;
+	private String consigneeName;
+
+//  varchar(20) NULL收/送货联系方式
+//  varchar(15) NULL收/送货人姓名
 }

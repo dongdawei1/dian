@@ -12,5 +12,9 @@ public interface OrderCommonOfferMapper {
 	List<OrderCommonOffer> getInitial(long orderFormId);
 
 	OrderCommonOffer getSuccess(long orderFormId, long saleUserId);
+	int operation_purchase_evaluate_all(long orderFormId, String updateTime);
 
+	void operation_purchase_evaluate_id(long orderFormId, String updateTime);
+
+	void operation_purchase_evaluate_noSelected(long id, String updateTime);
 }

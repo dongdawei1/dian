@@ -52,5 +52,25 @@
 		</if>
 	</select>
 
+	<select id="getOrderById" resultType="com.dian.mmall.pojo.Order">
+		select * from orderform
+		where
+		purchaseUserId=#{purchaseUserId}
+		and id=#{id}
+	</select>
+	
+
+
+	<!-- 用户操作    operation_purchase_order(int type, long id, String updateTime); -->
+	<update id="operation_purchase_order">
+		update orderform set
+		updateTime=#{updateTime},orderStatus=#{type} 
+		<if test="type==3 or type==11">, saleUserId=0</if>
+		where id=#{id}
+		<if test="type==3 "> and orderStatus in(13,11)</if>	
+		<if test="type==11 "> and orderStatus in(3,17)</if>
+		
+		
+	</update>
 
 </mapper>

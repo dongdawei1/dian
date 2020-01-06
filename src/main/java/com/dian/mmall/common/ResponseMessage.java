@@ -159,6 +159,7 @@ public enum ResponseMessage {
 	songhuoriqibunnegxiaoyujint("送货日期不能小于今天"),
 	chuangjiandingdanshibai("创建订单落库失败"),
 	dingdanbunnegweikong("采购列表不能为空"),
+	dingdanchaxunshibai("订单查询失败"),
 	;
    String message;
    ResponseMessage(String message){

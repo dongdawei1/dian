@@ -19,4 +19,9 @@ public interface OrderMapper {
 
 	List<Order> get_shut_orders(long purchaseUserId, String between, String and, Object orderStatus_liStrings,int type);
 
+	Order getOrderById(long id, long purchaseUserId);
+
+
+	int operation_purchase_order(Order order);
+
 }

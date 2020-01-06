@@ -65,7 +65,7 @@ public class Order {
 	private String guanShanReason; //关单原因 
 	private String collectTime;//收货时间
 	
-	
+	private String updateTime; //更新时间
 	@IsEmptyAnnotation(message="订单状态不能为空") 
 	private Integer orderStatus;
 	//1购买者下单,2批发者确认，3关单，4取/送货 ，5待评价，6评价完成 ，11发布采购订单 ，12抢单成功更新销售商户ID 13发布者确认  ，16 确认收货
