@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public synchronized ServerResponse<String> create_wholesaleCommodity_order(long userId,
 			Map<String, Object> params) {
-		//  暂时不做 批发订单
+		// 暂时不做 批发订单
 //    	commoditySurplusNo &lt;  #{commodityReserveNo} and
 //    	startTime &lt;   #{updateTime} and
 //    	endTime   &gt;   #{updateTime} 
@@ -237,10 +237,12 @@ public class OrderServiceImpl implements OrderService {
 		Set<String> keySet = RedisPoolUtil.keys(keyString);
 
 		boolean isredis = false;
-		//saleUserId   选中的销售商id  ，id 订单id
+		// orderCommonOfferId 选中的销售商id ，id 订单id ,commodityZongJiage 选中的报价元
+		// saleUserIdDeng 登陆的userId
 		int type = Integer.parseInt(params.get("type").toString().trim());
 		long id = Long.parseLong(params.get("id").toString().trim());
 		if (keySet.size() > 0) {
+			System.out.println(isredis + "____________2222");
 			for (String key : keySet) {
 				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
 				String orderJsonStr = RedisPoolUtil.get(key);
@@ -427,6 +429,7 @@ public class OrderServiceImpl implements OrderService {
 		// guanShanReason 给名字 地址即可 commodStatus ==1 的 成功
 		OrderCommonOffer orderCommonOffer = orderCommonOfferMapper.getSuccess(orderId, saleUserId);
 		orderCommonOffer.setContact(EncrypDES.decryptPhone(orderCommonOffer.getContact()));
+		orderCommonOffer.setCommodityZongJiage(orderCommonOffer.getCommodityZongJiage() / 100);
 
 		Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(saleUserId);
 
@@ -509,10 +512,10 @@ public class OrderServiceImpl implements OrderService {
 //		状态 =11 时 显示关单键  和 确认键  关单后端 传 3，确认传13 -->
 //
 //		关单后状态==3或者17   显示开启键   开启后端 传 11， 
-//		确认后状态==13   显示 支付键  支付后端  传 4  ， 和 显示关单键 -->
-//
+//		确认后状态==13  显示待确认总价 按键  置灰    销售商点击确认价格
+//      
 //		支付成功状态==4  显示 待收货 不可点击   送货者状态4时显示 已送到 传 operationRow(scope.row,16)  点击后状态变成16-->
-//
+//      送货者再次确认  13-->转为12待支付           显示 支付键    支付后端  传 4  ， 和 显示关单键 -->
 //		状态==16 显示确认收货   向后端传 5  状态更新为5--->
 //
 //		状态==5 显示待评价      向后端传 6  订单更新为 6 完成评价
@@ -520,58 +523,124 @@ public class OrderServiceImpl implements OrderService {
 		long id = order.getId();
 
 		order.setUpdateTime(updateTime);
-		order.setOrderStatus(type);
 
 		List<OrderCommonOffer> list_evaluates = orderCommonOfferMapper.getInitial(order.getId());
-		if (type == 3) {
-			if(order.getOrderStatus()==11) {
-				// 关单 关单状态只能 是11 时 13 时才能关
-				orderMapper.operation_purchase_order(order);
-				if (list_evaluates.size() > 0) {
-					//全部更新
-					orderCommonOfferMapper.operation_purchase_evaluate_all(order.getId(), updateTime);
-					
-					// TODO 去发送通知全部 
-				}
-			}else if(order.getOrderStatus()==13) {
-				// 关单 关单状态只能 是11 时 13 时才能关				
-				orderMapper.operation_purchase_order(order);
-				if (list_evaluates.size() > 0) {
-					//全部选中的那个
-					if(order.getSaleUserId()!=0) {
-						orderCommonOfferMapper.operation_purchase_evaluate_id(order.getId(), updateTime);
-					}else {
-						order = orderMapper.getOrderById(id, order.getPurchaseUserId());
-						orderCommonOfferMapper.operation_purchase_evaluate_id(order.getId(), updateTime);
-					}
-					
-					// TODO 通知全部的那个，用户关单了 order.getSaleUserId()发给这个user id
-				}
-			}
-		}else if(type==11) {		
-			// 关单 关单状态只能 是11 时 13 时才能关				
-			orderMapper.operation_purchase_order(order);
-			if (list_evaluates.size() > 0) {
-				//全部更新
-				orderCommonOfferMapper.operation_purchase_evaluate_all(order.getId(), updateTime);
-			}
-			//TODO 通知给抢单人员
-		}else if(type==13) {		
-			// 关单 关单状态只能 是11 时 13 时才能关				
-			orderMapper.operation_purchase_order(order);
-			if (list_evaluates.size() > 0) {
-				long saleUserId=Long.parseLong(params.get("saleUserId").toString().trim());
-				
-				//选中的更新
-				
-				//未选中全部更新为失败
-				orderCommonOfferMapper.operation_purchase_evaluate_noSelected(order.getId(), updateTime);
-			    
-			}
-			//TODO 通知给抢单成功人员  userID
-		}
 
-		return ServerResponse.createBySuccess();
+		try {
+			if (type == 3) {
+				if (order.getOrderStatus() == 11) {
+					// 关单 关单状态只能 是11 时 12 时才能关
+					order.setOrderStatus(type);
+					orderMapper.operation_purchase_order(order);
+					if (list_evaluates.size() > 0) {
+						// 全部更新
+						orderCommonOfferMapper.operation_purchase_evaluate_all(order.getId(), updateTime);
+
+						// TODO 去发送通知全部 接单失败
+					}
+				} else if (order.getOrderStatus() == 12) {
+					// 关单 关单状态只能 是11 时 12 时才能关
+					order.setOrderStatus(type);
+					orderMapper.operation_purchase_order(order);
+					orderCommonOfferMapper.operation_purchase_evaluate_id(order.getId(), updateTime,
+							order.getSaleUserId());
+
+					// TODO 通知接单成功的用户，关单了 order.getSaleUserId()发给这个user id
+
+				}
+			} else if (type == 11) {
+				// 重新开启订单 只有3和17的才能重新开启
+				order.setOrderStatus(type);
+				orderMapper.operation_purchase_order(order);
+				if (list_evaluates.size() > 0) {
+					// 全部更新
+					orderCommonOfferMapper.operation_purchase_evaluate_all(order.getId(), updateTime);
+				}
+				// TODO 通知给抢单人员
+			} else if (type == 13) {
+				// 确认订单
+				long order_commodityZongJiage = Long.parseLong(params.get("commodityZongJiage").toString().trim());
+				long orderCommonOfferId = Long.parseLong(params.get("orderCommonOfferId").toString().trim());
+				if (list_evaluates.size() > 0) {
+					boolean b = false;
+					for (int a = 0; a < list_evaluates.size(); a++) {
+						OrderCommonOffer orderCommonOffer = list_evaluates.get(a);
+						if (orderCommonOffer.getId() == orderCommonOfferId) {
+							b = true;
+
+							long commodityZongJiage = orderCommonOffer.getCommodityZongJiage() / 100;
+
+							if (commodityZongJiage == order_commodityZongJiage) {
+								// 选中的更新 为成功
+								long saleUserId = orderCommonOffer.getSaleUserId();
+								orderCommonOfferMapper.operation_purchase_evaluate_selected(order.getId(), updateTime,
+										saleUserId, orderCommonOffer.getId());
+								// 更新订单 为抢单成功 和其他信息 报价金额，抢单用户id
+								if (order.getOrderStatus() == 11) {
+									order.setSaleUserId(saleUserId);
+									order.setCommodityZongJiage(orderCommonOffer.getCommodityZongJiage());
+									order.setOrderStatus(type);
+									orderMapper.operation_purchase_order(order);
+									// TODO 通知给抢单成功人员 userID
+								} else {
+									return ServerResponse
+											.createByErrorMessage(ResponseMessage.dingdanzhuangtaicuowu.getMessage());
+								}
+
+							} else {
+								return ServerResponse
+										.createByErrorMessage(ResponseMessage.baojiajinebuyizhi.getMessage());
+							}
+						}
+					}
+					if (!b) {
+						return ServerResponse
+								.createByErrorMessage(ResponseMessage.baojiashanghuchaxunshibai.getMessage());
+					}
+
+					// 未选中全部更新为失败
+					orderCommonOfferMapper.operation_purchase_evaluate_noSelected(order.getId(), updateTime);
+
+				} else {
+					return ServerResponse.createByErrorMessage(ResponseMessage.baojiashanghuchaxunshibai.getMessage());
+				}
+
+			} else if (type == 12) {
+				// 抢单人员操作
+				long saleUserIdDeng = Long.parseLong(params.get("saleUserIdDeng").toString().trim());
+				if (saleUserIdDeng != order.getSaleUserId()) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
+				}
+				order.setOrderStatus(type);
+				orderMapper.operation_purchase_order(order);
+				// TODO 通知给商户 ，抢单人员已经确认过价格
+			} else if (type == 4) {
+				// 支付操作时处理 TODO 直接set支付的金额和待支付金额
+				order.setOrderStatus(type);
+				orderMapper.operation_purchase_order(order);
+				// TODO 通知给抢单成功人员 userID 支付成功送货
+			} else if (type == 16) {
+				// 抢单人员操作
+				long saleUserIdDeng = Long.parseLong(params.get("saleUserIdDeng").toString().trim());
+				if (saleUserIdDeng != order.getSaleUserId()) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
+				}
+				order.setOrderStatus(type);
+				orderMapper.operation_purchase_order(order);
+				// TODO 通知给商户 ，抢单人员已经送货到了
+			} else if (type == 5) {
+				order.setOrderStatus(type);
+				orderMapper.operation_purchase_order(order);
+				// TODO 通知给抢单成功人员 userID 用户已经收货，订单完成
+			} else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
+			}
+
+			return ServerResponse.createBySuccess();
+		} catch (Exception e) {
+			System.out.println("______0000" + e.toString());
+			return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
+		}
 	}
 
 }

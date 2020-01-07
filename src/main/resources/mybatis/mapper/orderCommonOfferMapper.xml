@@ -19,8 +19,8 @@
 		resultType="com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer">
 		select * from order_common_offer
 		where
-		orderFormId=#{orderFormId}
-		saleUserId=#{saleUserId}
+		 orderFormId=#{orderFormId}
+		and saleUserId=#{saleUserId}
 		and commodStatus=1
 	</select>
    
@@ -35,9 +35,24 @@
 	<update id="operation_purchase_evaluate_id">
 		update order_common_offer set
 		updateTime=#{updateTime},commodStatus=2 
-		where orderFormId=#{orderFormId}  and commodStatus=1 
+		where orderFormId=#{orderFormId}  and commodStatus=1  and saleUserId=#{saleUserId}
 	</update>
 	
+
+   	<!-- 用户操作 更新成功的 -->
+	<update id="operation_purchase_evaluate_selected">
+		update order_common_offer set
+		updateTime=#{updateTime},commodStatus=1
+		where orderFormId=#{orderFormId} and commodStatus=0 
+		and saleUserId=#{saleUserId} and id=#{id}
+	</update>
+
+	   	<!-- 用户操作 全部失败 -->
+	<update id="operation_purchase_evaluate_noSelected">
+		update order_common_offer set
+		updateTime=#{updateTime},commodStatus=2
+		where orderFormId=#{orderFormId} and commodStatus=0
+	</update>
 	
 	<!--创建用户成功返回非0 <insert id="createCommonMenu"> insert into common_menu ( 
 		userId,servicetypeId ) values ( #{userId},#{servicetypeId} ) </insert> <update 
