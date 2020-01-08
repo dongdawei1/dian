@@ -128,6 +128,48 @@ public class DateTimeUtil {
 
 	}
 
+	
+	/**
+	 * 判断是否是过去的日期
+	 * 
+	 * @param str输入的日期
+	 * @return
+	 * @return
+	 */
+	public static ServerResponse<Object> isPastDate2(String str, int type) {
+      
+		//限制死的 收货时间必须是两小时后
+		boolean flag = false;
+		Date nowDate = new Date();
+		nowDate=new Date(nowDate.getTime()+2*60*60*1000);
+		
+		Date pastDate = null;
+		// 格式化日期
+		SimpleDateFormat sdf = new SimpleDateFormat(STANDARD_FORMAT, Locale.CHINA);
+		// 在日期字符串非空时执行
+		if (str != null && !"".equals(str)) {
+			try {
+				// 将字符串转为日期格式，如果此处字符串为非合法日期就会抛出异常。
+				pastDate = sdf.parse(str);
+				// 调用Date里面的before方法来做判断
+				flag = pastDate.before(nowDate);
+				if (flag) {
+					// System.out.println("该日期早于今日");
+					return ServerResponse.createBySuccess(!flag);
+				} else {
+					// System.out.println("该日期晚于今日");
+					return ServerResponse.createBySuccess(!flag);
+				}
+			} catch (ParseException e) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqicuowo.getMessage());
+			}
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqikong.getMessage());
+		}
+
+	}
+	
+	
 	/**
 	 * 判断是否晚与传入的日期
 	 * 
@@ -169,6 +211,16 @@ public class DateTimeUtil {
 
 	public static void main(String[] args) {
 
+		Date nowDate = new Date();
+		long lon= nowDate.getTime()+2*60*60*1000;
+		System.out.println(nowDate);
+		System.out.println(lon);
+		System.out.println(nowDate.getTime());
+		nowDate=new Date(lon);
+		System.out.println(nowDate);
+		
+		SimpleDateFormat sdf = new SimpleDateFormat(STANDARD_FORMAT, Locale.CHINA);
+		
 		DateTime dateTime = new DateTime(strToDate(a_few_days_later(-2)));
 		dateTime.toString("yyyy-MM-dd");
 		System.out.println(dateTime.toString("yyyy-MM-dd"));

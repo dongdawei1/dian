@@ -122,7 +122,8 @@ public class OrderServiceImpl implements OrderService {
 			ServerResponse<Object> serverResponseObject = DateTimeUtil.dateCompare(giveTakeTime, 3);
 			if (serverResponseObject.getStatus() == 0) {
 				if ((boolean) serverResponseObject.getData()) {
-					serverResponseObject = DateTimeUtil.isPastDate(giveTakeTime, 1);
+					//限制死的 收货时间必须是两小时后
+					serverResponseObject = DateTimeUtil.isPastDate2(giveTakeTime, 1);
 					if ((boolean) serverResponseObject.getData()) {
 
 						List<CommonMenuWholesalecommodity> listObj4 = JsonUtil.list2Obj(

@@ -200,15 +200,15 @@ public class RedisPoolUtil {
         	System.out.println(key +"<--ddd");
         	String userJsonStr=RedisShardedPoolUtil.get(key);
         	
-        	System.out.println( "userJsonStr-->"+  userJsonStr);
-        	
-        	System.out.println( "jedis.pttl(key)-->"+  jedis.pttl(key));
+//        	System.out.println( "userJsonStr-->"+  userJsonStr);
+//        	
+//        	System.out.println( "jedis.pttl(key)-->"+  jedis.pttl(key));
         	
         }
         
         
-        System.out.println( "jedis.pttl(key)-->"+keyes.size());
-        System.out.println( "jedis.pttl(key)-->");
+//        System.out.println( "jedis.pttl(key)-->"+keyes.size());
+//        System.out.println( "jedis.pttl(key)-->");
 
     //    RedisShardedPoolUtil.del("keyTest");
 
