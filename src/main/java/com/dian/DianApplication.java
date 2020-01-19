@@ -21,18 +21,18 @@ public class DianApplication {
 	}
  
 	// 自己配置的 filter 生效SessionExpireFilter  
-	@Bean
-    public FilterRegistrationBean  filterRegistrationBean() {
-		FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-		SessionExpireFilter httpBasicFilter = new SessionExpireFilter();
-		registrationBean.setFilter(httpBasicFilter);
-		List<String> urlPatterns = new ArrayList<String>();
-		//拦截所有请求
-	    urlPatterns.add("/*");
-	    //urlPatterns.add("/user/*");
-	    registrationBean.setUrlPatterns(urlPatterns);
-	    return registrationBean;
-    }
+//	@Bean
+//    public FilterRegistrationBean  filterRegistrationBean() {
+//		FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+//		SessionExpireFilter httpBasicFilter = new SessionExpireFilter();
+//		registrationBean.setFilter(httpBasicFilter);
+//		List<String> urlPatterns = new ArrayList<String>();
+//		//拦截所有请求
+//	    urlPatterns.add("/*");
+//	    //urlPatterns.add("/user/*");
+//	    registrationBean.setUrlPatterns(urlPatterns);
+//	    return registrationBean;
+//    }
 
 
 	

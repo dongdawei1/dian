@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dian.mmall.common.ResponseMessage;
@@ -92,7 +93,7 @@ public class OrderController {
 	//商户今天发布的采购订单
     @RequestMapping(value = "get_conduct_purchase_order",method = RequestMethod.GET)
     @ResponseBody
-    public ServerResponse<Object> get_conduct_purchase_order(HttpServletRequest httpServletRequest){
+    public ServerResponse<Object> get_conduct_purchase_order(HttpServletRequest httpServletRequest, @RequestParam String uuid){
     	//检查登陆
     	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
     	if(serverResponse.getStatus()!=0) {
