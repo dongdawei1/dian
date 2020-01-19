@@ -34,11 +34,11 @@ public class PurchaseSeeOrderVo {
 	private boolean orderStatu12=false;
 	private boolean orderStatu13=false;
 	private boolean orderStatu16=false;
-	private boolean orderStatu17=false;
-	
+	private boolean orderStatu17=false; //30分钟已到，没有人接单
+	private boolean orderStatu18=false; //30到有人接单
 	private List<OrderCommonOfferEvaluateVo>     listOrderCommonOfferEvaluateVo;  
 	//11是抢单列表，其他只有一个或没有 ,一个抢单，对应一条  评价	
-	private Integer voSocket=1 ; //0开启长连接  ，
+	private Integer voSocket=1 ; //0开启轮询  ，
 	
 	private List<PurchaseSeeOrderVo> listPurchaseSeeOrderVo;
 	

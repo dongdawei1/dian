@@ -14,4 +14,5 @@ public interface OrderService {
 	ServerResponse<String> create_order_evaluation(User user, Map<String, Object> params);
 	ServerResponse<Object> get_conduct_purchase_order(User user);
 	ServerResponse<String> operation_purchase_order(User user, Map<String, Object> params);
+	void timerOrderStatus();
 }

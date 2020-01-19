@@ -122,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
 			ServerResponse<Object> serverResponseObject = DateTimeUtil.dateCompare(giveTakeTime, 3);
 			if (serverResponseObject.getStatus() == 0) {
 				if ((boolean) serverResponseObject.getData()) {
-					//限制死的 收货时间必须是两小时后
+					// 限制死的 收货时间必须是两小时后
 					serverResponseObject = DateTimeUtil.isPastDate2(giveTakeTime, 1);
 					if ((boolean) serverResponseObject.getData()) {
 
@@ -163,10 +163,11 @@ public class OrderServiceImpl implements OrderService {
 						order.setId(id);
 						order.setCommodityJiage(commodityJiage_int);
 						// 把订单存放在redis中
-						String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + id;
+//						String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + id;
+//
+//						RedisShardedPoolUtil.setEx(keyString, JsonUtil.obj2StringPretty(order),
+//								Const.RedisCacheExtime.REDIS_ORDER_TIME);
 
-						RedisShardedPoolUtil.setEx(keyString, JsonUtil.obj2StringPretty(order),
-								Const.RedisCacheExtime.REDIS_ORDER_TIME);
 						// TODO 成功 调用push接口发送站内信
 
 						// 调vo接口创建 /更新 redis的常用菜单
@@ -234,59 +235,59 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public synchronized ServerResponse<String> operation_purchase_order(User user, Map<String, Object> params) {
 		// 先去redis中找 ，
-		String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + "*";
-		Set<String> keySet = RedisPoolUtil.keys(keyString);
+//		String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + "*";
+//		Set<String> keySet = RedisPoolUtil.keys(keyString);
 
-		boolean isredis = false;
+		// boolean isredis = false;
 		// orderCommonOfferId 选中的销售商id ，id 订单id ,commodityZongJiage 选中的报价元
 		// saleUserIdDeng 登陆的userId
 		int type = Integer.parseInt(params.get("type").toString().trim());
 		long id = Long.parseLong(params.get("id").toString().trim());
-		if (keySet.size() > 0) {
-			System.out.println(isredis + "____________2222");
-			for (String key : keySet) {
-				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
-				String orderJsonStr = RedisPoolUtil.get(key);
-				Order order = JsonUtil.string2Obj(orderJsonStr, Order.class);
+//		if (keySet.size() > 0) {
+//			System.out.println(isredis + "____________2222");
+//			for (String key : keySet) {
+//				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
+//				String orderJsonStr = RedisPoolUtil.get(key);
+//				Order order = JsonUtil.string2Obj(orderJsonStr, Order.class);
+//
+//				if (id == order.getId() && user.getId() == order.getPurchaseUserId()) {
+//					isredis = true;
+//					// 这里处理
+//					ServerResponse<String> serverResponseImpl = operation_purchase_order_impl(type, order, params,
+//							isredis);
+//					if (serverResponseImpl.getStatus() == 0) {
+//
+//						// 删除redis中的key
+//						RedisPoolUtil.del(key);
+//						return ServerResponse.createBySuccess();
+//					} else {
+//						return serverResponseImpl;
+//					}
+//
+//				}
+//			}
+//		}
 
-				if (id == order.getId() && user.getId() == order.getPurchaseUserId()) {
-					isredis = true;
-					// 这里处理
-					ServerResponse<String> serverResponseImpl = operation_purchase_order_impl(type, order, params,
-							isredis);
-					if (serverResponseImpl.getStatus() == 0) {
-
-						// 删除redis中的key
-						RedisPoolUtil.del(key);
-						return ServerResponse.createBySuccess();
-					} else {
-						return serverResponseImpl;
-					}
-
-				}
-			}
-		}
-
-		System.out.println(isredis + "____________3333333");
-		if (!isredis) {
-			System.out.println(isredis + "____________44444");
-			// 找不到去数据库找，
-			Order order = orderMapper.getOrderById(id, user.getId());
-			if (order != null) {
-				// 这里处理
-				ServerResponse<String> serverResponseImpl = operation_purchase_order_impl(type, order, params, isredis);
-				if (serverResponseImpl.getStatus() == 0) {
-					return ServerResponse.createBySuccess();
-				} else {
-					return serverResponseImpl;
-				}
-
+//		System.out.println(isredis + "____________3333333");
+//		if (!isredis) {
+//			System.out.println(isredis + "____________44444");
+		// 找不到去数据库找，
+		Order order = orderMapper.getOrderById(id, user.getId());
+		if (order != null) {
+			// 这里处理
+			ServerResponse<String> serverResponseImpl = operation_purchase_order_impl(type, order, params);
+			if (serverResponseImpl.getStatus() == 0) {
+				return ServerResponse.createBySuccess();
 			} else {
-				return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
+				return serverResponseImpl;
 			}
+
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
 		}
-		System.out.println(isredis + "____________555555");
-		return ServerResponse.createBySuccess();
+//		}
+//		System.out.println(isredis + "____________555555");
+		// return ServerResponse.createBySuccess();
 	}
 
 	// 计算平均价格
@@ -304,94 +305,90 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public ServerResponse<Object> get_conduct_purchase_order(User user) {
 
-		String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + "*";
-		Set<String> keySet = RedisPoolUtil.keys(keyString);
+//		String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + "*";
+//		Set<String> keySet = RedisPoolUtil.keys(keyString);
 
 		List<Order> orders = new ArrayList<Order>();
 
 		String between = DateTimeUtil.betweenAnd(1);
 		String and = DateTimeUtil.betweenAnd(2);
 
-		PurchaseSeeOrderVo purchaseSeeOrderVo = null;
+		// if (keySet.size() == 0) {
+		// 查询数据库有无关单的数据
 
-		List<PurchaseSeeOrderVo> listPurchaseSeeOrderVo = null;
+		orders = orderMapper.get_shut_orders(user.getId(), between, and, null, 0);
 
-		if (keySet.size() == 0) {
-			// 查询数据库有无关单的数据
-
-			orders = orderMapper.get_shut_orders(user.getId(), between, and, null, 0);
-
-			int leng = orders.size();
-			if (leng == 0) {
-				return ServerResponse.createBySuccess();
-			}
-
-			purchaseSeeOrderVo = new PurchaseSeeOrderVo();
-			listPurchaseSeeOrderVo = new ArrayList<PurchaseSeeOrderVo>();
-			for (int a = 0; a < leng; a++) {
-
-				Order order = orders.get(a);
-				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = setPurchaseSeeOrderVo(order);
-				if (purchaseSeeOrderVo_sub.getVoSocket() == 0) {
-					purchaseSeeOrderVo.setVoSocket(0);
-				}
-
-				listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
-				purchaseSeeOrderVo_sub = null;
-			}
-
-		} else {
-
-			purchaseSeeOrderVo = new PurchaseSeeOrderVo();
-			listPurchaseSeeOrderVo = new ArrayList<PurchaseSeeOrderVo>();
-
-			// 获取redis中存在的id
-			List<String> orderStatus_liStrings = new ArrayList<String>();
-			for (String key : keySet) {
-				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
-
-				long pttl = RedisPoolUtil.pttl(key);
-				if (pttl > (15 * 60 - 20) * 1000) {
-					String orderJsonStr = RedisPoolUtil.get(key);
-					Order order = JsonUtil.string2Obj(orderJsonStr, Order.class);
-
-					orderStatus_liStrings.add(order.getId() + "");
-					// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
-					// 开启长连接
-					purchaseSeeOrderVo.setVoSocket(0);
-					purchaseSeeOrderVo_sub.setVoSocket(0);
-					purchaseSeeOrderVo_sub.setOrderStatuName("报价中");
-					purchaseSeeOrderVo_sub.setOrderStatu11(true);
-					purchaseSeeOrderVo_sub.setVoOrder(order);
-					purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(guanShanReason(order.getId()));
-					// 刚发布的没有抢单报价
-					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
-
-				}
-			}
-			// 添加不在redis中的订单
-			List<Order> orders_notin = new ArrayList<Order>();
-
-			if (orderStatus_liStrings.size() > 0) {
-				orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings, 2);
-
-			} else {
-				orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings, 1);
-			}
-
-			if (orders_notin.size() > 0) {
-				for (Order order : orders_notin) {
-					PurchaseSeeOrderVo purchaseSeeOrderVo_sub = setPurchaseSeeOrderVo(order);
-					if (purchaseSeeOrderVo_sub.getVoSocket() == 0) {
-						purchaseSeeOrderVo.setVoSocket(0);
-					}
-					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
-					purchaseSeeOrderVo_sub = null;
-
-				}
-			}
-
+		int leng = orders.size();
+		if (leng == 0) {
+			return ServerResponse.createBySuccess();
 		}
+
+		PurchaseSeeOrderVo purchaseSeeOrderVo = new PurchaseSeeOrderVo();
+		List<PurchaseSeeOrderVo> listPurchaseSeeOrderVo = new ArrayList<PurchaseSeeOrderVo>();
+		for (int a = 0; a < leng; a++) {
+
+			Order order = orders.get(a);
+			PurchaseSeeOrderVo purchaseSeeOrderVo_sub = setPurchaseSeeOrderVo(order);
+			if (purchaseSeeOrderVo_sub.getVoSocket() == 0) {
+				purchaseSeeOrderVo.setVoSocket(0);
+			}
+
+			listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
+			purchaseSeeOrderVo_sub = null;
+		}
+
+//		} else {
+//
+//			purchaseSeeOrderVo = new PurchaseSeeOrderVo();
+//			listPurchaseSeeOrderVo = new ArrayList<PurchaseSeeOrderVo>();
+//
+//			// 获取redis中存在的id
+//			List<String> orderStatus_liStrings = new ArrayList<String>();
+//			for (String key : keySet) {
+//				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
+//
+//				long pttl = RedisPoolUtil.pttl(key);
+//				if (pttl > (15 * 60 - 20) * 1000) {
+//					String orderJsonStr = RedisPoolUtil.get(key);
+//					Order order = JsonUtil.string2Obj(orderJsonStr, Order.class);
+//
+//					orderStatus_liStrings.add(order.getId() + "");
+//					// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
+//					// 开启长连接
+//					purchaseSeeOrderVo.setVoSocket(0);
+//					purchaseSeeOrderVo_sub.setVoSocket(0);
+//					purchaseSeeOrderVo_sub.setOrderStatuName("报价中");
+//					purchaseSeeOrderVo_sub.setOrderStatu11(true);
+//					purchaseSeeOrderVo_sub.setVoOrder(order);
+//					purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(guanShanReason(order.getId()));
+//					// 刚发布的没有抢单报价
+//					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
+//
+//				}
+//			}
+//			// 添加不在redis中的订单
+//			List<Order> orders_notin = new ArrayList<Order>();
+//
+//			if (orderStatus_liStrings.size() > 0) {
+//				orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings, 2);
+//
+//			} else {
+//				orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings, 1);
+//			}
+//
+//			if (orders_notin.size() > 0) {
+//				for (Order order : orders_notin) {
+//					PurchaseSeeOrderVo purchaseSeeOrderVo_sub = setPurchaseSeeOrderVo(order);
+//					if (purchaseSeeOrderVo_sub.getVoSocket() == 0) {
+//						purchaseSeeOrderVo.setVoSocket(0);
+//					}
+//					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
+//					purchaseSeeOrderVo_sub = null;
+//
+//				}
+//			}
+//
+//		}
 
 		purchaseSeeOrderVo.setListPurchaseSeeOrderVo(listPurchaseSeeOrderVo);
 		return ServerResponse.createBySuccess(purchaseSeeOrderVo);
@@ -466,6 +463,21 @@ public class OrderServiceImpl implements OrderService {
 			// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
 			// orders.set(a, guanShanReason(order));
 
+		} else if (orderStatus == 18) {
+			purchaseSeeOrderVo_sub.setOrderStatuName("待选择商家");
+			purchaseSeeOrderVo_sub.setOrderStatu18(true);
+			rderCommonOfferEvaluateVo = guanShanReason(order.getId());
+			if (rderCommonOfferEvaluateVo.size() > 0) {
+				for (int a = 0; a < rderCommonOfferEvaluateVo.size(); a++) {
+					OrderCommonOfferEvaluateVo subVo = rderCommonOfferEvaluateVo.get(a);
+					subVo.getOrderCommonOffer().setContact("选择后可见");
+					subVo.getOrderCommonOffer().setConsigneeName("选择后可见");
+					rderCommonOfferEvaluateVo.set(a, subVo);
+				}
+
+			}
+
+			purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
 		} else {
 
 			if (orderStatus == 3) {
@@ -507,8 +519,7 @@ public class OrderServiceImpl implements OrderService {
 		return purchaseSeeOrderVo_sub;
 	}
 
-	public ServerResponse<String> operation_purchase_order_impl(int type, Order order, Map<String, Object> params,
-			boolean isredis) {
+	public ServerResponse<String> operation_purchase_order_impl(int type, Order order, Map<String, Object> params) {
 		// 更新数据库，订单表，抢单表，找到了操作 更新数据库，订单表，抢单表， 发通知给抢单人员
 //		状态 =11 时 显示关单键  和 确认键  关单后端 传 3，确认传13 -->
 //
@@ -529,25 +540,24 @@ public class OrderServiceImpl implements OrderService {
 
 		try {
 			if (type == 3) {
-				if (order.getOrderStatus() == 11) {
-					// 关单 关单状态只能 是11 时 12 时才能关
+				if (order.getOrderStatus() == 11 || order.getOrderStatus() == 18) {
+					// 关单 关单状态只能 是11 时 12 时18时才能关
 					order.setOrderStatus(type);
 					orderMapper.operation_purchase_order(order);
 					if (list_evaluates.size() > 0) {
-						// 全部更新
-						orderCommonOfferMapper.operation_purchase_evaluate_all(order.getId(), updateTime);
-
 						// TODO 去发送通知全部 接单失败
+						// 全部更新抢单
+						orderCommonOfferMapper.operation_purchase_evaluate_all(order.getId(), updateTime);
 					}
 				} else if (order.getOrderStatus() == 12) {
-					// 关单 关单状态只能 是11 时 12 时才能关
+					// TODO 通知接单成功的用户，关单了 order.getSaleUserId()发给这个user id
+					
 					order.setOrderStatus(type);
+					//更新订单表
 					orderMapper.operation_purchase_order(order);
+					//更新抢单表
 					orderCommonOfferMapper.operation_purchase_evaluate_id(order.getId(), updateTime,
 							order.getSaleUserId());
-
-					// TODO 通知接单成功的用户，关单了 order.getSaleUserId()发给这个user id
-
 				}
 			} else if (type == 11) {
 				// 重新开启订单 只有3和17的才能重新开启
@@ -642,6 +652,11 @@ public class OrderServiceImpl implements OrderService {
 			System.out.println("______0000" + e.toString());
 			return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
 		}
+	}
+
+	@Override
+	public void timerOrderStatus() {
+
 	}
 
 }
