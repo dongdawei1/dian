@@ -225,7 +225,7 @@ public class DateTimeUtil {
 		dateTime.toString("yyyy-MM-dd");
 		System.out.println(dateTime.toString("yyyy-MM-dd"));
 		// dateCompare(0);ServerResponse [status=0, msg=null, data=true]
-		System.out.println(DateTimeUtil.betweenAnd(1));
+		System.out.println(DateTimeUtil.strToDate("2019-12-27 09:00:00"));
 
 		System.out.println(strToDate(a_few_days_later(-2)).toString());
 

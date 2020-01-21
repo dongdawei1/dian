@@ -15,6 +15,15 @@
 		and commodStatus=0
 	</select>
 
+	<!--  -->
+	<select id="getInitialCount"  resultType="int">
+		select count(*) from order_common_offer
+		where
+		orderFormId=#{orderFormId}
+		and commodStatus=0
+	</select>
+
+
 	<select id="getSuccess"
 		resultType="com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer">
 		select * from order_common_offer

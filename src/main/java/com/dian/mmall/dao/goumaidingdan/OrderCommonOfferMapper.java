@@ -19,4 +19,8 @@ public interface OrderCommonOfferMapper {
 	void operation_purchase_evaluate_noSelected(long orderFormId, String updateTime);
 
 	void operation_purchase_evaluate_selected(long orderFormId, String updateTime, long saleUserId,long id);
+
+	int getInitialCount(long orderFormId);
+
+
 }

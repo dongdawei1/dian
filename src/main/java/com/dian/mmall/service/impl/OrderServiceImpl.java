@@ -1,6 +1,7 @@
 package com.dian.mmall.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -464,6 +465,7 @@ public class OrderServiceImpl implements OrderService {
 			// orders.set(a, guanShanReason(order));
 
 		} else if (orderStatus == 18) {
+			// 开启长连接
 			purchaseSeeOrderVo_sub.setOrderStatuName("待选择商家");
 			purchaseSeeOrderVo_sub.setOrderStatu18(true);
 			rderCommonOfferEvaluateVo = guanShanReason(order.getId());
@@ -481,12 +483,20 @@ public class OrderServiceImpl implements OrderService {
 		} else {
 
 			if (orderStatus == 3) {
-				purchaseSeeOrderVo_sub.setOrderStatuName("手动关单");
+				purchaseSeeOrderVo_sub.setOrderStatuName("关单");
 				purchaseSeeOrderVo_sub.setOrderStatu3(true);
 				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
 			} else if (orderStatus == 17) {
-				purchaseSeeOrderVo_sub.setOrderStatuName("无接单关单");
+				purchaseSeeOrderVo_sub.setOrderStatuName("无销售商接单关单");
 				purchaseSeeOrderVo_sub.setOrderStatu17(true);
+				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
+			} else if (orderStatus == 20) {
+				purchaseSeeOrderVo_sub.setOrderStatuName("未支付质保金关单");
+				purchaseSeeOrderVo_sub.setOrderStatu20(true);
+				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
+			}  else if (orderStatus == 19) {
+				purchaseSeeOrderVo_sub.setOrderStatuName("未支付定金关单");
+				purchaseSeeOrderVo_sub.setOrderStatu19(true);
 				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
 			} else {
 				if (orderStatus == 4) {
@@ -499,10 +509,12 @@ public class OrderServiceImpl implements OrderService {
 					purchaseSeeOrderVo_sub.setOrderStatuName("已完成");
 					purchaseSeeOrderVo_sub.setOrderStatu6(true);
 				} else if (orderStatus == 12) {
-					purchaseSeeOrderVo_sub.setOrderStatuName("支付处理中");
+					purchaseSeeOrderVo_sub.setOrderStatuName("待支付定金(报价的6%)");
 					purchaseSeeOrderVo_sub.setOrderStatu12(true);
 				} else if (orderStatus == 13) {
-					purchaseSeeOrderVo_sub.setOrderStatuName("待支付保障金");
+					// 开启长连接
+					purchaseSeeOrderVo_sub.setVoSocket(0);
+					purchaseSeeOrderVo_sub.setOrderStatuName("待销售商支付质保金(报价的20%)");
 					purchaseSeeOrderVo_sub.setOrderStatu13(true);
 				} else if (orderStatus == 16) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("待确认收货");
@@ -551,16 +563,16 @@ public class OrderServiceImpl implements OrderService {
 					}
 				} else if (order.getOrderStatus() == 12) {
 					// TODO 通知接单成功的用户，关单了 order.getSaleUserId()发给这个user id
-					
+
 					order.setOrderStatus(type);
-					//更新订单表
+					// 更新订单表
 					orderMapper.operation_purchase_order(order);
-					//更新抢单表
+					// 更新抢单表
 					orderCommonOfferMapper.operation_purchase_evaluate_id(order.getId(), updateTime,
 							order.getSaleUserId());
 				}
 			} else if (type == 11) {
-				// 重新开启订单 只有3和17的才能重新开启
+				// 重新开启订单 只有3和17,19,20的才能重新开启
 				order.setOrderStatus(type);
 				orderMapper.operation_purchase_order(order);
 				if (list_evaluates.size() > 0) {
@@ -625,7 +637,7 @@ public class OrderServiceImpl implements OrderService {
 				order.setOrderStatus(type);
 				orderMapper.operation_purchase_order(order);
 				// TODO 通知给商户 ，抢单人员已经确认过价格
-			} else if (type == 4) {
+			} else if (type == 4 || type == 19) {
 				// 支付操作时处理 TODO 直接set支付的金额和待支付金额
 				order.setOrderStatus(type);
 				orderMapper.operation_purchase_order(order);
@@ -657,6 +669,69 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public void timerOrderStatus() {
 
+		List<Order> orders = orderMapper.timerOrderStatus();
+
+		if (orders.size() > 0) {
+			long nowDateLong = new Date().getTime();
+			String updateTime = DateTimeUtil.dateToAll();
+
+			for (Order o : orders) {
+				int orderStatus = o.getOrderStatus();
+				long createTimeLong = DateTimeUtil.strToDate(o.getCreateTime()).getTime();
+				
+				if (orderStatus == 11) {
+					System.out.println("定时任务11->"+orderStatus);
+					if ((nowDateLong - createTimeLong) >= 30 * 60 * 1000) {
+						// 已经到报价时间
+						int initialCount = orderCommonOfferMapper.getInitialCount(o.getId());
+						if (initialCount > 0) {
+							// 有报价更新为 orderStatus==18
+							o.setOrderStatus(18);
+							o.setUpdateTime(updateTime);
+							orderMapper.operation_purchase_order(o);
+						} else {
+							// 没有报价的更新为 17
+							o.setOrderStatus(17);
+							orderMapper.operation_purchase_order(o);
+						}
+					}
+				} else if (orderStatus == 13) {
+					
+					// 销售商到时见未确认 更新为 20 ，最后一次更新时间+15分钟 用 updateTime
+					
+					
+					long oUpDateLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
+					if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
+						o.setUpdateTime(updateTime);
+						o.setOrderStatus(20);
+						orderMapper.operation_purchase_order(o);
+						// TODO 记录下 这个销售商
+						// TODO 发消息给这个销售商
+						OrderCommonOffer orderCommonOffer=orderCommonOfferMapper.getSuccess(o.getId(),o.getSaleUserId());
+					}
+				} else if (orderStatus == 12) {
+					
+					// 销售商到时见未确认 更新为 20 ，最后一次更新时间+15分钟 用 updateTime
+					long oUpDateLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
+					if ((nowDateLong - oUpDateLong) >= 10 * 60 * 1000) {
+						o.setUpdateTime(updateTime);
+						o.setOrderStatus(19);
+						orderMapper.operation_purchase_order(o);
+						// TODO 记录下 这个销售商
+						// TODO 发消息给这个销售商
+						OrderCommonOffer orderCommonOffer=orderCommonOfferMapper.getSuccess(o.getId(),o.getSaleUserId());
+					}
+				} else if (orderStatus == 18) {
+					if ((nowDateLong - createTimeLong) >= 45 * 60 * 1000) {
+						// 留15分钟给采购者选择销售商，超时关单为3
+						o.setOrderStatus(3);
+						orderMapper.operation_purchase_order(o);
+                       //TODO 发消息给全部 接单的销售商
+						List<OrderCommonOffer> lists = orderCommonOfferMapper.getInitial(o.getId());
+					}
+				}
+			}
+		}
 	}
 
 }

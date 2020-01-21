@@ -67,7 +67,7 @@
 		updateTime=#{updateTime},orderStatus=#{orderStatus}
 		<if test="orderStatus==3 or orderStatus==11">
 			, saleUserId=0
-			<if test=" orderStatus==11">, createTime=#{updateTime}</if>
+			<if test=" orderStatus==11">, createTime=#{updateTime},commodityZongJiage=0</if>
 		</if>
 
 		<if test="orderStatus==13">, saleUserId=#{saleUserId}
@@ -76,11 +76,21 @@
 			,balanceMoney=#{balanceMoney} ,yesGuaranteeMoney=1</if>
 		where id=#{id}
 		<if test="orderStatus==3 "> and orderStatus in(12,11,18)</if>
-		<if test="orderStatus==11 "> and orderStatus in(3,17)</if>
+		<if test="orderStatus==11 "> and orderStatus in(3,17,19,20)</if>
 		<if test="orderStatus==13 "> and orderStatus in(11,18) </if>
-		<if test="orderStatus==12 "> and orderStatus =13</if>
-		<if test="orderStatus==4 "> and orderStatus =12</if>
+		<if test="orderStatus==12 or orderStatus==20 "> and orderStatus =13</if>
+		<if test="orderStatus==4 or orderStatus==19"> and orderStatus =12</if>
 		<if test="orderStatus==16 "> and orderStatus =4</if>
+		<if test="orderStatus==18 or orderStatus==17  "> and orderStatus =11</if>
 	</update>
-
+   
+   
+   	<select id="timerOrderStatus" resultType="com.dian.mmall.pojo.Order">
+		select id,saleUserId,purchaseUserId,createTime,orderStatus,yesGuaranteeMoney,payStatus,updateTime 
+		from orderform
+		where
+		orderStatus in (11,12,13,18)
+		
+	</select>
+   
 </mapper>

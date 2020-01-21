@@ -24,4 +24,6 @@ public interface OrderMapper {
 
 	int operation_purchase_order(Order order);
 
+	List<Order> timerOrderStatus();
+
 }
