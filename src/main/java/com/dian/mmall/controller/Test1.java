@@ -27,8 +27,8 @@ import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer.FromDecim
 
 public class Test1 {
 	public static void main(String[] args) {
-    
-    
+		System.out.println(1150*0.06);
+		System.out.println(new Double(10*0.06).intValue());
     StringBuffer serviceDetailed = new StringBuffer("北京市/市辖区/东城区");
     
     float a1=1/100;
@@ -46,7 +46,7 @@ public class Test1 {
             break;
         }
     }
-    System.out.println(slashMatcher.start());
+    
     
     System.out.println(string.substring(0, slashMatcher.start())+"%");
     System.out.println((int)10/2);

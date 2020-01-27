@@ -34,4 +34,21 @@ mybatis:
 cbs:
     imagesPath:
         file:/E:/img/  
-  
+#=================================微信相关====================================
+wxpay:
+  #公众号
+  appid: wx5beac15ca207cdd40c
+  appsecret: 5548012f33417fdsdsdd6f96b382fe548215e9
+#支付配置
+#微信商户平台
+  mer_id: 1503808832
+  key: xdclasss20182018xdclass2018x018d
+  #支付回调地址
+  callback: 16web.tunnel.qydev.com/pub/api/v1/wechat/order/callback1 
+
+#微信开放平台配置(第三方登陆)
+wxopen:
+  appid: wx025575eac69a2d5b
+  appsecret: deeae310a387fa9d3e8f3830ce64caac
+  #重定向url
+  redirect_url: http://16web.tunnel.qydev.com/api/v1/wechat/user/callback

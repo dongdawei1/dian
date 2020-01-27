@@ -1,6 +1,7 @@
 package com.dian.mmall.util;
 
 import java.security.MessageDigest;
+import java.util.UUID;
 
 /**
  * Created by geely
@@ -51,7 +52,42 @@ public class MD5Util {
         return MD5Encode(origin, "utf-8");
     }
 
+    /**
+     * 微信支付开始
+     * 生成 uuid， 即用来标识一笔单，也用做 nonce_str
+     * @return
+     */
+    public static String generateUUID(){
+        String uuid = UUID.randomUUID().toString().
+                replaceAll("-","").substring(0,28);
 
+        return uuid;
+    }
+
+
+    /**
+     * md5常用工具类
+     * @param data
+     * @return
+     * 微信支付结束
+     */
+    public static String MD5(String data){
+        try {
+
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            byte [] array = md5.digest(data.getBytes("UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            for (byte item : array) {
+                sb.append(Integer.toHexString((item & 0xFF) | 0x100).substring(1, 3));
+            }
+            return sb.toString().toUpperCase();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+
+    }
     private static final String hexDigits[] = {"0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
 

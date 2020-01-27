@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * 进入controller 之前进行拦截
  * Created by geely
  */
 

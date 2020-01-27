@@ -19,6 +19,7 @@ import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.OrderService;
 import com.dian.mmall.service.release.WineAndTablewareService;
 import com.dian.mmall.util.CheckLand;
+import com.dian.mmall.util.IpUtils;
 
 @Controller
 @RequestMapping("/api/order/")
@@ -110,7 +111,7 @@ public class OrderController {
         return orderService.get_conduct_purchase_order(user);
     
     }
-	//商户发布采购订单
+	//商户编辑采购订单
     @RequestMapping(value = "operation_purchase_order",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> operation_purchase_order(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
@@ -128,6 +129,26 @@ public class OrderController {
    
         
         return orderService.operation_purchase_order(user,params);
+    
+    }
+	//商户扫码支付
+    @RequestMapping(value = "native_pay_order",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> native_pay_order(HttpServletRequest httpServletRequest,@RequestParam long id){
+    	//检查登陆
+    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
+    	if(serverResponse.getStatus()!=0) {
+    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+    	}
+     	User user = (User) serverResponse.getData();
+    	//检查权限
+     	
+     	if(user.getRole()!=1 && user.getRole()!=2 ) {
+     		return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+     	}
+   
+     	 String spbillCreateIp = IpUtils.getIpAddr(httpServletRequest);
+        return orderService.native_pay_order(user,spbillCreateIp,id);
     
     }
 }

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dian.mmall.dao.PayOrderMapper">
+	<!-- public Employee getEmpById(Integer id); -->
+
+	<select id="getPayOrderByOrderId" resultType="com.dian.mmall.pojo.PayOrder">
+		SELECT
+		id,userId,orderId,nonceStr,body,state,
+		outTradeNo,spbillCreateIp,tradeType,totalFee,
+		state,createTime,payTime,updateTime,meg,payType
+		FROM payOrder WHERE
+		orderId=#{orderId} and del=0 and state=#{state}
+	</select>
+
+
+	<insert id="createPyOrder">
+		insert into payOrder (
+		userId,orderId,body,outTradeNo,spbillCreateIp,
+		totalFee,tradeType,state,del,createTime,nonceStr,payType,costType
+		)
+		values (
+		#{userId},#{orderId},#{body},#{outTradeNo},#{spbillCreateIp},
+		#{totalFee}, #{tradeType},
+		#{state},#{del},#{createTime},#{nonceStr},#{payType},#{costType} )
+	</insert>
+
+
+	<update id="unifiedUptaePayOrder">
+		update payOrder set
+		updateTime=#{updateTime},meg=#{meg}
+		<if test="del==1">, del=#{del}</if>
+		where id=#{id}
+	</update>
+
+	<!-- <select id="getall" resultType="java.util.Map"> select * from t_user 
+		</select> <select id="checkUsername" resultType="com.dian.mmall.pojo.user.User" 
+		parameterType="string" > select id,username, password,role,isAuthentication,mobilePhone 
+		from t_user where username = #{username} </select> 根据id查用户 <select id="selectUserById" 
+		resultType="com.dian.mmall.pojo.user.User"> SELECT * FROM t_user WHERE id=#{id} 
+		</select> <select id="selectUsername" resultType="com.dian.mmall.pojo.user.User" 
+		parameterType="string" > select id,username,role,isAuthentication,mobilePhone 
+		from t_user where username = #{username} </select> -->
+
+	<!--创建用户成功返回非0 <insert id="createUser" > insert into t_user ( username, 
+		password, mobilePhone, role, createTime,isAuthentication ) values ( #{username}, 
+		#{password}, #{mobilePhone}, #{role}, #{createTime},#{isAuthentication} ) 
+		</insert> -->
+
+	<!--修改用户基本信息 <update id="update_information" > update t_user set password=#{password}, 
+		mobilePhone=#{mobilePhone},updateTime=#{updateTime} where id=#{id} </update> -->
+	<!--修改用户实名状态 <update id="update_newRealName" > update t_user set isAuthentication=#{isAuthentication} 
+		where id=#{id} </update> -->
+</mapper>

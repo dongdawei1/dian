@@ -22,5 +22,7 @@ public interface OrderCommonOfferMapper {
 
 	int getInitialCount(long orderFormId);
 
+	void uptateGuanDan(long orderFormId, long saleUserId, String updateTime);
+
 
 }

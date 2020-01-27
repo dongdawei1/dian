@@ -63,6 +63,13 @@
 		where orderFormId=#{orderFormId} and commodStatus=0
 	</update>
 	
+		   	<!-- 定时任务更新，销售商，购买方未支付 质保金/定金 -->
+	<update id="uptateGuanDan">
+		update order_common_offer set
+		updateTime=#{updateTime},commodStatus=2
+		where orderFormId=#{orderFormId} and saleUserId=#{saleUserId}
+	</update>
+	
 	<!--创建用户成功返回非0 <insert id="createCommonMenu"> insert into common_menu ( 
 		userId,servicetypeId ) values ( #{userId},#{servicetypeId} ) </insert> <update 
 		id="updateCommonMenu"> update common_menu set servicetypeId=#{servicetypeId} 

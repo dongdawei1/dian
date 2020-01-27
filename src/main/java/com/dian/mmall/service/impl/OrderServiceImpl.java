@@ -6,18 +6,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dian.config.WeChatConfig;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.OrderMapper;
+import com.dian.mmall.dao.PayOrderMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.goumaidingdan.OrderCommonOfferMapper;
 import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.pojo.Order;
+import com.dian.mmall.pojo.PayOrder;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 import com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer;
@@ -33,9 +38,11 @@ import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
+import com.dian.mmall.util.HttpUtils;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisPoolUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
+import com.dian.mmall.util.WXPayUtil;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +61,10 @@ public class OrderServiceImpl implements OrderService {
 
 	@Autowired
 	private EvaluateMapper evaluateMapper;
+	@Autowired
+	private WeChatConfig weChatConfig; // 读取配置文件中配置微信的字段
+	@Autowired
+	private PayOrderMapper payOrderMapper;
 
 	@Override
 	public synchronized ServerResponse<String> create_wholesaleCommodity_order(long userId,
@@ -274,6 +285,7 @@ public class OrderServiceImpl implements OrderService {
 //			System.out.println(isredis + "____________44444");
 		// 找不到去数据库找，
 		Order order = orderMapper.getOrderById(id, user.getId());
+
 		if (order != null) {
 			// 这里处理
 			ServerResponse<String> serverResponseImpl = operation_purchase_order_impl(type, order, params);
@@ -494,7 +506,7 @@ public class OrderServiceImpl implements OrderService {
 				purchaseSeeOrderVo_sub.setOrderStatuName("未支付质保金关单");
 				purchaseSeeOrderVo_sub.setOrderStatu20(true);
 				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
-			}  else if (orderStatus == 19) {
+			} else if (orderStatus == 19) {
 				purchaseSeeOrderVo_sub.setOrderStatuName("未支付定金关单");
 				purchaseSeeOrderVo_sub.setOrderStatu19(true);
 				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
@@ -637,11 +649,18 @@ public class OrderServiceImpl implements OrderService {
 				order.setOrderStatus(type);
 				orderMapper.operation_purchase_order(order);
 				// TODO 通知给商户 ，抢单人员已经确认过价格
+
 			} else if (type == 4 || type == 19) {
 				// 支付操作时处理 TODO 直接set支付的金额和待支付金额
 				order.setOrderStatus(type);
 				orderMapper.operation_purchase_order(order);
 				// TODO 通知给抢单成功人员 userID 支付成功送货
+
+				if (type == 19) {
+					// 更新抢单表
+					orderCommonOfferMapper.operation_purchase_evaluate_id(order.getId(), updateTime,
+							order.getSaleUserId());
+				}
 			} else if (type == 16) {
 				// 抢单人员操作
 				long saleUserIdDeng = Long.parseLong(params.get("saleUserIdDeng").toString().trim());
@@ -678,9 +697,8 @@ public class OrderServiceImpl implements OrderService {
 			for (Order o : orders) {
 				int orderStatus = o.getOrderStatus();
 				long createTimeLong = DateTimeUtil.strToDate(o.getCreateTime()).getTime();
-				
+
 				if (orderStatus == 11) {
-					System.out.println("定时任务11->"+orderStatus);
 					if ((nowDateLong - createTimeLong) >= 30 * 60 * 1000) {
 						// 已经到报价时间
 						int initialCount = orderCommonOfferMapper.getInitialCount(o.getId());
@@ -696,37 +714,37 @@ public class OrderServiceImpl implements OrderService {
 						}
 					}
 				} else if (orderStatus == 13) {
-					
+
 					// 销售商到时见未确认 更新为 20 ，最后一次更新时间+15分钟 用 updateTime
-					
-					
+
 					long oUpDateLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
 					if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
 						o.setUpdateTime(updateTime);
 						o.setOrderStatus(20);
 						orderMapper.operation_purchase_order(o);
 						// TODO 记录下 这个销售商
+						// 更新抢单表
+						orderCommonOfferMapper.uptateGuanDan(o.getId(), o.getSaleUserId(), updateTime);
 						// TODO 发消息给这个销售商
-						OrderCommonOffer orderCommonOffer=orderCommonOfferMapper.getSuccess(o.getId(),o.getSaleUserId());
 					}
 				} else if (orderStatus == 12) {
-					
-					// 销售商到时见未确认 更新为 20 ，最后一次更新时间+15分钟 用 updateTime
+
+					// 购买者未支付定金 19，最后一次更新时间+10分钟 用 updateTime
 					long oUpDateLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
-					if ((nowDateLong - oUpDateLong) >= 10 * 60 * 1000) {
+					if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
 						o.setUpdateTime(updateTime);
 						o.setOrderStatus(19);
 						orderMapper.operation_purchase_order(o);
-						// TODO 记录下 这个销售商
-						// TODO 发消息给这个销售商
-						OrderCommonOffer orderCommonOffer=orderCommonOfferMapper.getSuccess(o.getId(),o.getSaleUserId());
+						// 更新抢单表
+						orderCommonOfferMapper.uptateGuanDan(o.getId(), o.getSaleUserId(), updateTime);
+						// TODO 发消息给这个销售商,购买者未支付定金关单
 					}
 				} else if (orderStatus == 18) {
 					if ((nowDateLong - createTimeLong) >= 45 * 60 * 1000) {
 						// 留15分钟给采购者选择销售商，超时关单为3
 						o.setOrderStatus(3);
 						orderMapper.operation_purchase_order(o);
-                       //TODO 发消息给全部 接单的销售商
+						// TODO 发消息给全部 接单的销售商
 						List<OrderCommonOffer> lists = orderCommonOfferMapper.getInitial(o.getId());
 					}
 				}
@@ -734,4 +752,132 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	// 支付定金生成二维码（ 第一步统一下单生成二维码）
+	@Override
+	public ServerResponse<String> native_pay_order(User user, String spbillCreateIp, long id) {
+		// 检查订单信息，获取支付金额
+		Order order = orderMapper.getOrderById(id, user.getId());
+
+		if (order != null) {
+			if (order.getOrderStatus() != 12) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.dingdanzhuangtaicuowu.getMessage());
+			}
+			long commodityZongJiage = order.getCommodityZongJiage();
+			int totalFee = new Double(commodityZongJiage * 0.06).intValue();
+			if (totalFee == 0) {
+				totalFee = 1; // 如果金额小于1分将支付1分
+			}
+			// 未支付的订单
+			PayOrder payOrder = payOrderMapper.getPayOrderByOrderId(id, 0);
+			if (payOrder != null) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.youweizhifudedingdan.getMessage());
+			}
+
+			// 生成支付订单
+			payOrder = new PayOrder();
+			payOrder.setUserId(user.getId());
+			payOrder.setOrderId(id);
+			payOrder.setBody("订单" + id + "支付定金");
+			// 生成规则 订单表id+"_"+支付金额
+			String outTradeNo = id + "_" + totalFee;
+			payOrder.setOutTradeNo(outTradeNo);
+			payOrder.setSpbillCreateIp(spbillCreateIp);
+			payOrder.setTotalFee(totalFee);
+			payOrder.setTradeType("NATIVE"); // 暂时先写死
+			payOrder.setState(0);
+			payOrder.setDel(0);
+			payOrder.setCreateTime(DateTimeUtil.dateToAll());
+
+			// 落库payOrder
+			payOrderMapper.createPyOrder(payOrder);
+
+			payOrder = payOrderMapper.getPayOrderByOrderId(id, 0);
+
+			return unifiedOrder(payOrder);
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
+		}
+
+	}
+
+	/**
+	 * 统一下单方法
+	 * 
+	 * @return
+	 */
+	private ServerResponse<String> unifiedOrder(PayOrder payOrder) {
+		//微信接口文档   https://pay.weixin.qq.com/wiki/doc/api/micropay.php?chapter=9_10&index=1
+		// TODO 所有weChatConfig 配置文件均为测试文件
+		// 生成签名
+		SortedMap<String, String> params = new TreeMap<>();
+		params.put("appid", weChatConfig.getAppId()); // 公众账号id
+		params.put("mch_id", weChatConfig.getMchId()); // 商户号
+		params.put("nonce_str", payOrder.getNonceStr()); // 随机字符串
+		params.put("body", payOrder.getBody()); // 描述
+		params.put("out_trade_no", payOrder.getOutTradeNo()); // 订单号，自己生成的订单号
+//		//要求32个字符内，只能是数字大小写字母_—|*,并且自己内部是唯一
+		params.put("total_fee", payOrder.getTotalFee().toString()); // 支付金额
+//		 // APP和网页支付提交用户端ip，扫码Native支付填调用微信支付API的机器IP 待确认（调用时服务器的ip）。
+		params.put("spbill_create_ip", payOrder.getSpbillCreateIp());
+//		   // 异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。
+		params.put("notify_url", weChatConfig.getPayCallbackUrl());
+		params.put("trade_type", payOrder.getTradeType()); // JSAPI--JSAPI支付（公众号或小程序支付）、NATIVE--扫码支付、APP--app支付，MWEB--H5支付
+//       
+//	   //网上找的开始-----
+//		// 自定义参数, 可以为终端设备号(门店号或收银设备ID)，PC网页或公众号内支付可以传"WEB"
+//        //params.put("device_info", "");
+//        // 附加数据，在查询API和支付通知中原样返回，可作为自定义参数使用。
+//       // params.put("attach", "");
+//      //网上找的结束-----
+//		
+//        //sign签名 TODO 所有weChatConfig 配置文件均为测试文件
+		String sign = WXPayUtil.createSign(params, weChatConfig.getKey());
+		params.put("sign", sign);
+		// map转xml
+		String payXml = null;
+		try {
+			payXml = WXPayUtil.mapToXml(params);
+		} catch (Exception e) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.zhuanghuanshujumapToXml.getMessage());
+		}
+
+		if (payXml == null) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.zhuanghuanshujumapToXml.getMessage() + "null");
+		}
+		// 获取codeurl
+		String orderStr = HttpUtils.doPost(WeChatConfig.getUnifiedOrderUrl(), payXml, 4000);
+		// 统一下单
+		Map<String, String> unifiedOrderMap = null;
+		try {
+			unifiedOrderMap = WXPayUtil.xmlToMap(orderStr);
+		} catch (Exception e) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.zhuanghuanshujuxmlToMap.getMessage());
+		}
+		System.out.println(unifiedOrderMap.toString());
+
+		payOrder.setUpdateTime(DateTimeUtil.dateToAll());
+		// {return_msg=appidä¸å­å¨, return_code=FAIL}
+		if (unifiedOrderMap != null) {
+			String return_code = unifiedOrderMap.get("return_code");
+			if (return_code.equals("FAIL")) {
+
+				payOrder.setDel(1);
+				if (unifiedOrderMap.toString().length() > 300) {
+					payOrder.setMeg(unifiedOrderMap.toString().substring(0, 298));
+				} else {
+					payOrder.setMeg(unifiedOrderMap.toString());
+				}
+				payOrderMapper.unifiedUptaePayOrder(payOrder);
+				//TODO 暂时返回固定的链接  
+				//return ServerResponse.createByErrorMessage(ResponseMessage.weixinxiaodanshibai.getMessage());
+				return ServerResponse.createBySuccessMessage("https://www.baidu.com");
+
+			}
+			// 更新数据库
+			payOrder.setMeg(unifiedOrderMap.get("code_url"));
+			payOrderMapper.unifiedUptaePayOrder(payOrder);
+			return ServerResponse.createBySuccessMessage(unifiedOrderMap.get("code_url"));
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.zhuanghuanshujuxmlToMap.getMessage() + "null");
+	}
 }

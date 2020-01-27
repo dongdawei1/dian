@@ -160,9 +160,15 @@ public enum ResponseMessage {
 	chuangjiandingdanshibai("创建订单落库失败"),
 	dingdanbunnegweikong("采购列表不能为空"),
 	dingdanchaxunshibai("订单查询失败"),
+	
 	baojiashanghuchaxunshibai("报价商户查询失败"),
 	baojiajinebuyizhi("报价金额不一致"),
 	dingdanzhuangtaicuowu("订单状态有误"),
+	zhuanghuanshujumapToXml("转换数据mapToXml异常"),
+	zhuanghuanshujuxmlToMap("转换数据xmlToMap异常"),
+	weixinxiaodanshibai("调用微信下单失败"),
+	youweizhifudedingdan("有待支付的订单"),
+	
 	;
    String message;
    ResponseMessage(String message){
