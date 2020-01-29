@@ -84,6 +84,21 @@
 		<if test="orderStatus==18 or orderStatus==17  "> and orderStatus =11</if>
 	</update>
    
+   	<!-- 微信支付回调或定时任务  -->
+	<update id="callbackUpDateOrder">
+		update orderform set
+		updateTime=#{updateTime},orderStatus=#{orderStatus},guanShanReason=#{guanShanReason}
+		<if test="payStatus==4  or payStatus==5">
+			, paymentTime={paymentTime},guaranteeMoney={guaranteeMoney},
+			payStatus=#{payStatus}
+			
+			<if test="payStatus==5">,guanShanTime=#{guanShanTime} </if>
+		</if>
+		where id=#{id}
+		<if test="orderStatus==21 "> and orderStatus !=3 </if>
+		<if test="payStatus==4 or payStatus==5 "> and orderStatus ==12 </if>
+	</update>
+   
    
    	<select id="timerOrderStatus" resultType="com.dian.mmall.pojo.Order">
 		select id,saleUserId,purchaseUserId,createTime,orderStatus,yesGuaranteeMoney,payStatus,updateTime 

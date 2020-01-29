@@ -1,6 +1,7 @@
 package com.dian.mmall.service;
 
 import java.util.Map;
+import java.util.SortedMap;
 
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
@@ -16,4 +17,5 @@ public interface OrderService {
 	ServerResponse<String> operation_purchase_order(User user, Map<String, Object> params);
 	void timerOrderStatus();
 	ServerResponse<String> native_pay_order(User user, String spbillCreateIp, long id);
+	ServerResponse<String> callback(SortedMap<String, String> sortedMap);
 }

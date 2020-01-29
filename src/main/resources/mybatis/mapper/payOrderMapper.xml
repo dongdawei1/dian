@@ -9,7 +9,7 @@
 		SELECT
 		id,userId,orderId,nonceStr,body,state,
 		outTradeNo,spbillCreateIp,tradeType,totalFee,
-		state,createTime,payTime,updateTime,meg,payType
+		createTime,payTime,updateTime,meg,payType
 		FROM payOrder WHERE
 		orderId=#{orderId} and del=0 and state=#{state}
 	</select>
@@ -34,6 +34,20 @@
 		where id=#{id}
 	</update>
 
+	<select id="getCallbackPayOrder" resultType="com.dian.mmall.pojo.PayOrder">
+		SELECT
+		id,orderId,totalFee
+		FROM payOrder WHERE
+		outTradeNo=#{outTradeNo} and del=0 and state=#{state}
+	</select>
+	
+		<update id="callbackUpdate">
+		update payOrder set
+		updateTime=#{updateTime},meg=#{meg},costType=#{costType},beiyong=#{beiyong},
+		payTime={payTime},state=#{state},payType=#{payType}
+		where id=#{id}
+	</update>
+	
 	<!-- <select id="getall" resultType="java.util.Map"> select * from t_user 
 		</select> <select id="checkUsername" resultType="com.dian.mmall.pojo.user.User" 
 		parameterType="string" > select id,username, password,role,isAuthentication,mobilePhone 

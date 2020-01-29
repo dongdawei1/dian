@@ -44,7 +44,7 @@ wxpay:
   mer_id: 1503808832
   key: xdclasss20182018xdclass2018x018d
   #支付回调地址
-  callback: 16web.tunnel.qydev.com/pub/api/v1/wechat/order/callback1 
+  callback: 16web.tunnel.qydev.com/api/order/callback 
 
 #微信开放平台配置(第三方登陆)
 wxopen:

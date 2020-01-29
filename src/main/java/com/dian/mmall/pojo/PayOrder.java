@@ -42,7 +42,7 @@ public class PayOrder  {
 	private String updateTime;
 
 	private String meg; //微信返回信息
-	private String payType="WX";//暂时先写死
+	private String payType="CJ";//操作类型CJ 创建，HD 微信回调，CX 主动查询
 	private String costType="dingjin";//暂时先写死
 	
 	private String beiyong; //数据库设计长度1 使用时修改

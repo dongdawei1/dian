@@ -62,16 +62,17 @@ public class Order {
 	private String createTime;
 	
 	private String confirmTime;   //确认时间
-	private String paymentTime;  //3代付款，4支付成功，5,取消支付，
-	private String guanShanTime; //关单时间
-	private String guanShanReason; //关单原因 
+	private String paymentTime;  //支付定金时间，
+	private String guanShanTime; //支付异常时正常应该支付的金额
+	private String guanShanReason; //此字段记录是哪个操作对应支付表payType 
 	private String collectTime;//收货时间
 	
 	private String updateTime; //更新时间
 	@IsEmptyAnnotation(message="订单状态不能为空") 
 	private Integer orderStatus;
-	//1购买者下单,2批发者确认，3关单，4取/送货 ，5待评价，6评价完成 ，11发布采购订单 ，12抢单成功更新销售商户ID 13发布者确认  ，16 确认收货
-	private Integer payStatus; //3代付款，4支付成功，5,取消支付，初始0
+	//1购买者下单,2批发者确认，3用户关单，4取/送货 ，5待评价，6评价完成 ，11发布采购订单 ，12待支付， 13发布者确认  ，
+	//16 确认收货，17超时无人接单关单，18 三十分钟已过有人接单 确认期，19 超时未支付，20接单者未支付定金，21支付失败
+	private Integer payStatus; //初始0,4支付成功，5支付异常，
 	@IsEmptyAnnotation(message="商品快照不能为空")
 	private String commoditySnapshot;   //下单时的商品详情除地址
 	

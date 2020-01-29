@@ -102,6 +102,9 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshangpinshibai.getMessage());
 	}
 
+	/**
+	 * 删除商品时查询有无交易的订单,前端下单入口已经屏蔽
+	 */
 	@Override
 	public ServerResponse<Object> get_conduct_order(long wholesaleCommodityId, int orderStatus) {
 		if (wholesaleCommodityId < 0) {
@@ -114,7 +117,9 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createBySuccess(orderMapper.get_conduct_order(wholesaleCommodityId, orderStatus));
 	}
 
-	// 商户创建采购订单
+	/**
+	 * 商户创建采购订单
+	 */
 	@Override
 	public ServerResponse<String> create_purchase_order(User user, Map<String, Object> params) {
 
@@ -206,7 +211,9 @@ public class OrderServiceImpl implements OrderService {
 
 	}
 
-	// 商户采购订单预估价格
+	/**
+	 * 商户采购订单 预估价格
+	 */
 	@Override
 	public ServerResponse<String> create_order_evaluation(User user, Map<String, Object> params) {
 		List<CommonMenuWholesalecommodity> listObj4 = JsonUtil.list2Obj(
@@ -242,7 +249,9 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createBySuccessMessage((int) Math.ceil((count / 100)) + "");
 	}
 
-	// 改变订单状态
+	/**
+	 * 用户手动改变, 倒计时结束改变 （倒计时结束改变后端没有校验） 改变订单状态
+	 */
 
 	@Override
 	public synchronized ServerResponse<String> operation_purchase_order(User user, Map<String, Object> params) {
@@ -303,7 +312,9 @@ public class OrderServiceImpl implements OrderService {
 		// return ServerResponse.createBySuccess();
 	}
 
-	// 计算平均价格
+	/**
+	 * 计算平均价格
+	 */
 	public int create_order_average(WholesaleCommodity wholesaleCommodity) {
 		int commodityJiage = 0;
 		List<Integer> commodityJiage_list = wholesaleCommodityService.getCommodityJiage(wholesaleCommodity);
@@ -314,7 +325,9 @@ public class OrderServiceImpl implements OrderService {
 		return (int) commodityJiage / length;
 	}
 
-	// 获取创建的订单
+	/**
+	 * 我的订单页 获取 3天内 创建的订单
+	 */
 	@Override
 	public ServerResponse<Object> get_conduct_purchase_order(User user) {
 
@@ -407,9 +420,11 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createBySuccess(purchaseSeeOrderVo);
 	}
 
-	public List<OrderCommonOfferEvaluateVo> guanShanReason(long orderId) {
+	/**
+	 * 根据订单id查询报价人员名单 ，返回setPurchaseSeeOrderVo
+	 */
+	private List<OrderCommonOfferEvaluateVo> guanShanReason(long orderId) {
 		List<OrderCommonOfferEvaluateVo> listOrderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
-
 		// guanShanReason 把报价的集合放到这个字段中 ，要处理状态 commodStatus ==0 的 预创建的多个
 		List<OrderCommonOffer> orderCommonOffer_list = orderCommonOfferMapper.getInitial(orderId);
 		int leng = orderCommonOffer_list.size();
@@ -420,8 +435,8 @@ public class OrderServiceImpl implements OrderService {
 //				if (offer.getOldOrNew() != 0 && offer.getRecommend() != 0) {
 //					//设置手机号和用户名
 //				}
-				offer.setConsigneeName("选择后可见");
-				offer.setContact("选择后可见");
+//				offer.setConsigneeName("选择后可见");
+//				offer.setContact("选择后可见");
 
 				Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(offer.getSaleUserId());
 				// orderCommonOffer_list.set(a, offer);
@@ -434,7 +449,10 @@ public class OrderServiceImpl implements OrderService {
 		return listOrderCommonOfferEvaluateVo;
 	}
 
-	public List<OrderCommonOfferEvaluateVo> getOrderCommonOffer(long orderId, long saleUserId) {
+	/**
+	 * 查询抢单成功的  返回setPurchaseSeeOrderVo
+	 */
+	private List<OrderCommonOfferEvaluateVo> getOrderCommonOffer(long orderId, long saleUserId) {
 
 		List<OrderCommonOfferEvaluateVo> listOrderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
 		// guanShanReason 给名字 地址即可 commodStatus ==1 的 成功
@@ -450,8 +468,10 @@ public class OrderServiceImpl implements OrderService {
 		listOrderCommonOfferEvaluateVo.add(orderCommonOfferEvaluateVo);
 		return listOrderCommonOfferEvaluateVo;
 	}
-
-	public PurchaseSeeOrderVo setPurchaseSeeOrderVo(Order order) {
+   /**
+           * 返回get_conduct_purchase_order方法  的订单+抢单人员的VO
+    * */
+	private PurchaseSeeOrderVo setPurchaseSeeOrderVo(Order order) {
 		int orderStatus = order.getOrderStatus();
 		PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
 		List<OrderCommonOfferEvaluateVo> rderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
@@ -543,8 +563,10 @@ public class OrderServiceImpl implements OrderService {
 		purchaseSeeOrderVo_sub.setVoOrder(order);
 		return purchaseSeeOrderVo_sub;
 	}
-
-	public ServerResponse<String> operation_purchase_order_impl(int type, Order order, Map<String, Object> params) {
+/**
+ * 实现用户（抢单人员，购买商，定时任务）    操作和定时任务操作，   改变订单状态   operation_purchase_order
+ * */
+	private ServerResponse<String> operation_purchase_order_impl(int type, Order order, Map<String, Object> params) {
 		// 更新数据库，订单表，抢单表，找到了操作 更新数据库，订单表，抢单表， 发通知给抢单人员
 //		状态 =11 时 显示关单键  和 确认键  关单后端 传 3，确认传13 -->
 //
@@ -583,6 +605,8 @@ public class OrderServiceImpl implements OrderService {
 					// 更新抢单表
 					orderCommonOfferMapper.operation_purchase_evaluate_id(order.getId(), updateTime,
 							order.getSaleUserId());
+					//检查有无待支付的订单 删除
+					
 				}
 			} else if (type == 11) {
 				// 重新开启订单 只有3和17,19,20的才能重新开启
@@ -651,13 +675,6 @@ public class OrderServiceImpl implements OrderService {
 				orderMapper.operation_purchase_order(order);
 				// TODO 通知给商户 ，抢单人员已经确认过价格
 
-			} else if (type == 4) {
-				// 支付操作时处理 TODO 直接set支付的金额和待支付金额
-				order.setOrderStatus(type);
-				// 判断是否在支付中
-				orderMapper.operation_purchase_order(order);
-				// TODO 通知给抢单成功人员 userID 支付成功送货
-
 			} else if (type == 19) {
 				PayOrder payOrder = payOrderMapper.getPayOrderByOrderId(order.getId(), 0);
 				if (payOrder == null) {
@@ -698,6 +715,9 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	/**
+	 * 改变 订单状态是11,12,13,18状态的定时任务
+	 * */ 
 	@Override
 	public void timerOrderStatus() {
 
@@ -799,8 +819,8 @@ public class OrderServiceImpl implements OrderService {
 			payOrder.setUserId(user.getId());
 			payOrder.setOrderId(id);
 			payOrder.setBody("订单ID" + id + "支付定金");
-			// 生成规则 订单表id+"_"+支付金额
-			String outTradeNo = id + "_" + totalFee;
+			// 生成规则 订单表id+"_"+时间戳
+			String outTradeNo = id + "_" + new Date().getTime();
 			payOrder.setOutTradeNo(outTradeNo);
 			payOrder.setSpbillCreateIp(spbillCreateIp);
 			payOrder.setTotalFee(totalFee);
@@ -822,7 +842,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
-	 * 统一下单方法
+	 * 微信支付 统一下单方法
 	 * 
 	 * @return
 	 */
@@ -904,4 +924,123 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createByErrorMessage(ResponseMessage.zhuanghuanshujuxmlToMap.getMessage() + "null");
 	}
 
+	/**
+	 *  微信/定时任务支付回调
+	 * */
+	@Override
+	public ServerResponse<String> callback(SortedMap<String, String> sortedMap) {
+		String outTradeNo = sortedMap.get("out_trade_no");
+		PayOrder payOrder = payOrderMapper.getCallbackPayOrder(outTradeNo, 0);
+		if (payOrder != null) {
+			payOrder.setUpdateTime(DateTimeUtil.dateToAll());
+			if (sortedMap.toString().length() > 300) {
+				payOrder.setMeg(sortedMap.toString().substring(0, 298));
+			} else {
+				payOrder.setMeg(sortedMap.toString());
+			}
+			payOrder.setPayType(sortedMap.get("payType"));
+			String transaction_id = sortedMap.get("transaction_id");// 微信支付订单号
+			payOrder.setBeiyong(transaction_id);
+			payOrder.setCostType("WX_diao");
+			
+			
+			Order order=new Order();
+			order.setId(payOrder.getOrderId());
+			order.setGuanShanReason("HD");
+			order.setUpdateTime(DateTimeUtil.dateToAll());
+			if ("SUCCESS".equals(sortedMap.get("result_code"))) {
+
+				String time_end = sortedMap.get("time_end");// 支付时间
+				payOrder.setPayTime(time_end);
+               
+				order.setPaymentTime(time_end);
+				
+				int total_fee = 0;
+				try {
+					total_fee = Integer.parseInt(sortedMap.get("total_fee"));
+				} catch (Exception e) {
+					System.out.print(outTradeNo + "转换金额异常");
+				}
+				if (total_fee != 0) {
+					if (total_fee != payOrder.getTotalFee()) {
+						payOrder.setState(1);
+						order.setPayStatus(4); 
+					} else {
+						payOrder.setCostType(total_fee + "");
+						// 支付金额与应收金额不一致返回错误，业务进行不下去可以叫用户打客服电话
+						payOrder.setState(3);
+						createZhifuBaojing(payOrder);
+						
+						order.setPayStatus(5);
+						order.setGuanShanTime(payOrder.getTotalFee()+"");
+					}
+					// 更新支付表
+					payOrderMapper.callbackUpdate(payOrder);
+					// 更新订单表 支付成功
+					order.setOrderStatus(4);
+					order.setGuaranteeMoney(total_fee+"");
+					callbackUpDateOrder(order);
+					
+					return ServerResponse.createBySuccess();
+				}
+				// 支付金额为0返回错误
+				return ServerResponse.createByError();
+
+			}
+			// 支付失败关单
+			payOrder.setState(2);
+			// 更新支付表
+			payOrderMapper.callbackUpdate(payOrder);
+			// 更新订单表 支付失败可以再次发起
+			order.setOrderStatus(21); 
+			order.setPayStatus(0); 
+			callbackUpDateOrder(order);
+			return ServerResponse.createBySuccess();
+		}
+		return ServerResponse.createByError();
+	}
+   /**
+            * 微信支付回调后  更新  订单状态
+    * */
+	
+	
+	private ServerResponse<String> callbackUpDateOrder(Order order) {
+		
+		//TODO 判断是状态是不是21  如果是先查询是否关单 ，如果是关单状态就不处理了
+		//guanShanReason  此字段记录是哪个操作对应支付表payType
+		////更新 order表 guanShanTime==应该支付金额  orderStatus==4成功,5支付异常
+		//支付失败  状态 更新为21 继续等支付，   定时任务支付   
+		int result=orderMapper.callbackUpDateOrder(order);
+		
+		return null;
+	}
+	
+	/**
+	 * 定时任务查询微信   执行   成功的调用callback   ,没有查到结果的   到时间  超时关单， 未到时不处理  关单前再查一次 支付表状态
+	 * */
+	
+	/**
+	 * 主动关单，更新订单表状态为超时未支付，更新支付表为  设置  del=1
+	 * */
+	
+	/**
+	 * 支付报警  state==3   TODO
+	 * */
+	private void createZhifuBaojing(PayOrder  payOrder) {
+		//TODO   发邮件给技术
+		payOrder.getCostType();//实际支付金额
+		
+		System.out.println("支付订单ID"+payOrder.getId()+"支付异常"+",应该支付金额"
+		+payOrder.getTotalFee()+"(分)，实际支付："+payOrder.getCostType()+"(分)");
+		
+	}
+	
+	/**
+	 *   TODO    guanShanTime==应该支付金额  orderStatus==5支付异常
+	 * */
+	private ServerResponse<Order> getZhifuBaojing(PayOrder  payOrder) {
+		//管理员业务查询接口
+		return null;
+	}
+	
 }

@@ -26,4 +26,6 @@ public interface OrderMapper {
 
 	List<Order> timerOrderStatus();
 
+	int callbackUpDateOrder(Order order);
+
 }

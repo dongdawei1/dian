@@ -13,4 +13,9 @@ public interface PayOrderMapper {
 
 	void unifiedUptaePayOrder(PayOrder payOrder);
 
+
+	PayOrder getCallbackPayOrder(String outTradeNo, int state);
+
+	int callbackUpdate(PayOrder payOrder);
+
 }
