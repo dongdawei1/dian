@@ -193,17 +193,18 @@ public class OrderController {
 			sortedMap.remove("device_info");
 			sortedMap.remove("openid");
 			sortedMap.remove("is_subscribe");
-				ServerResponse<String> serverResponse = orderService.callback(sortedMap);
+			sortedMap.put("payType", "HD");
+			ServerResponse<String> serverResponse = orderService.callback(sortedMap);
 
-				if (serverResponse.getStatus() == 0) {
-					response.setContentType("text/xml");
-					response.getWriter().println("success");
-					return;
-				} else {
-					// 都处理失败
-					response.setContentType("text/xml");
-					response.getWriter().println("fail");
-				}
+			if (serverResponse.getStatus() == 0) {
+				response.setContentType("text/xml");
+				response.getWriter().println("success");
+				return;
+			} else {
+				// 都处理失败
+				response.setContentType("text/xml");
+				response.getWriter().println("fail");
+			}
 		}
 		// 都处理失败
 		response.setContentType("text/xml");

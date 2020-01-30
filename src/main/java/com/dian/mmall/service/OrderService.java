@@ -16,6 +16,8 @@ public interface OrderService {
 	ServerResponse<Object> get_conduct_purchase_order(User user);
 	ServerResponse<String> operation_purchase_order(User user, Map<String, Object> params);
 	void timerOrderStatus();
+	void timerSelsetPayOrder();
 	ServerResponse<String> native_pay_order(User user, String spbillCreateIp, long id);
 	ServerResponse<String> callback(SortedMap<String, String> sortedMap);
+	
 }

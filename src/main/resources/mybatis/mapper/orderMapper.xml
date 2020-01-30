@@ -32,8 +32,7 @@
 		select id from orderform where
 		purchaseUserId=#{purchaseUserId}
 		and createTime=#{createTime}
-		and
-		orderStatus=#{orderStatus}
+		and orderStatus=#{orderStatus}
 	</select>
 
 	<select id="get_shut_orders"
@@ -54,9 +53,7 @@
 
 	<select id="getOrderById" resultType="com.dian.mmall.pojo.Order">
 		select * from orderform
-		where
-		purchaseUserId=#{purchaseUserId}
-		and id=#{id}
+		where  id=#{id}
 	</select>
 
 
@@ -75,11 +72,11 @@
 		<if test="orderStatus==4">, guaranteeMoney=#{guaranteeMoney}
 			,balanceMoney=#{balanceMoney} ,yesGuaranteeMoney=1</if>
 		where id=#{id}
-		<if test="orderStatus==3 "> and orderStatus in(12,11,18)</if>
+		<if test="orderStatus==3 "> and orderStatus in(12,11,18,21)</if>
 		<if test="orderStatus==11 "> and orderStatus in(3,17,19,20)</if>
 		<if test="orderStatus==13 "> and orderStatus in(11,18) </if>
 		<if test="orderStatus==12 or orderStatus==20 "> and orderStatus =13</if>
-		<if test="orderStatus==4 or orderStatus==19"> and orderStatus =12</if>
+		<if test="orderStatus==4 or orderStatus==19"> and orderStatus in(12,21)</if>
 		<if test="orderStatus==16 "> and orderStatus =4</if>
 		<if test="orderStatus==18 or orderStatus==17  "> and orderStatus =11</if>
 	</update>
@@ -90,13 +87,13 @@
 		updateTime=#{updateTime},orderStatus=#{orderStatus},guanShanReason=#{guanShanReason}
 		<if test="payStatus==4  or payStatus==5">
 			, paymentTime={paymentTime},guaranteeMoney={guaranteeMoney},
-			payStatus=#{payStatus}
+			payStatus=#{payStatus},balanceMoney=#{balanceMoney}
 			
 			<if test="payStatus==5">,guanShanTime=#{guanShanTime} </if>
 		</if>
 		where id=#{id}
 		<if test="orderStatus==21 "> and orderStatus !=3 </if>
-		<if test="payStatus==4 or payStatus==5 "> and orderStatus ==12 </if>
+		<if test="payStatus==4 or payStatus==5 "> and orderStatus in(12,21) </if>
 	</update>
    
    
@@ -104,7 +101,7 @@
 		select id,saleUserId,purchaseUserId,createTime,orderStatus,yesGuaranteeMoney,payStatus,updateTime 
 		from orderform
 		where
-		orderStatus in (11,12,13,18)
+		orderStatus in (11,12,13,18,21)
 		
 	</select>
    

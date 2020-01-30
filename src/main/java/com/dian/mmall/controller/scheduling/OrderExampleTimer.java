@@ -21,6 +21,14 @@ public class OrderExampleTimer {
     	   orderService.timerOrderStatus();
        }
        
+       
+       
+       //处理微信支付的状态=0的 3分钟执行一次
+       @Scheduled(fixedRate = 1000*60*5)
+       public void timerSelsetPayOrder() {
+    	   orderService.timerSelsetPayOrder();
+       }
+       
 //       //第一次延迟1秒执行，当执行完后2秒再执行
 //       @Scheduled(initialDelay = 1000, fixedDelay = 2000)
 //       public void timerInit() {

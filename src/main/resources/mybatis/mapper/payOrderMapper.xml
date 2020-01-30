@@ -11,7 +11,9 @@
 		outTradeNo,spbillCreateIp,tradeType,totalFee,
 		createTime,payTime,updateTime,meg,payType
 		FROM payOrder WHERE
-		orderId=#{orderId} and del=0 and state=#{state}
+		orderId=#{orderId} and del=0 
+		<if test="state==9">and state in(1,3)</if>
+		<if test="state!=9">and state=#{state}</if>
 	</select>
 
 
@@ -41,12 +43,24 @@
 		outTradeNo=#{outTradeNo} and del=0 and state=#{state}
 	</select>
 	
-		<update id="callbackUpdate">
+	<update id="callbackUpdate">
 		update payOrder set
 		updateTime=#{updateTime},meg=#{meg},costType=#{costType},beiyong=#{beiyong},
 		payTime={payTime},state=#{state},payType=#{payType}
 		where id=#{id}
 	</update>
+	
+	
+	(String createTime, int state, int del);
+	
+		<select id="timerSelsetPayOrder" resultType="com.dian.mmall.pojo.PayOrder">
+		SELECT
+		id,orderId,totalFee
+		FROM payOrder WHERE
+		createTime &lt;= #{createTime} and del=#{del} and state=#{state}
+	</select>
+	
+	
 	
 	<!-- <select id="getall" resultType="java.util.Map"> select * from t_user 
 		</select> <select id="checkUsername" resultType="com.dian.mmall.pojo.user.User" 

@@ -91,6 +91,12 @@ public class DateTimeUtil {
 
 	}
 
+	
+	public static String dateTimeToDateString(long longDateTime) {
+		DateTime dateTime = new DateTime(new Date(longDateTime));
+		return dateTime.toString(STANDARD_FORMAT);
+	}
+	
 	/**
 	 * 判断是否是过去的日期
 	 * 
@@ -210,7 +216,7 @@ public class DateTimeUtil {
 	}
 
 	public static void main(String[] args) {
-
+    System.out.println(dateTimeToDateString((new Date()).getTime()-15*60*1000));
 		Date nowDate = new Date();
 		long lon= nowDate.getTime()+2*60*60*1000;
 		System.out.println(nowDate);

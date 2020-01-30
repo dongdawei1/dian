@@ -168,6 +168,7 @@ public enum ResponseMessage {
 	zhuanghuanshujuxmlToMap("转换数据xmlToMap异常"),
 	weixinxiaodanshibai("调用微信下单失败"),
 	youweizhifudedingdan("有待支付的订单"),
+	zhifuyiwancheng("支付已完成"),
 	
 	;
    String message;

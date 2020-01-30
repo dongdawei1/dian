@@ -27,7 +27,10 @@ import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer.FromDecim
 
 public class Test1 {
 	public static void main(String[] args) {
-		System.out.println(1150*0.06);
+		Float float1= (float) 12;
+		
+		
+		System.out.println(float1/4);
 		System.out.println(new Double(10*0.06).intValue());
     StringBuffer serviceDetailed = new StringBuffer("北京市/市辖区/东城区");
     

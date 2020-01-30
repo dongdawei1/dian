@@ -38,6 +38,7 @@ public class PurchaseSeeOrderVo {
 	private boolean orderStatu18=false; //15分钟有报价没有 选择 关单
 	private boolean orderStatu19=false; //10分钟到购买者没有支付 关单
 	private boolean orderStatu20=false; //15 销售商未确认
+	private boolean orderStatu21=false; //支付失败重新支付
 	private List<OrderCommonOfferEvaluateVo>     listOrderCommonOfferEvaluateVo;  
 	//11是抢单列表，其他只有一个或没有 ,一个抢单，对应一条  评价	
 	private Integer voSocket=1 ; //0开启轮询  ，

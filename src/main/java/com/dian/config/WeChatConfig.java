@@ -93,6 +93,14 @@ public class WeChatConfig {
         return UNIFIED_ORDER_URL;
     }
 
+    /**
+     * 主动查询支付结果
+     * */
+    private static final String WXQUERY_ORDER_URL = "https://api.mch.weixin.qq.com/pay/orderquery";
+    public static String getWxOrderUrl() {
+    	return WXQUERY_ORDER_URL;
+    }
+    
     
     public String getMchId() {
         return mchId;

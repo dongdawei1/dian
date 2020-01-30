@@ -40,6 +40,7 @@ import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
 import com.dian.mmall.util.HttpUtils;
 import com.dian.mmall.util.JsonUtil;
+import com.dian.mmall.util.MD5Util;
 import com.dian.mmall.util.RedisPoolUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 import com.dian.mmall.util.WXPayUtil;
@@ -450,7 +451,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
-	 * 查询抢单成功的  返回setPurchaseSeeOrderVo
+	 * 查询抢单成功的 返回setPurchaseSeeOrderVo
 	 */
 	private List<OrderCommonOfferEvaluateVo> getOrderCommonOffer(long orderId, long saleUserId) {
 
@@ -468,9 +469,10 @@ public class OrderServiceImpl implements OrderService {
 		listOrderCommonOfferEvaluateVo.add(orderCommonOfferEvaluateVo);
 		return listOrderCommonOfferEvaluateVo;
 	}
-   /**
-           * 返回get_conduct_purchase_order方法  的订单+抢单人员的VO
-    * */
+
+	/**
+	 * 返回get_conduct_purchase_order方法 的订单+抢单人员的VO
+	 */
 	private PurchaseSeeOrderVo setPurchaseSeeOrderVo(Order order) {
 		int orderStatus = order.getOrderStatus();
 		PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
@@ -552,6 +554,9 @@ public class OrderServiceImpl implements OrderService {
 				} else if (orderStatus == 16) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("待确认收货");
 					purchaseSeeOrderVo_sub.setOrderStatu16(true);
+				} else if (orderStatus == 21) {
+					purchaseSeeOrderVo_sub.setOrderStatuName("支付失败请重新支付");
+					purchaseSeeOrderVo_sub.setOrderStatu21(true);
 				}
 				order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
 				purchaseSeeOrderVo_sub
@@ -563,9 +568,10 @@ public class OrderServiceImpl implements OrderService {
 		purchaseSeeOrderVo_sub.setVoOrder(order);
 		return purchaseSeeOrderVo_sub;
 	}
-/**
- * 实现用户（抢单人员，购买商，定时任务）    操作和定时任务操作，   改变订单状态   operation_purchase_order
- * */
+
+	/**
+	 * 实现用户（抢单人员，购买商，定时任务） 操作和定时任务操作， 改变订单状态 operation_purchase_order
+	 */
 	private ServerResponse<String> operation_purchase_order_impl(int type, Order order, Map<String, Object> params) {
 		// 更新数据库，订单表，抢单表，找到了操作 更新数据库，订单表，抢单表， 发通知给抢单人员
 //		状态 =11 时 显示关单键  和 确认键  关单后端 传 3，确认传13 -->
@@ -588,7 +594,7 @@ public class OrderServiceImpl implements OrderService {
 		try {
 			if (type == 3) {
 				if (order.getOrderStatus() == 11 || order.getOrderStatus() == 18) {
-					// 关单 关单状态只能 是11 时 12 时18时才能关
+					// 关单 关单状态只能 是11 时 12 （），21时18时才能关
 					order.setOrderStatus(type);
 					orderMapper.operation_purchase_order(order);
 					if (list_evaluates.size() > 0) {
@@ -596,7 +602,7 @@ public class OrderServiceImpl implements OrderService {
 						// 全部更新抢单
 						orderCommonOfferMapper.operation_purchase_evaluate_all(order.getId(), updateTime);
 					}
-				} else if (order.getOrderStatus() == 12) {
+				} else if (order.getOrderStatus() == 12 || order.getOrderStatus() == 21) {
 					// TODO 通知接单成功的用户，关单了 order.getSaleUserId()发给这个user id
 
 					order.setOrderStatus(type);
@@ -605,8 +611,8 @@ public class OrderServiceImpl implements OrderService {
 					// 更新抢单表
 					orderCommonOfferMapper.operation_purchase_evaluate_id(order.getId(), updateTime,
 							order.getSaleUserId());
-					//检查有无待支付的订单 删除
-					
+					// 检查有无待支付的订单 删除
+
 				}
 			} else if (type == 11) {
 				// 重新开启订单 只有3和17,19,20的才能重新开启
@@ -716,8 +722,8 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
-	 * 改变 订单状态是11,12,13,18状态的定时任务
-	 * */ 
+	 * 改变 订单状态是11（下单）,12（待支付定金）,13（销售商支付质保金）,18（有人接单多+15分钟）,21(支付失败)状态的定时任务
+	 */
 	@Override
 	public void timerOrderStatus() {
 
@@ -760,10 +766,28 @@ public class OrderServiceImpl implements OrderService {
 						orderCommonOfferMapper.uptateGuanDan(o.getId(), o.getSaleUserId(), updateTime);
 						// TODO 发消息给这个销售商
 					}
-				} else if (orderStatus == 12) {
+				} else if (orderStatus == 12 || orderStatus == 21) {
 					// 判断是否在支付中
 					PayOrder payOrder = payOrderMapper.getPayOrderByOrderId(o.getId(), 0);
 					if (payOrder == null) {
+						// 检查有无支付成功的
+						payOrder = payOrderMapper.getPayOrderByOrderId(o.getId(), 9);
+						if (payOrder == null) {
+
+							// 购买者未支付定金 19，最后一次更新时间+15分钟 用 updateTime
+							long oUpDateLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
+							if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
+								o.setUpdateTime(updateTime);
+								o.setOrderStatus(19);
+								orderMapper.operation_purchase_order(o);
+								// 更新抢单表
+								orderCommonOfferMapper.uptateGuanDan(o.getId(), o.getSaleUserId(), updateTime);
+
+							}
+						}
+					} else {
+						// TODO 调微信 关单去
+
 						// 购买者未支付定金 19，最后一次更新时间+15分钟 用 updateTime
 						long oUpDateLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
 						if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
@@ -772,12 +796,11 @@ public class OrderServiceImpl implements OrderService {
 							orderMapper.operation_purchase_order(o);
 							// 更新抢单表
 							orderCommonOfferMapper.uptateGuanDan(o.getId(), o.getSaleUserId(), updateTime);
-							// TODO 发消息给这个销售商,购买者未支付定金关单
+
 						}
-					} else {
-						// 是不是要调微信查询 结果TODO
 
 					}
+					// TODO 发消息给这个销售商,购买者未支付定金关单
 				} else if (orderStatus == 18) {
 					if ((nowDateLong - createTimeLong) >= 45 * 60 * 1000) {
 						// 留15分钟给采购者选择销售商，超时关单为3
@@ -791,6 +814,103 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	/**
+	 * 处理微信支付创建时间大于=当前时间15分钟的 支付订单 定时任务查询微信 执行 成功的调用callback ,没有查到结果的 到时间 超时关单，
+	 * 未到时不处理 关单前再查一次 支付表状态
+	 */
+
+	@Override
+	public void timerSelsetPayOrder() {
+		String createTime = DateTimeUtil.dateTimeToDateString(new Date().getTime() - 15 * 60 * 100);
+		List<PayOrder> payOrders = payOrderMapper.timerSelsetPayOrder(createTime, 0, 0);
+		if (payOrders.size() > 0) {
+			for (PayOrder pay : payOrders) {
+				ServerResponse<Object> serverResponse = orderqueryWX(pay);
+				if (serverResponse.getStatus() == 0) {
+					timerSelsetPayOrderImpl((Map<String, String>) serverResponse.getData(), pay);
+				}
+			}
+
+		}
+
+	}
+
+	private void timerSelsetPayOrderImpl(Map<String, String> sortedMap, PayOrder payOrder) {
+
+		// 支付结果
+		String trade_state = sortedMap.get("trade_state");
+//		SUCCESS—支付成功
+//		REFUND—转入退款
+//		NOTPAY—未支付
+//		CLOSED—已关闭
+//		REVOKED—已撤销（付款码支付）
+//		USERPAYING--用户支付中（付款码支付）
+//		PAYERROR--支付失败(其他原因，如银行返回失败)
+		payOrder.setUpdateTime(DateTimeUtil.dateToAll());
+		if (sortedMap.toString().length() > 300) {
+			payOrder.setMeg(sortedMap.toString().substring(0, 298));
+		} else {
+			payOrder.setMeg(sortedMap.toString());
+		}
+		payOrder.setPayType("CX");
+		payOrder.setBeiyong(trade_state);
+		payOrder.setCostType("CX_ding");
+
+		Order order = new Order();
+		order.setId(payOrder.getOrderId());
+		order.setGuanShanReason("CX");
+		if ("SUCCESS".equals(trade_state)) {
+			String transaction_id = sortedMap.get("transaction_id");// 微信支付订单号
+			payOrder.setBeiyong(transaction_id);
+			String time_end = sortedMap.get("time_end");// 支付时间
+			payOrder.setPayTime(time_end);
+			order.setPaymentTime(time_end);
+
+			int total_fee = 0;
+			try {
+				total_fee = Integer.parseInt(sortedMap.get("total_fee"));
+			} catch (Exception e) {
+				System.out.print(payOrder.getOutTradeNo() + "转换金额异常");
+			}
+			if (total_fee != 0) {
+				if (total_fee != payOrder.getTotalFee()) {
+					payOrder.setState(1);
+					order.setPayStatus(4);
+				} else {
+					payOrder.setCostType(total_fee + "");
+					// 支付金额与应收金额不一致返回错误，业务进行不下去可以叫用户打客服电话
+					payOrder.setState(3);
+					createZhifuBaojing(payOrder);
+
+					order.setPayStatus(5);
+					order.setGuanShanTime(payOrder.getTotalFee() + "");
+				}
+				// 更新支付表
+				payOrderMapper.callbackUpdate(payOrder);
+				// 更新订单表 支付成功
+				order.setOrderStatus(4);
+				order.setGuaranteeMoney(total_fee + "");
+				callbackUpDateOrder(order);
+				//TODO 通知接单者 已支付完成
+			}
+		}else if(!"USERPAYING".equals(trade_state)) {
+		// TODO 支付失败关单
+			
+			
+		payOrder.setState(4);
+		// 更新支付表
+		payOrderMapper.callbackUpdate(payOrder);
+		// 更新订单表 支付失败可以再次发起
+		order.setOrderStatus(19);
+		order.setPayStatus(0);
+		callbackUpDateOrder(order);
+		//TODO 通知接单者 关单了
+		}
+	}
+
+	/**
+	 * 生成二维码
+	 */
 	// 支付定金生成二维码（ 第一步统一下单生成二维码）
 	@Override
 	public ServerResponse<String> native_pay_order(User user, String spbillCreateIp, long id) {
@@ -798,7 +918,7 @@ public class OrderServiceImpl implements OrderService {
 		Order order = orderMapper.getOrderById(id, user.getId());
 
 		if (order != null) {
-			if (order.getOrderStatus() != 12) {
+			if (order.getOrderStatus() != 12 && order.getOrderStatus() != 21) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.dingdanzhuangtaicuowu.getMessage());
 			}
 			long commodityZongJiage = order.getCommodityZongJiage();
@@ -810,8 +930,12 @@ public class OrderServiceImpl implements OrderService {
 			PayOrder payOrder = payOrderMapper.getPayOrderByOrderId(id, 0);
 
 			if (payOrder != null && payOrder.getTotalFee() == totalFee) {
-				System.out.println("1111-->jinlai");
 				return ServerResponse.createBySuccessMessage(payOrder.getMeg());
+			}
+			// 查询是否已经支付过
+			payOrder = payOrderMapper.getPayOrderByOrderId(id, 9);
+			if (payOrder != null) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.zhifuyiwancheng.getMessage());
 			}
 
 			// 生成支付订单
@@ -925,8 +1049,8 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
-	 *  微信/定时任务支付回调
-	 * */
+	 * 微信支付异步回调
+	 */
 	@Override
 	public ServerResponse<String> callback(SortedMap<String, String> sortedMap) {
 		String outTradeNo = sortedMap.get("out_trade_no");
@@ -938,23 +1062,22 @@ public class OrderServiceImpl implements OrderService {
 			} else {
 				payOrder.setMeg(sortedMap.toString());
 			}
+			// coller层自己加的的参数
 			payOrder.setPayType(sortedMap.get("payType"));
 			String transaction_id = sortedMap.get("transaction_id");// 微信支付订单号
 			payOrder.setBeiyong(transaction_id);
 			payOrder.setCostType("WX_diao");
-			
-			
-			Order order=new Order();
+
+			Order order = new Order();
 			order.setId(payOrder.getOrderId());
 			order.setGuanShanReason("HD");
-			order.setUpdateTime(DateTimeUtil.dateToAll());
 			if ("SUCCESS".equals(sortedMap.get("result_code"))) {
 
 				String time_end = sortedMap.get("time_end");// 支付时间
 				payOrder.setPayTime(time_end);
-               
+
 				order.setPaymentTime(time_end);
-				
+
 				int total_fee = 0;
 				try {
 					total_fee = Integer.parseInt(sortedMap.get("total_fee"));
@@ -964,23 +1087,23 @@ public class OrderServiceImpl implements OrderService {
 				if (total_fee != 0) {
 					if (total_fee != payOrder.getTotalFee()) {
 						payOrder.setState(1);
-						order.setPayStatus(4); 
+						order.setPayStatus(4);
 					} else {
 						payOrder.setCostType(total_fee + "");
 						// 支付金额与应收金额不一致返回错误，业务进行不下去可以叫用户打客服电话
 						payOrder.setState(3);
 						createZhifuBaojing(payOrder);
-						
+
 						order.setPayStatus(5);
-						order.setGuanShanTime(payOrder.getTotalFee()+"");
+						order.setGuanShanTime(payOrder.getTotalFee() + "");
 					}
 					// 更新支付表
 					payOrderMapper.callbackUpdate(payOrder);
 					// 更新订单表 支付成功
 					order.setOrderStatus(4);
-					order.setGuaranteeMoney(total_fee+"");
+					order.setGuaranteeMoney(total_fee + "");
 					callbackUpDateOrder(order);
-					
+					//TODO 通知接单者 已支付完成
 					return ServerResponse.createBySuccess();
 				}
 				// 支付金额为0返回错误
@@ -992,55 +1115,124 @@ public class OrderServiceImpl implements OrderService {
 			// 更新支付表
 			payOrderMapper.callbackUpdate(payOrder);
 			// 更新订单表 支付失败可以再次发起
-			order.setOrderStatus(21); 
-			order.setPayStatus(0); 
+			order.setOrderStatus(21);
+			order.setPayStatus(0);
 			callbackUpDateOrder(order);
 			return ServerResponse.createBySuccess();
 		}
 		return ServerResponse.createByError();
 	}
-   /**
-            * 微信支付回调后  更新  订单状态
-    * */
-	
-	
+
+	/**
+	 * 微信支付回调、查询后 更新 订单状态
+	 */
+
 	private ServerResponse<String> callbackUpDateOrder(Order order) {
-		
-		//TODO 判断是状态是不是21  如果是先查询是否关单 ，如果是关单状态就不处理了
-		//guanShanReason  此字段记录是哪个操作对应支付表payType
-		////更新 order表 guanShanTime==应该支付金额  orderStatus==4成功,5支付异常
-		//支付失败  状态 更新为21 继续等支付，   定时任务支付   
-		int result=orderMapper.callbackUpDateOrder(order);
-		
+
+		order.setUpdateTime(DateTimeUtil.dateToAll());
+		/**
+		 * orderStatus=21 如果状态是关单==3，就不做更新 guanShanReason 此字段记录是哪个操作对应支付表payType 更新
+		 * order表 guanShanTime==应该支付金额 orderStatus==4成功,5支付异常
+		 */
+		// 如果是 4 要计算待支付金额
+		if (order.getOrderStatus() == 4) {
+			Order selectOrder = orderMapper.getOrderById(order.getId(), 0);
+
+			// 已支付金额元
+			Float guaranteeMoney = Float.parseFloat(order.getGuaranteeMoney()) / 100;
+			order.setGuaranteeMoney(guaranteeMoney + "");
+			// 待支付金额 balanceMoney 字符串 待支付金额
+			order.setBalanceMoney(
+					Float.parseFloat(selectOrder.getCommodityZongJiage() + "") / 100 - guaranteeMoney + "");
+			orderMapper.callbackUpDateOrder(order);
+			return null;
+		}
+		orderMapper.callbackUpDateOrder(order);
+
 		return null;
 	}
-	
+
 	/**
-	 * 定时任务查询微信   执行   成功的调用callback   ,没有查到结果的   到时间  超时关单， 未到时不处理  关单前再查一次 支付表状态
-	 * */
-	
-	/**
-	 * 主动关单，更新订单表状态为超时未支付，更新支付表为  设置  del=1
-	 * */
-	
-	/**
-	 * 支付报警  state==3   TODO
-	 * */
-	private void createZhifuBaojing(PayOrder  payOrder) {
-		//TODO   发邮件给技术
-		payOrder.getCostType();//实际支付金额
-		
-		System.out.println("支付订单ID"+payOrder.getId()+"支付异常"+",应该支付金额"
-		+payOrder.getTotalFee()+"(分)，实际支付："+payOrder.getCostType()+"(分)");
-		
+	 * 主动查询后更新状态 微信文档 https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_2
+	 */
+	private ServerResponse<Object> orderqueryWX(PayOrder pay) {
+		SortedMap<String, String> params = new TreeMap<>();
+		params.put("appid", weChatConfig.getAppId()); // 公众账号id
+		params.put("mch_id", weChatConfig.getMchId()); // 商户号
+		params.put("out_trade_no", pay.getOutTradeNo()); // 订单号，自己生成的订单号
+		params.put("nonce_str", MD5Util.generateUUID()); // 随机字符串
+		String sign = WXPayUtil.createSign(params, weChatConfig.getKey());
+		params.put("sign", sign);
+		// map转xml
+		String payXml = null;
+		try {
+			payXml = WXPayUtil.mapToXml(params);
+		} catch (Exception e) {
+			// TODO 内部邮件报警
+			return ServerResponse.createByError();
+		}
+
+		if (payXml == null) {
+			// TODO 内部邮件报警
+			return ServerResponse.createByError();
+		}
+
+		// 获取 查询结果
+		String orderStr = HttpUtils.doPost(WeChatConfig.getWxOrderUrl(), payXml, 4000);
+
+		Map<String, String> unifiedOrderMap = null;
+		try {
+			unifiedOrderMap = WXPayUtil.xmlToMap(orderStr);
+		} catch (Exception e) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.zhuanghuanshujuxmlToMap.getMessage());
+		}
+		System.out.println(unifiedOrderMap.toString());
+
+		if (unifiedOrderMap != null) {
+			String return_code = unifiedOrderMap.get("return_code");
+
+			if (return_code.equals("FAIL")) {
+				// TODO 内部报警
+				return ServerResponse.createByError();
+			}
+			String result_code = unifiedOrderMap.get("result_code");
+			if (return_code.equals("SUCCESS") && result_code.equals("SUCCESS")) {
+// 支付结果		String	trade_state	=unifiedOrderMap.get("trade_state");	
+//				SUCCESS—支付成功
+//				REFUND—转入退款
+//				NOTPAY—未支付
+//				CLOSED—已关闭
+//				REVOKED—已撤销（付款码支付）
+//				USERPAYING--用户支付中（付款码支付）
+//				PAYERROR--支付失败(其他原因，如银行返回失败)
+				return ServerResponse.createBySuccess(unifiedOrderMap);
+			}
+		}
+		return ServerResponse.createByError();
 	}
-	
+
 	/**
-	 *   TODO    guanShanTime==应该支付金额  orderStatus==5支付异常
-	 * */
-	private ServerResponse<Order> getZhifuBaojing(PayOrder  payOrder) {
-		//管理员业务查询接口
+	 * 主动关单，更新订单表状态为超时未支付，更新支付表为 设置 del=1
+	 */
+
+	/**
+	 * 支付报警 state==3 TODO 暂未实现
+	 */
+	private void createZhifuBaojing(PayOrder payOrder) {
+		// TODO 发邮件给技术
+		payOrder.getCostType();// 实际支付金额
+
+		System.out.println("支付订单ID" + payOrder.getId() + "支付异常" + ",应该支付金额" + payOrder.getTotalFee() + "(分)，实际支付："
+				+ payOrder.getCostType() + "(分)");
+
+	}
+
+	/**
+	 * TODO guanShanTime==应该支付金额 orderStatus==5支付异常 暂未实现
+	 */
+	private ServerResponse<Order> getZhifuBaojing(PayOrder payOrder) {
+		// 管理员业务查询接口
 		return null;
 	}
-	
+
 }

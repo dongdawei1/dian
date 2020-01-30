@@ -1,5 +1,7 @@
 package com.dian.mmall.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.dian.mmall.pojo.PayOrder;
@@ -17,5 +19,7 @@ public interface PayOrderMapper {
 	PayOrder getCallbackPayOrder(String outTradeNo, int state);
 
 	int callbackUpdate(PayOrder payOrder);
+
+	List<PayOrder> timerSelsetPayOrder(String createTime, int state, int del);
 
 }
