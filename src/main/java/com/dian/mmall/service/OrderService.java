@@ -19,5 +19,7 @@ public interface OrderService {
 	void timerSelsetPayOrder();
 	ServerResponse<String> native_pay_order(User user, String spbillCreateIp, long id);
 	ServerResponse<String> callback(SortedMap<String, String> sortedMap);
+	ServerResponse<String> get_pay_order_all(long userId);
+	ServerResponse<String> get_pay_order_byOrderId(long userId, long orderId);
 	
 }

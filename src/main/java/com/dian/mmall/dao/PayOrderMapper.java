@@ -22,4 +22,8 @@ public interface PayOrderMapper {
 
 	List<PayOrder> timerSelsetPayOrder(String createTime, int state, int del);
 
+	int get_pay_order_all(long userId);
+
+	PayOrder get_pay_order_byOrderId(long userId, long orderId, int del);
+
 }

@@ -20,6 +20,11 @@ import com.dian.mmall.util.CheckLand;
 public class PurchaseCreateOrderVoController {
 	@Autowired
 	private PurchaseCreateOrderVoService purchaseCreateOrderVoService;
+
+	/**
+	 * 获取我的添加常购买的菜 集合
+	 */
+
 	@RequestMapping(value = "getPurchaseCreateOrderVo", method = RequestMethod.GET)
 	@ResponseBody
 	public ServerResponse<Object> getPurchaseCreateOrderVo(HttpServletRequest httpServletRequest) {
@@ -29,12 +34,12 @@ public class PurchaseCreateOrderVoController {
 			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
 		User user = (User) serverResponse.getData();
-     if(user.getRole()!=1 && user.getRole()!=2) {
-    	 return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
-     }
-     if(user.getIsAuthentication()!=2) {
-    	 return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
-     }
+		if (user.getRole() != 1 && user.getRole() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 		return purchaseCreateOrderVoService.getPurchaseCreateOrderVo(user);
 
 	}

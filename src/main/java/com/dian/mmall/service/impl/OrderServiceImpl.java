@@ -815,13 +815,13 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
-	 * 处理微信支付创建时间大于=当前时间15分钟的 支付订单 定时任务查询微信 执行 成功的调用callback ,没有查到结果的 到时间 超时关单，
+	 * 处理微信支付创建时间大于=当前时间10分钟的 支付订单 定时任务查询微信 执行 成功的调用callback ,没有查到结果的 到时间 超时关单，
 	 * 未到时不处理 关单前再查一次 支付表状态
 	 */
 
 	@Override
 	public void timerSelsetPayOrder() {
-		String createTime = DateTimeUtil.dateTimeToDateString(new Date().getTime() - 15 * 60 * 100);
+		String createTime = DateTimeUtil.dateTimeToDateString(new Date().getTime() - 10 * 60 * 1000);
 		List<PayOrder> payOrders = payOrderMapper.timerSelsetPayOrder(createTime, 0, 0);
 		if (payOrders.size() > 0) {
 			for (PayOrder pay : payOrders) {
@@ -891,21 +891,77 @@ public class OrderServiceImpl implements OrderService {
 				order.setOrderStatus(4);
 				order.setGuaranteeMoney(total_fee + "");
 				callbackUpDateOrder(order);
-				//TODO 通知接单者 已支付完成
+				// TODO 通知接单者 已支付完成
 			}
-		}else if(!"USERPAYING".equals(trade_state)) {
-		// TODO 支付失败关单
-			
-			
-		payOrder.setState(4);
-		// 更新支付表
-		payOrderMapper.callbackUpdate(payOrder);
-		// 更新订单表 支付失败可以再次发起
-		order.setOrderStatus(19);
-		order.setPayStatus(0);
-		callbackUpDateOrder(order);
-		//TODO 通知接单者 关单了
+		} else if (!"USERPAYING".equals(trade_state)) {
+			// 支付超时关单,关单成功更新数据库
+			if (closeorderWX(payOrder).getStatus() == 0) {
+
+				payOrder.setState(4);
+				payOrder.setDel(1);
+				// 更新支付表
+				payOrderMapper.callbackUpdate(payOrder);
+				// 更新订单表 支付失败可以再次发起
+				order.setOrderStatus(19);
+				order.setPayStatus(0);
+				callbackUpDateOrder(order);
+				// TODO 通知接单者 关单了
+			}
 		}
+	}
+
+	/**
+	 * 主动关单，更新订单表状态为超时未支付，更新支付表为 设置
+	 * https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_3
+	 */
+
+	private ServerResponse<String> closeorderWX(PayOrder payOrder) {
+		SortedMap<String, String> params = new TreeMap<>();
+		params.put("appid", weChatConfig.getAppId()); // 公众账号id
+		params.put("mch_id", weChatConfig.getMchId()); // 商户号
+		params.put("out_trade_no", payOrder.getOutTradeNo()); // 订单号，自己生成的订单号
+		params.put("nonce_str", MD5Util.generateUUID()); // 随机字符串
+		String sign = WXPayUtil.createSign(params, weChatConfig.getKey());
+		params.put("sign", sign);
+		// map转xml
+		String payXml = null;
+		try {
+			payXml = WXPayUtil.mapToXml(params);
+		} catch (Exception e) {
+			// TODO 内部邮件报警
+			return ServerResponse.createByError();
+		}
+
+		if (payXml == null) {
+			// TODO 内部邮件报警
+			return ServerResponse.createByError();
+		}
+
+		// 获取 查询结果
+		String orderStr = HttpUtils.doPost(WeChatConfig.getWxCloseOrderUrl(), payXml, 4000);
+
+		Map<String, String> unifiedOrderMap = null;
+		try {
+			unifiedOrderMap = WXPayUtil.xmlToMap(orderStr);
+		} catch (Exception e) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.zhuanghuanshujuxmlToMap.getMessage());
+		}
+		System.out.println(unifiedOrderMap.toString());
+
+		if (unifiedOrderMap != null) {
+			String return_code = unifiedOrderMap.get("return_code");
+
+			if (return_code.equals("FAIL")) {
+				// TODO 内部报警
+				return ServerResponse.createByError();
+			}
+			String result_code = unifiedOrderMap.get("result_code");
+			if (return_code.equals("SUCCESS") && result_code.equals("SUCCESS")) {
+				return ServerResponse.createBySuccess();
+			}
+		}
+
+		return ServerResponse.createByError();
 	}
 
 	/**
@@ -1103,7 +1159,7 @@ public class OrderServiceImpl implements OrderService {
 					order.setOrderStatus(4);
 					order.setGuaranteeMoney(total_fee + "");
 					callbackUpDateOrder(order);
-					//TODO 通知接单者 已支付完成
+					// TODO 通知接单者 已支付完成
 					return ServerResponse.createBySuccess();
 				}
 				// 支付金额为0返回错误
@@ -1112,6 +1168,7 @@ public class OrderServiceImpl implements OrderService {
 			}
 			// 支付失败关单
 			payOrder.setState(2);
+			payOrder.setDel(1);
 			// 更新支付表
 			payOrderMapper.callbackUpdate(payOrder);
 			// 更新订单表 支付失败可以再次发起
@@ -1178,7 +1235,7 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		// 获取 查询结果
-		String orderStr = HttpUtils.doPost(WeChatConfig.getWxOrderUrl(), payXml, 4000);
+		String orderStr = HttpUtils.doPost(WeChatConfig.getWxQueryOrderUrl(), payXml, 4000);
 
 		Map<String, String> unifiedOrderMap = null;
 		try {
@@ -1212,10 +1269,6 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
-	 * 主动关单，更新订单表状态为超时未支付，更新支付表为 设置 del=1
-	 */
-
-	/**
 	 * 支付报警 state==3 TODO 暂未实现
 	 */
 	private void createZhifuBaojing(PayOrder payOrder) {
@@ -1233,6 +1286,37 @@ public class OrderServiceImpl implements OrderService {
 	private ServerResponse<Order> getZhifuBaojing(PayOrder payOrder) {
 		// 管理员业务查询接口
 		return null;
+	}
+
+	
+	/**
+	 * 查询是否有待支付的payOrder
+	 * */
+	@Override
+	public ServerResponse<String> get_pay_order_all(long userId) {
+		int count=payOrderMapper.get_pay_order_all(userId);
+		if(count>0) {
+			return ServerResponse.createBySuccess("YES");
+		}
+		return ServerResponse.createBySuccess("NO");
+	}
+	/**
+	 * 查询支付状态
+	 * */
+
+	@Override
+	public ServerResponse<String> get_pay_order_byOrderId(long userId, long orderId) {
+		PayOrder payOrder=payOrderMapper.get_pay_order_byOrderId(userId,orderId,0);
+		if(payOrder==null) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
+		}
+		
+		if(payOrder.getState()==1 || payOrder.getState()==3) {
+			return ServerResponse.createBySuccess("YES");
+		}else if(payOrder.getState()==2 || payOrder.getState()==4) {
+			return ServerResponse.createBySuccess("FAIL");
+		}
+		return ServerResponse.createBySuccess("NO");
 	}
 
 }

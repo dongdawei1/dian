@@ -16,6 +16,21 @@
 		<if test="state!=9">and state=#{state}</if>
 	</select>
 
+	<select id="get_pay_order_all" resultType="int">
+		SELECT
+		count(*)
+		FROM payOrder WHERE
+		userId=#{userId} and del=0  and state=0
+	</select>
+
+	<select id="get_pay_order_byOrderId" resultType="com.dian.mmall.pojo.PayOrder">
+		SELECT
+		id,userId,orderId,state
+		FROM payOrder WHERE
+		orderId=#{orderId} and del=#{del}  and userId=#{userId}
+	</select>
+
+
 
 	<insert id="createPyOrder">
 		insert into payOrder (
@@ -45,17 +60,17 @@
 	
 	<update id="callbackUpdate">
 		update payOrder set
-		updateTime=#{updateTime},meg=#{meg},costType=#{costType},beiyong=#{beiyong},
-		payTime={payTime},state=#{state},payType=#{payType}
+		updateTime=#{updateTime},state=#{state},meg=#{meg},
+		costType=#{costType},beiyong=#{beiyong},payType=#{payType}
+		<if test="state==1  or state==3">, payTime=#{payTime}</if>
+		<if test="state==2 or state==4">, del=#{del}</if>
 		where id=#{id}
 	</update>
 	
 	
-	(String createTime, int state, int del);
-	
-		<select id="timerSelsetPayOrder" resultType="com.dian.mmall.pojo.PayOrder">
+	<select id="timerSelsetPayOrder" resultType="com.dian.mmall.pojo.PayOrder">
 		SELECT
-		id,orderId,totalFee
+		id,orderId,totalFee,outTradeNo
 		FROM payOrder WHERE
 		createTime &lt;= #{createTime} and del=#{del} and state=#{state}
 	</select>

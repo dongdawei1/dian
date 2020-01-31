@@ -1,5 +1,8 @@
 package com.dian.config;
 
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -97,10 +100,20 @@ public class WeChatConfig {
      * 主动查询支付结果
      * */
     private static final String WXQUERY_ORDER_URL = "https://api.mch.weixin.qq.com/pay/orderquery";
-    public static String getWxOrderUrl() {
+    public static String getWxQueryOrderUrl() {
     	return WXQUERY_ORDER_URL;
     }
     
+    /**
+     * 微信主动关单 
+     * */
+    
+    private static final String WXCLOSE_ORDER_URL=  "https://api.mch.weixin.qq.com/pay/closeorder";
+    public  static String getWxCloseOrderUrl() {
+    	return WXCLOSE_ORDER_URL;
+    } 
+    
+ 
     
     public String getMchId() {
         return mchId;

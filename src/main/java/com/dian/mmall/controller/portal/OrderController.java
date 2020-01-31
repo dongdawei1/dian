@@ -163,7 +163,54 @@ public class OrderController {
 		return orderService.native_pay_order(user, spbillCreateIp, id);
 
 	}
+	
+	/**
+	 * 获取是否有待支付的支付订单
+	 * */ 
+	@RequestMapping(value = "get_pay_order_all", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<String> get_pay_order_all(HttpServletRequest httpServletRequest,@RequestParam String uuid) {
+		// 检查登陆
+		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		User user = (User) serverResponse.getData();
+		// 检查权限
 
+		if (user.getRole() != 1 && user.getRole() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+
+		String spbillCreateIp = IpUtils.getIpAddr(httpServletRequest);
+		return orderService.get_pay_order_all(user.getId());
+
+	}
+
+	
+	/**
+	 * 根据orderId查询支付状态
+	 * */ 
+	@RequestMapping(value = "get_pay_order_byOrderId", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<String> get_pay_order_byOrderId(HttpServletRequest httpServletRequest, @RequestParam long orderId,@RequestParam String uuid) {
+		// 检查登陆
+		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		User user = (User) serverResponse.getData();
+		// 检查权限
+
+		if (user.getRole() != 1 && user.getRole() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+
+		String spbillCreateIp = IpUtils.getIpAddr(httpServletRequest);
+		return orderService.get_pay_order_byOrderId(user.getId(),orderId);
+
+	}
+	
 	/**
 	 * 微信支付回调
 	 */
