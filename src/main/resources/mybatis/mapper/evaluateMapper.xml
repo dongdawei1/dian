@@ -14,12 +14,28 @@
         select * from evaluate where id=#{id}
     </select>
     
-    <!--根据id查  -->
+    <!--接单用户根据用户id查评价  -->
      <select id="selectEvvaluateByUserId" resultType="com.dian.mmall.pojo.pingjia.Evaluate">
         select * from evaluate where
          userId=#{userId}   
          and permissionid=-1
          and releaseid=-1
     </select>
+    
+    
+    <insert id="adminAddOrderCreateEvaluate">
+		insert into evaluate (
+		permissionid,userId,releaseid,fuwutaiduhao,fuwutaiduzhong,
+		fuwutaiducha,jiagegao,jiagezhong,jiagedi,
+		zhuanyehao,zhuanyemanyi,zhuayeyiban,zhunshihao,
+		zhunshijiaohao,zhunshijiaocha,shouhouhao,shouhouzhong,
+		shouhoucha,zhilianghao,zhiliangyiban,zhiliangcha) values (
+		#{permissionid},#{userId},#{releaseid},#{fuwutaiduhao},#{fuwutaiduzhong},
+		#{fuwutaiducha},#{jiagegao},#{jiagezhong},#{jiagedi},
+		#{zhuanyehao},#{zhuanyemanyi},#{zhuayeyiban},#{zhunshihao},
+		#{zhunshijiaohao},#{zhunshijiaocha},#{shouhouhao},#{shouhouzhong},
+		#{shouhoucha},#{zhilianghao},#{zhiliangyiban},#{zhiliangcha}
+		)
+	</insert>
     
 </mapper>

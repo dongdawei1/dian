@@ -258,4 +258,14 @@ public class OrderController {
 		response.getWriter().println("fail");
 
 	}
+
+
+
+    /**
+     * 接单用户获取待处理订单
+     * */
+public ServerResponse<Object> peceiptGetPendingOrders(){
+	return null;
+}
+
 }

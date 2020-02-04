@@ -24,6 +24,7 @@ import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.ServiceTypeMapper;
 import com.dian.mmall.dao.releaseDao.DepartmentStoreMapper;
 import com.dian.mmall.dao.releaseDao.EquipmentMapper;
+import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.dao.releaseDao.MenuAndRenovationAndPestControlMapper;
 import com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper;
 import com.dian.mmall.dao.releaseDao.RentMapper;
@@ -37,6 +38,7 @@ import com.dian.mmall.pojo.chuzufang.Rent;
 import com.dian.mmall.pojo.gongfu.DepartmentStore;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
+import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.qianyue.Peixun;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.OrderUser;
@@ -91,6 +93,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private UserAccountService userAccountService;
 	@Autowired
 	private LiushuiService liushuiService;
+	@Autowired
+	private EvaluateMapper evaluateMapper;
 	
 	@Autowired
 	private WholesaleCommodityMapper wholesaleCommodityMapper;
@@ -243,6 +247,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 		}
 
 		List<String> addressDetailedList = peixunMapper.getAddressDetailed(detailed, addressDetailed);
+	
+		
 		return ServerResponse.createBySuccess(addressDetailedList);
 	}
 
@@ -429,6 +435,15 @@ public class ToExamineServiceImpl implements ToExamineService {
 				
 				// 更新实名库
 				realNameMapper.admin_set_addOrder(realName);
+				
+				//创建 接单用户评价
+				Evaluate evaluate=new Evaluate();
+				evaluate.setPermissionid(-1);
+				evaluate.setUserId(userId);
+				evaluate.setReleaseid(-1);
+				evaluateMapper.adminAddOrderCreateEvaluate(evaluate);
+				
+				
 				return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
 
 			} else if ((boolean) checknullMap.get("result") == false) {

@@ -13,6 +13,8 @@ public interface EvaluateMapper {
 
 	Evaluate selectEvvaluateById(long evaluateid);
 	Evaluate selectEvvaluateByUserId(long userId);
+   
+	void adminAddOrderCreateEvaluate(Evaluate evaluate);
 
 
 	

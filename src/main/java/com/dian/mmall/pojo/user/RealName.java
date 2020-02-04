@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class RealName {
 
 	// 实名信息 ,
@@ -21,6 +23,7 @@ public class RealName {
 	private Integer districtCountyId; // 区，
 	private String detailed;// 省市区
 	private String addressDetailed; // 详细地址，
+	private String addressDianming;//门牌
 	private String licenseUrl; // 营业执照图片url
 	private String contact; // 收/送货联系方式
 	private String consigneeName; // 收/送货人姓名
@@ -43,14 +46,6 @@ public class RealName {
 	private String qianyueTime;// 预约线下签约时间
 	private String qianyueDetailed;// 签约地址
 
-	@Override
-	public String toString() {
-		return "RealName [id=" + id + ", userId=" + userId + ", provincesId=" + provincesId + ", cityId=" + cityId
-				+ ", districtCountyId=" + districtCountyId + ", detailed=" + detailed + ", addressDetailed="
-				+ addressDetailed + ", licenseUrl=" + licenseUrl + ", contact=" + contact + ", consigneeName="
-				+ consigneeName + ", authentiCationStatus=" + authentiCationStatus + ", authentiCationFailure="
-				+ authentiCationFailure + ", email=" + email + ", createTime=" + createTime + ", updateTime="
-				+ updateTime + "]";
-	}
+
 
 }

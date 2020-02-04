@@ -11,24 +11,26 @@
 		insert into t_user_realname (
 		userId, provincesId, cityId,
 		districtCountyId,addressDetailed,contact,consigneeName,
-		authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender,userName,userType,examineName,examineTime,companyName
+		authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender,userName,userType,examineName,examineTime,companyName,
+		addressDianming
 		) values (
 		#{userId}, #{provincesId}, #{cityId},
 		#{districtCountyId},#{addressDetailed},#{contact},
-		#{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed},#{eag},#{gender},#{userName},#{userType},#{examineName},#{examineTime},#{companyName}
+		#{consigneeName},#{authentiCationStatus},#{email},#{createTime},#{licenseUrl},#{detailed},#{eag},#{gender},#{userName},#{userType},#{examineName},#{examineTime},#{companyName},
+		#{addressDianming}
 		)
 	</insert>
 
 	<select id="getRealName"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select id,addressDetailed,contact ,consigneeName,
+		select id,CONCAT(addressDetailed,addressDianming)addressDetailed,contact ,consigneeName,
 		email,detailed,eag,gender,companyName,provincesId,
 		cityId,districtCountyId,isReceipt,authentiCationStatus,authentiCationFailure
 		from t_user_realname where userId=#{userId}
 	</select>
 	<select id="getUserRealName"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select id,addressDetailed,contact ,consigneeName,licenseUrl,
+		select id,CONCAT(addressDetailed,addressDianming)addressDetailed,contact ,consigneeName,licenseUrl,
 		email,detailed,eag,gender,companyName,provincesId,
 		cityId,districtCountyId,authentiCationStatus,authentiCationFailure
 		from t_user_realname where userId=#{userId}
@@ -41,7 +43,8 @@
 	<update id="updateRealName">
 		update t_user_realname set
 		provincesId=#{provincesId},cityId=#{cityId},districtCountyId=#{districtCountyId},addressDetailed=#{addressDetailed},contact=#{contact},consigneeName=#{consigneeName},
-		authentiCationStatus=#{authentiCationStatus},email=#{email},licenseUrl=#{licenseUrl},detailed=#{detailed},updateTime=#{updateTime},eag=#{eag},gender=#{gender},companyName=#{companyName}
+		authentiCationStatus=#{authentiCationStatus},email=#{email},licenseUrl=#{licenseUrl},detailed=#{detailed},updateTime=#{updateTime},eag=#{eag},gender=#{gender},companyName=#{companyName},
+		addressDianming=#{addressDianming}
 		where id=#{id}
 	</update>
 	<!--审批用户实名 -->
@@ -70,7 +73,13 @@
 	<!--审核分页待审批 -->
 	<select id="getRealNameAll"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select * from t_user_realname where authentiCationStatus in(1,3)
+		select 
+		
+		id, userId,provincesId,cityId,districtCountyId,CONCAT(addressDetailed,addressDianming)addressDetailed,
+		contact,consigneeName,authentiCationStatus,authentiCationFailure,email,createTime,licenseUrl,
+		detailed,eag,gender,userName,userType,examineName,examineTime,companyName,isReceipt,addReceiptTime,
+		examineAddReceiptName,commitAddReceiptName,qianyueTime,qianyueDetailed
+		from t_user_realname where authentiCationStatus in(1,3)
 		<if test="userName!=null and userName.trim()!=''">and userName=#{userName}   </if>
 		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
 		order by createTime limit #{pageLength}, #{pageSize}
@@ -79,18 +88,18 @@
 
 	<select id="getRealNameById"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select addressDetailed,detailed,companyName from t_user_realname
+		select CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName from t_user_realname
 		where authentiCationStatus=2 and id=#{id}
 	</select>
 
 	<select id="getRealNameByuserId"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select addressDetailed,detailed,companyName from t_user_realname
+		select CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName from t_user_realname
 		where authentiCationStatus=2 and userId=#{userId}
 	</select>
 	<select id="getRealNameByIdContact"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select addressDetailed,detailed,companyName,consigneeName,contact from
+		select CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName,consigneeName,contact from
 		t_user_realname
 		where authentiCationStatus=2 and id=#{id}
 	</select>
@@ -118,7 +127,7 @@
 	<select id="admin_select_addOrder"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		id,userId,addressDetailed,contact,email,consigneeName,detailed,userName
+		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact,email,consigneeName,detailed,userName
 		,companyName,addReceiptTime,isReceipt,
 		qianyueTime,qianyueDetailed
 		from t_user_realname where authentiCationStatus=2 and isReceipt in(3,4)
@@ -149,7 +158,7 @@
 	<select id="admin_select_signingOrder"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		id,userId,addressDetailed,contact,email,consigneeName,detailed,userName
+		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact,email,consigneeName,detailed,userName
 		,companyName,addReceiptTime,isReceipt,
 		qianyueTime,qianyueDetailed
 		from t_user_realname where authentiCationStatus=2 and isReceipt in (4,6)
@@ -196,7 +205,7 @@
 
 	<select id="admin_select_signingOrderById"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select id,userId,addressDetailed,contact ,consigneeName,
+		select id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact ,consigneeName,
 		detailed,companyName,provincesId,
 		cityId,districtCountyId
 		from t_user_realname where id=#{id} and isReceipt in(6,4) and
@@ -205,7 +214,7 @@
 
 	<select id="admin_select_realNameByContact"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select id,userId,addressDetailed,contact ,consigneeName,
+		select id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact ,consigneeName,
 		detailed,companyName,provincesId,
 		cityId,districtCountyId
 		from t_user_realname where contact=#{contact}

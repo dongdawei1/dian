@@ -26,6 +26,7 @@ public enum ResponseMessage {
    	BianJiChengGongChongXinDengLu("编辑成功重新登陆"),
 	YongHuLeiXingCuoWu("用户类型错误"),
 	ChengShiBuHeFa("城市输入不合法"),
+	gaiqueyuchaxunshibai("该区域线下培训地址查询失败，请手动添加"),
 	ChengGong("创建成功"),
 	GengXinYongHuXinXiShiBai("更新用户信息失败"),
 	LuoKuShiBai("落库失败"), 

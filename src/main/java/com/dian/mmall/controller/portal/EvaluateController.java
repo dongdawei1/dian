@@ -22,7 +22,7 @@ public class EvaluateController {
 	@Autowired
 	private EvaluateService evaluateService;
 	
-	//创建简历
+	//评价
     @RequestMapping(value = "create_evaluate",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> create_evaluate(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){

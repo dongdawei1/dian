@@ -107,7 +107,7 @@ public class RealNameServiceImpl implements RealNameService {
 		if (isbusiness == 2 || isbusiness == 6) {
 			String licenseUrl = null; // 营业执照图片url
 			String email = null;
-
+     
 			try {
 				// 图片
 				List<Picture> listObj3 = JsonUtil.list2Obj((ArrayList<Picture>) params_map.get("licenseUrl"),
@@ -167,6 +167,10 @@ public class RealNameServiceImpl implements RealNameService {
 				if (email != null) {
 					realName.setEmail(email);
 				}
+				if(isbusiness==2) {  
+					realName.setAddressDianming(params_map.get("address_dianming").toString().trim());
+				}
+				
 				realName.setAddressDetailed(address_detailed);
 				realName.setLicenseUrl(licenseUrl);
 				realName.setContact(EncrypDES.encryptPhone(contact));
