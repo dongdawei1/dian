@@ -74,4 +74,7 @@ public interface RealNameMapper {
 
 	RealName getRealNameByIdContact(long id);
 
+
+	String getRealNameAddressDetailed(long userId);
+
 }

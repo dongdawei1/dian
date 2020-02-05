@@ -22,12 +22,14 @@ import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.goumaidingdan.OrderCommonOfferMapper;
 import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.pojo.Order;
+import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.PayOrder;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 import com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer;
 import com.dian.mmall.pojo.goumaidingdan.OrderCommonOfferEvaluateVo;
 import com.dian.mmall.pojo.goumaidingdan.PurchaseSeeOrderVo;
+import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
@@ -158,6 +160,7 @@ public class OrderServiceImpl implements OrderService {
 						order.setCreateTime(newdateString);
 						order.setOrderStatus(11);
 						order.setPayStatus(0);
+						order.setReleaseType(4);
 						order.setCommoditySnapshot(JsonUtil.obj2StringPretty(listObj4));
 						String commodityJiage = params.get("commodityJiage").toString().trim();
 						int commodityJiage_int = 0;
@@ -1288,35 +1291,128 @@ public class OrderServiceImpl implements OrderService {
 		return null;
 	}
 
-	
 	/**
 	 * 查询是否有待支付的payOrder
-	 * */
+	 */
 	@Override
 	public ServerResponse<String> get_pay_order_all(long userId) {
-		int count=payOrderMapper.get_pay_order_all(userId);
-		if(count>0) {
+		int count = payOrderMapper.get_pay_order_all(userId);
+		if (count > 0) {
 			return ServerResponse.createBySuccess("YES");
 		}
 		return ServerResponse.createBySuccess("NO");
 	}
+
 	/**
 	 * 查询支付状态
-	 * */
+	 */
 
 	@Override
 	public ServerResponse<String> get_pay_order_byOrderId(long userId, long orderId) {
-		PayOrder payOrder=payOrderMapper.get_pay_order_byOrderId(userId,orderId,0);
-		if(payOrder==null) {
+		PayOrder payOrder = payOrderMapper.get_pay_order_byOrderId(userId, orderId, 0);
+		if (payOrder == null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
 		}
-		
-		if(payOrder.getState()==1 || payOrder.getState()==3) {
+
+		if (payOrder.getState() == 1 || payOrder.getState() == 3) {
 			return ServerResponse.createBySuccess("YES");
-		}else if(payOrder.getState()==2 || payOrder.getState()==4) {
+		} else if (payOrder.getState() == 2 || payOrder.getState() == 4) {
 			return ServerResponse.createBySuccess("FAIL");
 		}
 		return ServerResponse.createBySuccess("NO");
+	}
+
+	@Override
+	public ServerResponse<Object> peceiptGetPendingOrders(long userId, Map<String, Object> params) {
+
+//		provincesIdint(20) NULL省
+//		cityIdint(21) NULL市
+//		districtCountyIdint(20) NULL区
+		//
+		String currentPage_string = params.get("currentPage").toString().trim();
+		String pageSize_string = params.get("pageSize").toString().trim();
+		int currentPage = 0;
+		int pageSize = 0;
+
+		if (currentPage_string != null && currentPage_string != "") {
+			currentPage = Integer.parseInt(currentPage_string);
+			if (currentPage <= 0) {
+				return ServerResponse.createByErrorMessage("页数不能小于0");
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入页数");
+		}
+
+		if (pageSize_string != null && pageSize_string != "") {
+			pageSize = Integer.parseInt(pageSize_string);
+			if (pageSize <= 0) {
+				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+			}
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		}
+
+		// 类型
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		Integer releaseType = 4;
+		if (releaseTypeString != null && !releaseTypeString.equals("")) {
+			releaseType = Integer.valueOf(releaseTypeString);
+		}
+
+		// selectedOptions 城市id
+
+		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
+				List.class);
+		Integer provincesId = 0;
+		Integer cityId = 0;
+		Integer districtCountyId = 0;
+		RealName realName = null;
+		if (selectedOptions_list.size() == 3) {
+			provincesId = selectedOptions_list.get(0);
+			cityId = selectedOptions_list.get(1);
+			districtCountyId = selectedOptions_list.get(2);
+		} else {
+			realName = realNameMapper.getRealName(userId);
+			provincesId = realName.getProvincesId();
+			cityId = realName.getCityId();
+			districtCountyId = realName.getDistrictCountyId();
+		}
+
+		// 送貨日期
+		String giveTakeTime = params.get("giveTakeTime").toString().trim();
+		if (giveTakeTime != null && !giveTakeTime.equals("")) {
+			giveTakeTime = "%" + giveTakeTime + "%";
+		}
+
+		Page<Order> order_pagePage = new Page<Order>();
+
+		long zongtiaoshu = orderMapper.peceiptGetPendingOrdersZongtiaoshu(provincesId, cityId, districtCountyId,
+				releaseType, giveTakeTime);
+
+		order_pagePage.setTotalno(zongtiaoshu);
+		order_pagePage.setPageSize(pageSize);
+		order_pagePage.setCurrentPage(currentPage); // 当前页
+		if (zongtiaoshu == 0) {
+			return ServerResponse.createBySuccess(order_pagePage);
+		}
+
+		// 查询list
+		List<Order> orderList = orderMapper.peceiptGetPendingOrders((currentPage - 1) * pageSize, pageSize, provincesId,
+				cityId, districtCountyId, releaseType, giveTakeTime);
+		for (int i = 0; i < orderList.size(); i++) {
+			Order o = orderList.get(i);
+			String addressDetailed = realNameMapper.getRealNameAddressDetailed(o.getPurchaseUserId());
+			o.setAddressDetailed(addressDetailed);
+			o.setPurchaseUserId(0);
+			orderList.set(i, o);
+		}
+		order_pagePage.setDatas(orderList);
+		if (realName.getIsReceipt() == 2) {
+			// 接单用户开启轮询
+			return ServerResponse.createBySuccess("YES", order_pagePage);
+		}
+		return ServerResponse.createBySuccess(order_pagePage);
 	}
 
 }

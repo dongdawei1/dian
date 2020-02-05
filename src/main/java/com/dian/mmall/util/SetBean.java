@@ -7,6 +7,10 @@ import ch.qos.logback.core.status.Status;
 
 public class SetBean {
 	
+	/**
+	 * 订单表中用这个了 sql中   ‘需求企业’ 不能改
+	 * */
+	
 public static ServerResponse<String> setRole(Integer role){
 	if(role!=0) {
 		if(role==2 ) {

@@ -28,4 +28,10 @@ public interface OrderMapper {
 
 	int callbackUpDateOrder(Order order);
 
+	long peceiptGetPendingOrdersZongtiaoshu(Integer provincesId, Integer cityId, Integer districtCountyId,
+			Integer releaseType, String giveTakeTime);
+
+	List<Order> peceiptGetPendingOrders(int pageLength, int pageSize, Integer provincesId, Integer cityId,
+			Integer districtCountyId, Integer releaseType, String giveTakeTime);
+
 }

@@ -264,8 +264,22 @@ public class OrderController {
     /**
      * 接单用户获取待处理订单
      * */
-public ServerResponse<Object> peceiptGetPendingOrders(){
-	return null;
+	@RequestMapping(value = "peceiptGetPendingOrders", method = RequestMethod.POST)
+	@ResponseBody
+public ServerResponse<Object> peceiptGetPendingOrders(HttpServletRequest httpServletRequest,
+		@RequestBody Map<String, Object> params){
+	// 检查登陆
+			ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
+			if (serverResponse.getStatus() != 0) {
+				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+			}
+			User user = (User) serverResponse.getData();
+			if(user.getIsAuthentication()!=2) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+			}
+
+			return orderService.peceiptGetPendingOrders(user.getId(),params);
+
 }
 
 }

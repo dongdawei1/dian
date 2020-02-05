@@ -21,6 +21,6 @@ public interface OrderService {
 	ServerResponse<String> callback(SortedMap<String, String> sortedMap);
 	ServerResponse<String> get_pay_order_all(long userId);
 	ServerResponse<String> get_pay_order_byOrderId(long userId, long orderId);
-	ServerResponse<Object> peceiptGetPendingOrders(User user);
+	ServerResponse<Object> peceiptGetPendingOrders(long userId,Map<String, Object> params);
 	
 }

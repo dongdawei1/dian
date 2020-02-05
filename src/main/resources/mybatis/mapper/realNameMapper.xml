@@ -219,5 +219,11 @@
 		cityId,districtCountyId
 		from t_user_realname where contact=#{contact}
 	</select>
-
+   
+   <!-- 查询订单的发布者的街道小区  -->
+   	<select id="getRealNameAddressDetailed"
+		resultType="String">
+		select addressDetailed from t_user_realname where userId=#{userId}
+	</select>
+   
 </mapper>
