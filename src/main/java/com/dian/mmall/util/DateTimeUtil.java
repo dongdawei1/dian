@@ -218,12 +218,37 @@ public class DateTimeUtil {
 	public static void main(String[] args) {
     System.out.println(dateTimeToDateString((new Date()).getTime()-15*60*1000));
 		Date nowDate = new Date();
-		long lon= nowDate.getTime()+2*60*60*1000;
-		System.out.println(nowDate);
-		System.out.println(lon);
-		System.out.println(nowDate.getTime());
-		nowDate=new Date(lon);
-		System.out.println(nowDate);
+//		long lon=1549641600000L;
+//		System.out.println(nowDate);
+//		System.out.println(lon);
+//		System.out.println(nowDate.getTime());
+//		nowDate=new Date(lon);
+		
+//		policyBeginTime":1549641600000,"
+//		policyEndTime":1581177599000,"
+//		updateTime":1580973296000,"
+//
+//""startCancelTime":31507200000,"finishCancelTime":31507200000,"
+//		+ ","policyTime":1580973296000,"
+//,"policyInitBeginTime":1549641600000,"
+//		policyInitEndTime":1581177599000,
+		
+		
+		
+//,"policyEndTime":1580917799000,"policyInitBeginTime":1549641600000,"policyInitEndTime":1580918399000,"productCode":"AG13","productType":"SHOP","groupPlanId":-1,"planId":0,"maxInsuredAmount":0.0,"premiumRate":0.0,"waitPeriodTime":31507200000,"payRate":0.0,"insuredAmount":0.0,"initType":0,"sourceType":27,"sourceTradeNo":"1806525fa2a316a4c072af7650872867","shouldReciveTime":31507200000,"frontCategoryId":null,"payOrderId":"288397016306532358","insurantName":"沉沉额","insurantBirthday":294854400000,"insurantCertNo":"110101197905077336","insurantCertNoEnc":"AbH4rZaaG+yCpD90+7CNc8VCm3QxmJiKhU8mBj+MpRU=","insurantCertNoType":1,"insurantGender":1,"insurantMobile":null,"insurantMobileEnc":null,"insurantRelationToApplicant":2,"originStatus":3}],"httpStatus":200,"errorCode":0,"errorMsg":"ok"},"status":200}||_msg=http外部请求成功响应||spanid=860003276045ec0||traceid=0a60647a5e3be1ec0001b25e00002020
+// "policyEndTime":1581177599000,"policyInitBeginTime":1581004800000,"policyInitEndTime":1612627199000,"productCode":"AG13","productType":"SHOP","groupPlanId":-1,"planId":0,"maxInsuredAmount":0.0,"premiumRate":0.0,"waitPeriodTime":31507200000,"payRate":0.0,"insuredAmount":0.0,"initType":0,"sourceType":27,"sourceTradeNo":"1806525fa2a316a4c072af7650872867","shouldReciveTime":31507200000,"frontCategoryId":null,"payOrderId":"288397016306532358","insurantName":"沉沉额","insurantBirthday":294854400000,"insurantCertNo":"110101197905077336","insurantCertNoEnc":"AbH4rZaaG+yCpD90+7CNc8VCm3QxmJiKhU8mBj+MpRU=","insurantCertNoType":1,"insurantGender":1,"insurantMobile":null,"insurantMobileEnc":null,"insurantRelationToApplicant":2,"originStatus":3}],"httpStatus":200,"errorCode":0,"errorMsg":"ok"},"status":200}||_msg=http外部请求成功响应||spanid=82060109f9f1c1b||traceid=0a60647a5e3bd5180001b25e00001920
+
+		System.out.println("policyEndTime  上边成功下边失败");
+		System.out.println(dateTimeToDateString(1580917799000L));
+		System.out.println(dateTimeToDateString(1581177599000L));
+		System.out.println("policyInitBeginTime");
+		System.out.println(dateTimeToDateString(1549641600000L));
+		System.out.println(dateTimeToDateString(1581004800000L));
+		System.out.println("policyInitEndTime");
+		System.out.println(dateTimeToDateString(1580918399000L));
+		System.out.println(dateTimeToDateString(1612627199000L));
+		
+		
 		
 		SimpleDateFormat sdf = new SimpleDateFormat(STANDARD_FORMAT, Locale.CHINA);
 		

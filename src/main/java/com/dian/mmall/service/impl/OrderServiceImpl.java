@@ -1367,13 +1367,13 @@ public class OrderServiceImpl implements OrderService {
 		Integer provincesId = 0;
 		Integer cityId = 0;
 		Integer districtCountyId = 0;
-		RealName realName = null;
+		RealName realName =  realNameMapper.getRealName(userId);
 		if (selectedOptions_list.size() == 3) {
 			provincesId = selectedOptions_list.get(0);
 			cityId = selectedOptions_list.get(1);
 			districtCountyId = selectedOptions_list.get(2);
 		} else {
-			realName = realNameMapper.getRealName(userId);
+			
 			provincesId = realName.getProvincesId();
 			cityId = realName.getCityId();
 			districtCountyId = realName.getDistrictCountyId();
@@ -1408,6 +1408,7 @@ public class OrderServiceImpl implements OrderService {
 			orderList.set(i, o);
 		}
 		order_pagePage.setDatas(orderList);
+		System.out.println(realName.toString());
 		if (realName.getIsReceipt() == 2) {
 			// 接单用户开启轮询
 			return ServerResponse.createBySuccess("YES", order_pagePage);
