@@ -34,4 +34,8 @@ public interface OrderMapper {
 	List<Order> peceiptGetPendingOrders(int pageLength, int pageSize, Integer provincesId, Integer cityId,
 			Integer districtCountyId, Integer releaseType, String giveTakeTime);
 
+	long myPurchaseOrderZongtiaoshu(Integer releaseType, String createTime, long userId);
+
+	List<Order> myPurchaseOrder(int pageLength, int pageSize, Integer releaseType, String createTime, long userId);
+
 }

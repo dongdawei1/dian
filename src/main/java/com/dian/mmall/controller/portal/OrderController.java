@@ -163,13 +163,13 @@ public class OrderController {
 		return orderService.native_pay_order(user, spbillCreateIp, id);
 
 	}
-	
+
 	/**
 	 * 获取是否有待支付的支付订单
-	 * */ 
+	 */
 	@RequestMapping(value = "get_pay_order_all", method = RequestMethod.GET)
 	@ResponseBody
-	public ServerResponse<String> get_pay_order_all(HttpServletRequest httpServletRequest,@RequestParam String uuid) {
+	public ServerResponse<String> get_pay_order_all(HttpServletRequest httpServletRequest, @RequestParam String uuid) {
 		// 检查登陆
 		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
 		if (serverResponse.getStatus() != 0) {
@@ -187,13 +187,13 @@ public class OrderController {
 
 	}
 
-	
 	/**
 	 * 根据orderId查询支付状态
-	 * */ 
+	 */
 	@RequestMapping(value = "get_pay_order_byOrderId", method = RequestMethod.GET)
 	@ResponseBody
-	public ServerResponse<String> get_pay_order_byOrderId(HttpServletRequest httpServletRequest, @RequestParam long orderId,@RequestParam String uuid) {
+	public ServerResponse<String> get_pay_order_byOrderId(HttpServletRequest httpServletRequest,
+			@RequestParam long orderId, @RequestParam String uuid) {
 		// 检查登陆
 		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
 		if (serverResponse.getStatus() != 0) {
@@ -207,10 +207,10 @@ public class OrderController {
 		}
 
 		String spbillCreateIp = IpUtils.getIpAddr(httpServletRequest);
-		return orderService.get_pay_order_byOrderId(user.getId(),orderId);
+		return orderService.get_pay_order_byOrderId(user.getId(), orderId);
 
 	}
-	
+
 	/**
 	 * 微信支付回调
 	 */
@@ -229,9 +229,6 @@ public class OrderController {
 		in.close();
 		inputStream.close();
 		Map<String, String> callbackMap = WXPayUtil.xmlToMap(sb.toString());
-
-		System.out.println(callbackMap.toString());
-
 		SortedMap<String, String> sortedMap = WXPayUtil.getSortedMap(callbackMap);
 		// 判断签名是否正确
 		if (WXPayUtil.isCorrectSign(sortedMap, weChatConfig.getKey())) {
@@ -259,27 +256,52 @@ public class OrderController {
 
 	}
 
-
-
-    /**
-     * 接单用户获取待处理订单
-     * */
+	/**
+	 * 接单用户获取待处理订单
+	 */
 	@RequestMapping(value = "peceiptGetPendingOrders", method = RequestMethod.POST)
 	@ResponseBody
-public ServerResponse<Object> peceiptGetPendingOrders(HttpServletRequest httpServletRequest,
-		@RequestBody Map<String, Object> params){
-	// 检查登陆
-			ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-			if (serverResponse.getStatus() != 0) {
-				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-			}
-			User user = (User) serverResponse.getData();
-			if(user.getIsAuthentication()!=2) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
-			}
+	public ServerResponse<Object> peceiptGetPendingOrders(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		// 检查登陆
+		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		User user = (User) serverResponse.getData();
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 
-			return orderService.peceiptGetPendingOrders(user.getId(),params);
+		return orderService.peceiptGetPendingOrders(user.getId(), params);
 
-}
+	}
 
+	
+	/**
+	 * 发布企业查询所有订单
+	 */
+	@RequestMapping(value = "myPurchaseOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> myPurchaseOrder(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		// 检查登陆
+		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		User user = (User) serverResponse.getData();
+		//检查实名
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		// 检查权限
+
+		if (user.getRole() != 1 && user.getRole() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		return orderService.myPurchaseOrder(user.getId(), params);
+
+	}
+	
 }

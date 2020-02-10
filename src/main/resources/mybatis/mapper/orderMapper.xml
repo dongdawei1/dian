@@ -127,19 +127,43 @@
 
 	<select id="peceiptGetPendingOrders"
 		resultType="com.dian.mmall.pojo.Order">
-		select id,purchaseUserId,giveTakeTime,remarks,createTime,releaseType,commoditySnapshot from orderform
+		select
+		id,purchaseUserId,giveTakeTime,remarks,createTime,releaseType,commoditySnapshot
+		from orderform
 		where orderStatus=11
 		and
 		releaseType=#{releaseType}
-		and purchaseUserId in (
+		and
+		purchaseUserId in (
 		select userId from
-		t_user_realname where provincesId=#{provincesId} and cityId=#{cityId}
-		and districtCountyId=#{districtCountyId} and userType='需求企业' )
+		t_user_realname where
+		provincesId=#{provincesId} and cityId=#{cityId}
+		and
+		districtCountyId=#{districtCountyId} and userType='需求企业' )
 		<if test="giveTakeTime!=null and giveTakeTime.trim()!=''">and giveTakeTime like #{giveTakeTime}   </if>
 		order by updateTime desc
 		limit #{pageLength}, #{pageSize}
 	</select>
 	<!-- 首页查询待抢订单 分页 结束 -->
+	<!-- 发布企业用户中心分页查询开始 -->
+	<select id="myPurchaseOrderZongtiaoshu" resultType="long">
+		select count(*) from orderform
+		where
+		releaseType=#{releaseType} and purchaseUserId=#{userId}
+		<if test="createTime!=null and createTime.trim()!=''">and createTime like #{createTime}   </if>
+	</select>
 
-
+	<select id="myPurchaseOrder"
+		resultType="com.dian.mmall.pojo.Order">
+		select
+		id,purchaseUserId,giveTakeTime,remarks,createTime,releaseType,commoditySnapshot,commodityZongJiage,
+		orderStatus,saleUserId,collectTime
+		from orderform
+		where 
+		releaseType=#{releaseType} and purchaseUserId=#{userId}
+		<if test="createTime!=null and createTime.trim()!=''">and createTime like #{createTime}   </if>
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+	<!-- 发布企业用户中心分页查询结束 -->
 </mapper>

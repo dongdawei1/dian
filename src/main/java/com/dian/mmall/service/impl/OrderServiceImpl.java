@@ -1367,13 +1367,13 @@ public class OrderServiceImpl implements OrderService {
 		Integer provincesId = 0;
 		Integer cityId = 0;
 		Integer districtCountyId = 0;
-		RealName realName =  realNameMapper.getRealName(userId);
+		RealName realName = realNameMapper.getRealName(userId);
 		if (selectedOptions_list.size() == 3) {
 			provincesId = selectedOptions_list.get(0);
 			cityId = selectedOptions_list.get(1);
 			districtCountyId = selectedOptions_list.get(2);
 		} else {
-			
+
 			provincesId = realName.getProvincesId();
 			cityId = realName.getCityId();
 			districtCountyId = realName.getDistrictCountyId();
@@ -1394,6 +1394,9 @@ public class OrderServiceImpl implements OrderService {
 		order_pagePage.setPageSize(pageSize);
 		order_pagePage.setCurrentPage(currentPage); // 当前页
 		if (zongtiaoshu == 0) {
+			if (realName.getIsReceipt() == 2) {
+				return ServerResponse.createBySuccess("YES", order_pagePage);
+			}
 			return ServerResponse.createBySuccess(order_pagePage);
 		}
 
@@ -1413,6 +1416,93 @@ public class OrderServiceImpl implements OrderService {
 			// 接单用户开启轮询
 			return ServerResponse.createBySuccess("YES", order_pagePage);
 		}
+		return ServerResponse.createBySuccess(order_pagePage);
+	}
+
+	@Override
+	public ServerResponse<Object> myPurchaseOrder(long userId, Map<String, Object> params) {
+		String currentPage_string = params.get("currentPage").toString().trim();
+		String pageSize_string = params.get("pageSize").toString().trim();
+		int currentPage = 0;
+		int pageSize = 0;
+
+		if (currentPage_string != null && currentPage_string != "") {
+			currentPage = Integer.parseInt(currentPage_string);
+			if (currentPage <= 0) {
+				return ServerResponse.createByErrorMessage("页数不能小于0");
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入页数");
+		}
+
+		if (pageSize_string != null && pageSize_string != "") {
+			pageSize = Integer.parseInt(pageSize_string);
+			if (pageSize <= 0) {
+				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+			}
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		}
+
+		// 类型
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		Integer releaseType = 4;
+		if (releaseTypeString != null && !releaseTypeString.equals("")) {
+			releaseType = Integer.valueOf(releaseTypeString);
+		}
+
+		// 送貨日期
+		String createTime = params.get("createTime").toString().trim();
+		if (createTime != null && !createTime.equals("")) {
+			createTime = "%" + createTime + "%";
+		}
+
+		Page<Order> order_pagePage = new Page<Order>();
+
+		long zongtiaoshu = orderMapper.myPurchaseOrderZongtiaoshu(releaseType, createTime, userId);
+
+		order_pagePage.setTotalno(zongtiaoshu);
+		order_pagePage.setPageSize(pageSize);
+		order_pagePage.setCurrentPage(currentPage); // 当前页
+		if (zongtiaoshu == 0) {
+			return ServerResponse.createBySuccess(order_pagePage);
+		}
+
+		// 查询list
+		List<Order> orderList = orderMapper.myPurchaseOrder((currentPage - 1) * pageSize, pageSize, releaseType,
+				createTime, userId);
+		for (int i = 0; i < orderList.size(); i++) {
+			Order o = orderList.get(i);
+//			购买者下单,2批发者确认，3用户关单，4取/送货 ，5待评价，6评价完成 
+//			，11发布采购订单 ，12待支付， 13发布者确认 ，16 确认收货，17超时无人接单关单，
+//			18 三十分钟已过有人接单 确认期，19 超时未支付，20接单者未支付定金，21支付失败
+          if(o.getReleaseType()==4) {
+        	  o.setPaymentTime("实时采购信息");
+          }
+			
+			
+			if (o.getOrderStatus() == 5 || o.getOrderStatus() == 6) {
+
+				RealName realName = realNameMapper.getRealNameByuserId(o.getSaleUserId());
+				o.setAddressDetailed(realName.getCompanyName());
+				o.setGuanShanTime(o.getCommodityZongJiage() / 100+"");
+				o.setGuanShanReason("已完成");
+			} else {
+				o.setAddressDetailed("--");
+				o.setGuanShanTime("--");
+				o.setCollectTime("--");
+				if(o.getOrderStatus() == 17 || o.getOrderStatus() == 19|| o.getOrderStatus() == 10 || o.getOrderStatus() == 21) {
+					o.setGuanShanReason("关单");
+				}else {
+					o.setGuanShanReason("进行中");
+				}
+			}
+
+			orderList.set(i, o);
+		}
+		order_pagePage.setDatas(orderList);
+
 		return ServerResponse.createBySuccess(order_pagePage);
 	}
 
