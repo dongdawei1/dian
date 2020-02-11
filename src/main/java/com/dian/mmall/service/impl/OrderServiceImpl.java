@@ -1419,6 +1419,7 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createBySuccess(order_pagePage);
 	}
 
+	/** 发布企业用户中心 全部发布的订单 */
 	@Override
 	public ServerResponse<Object> myPurchaseOrder(long userId, Map<String, Object> params) {
 		String currentPage_string = params.get("currentPage").toString().trim();
@@ -1477,26 +1478,119 @@ public class OrderServiceImpl implements OrderService {
 //			购买者下单,2批发者确认，3用户关单，4取/送货 ，5待评价，6评价完成 
 //			，11发布采购订单 ，12待支付， 13发布者确认 ，16 确认收货，17超时无人接单关单，
 //			18 三十分钟已过有人接单 确认期，19 超时未支付，20接单者未支付定金，21支付失败
-          if(o.getReleaseType()==4) {
-        	  o.setPaymentTime("实时采购信息");
-          }
-			
-			
+			if (o.getReleaseType() == 4) {
+				o.setPaymentTime("实时采购信息");
+			}
+
 			if (o.getOrderStatus() == 5 || o.getOrderStatus() == 6) {
 
 				RealName realName = realNameMapper.getRealNameByuserId(o.getSaleUserId());
 				o.setAddressDetailed(realName.getCompanyName());
-				o.setGuanShanTime(o.getCommodityZongJiage() / 100+"");
+				o.setGuanShanTime(o.getCommodityZongJiage() / 100 + "");
 				o.setGuanShanReason("已完成");
 			} else {
 				o.setAddressDetailed("--");
 				o.setGuanShanTime("--");
 				o.setCollectTime("--");
-				if(o.getOrderStatus() == 17 || o.getOrderStatus() == 19|| o.getOrderStatus() == 10 || o.getOrderStatus() == 21) {
+				if (o.getOrderStatus() == 17 || o.getOrderStatus() == 19 || o.getOrderStatus() == 10
+						|| o.getOrderStatus() == 21) {
 					o.setGuanShanReason("关单");
-				}else {
+				} else {
 					o.setGuanShanReason("进行中");
 				}
+			}
+
+			orderList.set(i, o);
+		}
+		order_pagePage.setDatas(orderList);
+
+		return ServerResponse.createBySuccess(order_pagePage);
+	}
+
+	/** 接单企业 首页 除抢单中的全部订单 */
+	@Override
+	public ServerResponse<Object> mySaleOrder(long userId, Map<String, Object> params) {
+		Integer isReceipt = realNameMapper.getIsReceipt(userId);
+		if (isReceipt==null || isReceipt != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.jiedanyonghukechanxun.getMessage());
+		}
+		String currentPage_string = params.get("currentPage").toString().trim();
+		String pageSize_string = params.get("pageSize").toString().trim();
+		int currentPage = 0;
+		int pageSize = 0;
+		if (currentPage_string != null && currentPage_string != "") {
+			currentPage = Integer.parseInt(currentPage_string);
+			if (currentPage <= 0) {
+				return ServerResponse.createByErrorMessage("页数不能小于0");
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入页数");
+		}
+
+		if (pageSize_string != null && pageSize_string != "") {
+			pageSize = Integer.parseInt(pageSize_string);
+			if (pageSize <= 0) {
+				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+			}
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		}
+
+		// 类型
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		Integer releaseType = 4;
+		if (releaseTypeString != null && !releaseTypeString.equals("")) {
+			releaseType = Integer.valueOf(releaseTypeString);
+		}
+
+		// 送貨日期
+		String giveTakeTime = params.get("giveTakeTime").toString().trim();
+		if (giveTakeTime != null && !giveTakeTime.equals("")) {
+			giveTakeTime = "%" + giveTakeTime + "%";
+		}
+
+		String orderStatusString = params.get("orderStatus").toString().trim();
+		int orderStatus = 0; // 2送货中 3已完成9全部
+		try {
+			orderStatus = Integer.parseInt(orderStatusString);
+		} catch (Exception e) {
+
+		}
+
+		if (orderStatus != 2 && orderStatus != 3 && orderStatus != 9) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanzhuangtaicuowu.getMessage());
+		}
+
+		Page<Order> order_pagePage = new Page<Order>();
+
+		long zongtiaoshu = orderMapper.mySaleOrderZongtiaoshu(releaseType, giveTakeTime, userId, orderStatus);
+
+		order_pagePage.setTotalno(zongtiaoshu);
+		order_pagePage.setPageSize(pageSize);
+		order_pagePage.setCurrentPage(currentPage); // 当前页
+		if (zongtiaoshu == 0) {
+			return ServerResponse.createBySuccess(order_pagePage);
+		}
+
+		// 查询list
+		List<Order> orderList = orderMapper.mySaleOrder((currentPage - 1) * pageSize, pageSize, releaseType,
+				giveTakeTime, userId, orderStatus);
+		for (int i = 0; i < orderList.size(); i++) {
+			Order o = orderList.get(i);
+//			购买者下单,2批发者确认，3用户关单，4取/送货 ，5待评价，6评价完成 
+//			，11发布采购订单 ，12待支付， 13发布者确认 ，16 确认收货，17超时无人接单关单，
+//			18 三十分钟已过有人接单 确认期，19 超时未支付，20接单者未支付定金，21支付失败
+			if (o.getReleaseType() == 4) {
+				o.setPaymentTime("实时采购信息");
+			}
+			o.setGuanShanTime(o.getCommodityZongJiage() / 100 + "");
+
+			if (o.getOrderStatus() == 5 || o.getOrderStatus() == 6) {
+				o.setGuanShanReason("已完成");
+			} else {
+				o.setCollectTime("--");
+				o.setGuanShanReason("进行中");
 			}
 
 			orderList.set(i, o);

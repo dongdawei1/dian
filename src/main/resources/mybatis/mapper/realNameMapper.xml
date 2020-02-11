@@ -9,7 +9,8 @@
 	<!--创建用户成功返回非0 -->
 	<insert id="newRealName">
 		insert into t_user_realname (
-		userId, provincesId, cityId,
+		userId, provincesId,
+		cityId,
 		districtCountyId,addressDetailed,contact,consigneeName,
 		authentiCationStatus,email,createTime,licenseUrl,detailed,eag,gender,userName,userType,examineName,examineTime,companyName,
 		addressDianming
@@ -23,21 +24,26 @@
 
 	<select id="getRealName"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select id,CONCAT(addressDetailed,addressDianming)addressDetailed,contact ,consigneeName,
+		select
+		id,CONCAT(addressDetailed,addressDianming)addressDetailed,contact
+		,consigneeName,
 		email,detailed,eag,gender,companyName,provincesId,
 		cityId,districtCountyId,isReceipt,authentiCationStatus,authentiCationFailure
 		from t_user_realname where userId=#{userId}
 	</select>
 	<select id="getUserRealName"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select id,CONCAT(addressDetailed,addressDianming)addressDetailed,contact ,consigneeName,licenseUrl,
+		select
+		id,CONCAT(addressDetailed,addressDianming)addressDetailed,contact
+		,consigneeName,licenseUrl,
 		email,detailed,eag,gender,companyName,provincesId,
 		cityId,districtCountyId,authentiCationStatus,authentiCationFailure
 		from t_user_realname where userId=#{userId}
 	</select>
 
 	<select id="isNewRealName" resultType="int">
-		select count(*) from t_user_realname where userId=#{userId}
+		select count(*) from
+		t_user_realname where userId=#{userId}
 	</select>
 	<!--重新发起用户实名 -->
 	<update id="updateRealName">
@@ -73,9 +79,10 @@
 	<!--审核分页待审批 -->
 	<select id="getRealNameAll"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select 
-		
-		id, userId,provincesId,cityId,districtCountyId,CONCAT(addressDetailed,addressDianming)addressDetailed,
+		select
+
+		id,
+		userId,provincesId,cityId,districtCountyId,CONCAT(addressDetailed,addressDianming)addressDetailed,
 		contact,consigneeName,authentiCationStatus,authentiCationFailure,email,createTime,licenseUrl,
 		detailed,eag,gender,userName,userType,examineName,examineTime,companyName,isReceipt,addReceiptTime,
 		examineAddReceiptName,commitAddReceiptName,qianyueTime,qianyueDetailed
@@ -88,25 +95,32 @@
 
 	<select id="getRealNameById"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName from t_user_realname
+		select
+		CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName
+		from t_user_realname
 		where authentiCationStatus=2 and id=#{id}
 	</select>
 
 	<select id="getRealNameByuserId"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName from t_user_realname
+		select
+		CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName
+		from t_user_realname
 		where authentiCationStatus=2 and userId=#{userId}
 	</select>
 	<select id="getRealNameByIdContact"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName,consigneeName,contact from
+		select
+		CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName,consigneeName,contact
+		from
 		t_user_realname
 		where authentiCationStatus=2 and id=#{id}
 	</select>
 
 
 	<select id="getDetailed" resultType="String">
-		select detailed from t_user_realname
+		select detailed from
+		t_user_realname
 		where authentiCationStatus!=3 and userId=#{userId}
 	</select>
 
@@ -130,7 +144,8 @@
 		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact,email,consigneeName,detailed,userName
 		,companyName,addReceiptTime,isReceipt,
 		qianyueTime,qianyueDetailed
-		from t_user_realname where authentiCationStatus=2 and isReceipt in(3,4)
+		from
+		t_user_realname where authentiCationStatus=2 and isReceipt in(3,4)
 		<if test="userName!=null and userName.trim()!=''">and userName=#{userName}   </if>
 		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
 		<if test="detailed!=null and detailed.trim()!=''">and detailed=#{detailed}   </if>
@@ -161,7 +176,8 @@
 		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact,email,consigneeName,detailed,userName
 		,companyName,addReceiptTime,isReceipt,
 		qianyueTime,qianyueDetailed
-		from t_user_realname where authentiCationStatus=2 and isReceipt in (4,6)
+		from
+		t_user_realname where authentiCationStatus=2 and isReceipt in (4,6)
 		<if test="userName!=null and userName.trim()!=''">and userName=#{userName}   </if>
 		<if test="contact!=null and contact.trim()!=''">and contact=#{contact}   </if>
 		<if test="detailed!=null and detailed.trim()!=''">and detailed=#{detailed}   </if>
@@ -205,25 +221,35 @@
 
 	<select id="admin_select_signingOrderById"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact ,consigneeName,
+		select
+		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact
+		,consigneeName,
 		detailed,companyName,provincesId,
 		cityId,districtCountyId
-		from t_user_realname where id=#{id} and isReceipt in(6,4) and
+		from t_user_realname where id=#{id} and
+		isReceipt in(6,4) and
 		authentiCationStatus=2
 	</select>
 
 	<select id="admin_select_realNameByContact"
 		resultType="com.dian.mmall.pojo.user.RealName">
-		select id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact ,consigneeName,
+		select
+		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact
+		,consigneeName,
 		detailed,companyName,provincesId,
 		cityId,districtCountyId
 		from t_user_realname where contact=#{contact}
 	</select>
-   
-   <!-- 查询订单的发布者的街道小区  -->
-   	<select id="getRealNameAddressDetailed"
-		resultType="String">
-		select addressDetailed from t_user_realname where userId=#{userId}
+
+	<!-- 查询订单的发布者的街道小区 -->
+	<select id="getRealNameAddressDetailed" resultType="String">
+		select
+		addressDetailed from t_user_realname where userId=#{userId}
 	</select>
-   
+	
+	<select id="getIsReceipt" resultType="int">
+		select isReceipt from
+		t_user_realname where userId=#{userId}
+	</select>
+
 </mapper>

@@ -77,4 +77,7 @@ public interface RealNameMapper {
 
 	String getRealNameAddressDetailed(long userId);
 
+
+	Integer getIsReceipt(long userId);
+
 }

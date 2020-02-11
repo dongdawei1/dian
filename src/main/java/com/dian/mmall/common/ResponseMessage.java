@@ -42,6 +42,7 @@ public enum ResponseMessage {
 	fabuzongshudayu("发布总数不能大于"),
 	yonghuweishiming("用户未实名"),
 	meiyouquanxian("没有发布权限"),
+	jiedaunyonghuocaikeyikan("没有接单权限"),
 	fulibunengweikong("福利不能为空"),
 	fulibuhefa("福利输入不合法"),
 	zhiweikong("职位不能为空"),
@@ -161,7 +162,7 @@ public enum ResponseMessage {
 	chuangjiandingdanshibai("创建订单落库失败"),
 	dingdanbunnegweikong("采购列表不能为空"),
 	dingdanchaxunshibai("订单查询失败"),
-	
+	jiedanyonghukechanxun("接单用户可查询"),
 	baojiashanghuchaxunshibai("报价商户查询失败"),
 	baojiajinebuyizhi("报价金额不一致"),
 	dingdanzhuangtaicuowu("订单状态有误"),

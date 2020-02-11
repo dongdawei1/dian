@@ -38,4 +38,9 @@ public interface OrderMapper {
 
 	List<Order> myPurchaseOrder(int pageLength, int pageSize, Integer releaseType, String createTime, long userId);
 
+	long mySaleOrderZongtiaoshu(Integer releaseType, String giveTakeTime, long userId, int orderStatus);
+
+	List<Order> mySaleOrder(int pageLength, int pageSize, Integer releaseType, String giveTakeTime, long userId,
+			int orderStatus);
+
 }

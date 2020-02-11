@@ -23,5 +23,6 @@ public interface OrderService {
 	ServerResponse<String> get_pay_order_byOrderId(long userId, long orderId);
 	ServerResponse<Object> peceiptGetPendingOrders(long userId,Map<String, Object> params);
 	ServerResponse<Object> myPurchaseOrder(long userId, Map<String, Object> params);
+	ServerResponse<Object> mySaleOrder(long userId, Map<String, Object> params);
 	
 }

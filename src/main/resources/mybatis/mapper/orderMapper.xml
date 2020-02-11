@@ -149,7 +149,8 @@
 	<select id="myPurchaseOrderZongtiaoshu" resultType="long">
 		select count(*) from orderform
 		where
-		releaseType=#{releaseType} and purchaseUserId=#{userId}
+		releaseType=#{releaseType} and
+		purchaseUserId=#{userId}
 		<if test="createTime!=null and createTime.trim()!=''">and createTime like #{createTime}   </if>
 	</select>
 
@@ -159,11 +160,42 @@
 		id,purchaseUserId,giveTakeTime,remarks,createTime,releaseType,commoditySnapshot,commodityZongJiage,
 		orderStatus,saleUserId,collectTime
 		from orderform
-		where 
+		where
 		releaseType=#{releaseType} and purchaseUserId=#{userId}
 		<if test="createTime!=null and createTime.trim()!=''">and createTime like #{createTime}   </if>
 		order by updateTime desc
 		limit #{pageLength}, #{pageSize}
 	</select>
 	<!-- 发布企业用户中心分页查询结束 -->
+	<!-- 接单企业首页除抢单中的全部订单开始 -->
+	<select id="mySaleOrderZongtiaoshu" resultType="long">
+		select count(*) from orderform
+		where
+		releaseType=#{releaseType} and
+		saleUserId=#{userId}
+		<if test="giveTakeTime!=null and giveTakeTime.trim()!=''">and giveTakeTime like #{giveTakeTime}   </if>
+		<if test="orderStatus==2">and orderStatus in(4,16)   </if>
+		<if test="orderStatus==3">and orderStatus in(5,6)   </if>
+		<if test="orderStatus==9">and orderStatus in(4,16,5,6)   </if>
+	</select>
+
+	<select id="mySaleOrder"
+		resultType="com.dian.mmall.pojo.Order">
+		select
+		id,giveTakeTime,createTime,releaseType,commoditySnapshot,commodityZongJiage,
+		orderStatus,saleUserId,collectTime,balanceMoney
+		from orderform
+		where
+		releaseType=#{releaseType} and
+		saleUserId=#{userId}
+		<if test="giveTakeTime!=null and giveTakeTime.trim()!=''">and giveTakeTime like #{giveTakeTime}   </if>
+		<if test="orderStatus==2">and orderStatus in(4,16)   </if>
+		<if test="orderStatus==3">and orderStatus in(5,6)   </if>
+		<if test="orderStatus==9">and orderStatus in(4,16,5,6)   </if>
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+	<!-- 接单企业首页除抢单中的全部订单结束 -->
+
 </mapper>
