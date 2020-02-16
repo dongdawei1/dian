@@ -17,6 +17,29 @@ public class CookieUtil {
     private final static String COOKIE_DOMAIN =".localhost"; //  ".dian.com";//
     //种到服务端的cookie名字
     private final static String COOKIE_NAME = "dian_token";
+    
+//    1. 获得客户机信息
+//    getRequestURL方法返回客户端发出请求时的完整URL。
+//    getRequestURI方法返回请求行中的资源名部分。
+//    getQueryString 方法返回请求行中的参数部分。
+//    getRemoteAddr方法返回发出请求的客户机的IP地址 
+//    getRemoteHost方法返回发出请求的客户机的完整主机名
+//    getRemotePort方法返回客户机所使用的网络端口号
+//    getLocalAddr方法返回WEB服务器的IP地址。
+//    getLocalName方法返回WEB服务器的主机名 
+//    getMethod得到客户机请求方式
+// 2.获得客户机请求头 
+//    getHeader(string name)方法 
+//    getHeaders(String name)方法 
+//    getHeaderNames方法 
+//
+// 3. 获得客户机请求参数(客户端提交的数据)
+//    getParameter(name)方法
+//    getParameterValues（String name）方法
+//    getParameterNames方法 
+//    getParameterMap方法
+
+
 
 //读取cookie
     public static String readLoginToken(HttpServletRequest request){

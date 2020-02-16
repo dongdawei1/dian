@@ -20,7 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
- * Created by geely  过滤器  用户的操作增加   session时长
+ * 过滤器早于拦截器执行
+ * Created by geely  过滤器  用户的操作增加   session时长 
  */
 public class SessionExpireFilter implements Filter {
     @Override
@@ -30,15 +31,17 @@ public class SessionExpireFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest)servletRequest;
-
+      
+    	System.out.println("过滤器-->servletRequest"+servletRequest.toString());
+    	HttpServletRequest httpServletRequest = (HttpServletRequest)servletRequest;
+    	System.out.println("过滤器-->httpServletRequest"+httpServletRequest.toString());
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
         if(StringUtils.isNotEmpty(loginToken)){
             //判断logintoken是否为空或者""；
             //如果不为空的话，符合条件，继续拿user信息
 
             String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-            System.out.println( userJsonStr );
+            System.out.println("SessionExpireFilter--->"+ userJsonStr );
             User user = JsonUtil.string2Obj(userJsonStr,User.class);
             
             if(user != null){
@@ -46,7 +49,10 @@ public class SessionExpireFilter implements Filter {
                 RedisShardedPoolUtil.expire(loginToken, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
             }
         }
+        //请求向下执行
         filterChain.doFilter(servletRequest,servletResponse);
+        
+        //响应时前执行    System.out.println("执行完controller在执行" );
     }
 
 

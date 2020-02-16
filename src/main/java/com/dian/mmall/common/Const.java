@@ -28,7 +28,7 @@ public class Const {
     public static String  XITONGSHOUKUAN="系统收款账户";
     
     public interface RedisCacheExtime{
-        int REDIS_SESSION_EXTIME = 60 * 1200;//1200分钟
+        int REDIS_SESSION_EXTIME = 60 * 1000;//1000分钟
         int REDIS_SESSION_CommonMenu = 60 * 3600;//3600分钟
         int REDIS_ORDER_TIME=60 * 45;//订单存放45分钟
     }

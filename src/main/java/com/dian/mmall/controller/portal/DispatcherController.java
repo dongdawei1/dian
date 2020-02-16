@@ -28,7 +28,7 @@ import com.dian.mmall.util.RedisShardedPoolUtil;
 
 
 @Controller
-@RequestMapping("/permission")
+@RequestMapping("/api/permission")
 public class DispatcherController {
 
 

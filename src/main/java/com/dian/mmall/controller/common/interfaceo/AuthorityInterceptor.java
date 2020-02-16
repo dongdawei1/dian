@@ -34,7 +34,8 @@ public class AuthorityInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		//请求controller中的方法名
-
+		
+        System.out.println("AuthorityInterceptor.preHandle()"+"2222");
 		HandlerMethod handlerMethod = (HandlerMethod)handler;
 
 		//解析HandlerMethod
@@ -61,61 +62,59 @@ public class AuthorityInterceptor implements HandlerInterceptor {
 		}
 
 		//对于拦截器中拦截manage下的login.do的处理,对于登录不拦截，直接放行
-		if(StringUtils.equals(className,"UserManageController") && StringUtils.equals(methodName,"login")){
-			logger.info("权限拦截器拦截到请求,className:{},methodName:{}",className,methodName);//如果是拦截到登录请求，不打印参数，因为参数里面有密码，全部会打印到日志中，防止日志泄露
-			return true;
-		}
+//		if(StringUtils.equals(className,"UserManageController") && StringUtils.equals(methodName,"login")){
+//			logger.info("权限拦截器拦截到请求,className:{},methodName:{}",className,methodName);//如果是拦截到登录请求，不打印参数，因为参数里面有密码，全部会打印到日志中，防止日志泄露
+//			return true;
+//		}
 
 		logger.info("权限拦截器拦截到请求,className:{},methodName:{},param:{}",className,methodName,requestParamBuffer);
 
 //		User user = (User)request.getSession().getAttribute(Const.CURRENT_USER);
 
 		User user = null;
-		String loginToken  = CookieUtil.readLoginToken(request);
-		if(StringUtils.isNotEmpty(loginToken)){
-			String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-			user = JsonUtil.string2Obj(userJsonStr,User.class);
-		}
-
-		if(user == null || (user.getRole().intValue() != Const.Role.ROLE_ADMIN)){
-			//返回false.即不会调用到controller里的方法
-			response.reset();//geelynote 这里要添加reset，否则报异常 getWriter() has already been called for this response
-			response.setCharacterEncoding("UTF-8");//geelynote 这里要设置编码，否则会乱码
-//			response.setContentType("text/html;charset=utf-8");
-			response.setContentType("application/json;charset=UTF-8");//geelynote 这里要设置返回值类型，因为全部是json接口。
-
-			PrintWriter out = response.getWriter();
-
-
-			//上传由于富文本的控件要求，要特殊处理返回值，这里面区分是否登录以及是否有权限
-			if(user == null){
-				if(StringUtils.equals(className,"ProductManageController") && (StringUtils.equals(methodName,"richtextImgUpload") )){
-					Map resultMap = Maps.newHashMap();
-					resultMap.put("success",false);
-					resultMap.put("msg","请登录管理员");
-					out.print(JsonUtil.obj2String(resultMap));
-				}else{
-					out.print(JsonUtil.obj2String(ServerResponse.createByErrorMessage("拦截器拦截,用户未登录")));
-				}
-
-			}else{
-				if(StringUtils.equals(className,"ProductManageController") && (StringUtils.equals(methodName,"richtextImgUpload") )){
-					Map resultMap = Maps.newHashMap();
-					resultMap.put("success",false);
-					resultMap.put("msg","无权限操作");
-					out.print(JsonUtil.obj2String(resultMap));
-
-				}else{
-					out.print(JsonUtil.obj2String(ServerResponse.createByErrorMessage("拦截器拦截,用户无权限操作")));
-				}
-			}
-
-			out.flush();//geelynote 这里要关闭流
-			out.close();
-
-			//geelynote
-			return false;//这里虽然已经输出，但是还会走到controller，所以要return false
-		}
+//		String loginToken  = CookieUtil.readLoginToken(request);
+//		if(StringUtils.isNotEmpty(loginToken)){
+//			String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+//			user = JsonUtil.string2Obj(userJsonStr,User.class);
+//		}
+//
+//		if(user == null || (user.getRole().intValue() != Const.Role.ROLE_ADMIN)){
+//			//返回false.即不会调用到controller里的方法
+//			response.reset();//geelynote 这里要添加reset，否则报异常 getWriter() has already been called for this response
+//			response.setCharacterEncoding("UTF-8");//geelynote 这里要设置编码，否则会乱码
+//			response.setContentType("application/json;charset=UTF-8");//geelynote 这里要设置返回值类型，因为全部是json接口。
+//
+//			PrintWriter out = response.getWriter();
+//
+//
+//			//上传由于富文本的控件要求，要特殊处理返回值，这里面区分是否登录以及是否有权限
+//			if(user == null){
+//				if(StringUtils.equals(className,"ProductManageController") && (StringUtils.equals(methodName,"richtextImgUpload") )){
+//					Map resultMap = Maps.newHashMap();
+//					resultMap.put("success",false);
+//					resultMap.put("msg","请登录管理员");
+//					out.print(JsonUtil.obj2String(resultMap));
+//				}else{
+//					out.print(JsonUtil.obj2String(ServerResponse.createByErrorMessage("拦截器拦截,用户未登录")));
+//				}
+//
+//			}else{
+//				if(StringUtils.equals(className,"ProductManageController") && (StringUtils.equals(methodName,"richtextImgUpload") )){
+//					Map resultMap = Maps.newHashMap();
+//					resultMap.put("success",false);
+//					resultMap.put("msg","无权限操作");
+//					out.print(JsonUtil.obj2String(resultMap));
+//
+//				}else{
+//					out.print(JsonUtil.obj2String(ServerResponse.createByErrorMessage("拦截器拦截,用户无权限操作")));
+//				}
+//			}
+//
+//			out.flush();//geelynote 这里要关闭流
+//			out.close();
+//
+//			return false;//这里虽然已经输出，但是还会走到controller，所以要return false
+//		}
 		return true;
 	}
 
