@@ -39,7 +39,7 @@ import com.dian.mmall.util.RedisPoolUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
-@RequestMapping("/api/toExamine/")
+@RequestMapping(Const.PCAPI+"toExamine/")
 public class ToExamineController {
 	//管理员接口审批
 	

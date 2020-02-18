@@ -32,8 +32,7 @@ mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
 #文件上传
 cbs:
-    imagesPath:
-        file:/E:/img/  
+    imagesPath: file:E:/img/
 #=================================微信相关====================================
 wxpay:
   #公众号

@@ -1,4 +1,4 @@
-package com.dian.mmall.controller.portal;
+package com.dian.comController;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
-@RequestMapping("/api/uploadDown/")
+@RequestMapping(Const.APIV3+"uploadDown/")
 public class UploadDownController {
   
 	//图片访问地址  http://localhost:8080/img/201907251001091.jpg

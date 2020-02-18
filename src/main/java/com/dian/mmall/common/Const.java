@@ -19,6 +19,16 @@ public class Const {
     public static final String USERNAME = "username";
     public static final String TOKEN_PREFIX = "token_";
   
+    public static final String PCAPPID = "DIANTOP";
+    public static final String APPAPPID = "DIANTOA";
+    
+    public static final String PCAPI = "/api/v1/vp/";  //pc
+    public static final String APPAPI = "/api/v1/va/"; //app
+    public static final String APIV1 = "/api/v1/";
+    public static final String APIV3 = "/api/v3/";  //图片上传相关
+    
+    public static final String APIV2 = "/api/v2/"; //登陆相关
+    
     public static String  PATH_E_IMG="E:/img/";
     public static String  MY_C0MMONMENU="myCommonMenu";
     public static String  ALL_C0MMONMENU="allCommonMenu";

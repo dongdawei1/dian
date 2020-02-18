@@ -9,7 +9,8 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import com.dian.mmall.controller.common.SessionExpireFilter;
+
+import com.dian.guolvAndlanjie.SessionExpireFilter;
 
 @SpringBootApplication
 @EnableScheduling

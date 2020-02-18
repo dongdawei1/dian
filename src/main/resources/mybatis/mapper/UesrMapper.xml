@@ -15,7 +15,7 @@
     </select>
     
     <select id="checkUsername" resultType="com.dian.mmall.pojo.user.User" parameterType="string" >
-        select id,username, password,role,isAuthentication,mobilePhone from t_user
+        select id,username, password,role,isAuthentication,mobilePhone,createTime from t_user
         where username = #{username}
     </select>
     

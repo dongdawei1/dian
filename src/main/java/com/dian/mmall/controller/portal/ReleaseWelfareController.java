@@ -31,7 +31,7 @@ import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
-@RequestMapping("/api/releaseWelfare/")
+@RequestMapping(Const.PCAPI+"releaseWelfare/")
 public class ReleaseWelfareController {
 	private String recruitWorkers="/home/recruitWorkers";
 	

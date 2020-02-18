@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
@@ -21,7 +22,7 @@ import com.dian.mmall.service.release.FoodAndGrainService;
 import com.dian.mmall.util.CheckLand;
 
 @Controller
-@RequestMapping("/api/departmentStore/")
+@RequestMapping(Const.PCAPI+"departmentStore/")
 public class DepartmentStoreController {
 	private String StringPath="/home/departmentStore";
 	

@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.EvaluateService;
 import com.dian.mmall.util.CheckLand;
 
 @Controller
-@RequestMapping("/api/evaluate/")
+@RequestMapping(Const.PCAPI+"evaluate/")
 public class EvaluateController {
 	@Autowired
 	private EvaluateService evaluateService;

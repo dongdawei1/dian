@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.guolvAndlanjie.ImgAuthorityInterceptor;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseCode;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
-import com.dian.mmall.controller.common.interfaceo.AuthorityInterceptor;
 import com.dian.mmall.pojo.Role;
 import com.dian.mmall.pojo.TUserRole;
 import com.dian.mmall.pojo.user.User;
@@ -46,60 +46,13 @@ import javax.servlet.http.HttpSession;
 
 
 @Controller
-@RequestMapping("/api/user/")
+@RequestMapping(Const.PCAPI+"user/")
 public class UserController {
 	
 
     @Autowired
     private IUserService iUserService;
    
-    //用户登录
-    @RequestMapping(value = "login",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> login(@RequestBody Map<String, Object> params, HttpSession session,
-    		HttpServletResponse httpServletResponse){
- 
-    	 String captcha  =params.get("captcha").toString().trim() ; 
-    	 String getPicCode=RedisShardedPoolUtil.get(params.get("uuid").toString().trim());
-    	if( ! captcha.equalsIgnoreCase(getPicCode)) {	
-    		  return ServerResponse.createByErrorMessage(ResponseMessage.YanZhengMaCuoWu.getMessage());
-    	}
-    	ServerResponse<String> response = iUserService.login(params);
-    	if(response.getStatus()==ResponseCode.SUCCESS.getCode()){
-          CookieUtil.writeLoginToken(httpServletResponse,session.getId());
-               //把用户session当做key存到数据库中，时长是 30分钟
-        	   RedisShardedPoolUtil.setEx(session.getId(), response.getMsg(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
-        	   return response;
-    	}else {
-    		return response;
-        }      
-    }
-    
-    
-    //用户注册
-    @RequestMapping(value = "create",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> create(@RequestBody Map<String,Object> params,
-    		HttpSession session, HttpServletResponse httpServletResponse){
-         
-   	 String uuid  =params.get("uuid").toString().trim() ; 
-	 String captcha  =params.get("captcha").toString().trim() ; 
-	 String getPicCode=RedisShardedPoolUtil.get(uuid);
-	if( ! captcha.equalsIgnoreCase(getPicCode)) {		
-		  return ServerResponse.createByErrorMessage(ResponseMessage.YanZhengMaCuoWu.getMessage());
-	}
-    	
-	ServerResponse<String> serverResponse= iUserService.createUser(params);
-    	
- 		if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
- 			CookieUtil.writeLoginToken(httpServletResponse,session.getId());
- 			//把用户session当做key存到数据库中，时长是 30分钟
- 			RedisShardedPoolUtil.setEx(session.getId(),serverResponse.getMsg(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
- 			return serverResponse;
- 		}
-	     	return serverResponse;
-    }
-    
   //获取用户信息
     
     @RequestMapping(value = "get_user_info",method = RequestMethod.GET)
@@ -134,37 +87,7 @@ public class UserController {
 		}
     }
 
-    //获取验证码
-    //获取验证码    @RequestBody Map<String,Object> params
-	@ResponseBody
-	@RequestMapping(value = "captcha", method = RequestMethod.GET)
-	public ServerResponse<String>  captcha(HttpServletResponse response , @RequestParam String uuid) {
-		String base64PicCodeImage;
-		String getPicCode;
-		
-		try {
-			base64PicCodeImage = CheckPicCode.encodeBase64ImgCode();
-			getPicCode=CheckPicCode.getPicCode();
-
-			if(base64PicCodeImage != null  && getPicCode!=null){
-				
-				if( RedisShardedPoolUtil.exists(uuid)) {
-			     //根据ip把验证码放到数据库
-					RedisShardedPoolUtil.del(uuid);
-					RedisShardedPoolUtil.setEx(uuid,getPicCode,8*40);
-				}else {
-					RedisShardedPoolUtil.setEx(uuid,getPicCode,8*40);
-				}
-				
-				
-	    		return ServerResponse.createBySuccessMessage(base64PicCodeImage);
-	    	}
-		} catch (IOException e) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.YangZhengMaShengChengShiBai.getMessage());
-		}
-		 return ServerResponse.createByErrorMessage(ResponseMessage.YangZhengMaShengChengShiBai.getMessage());
-
-	}
+ 
     
   
 	//修改用户基本信息

@@ -31,7 +31,7 @@ import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
-@RequestMapping("/api/realName/")
+@RequestMapping(Const.PCAPI+"realName/")
 public class RealNameController {
 
 

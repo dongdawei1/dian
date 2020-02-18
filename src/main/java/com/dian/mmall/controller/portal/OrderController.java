@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dian.config.WeChatConfig;
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
@@ -29,7 +30,7 @@ import com.dian.mmall.util.IpUtils;
 import com.dian.mmall.util.WXPayUtil;
 
 @Controller
-@RequestMapping("/api/order/")
+@RequestMapping(Const.PCAPI+"order/")
 public class OrderController {
 	private String StringPath = "/home/order";
 	@Autowired

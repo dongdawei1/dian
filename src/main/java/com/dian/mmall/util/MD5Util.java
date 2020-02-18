@@ -1,6 +1,7 @@
 package com.dian.mmall.util;
 
 import java.security.MessageDigest;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -90,5 +91,15 @@ public class MD5Util {
     }
     private static final String hexDigits[] = {"0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
-
+   
+    
+    public static String setTocken(long id,String createTime,String appid) {
+    	long l=new Date().getTime()+id;  	
+    	return appid+MD5EncodeUtf8(l+createTime).toUpperCase().substring(0,28);
+    }
+    
+    
+    public static void main(String[] args) {
+    	
+	}
 }

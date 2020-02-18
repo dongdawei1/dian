@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.Permission;
 import com.dian.mmall.pojo.user.User;
@@ -28,7 +29,7 @@ import com.dian.mmall.util.RedisShardedPoolUtil;
 
 
 @Controller
-@RequestMapping("/api/permission")
+@RequestMapping(Const.PCAPI+"permission")
 public class DispatcherController {
 
 
