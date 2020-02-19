@@ -31,151 +31,118 @@ import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
-@RequestMapping(Const.PCAPI+"releaseWelfare/")
+@RequestMapping(Const.PCAPI + "releaseWelfare/")
 public class ReleaseWelfareController {
-	private String recruitWorkers="/home/recruitWorkers";
-	
-	 @Autowired
-	    private ReleaseWelfareService releaseWelfareService;
-	//商户创建职位信息
-	    @RequestMapping(value = "create_position",method = RequestMethod.POST)
-	    @ResponseBody
-	    public ServerResponse<String> create_position(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-	    	//检查登陆
-	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-	    	if(serverResponse.getStatus()!=0) {
-	    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-	    	}
-	     	User user = (User) serverResponse.getData();
-	    	//检查权限
-	     	params.put("StringPath", recruitWorkers);
-	     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
-	    	if(serverResponse1.getStatus()!=0) {
-	    		return serverResponse1;
-	    	}
-	   
-	        
-	        return releaseWelfareService.create_position(user,params);
-	    
-	    }
-		
-	
-	//商户获取获取自己发布的除删除外的全部信息
-	
-	    @RequestMapping(value = "get_position_list",method = RequestMethod.POST)
-	    @ResponseBody
-	    public ServerResponse<Object> get_position_list(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-	    	
-	    	//检查登陆
-	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-	    	if(serverResponse.getStatus()!=0) {
-	    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-	    	}
-	     	User user = (User) serverResponse.getData();
-	    	//检查权限
-	     	params.put("StringPath", recruitWorkers);
-	     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
-	    	if(serverResponse1.getStatus()!=0) {
-	    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-	    	}
-	        
-	        return releaseWelfareService.get_position_list(user,params);
-	    
-	    }
-	
-	    
-		//职位分页
-		
-	    @RequestMapping(value = "get_position_all",method = RequestMethod.POST)
-	    @ResponseBody
-	    public ServerResponse<Object> get_position_all(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-	    	
-	    	//检查登陆
-	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-	    	if(serverResponse.getStatus()!=0) {
-	    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-	    	}
-	     	User user = (User) serverResponse.getData();
-	    	//检查权限
-	     	params.put("StringPath", recruitWorkers);
-	     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-	    	if(serverResponse1.getStatus()!=0) {
-	    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-	    	}
-	        
-	        return releaseWelfareService.get_position_all(user,params);
-	    
-	    }
-	    
-	    
-		//职位操作列
-		
-	    @RequestMapping(value = "position_operation",method = RequestMethod.POST)
-	    @ResponseBody
-	    public ServerResponse<String> position_operation(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-	    	
-	    	//检查登陆
-	    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-	    	if(serverResponse.getStatus()!=0) {
-	    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-	    	}
-	     	User user = (User) serverResponse.getData();
-	    	//检查权限
-	     	params.put("StringPath", recruitWorkers);
-	     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
-	    	if(serverResponse1.getStatus()!=0) {
-	    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-	    	}
-	        
-	        return releaseWelfareService.position_operation(user,params);
-	    
-	    }
-	    
-	 
-	    
-	    
-	    
-	    
-	    
+	private String recruitWorkers = "/home/recruitWorkers";
 
-  //获取职位类型
-    
-    @RequestMapping(value = "get_position",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> getPosition(HttpServletRequest httpServletRequest){
-   
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    		int role=user.getRole();
-    		List<String> list=new ArrayList<String>();
-    		
-    		Position[] positions=	Position.values();
-    		
-    			if( role==2) {
-    			for(int i=0;i<positions.length;i++) {
-    			if(positions[i].getRoleId()==2) {
-    				list.add(positions[i].getPositionType());
-    			}}
-    		}else if( role==5) {
-    			for(int i=0;i<positions.length;i++) {
-    			if(positions[i].getRoleId()==5) {
-    				list.add(positions[i].getPositionType());
-    			}}
-    		}else {
-    			for(int i=0;i<positions.length;i++) { 
-        				list.add(positions[i].getPositionType());
-        			}
-    		}
-    		return ServerResponse.createBySuccess(list);
+	@Autowired
+	private ReleaseWelfareService releaseWelfareService;
 
-    }
-	
-    
-    
-    
-	
+	// 商户创建职位信息
+	@RequestMapping(value = "create_position", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> create_position(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", recruitWorkers);
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return serverResponse1;
+		}
+
+		return releaseWelfareService.create_position(user, params);
+
+	}
+
+	// 商户获取获取自己发布的除删除外的全部信息
+
+	@RequestMapping(value = "get_position_list", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> get_position_list(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", recruitWorkers);
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return releaseWelfareService.get_position_list(user, params);
+
+	}
+
+	// 职位分页
+
+	@RequestMapping(value = "get_position_all", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> get_position_all(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", recruitWorkers);
+		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return releaseWelfareService.get_position_all(user, params);
+
+	}
+
+	// 职位操作列
+
+	@RequestMapping(value = "position_operation", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> position_operation(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", recruitWorkers);
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return releaseWelfareService.position_operation(user, params);
+
+	}
+
+	// 获取职位类型
+
+	@RequestMapping(value = "get_position", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getPosition(HttpServletRequest httpServletRequest) {
+
+		User user = (User) httpServletRequest.getAttribute("user");
+		int role = user.getRole();
+		List<String> list = new ArrayList<String>();
+
+		Position[] positions = Position.values();
+
+		if (role == 2) {
+			for (int i = 0; i < positions.length; i++) {
+				if (positions[i].getRoleId() == 2) {
+					list.add(positions[i].getPositionType());
+				}
+			}
+		} else if (role == 5) {
+			for (int i = 0; i < positions.length; i++) {
+				if (positions[i].getRoleId() == 5) {
+					list.add(positions[i].getPositionType());
+				}
+			}
+		} else {
+			for (int i = 0; i < positions.length; i++) {
+				list.add(positions[i].getPositionType());
+			}
+		}
+		return ServerResponse.createBySuccess(list);
+
+	}
+
 }

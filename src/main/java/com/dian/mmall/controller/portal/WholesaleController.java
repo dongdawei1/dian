@@ -31,12 +31,7 @@ public class WholesaleController {
 	@ResponseBody
 	public ServerResponse<Object> getwholesale(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
+		User user =	(User) httpServletRequest.getAttribute("user"); 
     	//检查权限
      	params.put("StringPath", StringPath);
      	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);

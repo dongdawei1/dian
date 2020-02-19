@@ -20,96 +20,77 @@ import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.CheckLand;
 
 @Controller
-@RequestMapping(Const.PCAPI+"resume/")
+@RequestMapping(Const.PCAPI + "resume/")
 public class ResumeController {
-    @Autowired
-    private ResumeService resumeService;
-	
-    private Map<String, Object> map=new HashMap<String, Object>();
-	//创建简历
-    @RequestMapping(value = "create_resume",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> create_resume(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    	//检查权限
-     	params.put("StringPath", "/home/jobWanted");
-     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return serverResponse1;
-    	}
-   
-        
-        return resumeService.create_resume(user,params);
-    
-    }
-    
-	//用户获取自己创建的简历
-    @RequestMapping(value = "select_resume_by_id",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> select_resume_by_id(HttpServletRequest httpServletRequest){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-     	map.put("StringPath", "/home/jobWanted");
-    	//检查权限
-     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,map);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-    	}
-   
-        
-        return resumeService.select_resume_by_id(user.getId());
-    
-    }
-    
-    
-	//创建简历
-    @RequestMapping(value = "operation_resume",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> operation_resume(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    	//检查权限
-     	params.put("StringPath", "/home/jobWanted");
-     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return serverResponse1;
-    	}   
-        return resumeService.operation_resume(user,params);
-    
-    }
-    //查看简历列表
-	
-    @RequestMapping(value = "get_resume_all",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<Object> get_resume_all(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    	//检查权限
-     	params.put("StringPath", "/home/jobWanted");
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
-        
-        return resumeService.get_resume_all(user,params);
-    
-    }
+	@Autowired
+	private ResumeService resumeService;
+
+	private Map<String, Object> map = new HashMap<String, Object>();
+
+	// 创建简历
+	@RequestMapping(value = "create_resume", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> create_resume(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", "/home/jobWanted");
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return serverResponse1;
+		}
+
+		return resumeService.create_resume(user, params);
+
+	}
+
+	// 用户获取自己创建的简历
+	@RequestMapping(value = "select_resume_by_id", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> select_resume_by_id(HttpServletRequest httpServletRequest) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		map.put("StringPath", "/home/jobWanted");
+		// 检查权限
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, map);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return resumeService.select_resume_by_id(user.getId());
+
+	}
+
+	// 创建简历
+	@RequestMapping(value = "operation_resume", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> operation_resume(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", "/home/jobWanted");
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return serverResponse1;
+		}
+		return resumeService.operation_resume(user, params);
+
+	}
+	// 查看简历列表
+
+	@RequestMapping(value = "get_resume_all", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> get_resume_all(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", "/home/jobWanted");
+		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return resumeService.get_resume_all(user, params);
+
+	}
 }

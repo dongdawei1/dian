@@ -18,29 +18,24 @@ import com.dian.mmall.service.release.EvaluateService;
 import com.dian.mmall.util.CheckLand;
 
 @Controller
-@RequestMapping(Const.PCAPI+"evaluate/")
+@RequestMapping(Const.PCAPI + "evaluate/")
 public class EvaluateController {
 	@Autowired
 	private EvaluateService evaluateService;
-	
-	//评价
-    @RequestMapping(value = "create_evaluate",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> create_evaluate(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    	//检查权限
-     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return serverResponse1;
-    	}
-   
-        
-        return evaluateService.create_evaluate(user,params);
-    
-    }
+
+	// 评价
+	@RequestMapping(value = "create_evaluate", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> create_evaluate(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return serverResponse1;
+		}
+
+		return evaluateService.create_evaluate(user, params);
+
+	}
 }

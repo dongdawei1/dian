@@ -20,63 +20,51 @@ import com.dian.mmall.service.ServiceTypeService;
 import com.dian.mmall.util.CheckLand;
 
 @Controller
-@RequestMapping(Const.PCAPI+"serviceType/")
+@RequestMapping(Const.PCAPI + "serviceType/")
 public class ServiceTypeController {
 
 	@Autowired
 	private ServiceTypeService serviceTypeService;
-	//创建服务名称
-    @RequestMapping(value = "create_serviceType",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> create_serviceType(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-     	  if(user.getIsAuthentication()!=2) {
-       	   return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
-          }
-   
-        
-        return serviceTypeService.create_serviceType(user,params);
-    
-    }
 
+	// 创建服务名称
+	@RequestMapping(value = "create_serviceType", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> create_serviceType(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 
-  //获取服务名称
-    @RequestMapping(value = "get_serviceType",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> get_serviceType(HttpServletRequest httpServletRequest,@RequestParam Integer releaseType ,@RequestParam(value = "serviceType", required = false ) String serviceType){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-     	  if(user.getIsAuthentication()!=2) {
-       	   return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
-          }
-        return serviceTypeService.get_serviceType(releaseType,serviceType,user.getId());
-    
-    }
+		return serviceTypeService.create_serviceType(user, params);
 
-    
-    //获取服务名称
-    @RequestMapping(value = "get_serviceTypeUrl",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> get_serviceTypeUrl(HttpServletRequest httpServletRequest,@RequestParam Integer releaseType ,@RequestParam(value = "serviceType", required = false ) String serviceType){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-     	  if(user.getIsAuthentication()!=2) {
-       	   return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
-          }
-        return serviceTypeService.get_serviceTypeUrl(releaseType,serviceType,user.getId());
-    
-    }
+	}
+
+	// 获取服务名称
+	@RequestMapping(value = "get_serviceType", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> get_serviceType(HttpServletRequest httpServletRequest,
+			@RequestParam Integer releaseType,
+			@RequestParam(value = "serviceType", required = false) String serviceType) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		return serviceTypeService.get_serviceType(releaseType, serviceType, user.getId());
+
+	}
+
+	// 获取服务名称
+	@RequestMapping(value = "get_serviceTypeUrl", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> get_serviceTypeUrl(HttpServletRequest httpServletRequest,
+			@RequestParam Integer releaseType,
+			@RequestParam(value = "serviceType", required = false) String serviceType) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		return serviceTypeService.get_serviceTypeUrl(releaseType, serviceType, user.getId());
+
+	}
 }

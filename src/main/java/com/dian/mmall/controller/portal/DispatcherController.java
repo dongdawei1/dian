@@ -20,45 +20,26 @@ import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.Permission;
 import com.dian.mmall.pojo.user.User;
-import com.dian.mmall.service.IUserService;
 import com.dian.mmall.service.PermissionService;
-import com.dian.mmall.util.CookieUtil;
-import com.dian.mmall.util.JsonUtil;
-import com.dian.mmall.util.RedisShardedPoolUtil;
-
-
 
 @Controller
-@RequestMapping(Const.PCAPI+"permission")
+@RequestMapping(Const.PCAPI + "permission")
 public class DispatcherController {
-
 
 	@Autowired
 	private PermissionService permissionService;
-	//根据角色过去菜单
-	
+	// 根据角色过去菜单
+
 	@ResponseBody
-	@RequestMapping(value="/loadData" )
+	@RequestMapping(value = "/loadData")
 	public ServerResponse<Object> loadData(HttpServletRequest httpServletRequest) {
-			 
-		List<Permission> permissions = new ArrayList<Permission>();
-		
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-    	if(StringUtils.isEmpty(loginToken)){
-    		return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
-    	}
-    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
-    	
-    	if(user != null){
- 
-    		// 获取用户权限信息
-    		List<Permission> ps = permissionService.queryPermissionsByUser(user);	
-    		return ServerResponse.createBySuccess(ps);
-    	}
-    	return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
+
+		User user = (User) httpServletRequest.getAttribute("user");
+
+		// 获取用户权限信息
+		List<Permission> ps = permissionService.queryPermissionsByUser(user);
+		return ServerResponse.createBySuccess(ps);
 
 	}
-	
 
 }

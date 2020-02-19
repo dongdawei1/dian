@@ -13,6 +13,7 @@ public enum ResponseMessage {
    YanZhengMaCuoWu("验证码错误或失效"),
    YongHuMingMiMaGeShiCouWu("用户名或密码格式错误"),
    YongHuMingMiMaCouWu("用户名或密码错误"),
+   //TODO不能改，前端根据这个判断是否登录
    HuoQuDengLuXinXiShiBai("用户未登录,无法获取当前用户的信息"),
    XiTongYiChang("系统异常"),
    YangZhengMaShengChengShiBai("验证码生成错误"),

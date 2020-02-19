@@ -31,12 +31,7 @@ public class MenuAndRenovationAndPestControlController {
     @RequestMapping(value = "create_menuAndRenovationAndPestControl",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> create_menuAndRenovationAndPestControl(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user");
     	//检查权限
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
     	if(serverResponse1.getStatus()!=0) {
@@ -55,12 +50,7 @@ public class MenuAndRenovationAndPestControlController {
     @ResponseBody
     public ServerResponse<Object> get_usermrp_list(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
     	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user");
     	//检查权限
      	params.put("StringPath", "menuAndRenovationAndPestControl");
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
@@ -79,12 +69,7 @@ public class MenuAndRenovationAndPestControlController {
     @ResponseBody
     public ServerResponse<String> operation_usermrp(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
     	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user");
     	//检查权限
      	params.put("StringPath", "menuAndRenovationAndPestControl");
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
@@ -101,12 +86,7 @@ public class MenuAndRenovationAndPestControlController {
     @RequestMapping(value = "get_usermrp_id",method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<Object> get_usermrp_id(HttpServletRequest httpServletRequest,@RequestParam long id){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
+    	User user =	(User) httpServletRequest.getAttribute("user");   
      	Map<String, Object> params= new HashMap<String, Object>();
      	params.put("StringPath", "menuAndRenovationAndPestControl");
     	//检查权限
@@ -125,15 +105,10 @@ public class MenuAndRenovationAndPestControlController {
     @ResponseBody
     public ServerResponse<Object> getmrpList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
     	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData(); 
+    	
      	//检查权限
      	params.put("StringPath", "menuAndRenovationAndPestControl");
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),params);
     	if(serverResponse1.getStatus()!=0) {
     		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
     	}
@@ -147,15 +122,10 @@ public class MenuAndRenovationAndPestControlController {
     @RequestMapping(value = "getReleaseTitleList",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Object> getReleaseTitleList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
+    
      	params.put("StringPath", "menuAndRenovationAndPestControl");
     	//检查权限
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),params);
     	if(serverResponse1.getStatus()!=0) {
     		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
     	}
@@ -171,16 +141,11 @@ public class MenuAndRenovationAndPestControlController {
     @RequestMapping(value = "getMrpDetails",method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<Object> getMrpDetails(HttpServletRequest httpServletRequest,@RequestParam long id){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
+  
      	Map<String, Object> params= new HashMap<String, Object>();
      	params.put("StringPath", "menuAndRenovationAndPestControl");
     	//检查权限
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
+     	ServerResponse<String>	serverResponse1=CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),params);
     	if(serverResponse1.getStatus()!=0) {
     		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
     	}

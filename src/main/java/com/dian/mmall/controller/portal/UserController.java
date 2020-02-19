@@ -48,30 +48,8 @@ import javax.servlet.http.HttpSession;
 @Controller
 @RequestMapping(Const.PCAPI+"user/")
 public class UserController {
-	
-
     @Autowired
     private IUserService iUserService;
-   
-  //获取用户信息
-    
-    @RequestMapping(value = "get_user_info",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<String> getUserInfo(HttpServletRequest httpServletRequest){
-   
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-    	if(StringUtils.isEmpty(loginToken)){
-    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
-    	}
-    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
-    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
-    	if(user != null){
-    		return ServerResponse.createBySuccess(JsonUtil.obj2String(user));
-    	}
-    	return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
-    }
-    
-    
     //退出
     @RequestMapping(value = "logout",method = RequestMethod.POST)
     @ResponseBody
@@ -87,9 +65,6 @@ public class UserController {
 		}
     }
 
- 
-    
-  
 	//修改用户基本信息
    //修改用户基本信息，如果修改了密码和用户名就强制用户重新登陆，如果只修改手机号不重新登陆
     @RequestMapping(value = "update_information",method = RequestMethod.POST)

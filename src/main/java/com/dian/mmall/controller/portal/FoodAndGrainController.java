@@ -21,188 +21,153 @@ import com.dian.mmall.service.release.FoodAndGrainService;
 import com.dian.mmall.util.CheckLand;
 
 @Controller
-@RequestMapping(Const.PCAPI+"foodAndGrain/")
+@RequestMapping(Const.PCAPI + "foodAndGrain/")
 public class FoodAndGrainController {
-private String StringPath="/home/foodAndGrain";
-    
-	@Autowired
-	private FoodAndGrainService  foodAndGrainService;
-	//创建电器/维修
-    @RequestMapping(value = "create_foodAndGrain",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> create_foodAndGrain(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    	//检查权限
-     	params.put("StringPath", StringPath);
-     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return serverResponse1;
-    	}
-   
-        
-        return foodAndGrainService.create_foodAndGrain(user,params);
-    
-    }
-    
-	//商户获取获取自己发布的除删除外的全部信息
-	
-    @RequestMapping(value = "get_myFoodAndGrain_list",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<Object> get_FoodAndGrain_list(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    	//检查权限
-     	params.put("StringPath", StringPath);
-     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
-        
-        return foodAndGrainService.get_myFoodAndGrain_list(user,params);
-    
-    }
+	private String StringPath = "/home/foodAndGrain";
 
-	//操作列
-	
-    @RequestMapping(value = "operation_userFoodAndGrain",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> operation_userFoodAndGrain(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    	//检查权限
-     	params.put("StringPath", StringPath);
-     	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
-        
-        return foodAndGrainService.operation_userFoodAndGrain(user,params);
-    
-    }
-    
-//商户根据id获取详请编辑
-	
-    @RequestMapping(value = "get_userFoodAndGrain_id",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> get_userFoodAndGrain_id(HttpServletRequest httpServletRequest,@RequestParam long id){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
-     	int role=user.getRole();
-		if(role!=1  &&role!=4 ) {
-			 return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
+	@Autowired
+	private FoodAndGrainService foodAndGrainService;
+
+	// 创建电器/维修
+	@RequestMapping(value = "create_foodAndGrain", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> create_foodAndGrain(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", StringPath);
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return serverResponse1;
 		}
-       return foodAndGrainService.get_userFoodAndGrain_id(user.getId(),id);
-    
-    }
-   //没有用
-    
-    @RequestMapping(value = "getFoodAndGrainList",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<Object> getFoodAndGrainList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-    	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData(); 
-     
-     	
-     		params.put("StringPath", StringPath);
-     
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
- 	
-    	return foodAndGrainService.getFoodAndGrainList(params);
-    	
-    } 
-    
-    
+
+		return foodAndGrainService.create_foodAndGrain(user, params);
+
+	}
+
+	// 商户获取获取自己发布的除删除外的全部信息
+
+	@RequestMapping(value = "get_myFoodAndGrain_list", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> get_FoodAndGrain_list(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", StringPath);
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return foodAndGrainService.get_myFoodAndGrain_list(user, params);
+
+	}
+
+	// 操作列
+
+	@RequestMapping(value = "operation_userFoodAndGrain", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> operation_userFoodAndGrain(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		params.put("StringPath", StringPath);
+		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return foodAndGrainService.operation_userFoodAndGrain(user, params);
+
+	}
+
+//商户根据id获取详请编辑
+
+	@RequestMapping(value = "get_userFoodAndGrain_id", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> get_userFoodAndGrain_id(HttpServletRequest httpServletRequest,
+			@RequestParam long id) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		int role = user.getRole();
+		if (role != 1 && role != 4) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
+		}
+		return foodAndGrainService.get_userFoodAndGrain_id(user.getId(), id);
+
+	}
+	// 没有用
+
+	@RequestMapping(value = "getFoodAndGrainList", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> getFoodAndGrainList(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		params.put("StringPath", StringPath);
+
+		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
+				params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return foodAndGrainService.getFoodAndGrainList(params);
+
+	}
+
 //根据类型获取全部标题
-	
-    @RequestMapping(value = "getFoodAndGrainTitleList",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<Object> getFoodAndGrainTitleList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
-     	params.put("StringPath", StringPath);
-    	//检查权限
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
-     	
-       return foodAndGrainService.getFoodAndGrainTitleList(params);
-    
-    }
-    
-    
-    //公开列表
-    
-    @RequestMapping(value = "getFoodAndGrainPublicList",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<Object> getFoodAndGrainPublicList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-    	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData(); 
-     	//检查权限
-     	params.put("StringPath", StringPath);
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
- 	
-    	return foodAndGrainService.getFoodAndGrainPublicList(params);
-    	
-    }
-	//公开获取id
-	
-    @RequestMapping(value = "getFoodAndGrainDetails",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> getFoodAndGrainDetails(HttpServletRequest httpServletRequest,@RequestParam long id){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
-     	Map<String, Object> params= new HashMap<String, Object>();
-     	params.put("StringPath", StringPath);
-    	//检查权限
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
-       return foodAndGrainService.getFoodAndGrainDetails(id);
-    
-    }
+
+	@RequestMapping(value = "getFoodAndGrainTitleList", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> getFoodAndGrainTitleList(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		params.put("StringPath", StringPath);
+		// 检查权限
+		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
+				params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return foodAndGrainService.getFoodAndGrainTitleList(params);
+
+	}
+
+	// 公开列表
+
+	@RequestMapping(value = "getFoodAndGrainPublicList", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> getFoodAndGrainPublicList(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		// 检查权限
+		params.put("StringPath", StringPath);
+		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
+				params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
+		return foodAndGrainService.getFoodAndGrainPublicList(params);
+
+	}
+	// 公开获取id
+
+	@RequestMapping(value = "getFoodAndGrainDetails", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getFoodAndGrainDetails(HttpServletRequest httpServletRequest, @RequestParam long id) {
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("StringPath", StringPath);
+		// 检查权限
+		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
+				params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+		return foodAndGrainService.getFoodAndGrainDetails(id);
+
+	}
 }

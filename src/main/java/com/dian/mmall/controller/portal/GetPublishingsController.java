@@ -26,50 +26,43 @@ import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
-@RequestMapping(Const.PCAPI+"getPublishings/")
+@RequestMapping(Const.PCAPI + "getPublishings/")
 public class GetPublishingsController {
-   String recruitWorkers="/home/recruitWorkers";
-	
-	
+	String recruitWorkers = "/home/recruitWorkers";
+
 	@Autowired
-	private  GetPublishingsService getPublishingsService;
+	private GetPublishingsService getPublishingsService;
 	@Autowired
 	private ReleaseWelfareService releaseWelfareService;
-    @Autowired
-    private ResumeService resumeService;
-	
-    
-    //职位获取电话或者邮箱   
-    @RequestMapping(value = "getContact",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse getContact(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-   
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
-    	//检查权限
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage( serverResponse1.getMsg());
-    	}
-    	
+	@Autowired
+	private ResumeService resumeService;
+
+	// 职位获取电话或者邮箱
+	@RequestMapping(value = "getContact", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse getContact(HttpServletRequest httpServletRequest, @RequestBody Map<String, Object> params) {
+
+		User user = (User) httpServletRequest.getAttribute("user");
+		// 检查权限
+		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
+		if (serverResponse1.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		}
+
 //        selectType:1   //1是查询职位 ，2是查询 简历
-    	String selectTypeString=params.get("selectType").toString().trim();
-        if(selectTypeString==null || selectTypeString.equals("")) {
-        	return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-        }		
-        int selectType=Integer.valueOf(selectTypeString);
-        //1电话2邮箱
-        if(selectType==1 ) {
-        	return releaseWelfareService.getContact(user, params);
-        }else if(selectType==2){
-        	return resumeService.getContact(user, params);
-        }
-        
-            return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
-       
-    }
+		String selectTypeString = params.get("selectType").toString().trim();
+		if (selectTypeString == null || selectTypeString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
+		}
+		int selectType = Integer.valueOf(selectTypeString);
+		// 1电话2邮箱
+		if (selectType == 1) {
+			return releaseWelfareService.getContact(user, params);
+		} else if (selectType == 2) {
+			return resumeService.getContact(user, params);
+		}
+
+		return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
+
+	}
 }

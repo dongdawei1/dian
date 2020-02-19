@@ -27,7 +27,7 @@ public class Const {
     public static final String APIV1 = "/api/v1/";
     public static final String APIV3 = "/api/v3/";  //图片上传相关
     
-    public static final String APIV2 = "/api/v2/"; //登陆相关
+    public static final String APIV2 = "/api/v2/"; //登陆获取用户信息相关
     
     public static String  PATH_E_IMG="E:/img/";
     public static String  MY_C0MMONMENU="myCommonMenu";

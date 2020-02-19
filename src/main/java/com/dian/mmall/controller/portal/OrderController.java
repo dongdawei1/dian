@@ -43,12 +43,7 @@ public class OrderController {
 	@ResponseBody
 	public ServerResponse<String> create_wholesaleCommodity_order(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		// 检查权限
 		params.put("StringPath", StringPath);
 		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
@@ -65,12 +60,7 @@ public class OrderController {
 	@ResponseBody
 	public ServerResponse<String> create_order_evaluation(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		// 检查权限
 
 		if (user.getRole() != 1 && user.getRole() != 2) {
@@ -86,12 +76,7 @@ public class OrderController {
 	@ResponseBody
 	public ServerResponse<String> create_purchase_order(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		// 检查权限
 
 		if (user.getRole() != 1 && user.getRole() != 2) {
@@ -107,12 +92,7 @@ public class OrderController {
 	@ResponseBody
 	public ServerResponse<Object> get_conduct_purchase_order(HttpServletRequest httpServletRequest,
 			@RequestParam String uuid) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		// 检查权限
 
 		if (user.getRole() != 1 && user.getRole() != 2) {
@@ -128,12 +108,7 @@ public class OrderController {
 	@ResponseBody
 	public ServerResponse<String> operation_purchase_order(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		// 检查权限
 
 		if (user.getRole() != 1 && user.getRole() != 2) {
@@ -148,12 +123,7 @@ public class OrderController {
 	@RequestMapping(value = "native_pay_order", method = RequestMethod.GET)
 	@ResponseBody
 	public ServerResponse<String> native_pay_order(HttpServletRequest httpServletRequest, @RequestParam long id) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		// 检查权限
 
 		if (user.getRole() != 1 && user.getRole() != 2) {
@@ -171,19 +141,14 @@ public class OrderController {
 	@RequestMapping(value = "get_pay_order_all", method = RequestMethod.GET)
 	@ResponseBody
 	public ServerResponse<String> get_pay_order_all(HttpServletRequest httpServletRequest, @RequestParam String uuid) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		// 检查权限
 
 		if (user.getRole() != 1 && user.getRole() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
 
-		String spbillCreateIp = IpUtils.getIpAddr(httpServletRequest);
+		
 		return orderService.get_pay_order_all(user.getId());
 
 	}
@@ -195,67 +160,19 @@ public class OrderController {
 	@ResponseBody
 	public ServerResponse<String> get_pay_order_byOrderId(HttpServletRequest httpServletRequest,
 			@RequestParam long orderId, @RequestParam String uuid) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		// 检查权限
 
 		if (user.getRole() != 1 && user.getRole() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
 
-		String spbillCreateIp = IpUtils.getIpAddr(httpServletRequest);
+		
 		return orderService.get_pay_order_byOrderId(user.getId(), orderId);
 
 	}
 
-	/**
-	 * 微信支付回调
-	 */
-	@RequestMapping("callback")
-	public void callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		InputStream inputStream = request.getInputStream();
-
-		// BufferedReader是包装设计模式，性能更搞
-		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-		StringBuffer sb = new StringBuffer();
-		String line;
-		while ((line = in.readLine()) != null) {
-			sb.append(line);
-		}
-		in.close();
-		inputStream.close();
-		Map<String, String> callbackMap = WXPayUtil.xmlToMap(sb.toString());
-		SortedMap<String, String> sortedMap = WXPayUtil.getSortedMap(callbackMap);
-		// 判断签名是否正确
-		if (WXPayUtil.isCorrectSign(sortedMap, weChatConfig.getKey())) {
-			sortedMap.remove("appid");
-			sortedMap.remove("mch_id");
-			sortedMap.remove("device_info");
-			sortedMap.remove("openid");
-			sortedMap.remove("is_subscribe");
-			sortedMap.put("payType", "HD");
-			ServerResponse<String> serverResponse = orderService.callback(sortedMap);
-
-			if (serverResponse.getStatus() == 0) {
-				response.setContentType("text/xml");
-				response.getWriter().println("success");
-				return;
-			} else {
-				// 都处理失败
-				response.setContentType("text/xml");
-				response.getWriter().println("fail");
-			}
-		}
-		// 都处理失败
-		response.setContentType("text/xml");
-		response.getWriter().println("fail");
-
-	}
 
 	/**
 	 * 接单用户获取待处理订单
@@ -264,12 +181,7 @@ public class OrderController {
 	@ResponseBody
 	public ServerResponse<Object> peceiptGetPendingOrders(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
@@ -286,12 +198,7 @@ public class OrderController {
 	@ResponseBody
 	public ServerResponse<Object> myPurchaseOrder(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		//检查实名
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
@@ -311,12 +218,7 @@ public class OrderController {
 	@ResponseBody
 	public ServerResponse<Object> mySaleOrder(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
 		//检查实名
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());

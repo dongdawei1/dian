@@ -38,12 +38,12 @@ public class CheckLand {
 	public static ServerResponse<Object> checke_land(HttpServletRequest httpServletRequest) {
 		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
 		if (StringUtils.isEmpty(loginToken)) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
+			return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
 		}
 		String userJsonStr = RedisShardedPoolUtil.get(loginToken);
 		User user = JsonUtil.string2Obj(userJsonStr, User.class);
 		if (user == null) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.dengluguoqi.getMessage());
+			return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
 		}
 		return ServerResponse.createBySuccess(user);
 	}
@@ -527,6 +527,7 @@ public class CheckLand {
 		return checke_isButten(user, menu);
 	}
 
+	
 	public static void main(String[] args) {
 
 	}

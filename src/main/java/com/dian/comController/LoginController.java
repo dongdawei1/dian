@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,9 +42,6 @@ public class LoginController {
        
     	
 	   String appId=request.getHeader("appId");
-    	
-    	System.out.println("appId22222222222"+appId);
-    
     	
     	 String captcha  =params.get("captcha").toString().trim() ; 
     	 String getPicCode=RedisShardedPoolUtil.get(params.get("uuid").toString().trim());
@@ -96,7 +94,7 @@ public class LoginController {
 	public ServerResponse<String>  captcha(HttpServletRequest request , @RequestParam String uuid) {
 		String base64PicCodeImage;
 		String getPicCode;
-		 System.out.println("AuthorityIn333333333"+request.getAttribute("a"));
+		
 		try {
 			base64PicCodeImage = CheckPicCode.encodeBase64ImgCode();
 			getPicCode=CheckPicCode.getPicCode();
@@ -120,5 +118,21 @@ public class LoginController {
 		 return ServerResponse.createByErrorMessage(ResponseMessage.YangZhengMaShengChengShiBai.getMessage());
 
 	}
+  //获取用户信息
     
+    @RequestMapping(value = "get_user_info",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> getUserInfo(HttpServletRequest httpServletRequest){
+   
+    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+    	if(StringUtils.isEmpty(loginToken)){
+    		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    	}
+    	String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+    	User user = JsonUtil.string2Obj(userJsonStr,User.class);
+    	if(user != null){
+    		return ServerResponse.createBySuccess(JsonUtil.obj2String(user));
+    	}
+    	return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+    }
 }

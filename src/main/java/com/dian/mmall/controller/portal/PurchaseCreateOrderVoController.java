@@ -17,7 +17,7 @@ import com.dian.mmall.service.PurchaseCreateOrderVoService;
 import com.dian.mmall.util.CheckLand;
 
 @Controller
-@RequestMapping(Const.PCAPI+"orderVoAddCommonMenu/")
+@RequestMapping(Const.PCAPI + "orderVoAddCommonMenu/")
 public class PurchaseCreateOrderVoController {
 	@Autowired
 	private PurchaseCreateOrderVoService purchaseCreateOrderVoService;
@@ -29,12 +29,7 @@ public class PurchaseCreateOrderVoController {
 	@RequestMapping(value = "getPurchaseCreateOrderVo", method = RequestMethod.GET)
 	@ResponseBody
 	public ServerResponse<Object> getPurchaseCreateOrderVo(HttpServletRequest httpServletRequest) {
-		// 检查登陆
-		ServerResponse<Object> serverResponse = CheckLand.checke_land(httpServletRequest);
-		if (serverResponse.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-		}
-		User user = (User) serverResponse.getData();
+		User user = (User) httpServletRequest.getAttribute("user");
 		if (user.getRole() != 1 && user.getRole() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
 		}

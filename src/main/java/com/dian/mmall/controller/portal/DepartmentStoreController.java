@@ -28,16 +28,12 @@ public class DepartmentStoreController {
 	
 	@Autowired
 	private DepartmentStoreService  departmentStoreService;
-	//创建电器/维修
+	//百货
     @RequestMapping(value = "create_departmentStore",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> create_departmentStore(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
+    	
+    	User user =	(User) httpServletRequest.getAttribute("user");
     	//检查权限
      	params.put("StringPath", StringPath);
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
@@ -56,12 +52,7 @@ public class DepartmentStoreController {
     @ResponseBody
     public ServerResponse<Object> get_myDepartmentStore_list(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
     	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user");
     	//检查权限
      	params.put("StringPath", StringPath);
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
@@ -78,13 +69,7 @@ public class DepartmentStoreController {
     @RequestMapping(value = "operation_userDepartmentStore",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> operation_userDepartmentStore(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();
+    	User user =	(User) httpServletRequest.getAttribute("user");
     	//检查权限
      	params.put("StringPath", StringPath);
      	ServerResponse<String>	serverResponse1=CheckLand.getCreateRole(user,params);
@@ -101,12 +86,7 @@ public class DepartmentStoreController {
     @RequestMapping(value = "get_userDepartmentStore_id",method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<Object> get_userDepartmentStore_id(HttpServletRequest httpServletRequest,@RequestParam long id){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
+    	User user =	(User) httpServletRequest.getAttribute("user");  
      	int role=user.getRole();
 		if(role!=1  &&role!=4 ) {
 			 return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
@@ -121,12 +101,7 @@ public class DepartmentStoreController {
     @RequestMapping(value = "getDepartmentStoreTitleList",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Object> getDepartmentStoreTitleList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
      	params.put("StringPath", StringPath);
     	//检查权限
      	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
@@ -144,13 +119,7 @@ public class DepartmentStoreController {
     @RequestMapping(value = "getDepartmentStorePublicList",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Object> getDepartmentStorePublicList(HttpServletRequest httpServletRequest,@RequestBody Map<String,Object> params){
-    	
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData(); 
+    	User user =	(User) httpServletRequest.getAttribute("user");
      	//检查权限
      	params.put("StringPath", StringPath);
      	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
@@ -166,12 +135,7 @@ public class DepartmentStoreController {
     @RequestMapping(value = "getDepartmentStoreDetails",method = RequestMethod.GET)
     @ResponseBody
     public ServerResponse<Object> getDepartmentStoreDetails(HttpServletRequest httpServletRequest,@RequestParam long id){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
+    	User user =	(User) httpServletRequest.getAttribute("user");  
      	Map<String, Object> params= new HashMap<String, Object>();
      	params.put("StringPath", StringPath);
     	//检查权限

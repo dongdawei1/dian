@@ -19,23 +19,18 @@ import com.dian.mmall.service.BunnerService;
 import com.dian.mmall.util.CheckLand;
 
 @Controller
-@RequestMapping(Const.PCAPI+"bunner/")
+@RequestMapping(Const.PCAPI + "bunner/")
 public class DibuBunnerController {
 	@Autowired
 	private BunnerService bunnerService;
-	
-	
-    @RequestMapping(value = "getBunner",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> getBunner(HttpServletRequest httpServletRequest,@RequestParam Integer permissionid,@RequestParam Integer bunnerType){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-    	}
-     	User user = (User) serverResponse.getData();   
-     
-       return bunnerService.getBunnerList(user.getRole(),permissionid,bunnerType,user.getId());
-    
-    }
+
+	@RequestMapping(value = "getBunner", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getBunner(HttpServletRequest httpServletRequest, @RequestParam Integer permissionid,
+			@RequestParam Integer bunnerType) {
+		User user = (User) httpServletRequest.getAttribute("user");
+
+		return bunnerService.getBunnerList(user.getRole(), permissionid, bunnerType, user.getId());
+
+	}
 }

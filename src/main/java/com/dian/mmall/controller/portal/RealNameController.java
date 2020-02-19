@@ -31,142 +31,106 @@ import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
-@RequestMapping(Const.PCAPI+"realName/")
+@RequestMapping(Const.PCAPI + "realName/")
 public class RealNameController {
 
+	@Autowired
+	private RealNameService realNameService;
 
+	// 用户实名
+	@RequestMapping(value = "newRealName", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> newRealName(@RequestBody Map<String, Object> params,
+			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, HttpSession session) {
+		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+		User user = (User) httpServletRequest.getAttribute("user");
 
-    @Autowired
-    private RealNameService  realNameService;
-    //用户实名
-    @RequestMapping(value = "newRealName",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> newRealName(@RequestBody Map<String, Object> params, HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,HttpSession session){
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-    	//检查登陆
-    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-    	}
-     	User user = (User) serverResponse1.getData();
-     	
-    	ServerResponse<String> serverResponse= realNameService.newRealName(user,loginToken,params);
-    	
-    	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
-    		   
-    		    CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
-             	RedisShardedPoolUtil.del(loginToken);
-             	CookieUtil.writeLoginToken(httpServletResponse,session.getId());
-    			//把用户session当做key存到数据库中，时长是 30分钟
-    			RedisShardedPoolUtil.setEx(session.getId(),serverResponse.getMsg(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME); 
-    			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
-    	}
-    	
-    	return serverResponse;
-    }
-	
-    
-    //重新用户实名
-    @RequestMapping(value = "updateRealName",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> updateRealName(@RequestBody Map<String, Object> params, HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse,HttpSession session){
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-    	//检查登陆
-    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-    	}
-     	User user = (User) serverResponse1.getData();
-    	ServerResponse<String> serverResponse= realNameService.updateRealName(user,loginToken,params);
-    	
-    	if(serverResponse.getStatus()==ResponseCode.SUCCESS.getCode()) {
-    		   
-    		    CookieUtil.delLoginToken(httpServletRequest,httpServletResponse);
-             	RedisShardedPoolUtil.del(loginToken);
-             	CookieUtil.writeLoginToken(httpServletResponse,session.getId());
-    			//把用户session当做key存到数据库中，时长是 30分钟
-    			RedisShardedPoolUtil.setEx(session.getId(),serverResponse.getMsg(),Const.RedisCacheExtime.REDIS_SESSION_EXTIME); 
-    			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
-    	} 	
-    	return serverResponse;
-    }
-	
-    //获取实名信息
-    @RequestMapping(value = "getRealName",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> getRealName(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-    	}
-     	User user = (User) serverResponse1.getData();
-    	return realNameService.getRealName(user);
-    	
-    }
-    
-    //获取实名信息
-    @RequestMapping(value = "getUserRealName",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> getUserRealName(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-    	}
-     	User user = (User) serverResponse1.getData();
-    	return realNameService.getUserRealName(user);
-    	
-    }
-    
-    
-    
-    //获取实名信息
-    @RequestMapping(value = "getRealNameById",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> getRealNameById(HttpServletRequest httpServletRequest,@RequestParam long id){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-    	}
-  
-     	
-    	return realNameService.getRealNameById(id);
-    	
-    }
-    //获取实名信息
-    @RequestMapping(value = "getRealNameByuserId",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> getRealNameByuserId(HttpServletRequest httpServletRequest,@RequestParam long id){
-    	//检查登陆
-    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-    	}
-  
-     	
-    	return realNameService.getRealNameByuserId(id);
-    	
-    }
-    //重新用户实名
-    @RequestMapping(value = "addOrder",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> addOrder(HttpServletRequest httpServletRequest,@RequestBody Map<String, Object> params){
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-    	//检查登陆
-    	ServerResponse<Object> serverResponse1=CheckLand.checke_land(httpServletRequest);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-    	}
-     	User user = (User) serverResponse1.getData();
-     	if(user.getIsAuthentication()!=2 || (user.getRole()!=4 && user.getRole()!=1)) {
-     		return ServerResponse.createByErrorMessage(ResponseMessage.zhiyoushiming.getMessage());
-     	}
-    	
-    	return realNameService.addOrder(user,params);
-    }
-    
-    
-    
+		ServerResponse<String> serverResponse = realNameService.newRealName(user, loginToken, params);
+
+		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
+
+			CookieUtil.delLoginToken(httpServletRequest, httpServletResponse);
+			RedisShardedPoolUtil.del(loginToken);
+			CookieUtil.writeLoginToken(httpServletResponse, session.getId());
+			// 把用户session当做key存到数据库中，时长是 30分钟
+			RedisShardedPoolUtil.setEx(session.getId(), serverResponse.getMsg(),
+					Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
+		}
+
+		return serverResponse;
+	}
+
+	// 重新用户实名
+	@RequestMapping(value = "updateRealName", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> updateRealName(@RequestBody Map<String, Object> params,
+			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, HttpSession session) {
+		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+		User user = (User) httpServletRequest.getAttribute("user");
+		ServerResponse<String> serverResponse = realNameService.updateRealName(user, loginToken, params);
+
+		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
+
+			CookieUtil.delLoginToken(httpServletRequest, httpServletResponse);
+			RedisShardedPoolUtil.del(loginToken);
+			CookieUtil.writeLoginToken(httpServletResponse, session.getId());
+			// 把用户session当做key存到数据库中，时长是 30分钟
+			RedisShardedPoolUtil.setEx(session.getId(), serverResponse.getMsg(),
+					Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
+		}
+		return serverResponse;
+	}
+
+	// 获取实名信息
+	@RequestMapping(value = "getRealName", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getRealName(HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse) {
+
+		return realNameService.getRealName((User) httpServletRequest.getAttribute("user"));
+
+	}
+
+	// 获取实名信息
+	@RequestMapping(value = "getUserRealName", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getUserRealName(HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse) {
+
+		return realNameService.getUserRealName((User) httpServletRequest.getAttribute("user"));
+
+	}
+
+	// 获取实名信息
+	@RequestMapping(value = "getRealNameById", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getRealNameById(HttpServletRequest httpServletRequest, @RequestParam long id) {
+		return realNameService.getRealNameById(id);
+
+	}
+
+	// 获取实名信息
+	@RequestMapping(value = "getRealNameByuserId", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getRealNameByuserId(HttpServletRequest httpServletRequest, @RequestParam long id) {
+
+		return realNameService.getRealNameByuserId(id);
+
+	}
+
+	// 重新用户实名
+	@RequestMapping(value = "addOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> addOrder(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getIsAuthentication() != 2 || (user.getRole() != 4 && user.getRole() != 1)) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.zhiyoushiming.getMessage());
+		}
+
+		return realNameService.addOrder(user, params);
+	}
+
 }

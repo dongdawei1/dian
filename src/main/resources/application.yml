@@ -23,7 +23,16 @@ spring:
     maxPoolPreparedStatementPerConnectionSize: 20
     useGlobalDataSourceStat: true
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
-#    schema:
+# 处理拦截器返回中文乱码
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
+# 处理拦截器返回中文乱码
+server:
+  tomcat:
+    uri-encoding: UTF-8
 #       - classpath:department.sql
 mybatis:
   # 指定全局配置文件位置
@@ -44,6 +53,8 @@ wxpay:
   key: xdclasss20182018xdclass2018x018d
   #支付回调地址
   callback: 16web.tunnel.qydev.com/api/order/callback 
+
+
 
 #微信开放平台配置(第三方登陆)
 wxopen:
