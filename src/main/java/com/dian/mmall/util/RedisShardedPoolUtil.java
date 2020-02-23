@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import com.dian.mmall.common.RedisPool;
 import com.dian.mmall.common.RedisShardedPool;
+import com.dian.mmall.common.ServerResponse;
+
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisShardInfo;
@@ -159,6 +161,10 @@ public class RedisShardedPoolUtil {
         return result;
     }
 
+
+    
+    
+    
     
     
     public static void main(String[] args) {

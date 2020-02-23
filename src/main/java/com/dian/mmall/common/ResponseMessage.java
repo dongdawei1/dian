@@ -11,6 +11,7 @@ public enum ResponseMessage {
    shichangming("市场名称不能为空"),
    ChuangJianYongHuShiBai("创建用户失败"),
    YanZhengMaCuoWu("验证码错误或失效"),
+   qingqiuxinxiyouwu("请求信息有误"),
    YongHuMingMiMaGeShiCouWu("用户名或密码格式错误"),
    YongHuMingMiMaCouWu("用户名或密码错误"),
    //TODO不能改，前端根据这个判断是否登录
