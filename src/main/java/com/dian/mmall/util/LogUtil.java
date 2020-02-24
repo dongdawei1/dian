@@ -14,30 +14,34 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class LogUtil {
-	public static ServerResponse<String> setTocken(String appId, HttpServletResponse httpServletResponse,
-			String userString) {
-
-		User user = JsonUtil.string2Obj(userString, User.class);
+	public static ServerResponse<Object> setTocken(String appId, HttpServletResponse httpServletResponse,
+			User user) {
 		if (appId != null && !appId.equals("")) {
+			String userString = JsonUtil.obj2String(user);
 			if (appId.equals("p")) {
 				// 定期更换加密方式
 				String tockenString = MD5Util.setTocken(user.getId(), user.getCreateTime(), Const.PCAPPID);
 				CookieUtil.writeLoginToken(httpServletResponse, tockenString);
 				// 把用户session当做key存到数据库中，时长是 30分钟
 				RedisShardedPoolUtil.setEx(tockenString, userString, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
-				return ServerResponse.createBySuccess();
+				return ServerResponse.createBySuccess(user);
 			} else if (appId.equals("a")) {
 				String tockenString = MD5Util.setTocken(user.getId(), user.getCreateTime(), Const.APPAPPID);
 				// 把用户session当做key存到数据库中，时长是 30分钟
 				RedisShardedPoolUtil.setEx(tockenString, userString, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
-				Map<String, String>  map=new HashMap<String, String>();
+				Map<String, Object>  map=new HashMap<String, Object>();
 				map.put("dian_token", tockenString);
-				map.put("user", userString);
+				map.put("user", user);
 				System.out.println(userString);
 				System.out.println(JsonUtil.obj2String(map));
-				return ServerResponse.createBySuccess(JsonUtil.obj2String(map));//);
+				return ServerResponse.createBySuccess(map);//);
 			}
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.qingqiuxinxiyouwu.getMessage());
 	}
+	//TODO 单点登录检查
+	
+	
+	
+	
 }

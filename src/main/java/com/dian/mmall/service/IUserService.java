@@ -11,7 +11,7 @@ import com.dian.mmall.pojo.user.User;
  */
 public interface IUserService {
    //登陆
-    ServerResponse<String> login(Map<String, Object> params);
+    ServerResponse<Object> login(Map<String, Object> params);
     
     ServerResponse<String> register(User user);
 
@@ -37,7 +37,7 @@ public interface IUserService {
 	//注册检查用户名是否可用
 	ServerResponse<String> checkUsername(String username);
    //注册
-	ServerResponse<String> createUser(Map<String,Object> params);
+	ServerResponse<Object> createUser(Map<String,Object> params);
 	//根据用户名查id
 	long selectUserId(User user);
 	//编辑用户基本信息

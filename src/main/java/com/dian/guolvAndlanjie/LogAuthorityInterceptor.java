@@ -70,8 +70,8 @@ public class LogAuthorityInterceptor implements HandlerInterceptor {
 //				 Au33333333http://localhost:8090/details/foodAndGrainDetails/17/4
 
 		// 和前端约定前端传入的请求方式 p =pc端 a=app端
-		String appId = request.getHeader("appId");
-
+		String appId = request.getHeader("appid");
+       System.out.println("1111111"+appId);
 
 		String loginToken = CookieUtil.readLoginToken(request);
 		if (StringUtils.isNotEmpty(loginToken)) {

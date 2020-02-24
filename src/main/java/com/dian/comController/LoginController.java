@@ -42,7 +42,7 @@ public class LoginController {
 	// 用户登录
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
-	public ServerResponse<String> login(@RequestBody Map<String, Object> params, HttpServletRequest request,
+	public ServerResponse<Object> login(@RequestBody Map<String, Object> params, HttpServletRequest request,
 			HttpServletResponse httpServletResponse) {
 
 		String captcha = params.get("captcha").toString().trim();
@@ -51,9 +51,9 @@ public class LoginController {
 			return ServerResponse.createByErrorMessage(ResponseMessage.YanZhengMaCuoWu.getMessage());
 		}
 
-		ServerResponse<String> response = iUserService.login(params);
+		ServerResponse<Object> response = iUserService.login(params);
 		if (response.getStatus() == ResponseCode.SUCCESS.getCode()) {
-			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, response.getMsg());		
+			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User)response.getData());		
 		} else {
 			return response;
 		}
@@ -62,7 +62,7 @@ public class LoginController {
 	// 用户注册
 	@RequestMapping(value = "create", method = RequestMethod.POST)
 	@ResponseBody
-	public ServerResponse<String> create(@RequestBody Map<String, Object> params, HttpServletRequest request,
+	public ServerResponse<Object> create(@RequestBody Map<String, Object> params, HttpServletRequest request,
 			HttpServletResponse httpServletResponse) {
 		String uuid = params.get("uuid").toString().trim();
 		String captcha = params.get("captcha").toString().trim();
@@ -70,9 +70,9 @@ public class LoginController {
 		if (!captcha.equalsIgnoreCase(getPicCode)) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.YanZhengMaCuoWu.getMessage());
 		}
-		ServerResponse<String> serverResponse = iUserService.createUser(params);
+		ServerResponse<Object> serverResponse = iUserService.createUser(params);
 		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
-			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, serverResponse.getMsg());		
+			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User)serverResponse.getData());		
 		}
 		return serverResponse;
 	}
@@ -100,7 +100,7 @@ public class LoginController {
 					RedisShardedPoolUtil.setEx(uuid, getPicCode, 8 * 40);
 				}
 
-				return ServerResponse.createBySuccessMessage(base64PicCodeImage);
+				return ServerResponse.createBySuccess(base64PicCodeImage);
 			}
 		} catch (IOException e) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.YangZhengMaShengChengShiBai.getMessage());
