@@ -112,7 +112,7 @@ public class LoginController {
 
 	@RequestMapping(value = "get_user_info", method = RequestMethod.GET)
 	@ResponseBody
-	public ServerResponse<String> getUserInfo(HttpServletRequest httpServletRequest) {
+	public ServerResponse<Object> getUserInfo(HttpServletRequest httpServletRequest, @RequestParam String uuid) {
 
 		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
 		if (StringUtils.isEmpty(loginToken)) {
@@ -121,7 +121,7 @@ public class LoginController {
 		String userJsonStr = RedisShardedPoolUtil.get(loginToken);
 		User user = JsonUtil.string2Obj(userJsonStr, User.class);
 		if (user != null) {
-			return ServerResponse.createBySuccess(JsonUtil.obj2String(user));
+			return ServerResponse.createBySuccess(user);
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
 	}

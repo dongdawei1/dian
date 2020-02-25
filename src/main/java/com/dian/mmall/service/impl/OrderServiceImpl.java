@@ -125,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	@Override
 	public ServerResponse<String> create_purchase_order(User user, Map<String, Object> params) {
-
+		
 		// 判断实名信息是否正确
 		RealName realName = realNameMapper.getRealName(user.getId());
 
@@ -250,7 +250,7 @@ public class OrderServiceImpl implements OrderService {
 			commodityJiage = create_order_average(wholesaleCommodity);
 			count += commodityJiage * Float.parseFloat(commonMenuWholesalecommodity.getNumber());
 		}
-		return ServerResponse.createBySuccessMessage((int) Math.ceil((count / 100)) + "");
+		return ServerResponse.createBySuccess((int) Math.ceil((count / 100)) + "");
 	}
 
 	/**

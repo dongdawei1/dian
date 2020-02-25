@@ -36,12 +36,6 @@ public class ImgAuthorityInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 	    
 	    
-	    Enumeration<String> headerNames=request.getHeaderNames();
-	    for(Enumeration<String> e=headerNames;e.hasMoreElements();){
-	     String thisName=e.nextElement().toString();
-	    String thisValue=request.getHeader(thisName);
-	    System.out.println("header的key:"+thisName+"--------------header的value:"+thisValue);
-	    }
 		return true;
 	}
 

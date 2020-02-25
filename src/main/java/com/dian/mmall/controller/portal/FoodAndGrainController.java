@@ -23,24 +23,22 @@ import com.dian.mmall.util.CheckLand;
 @Controller
 @RequestMapping(Const.PCAPI + "foodAndGrain/")
 public class FoodAndGrainController {
-	private String StringPath = "/home/foodAndGrain";
-
 	@Autowired
 	private FoodAndGrainService foodAndGrainService;
 
-	// 创建电器/维修
+	/** 零售市场 */
 	@RequestMapping(value = "create_foodAndGrain", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<String> create_foodAndGrain(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return serverResponse1;
+		if (user.getRole() != 1 && user.getRole() != 4) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
-
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 		return foodAndGrainService.create_foodAndGrain(user, params);
 
 	}
@@ -54,10 +52,12 @@ public class FoodAndGrainController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		// 检查权限
+		if (user.getRole() != 1 && user.getRole() != 4) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return foodAndGrainService.get_myFoodAndGrain_list(user, params);
@@ -73,10 +73,11 @@ public class FoodAndGrainController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 4) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return foodAndGrainService.operation_userFoodAndGrain(user, params);
@@ -104,7 +105,7 @@ public class FoodAndGrainController {
 	public ServerResponse<Object> getFoodAndGrainList(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 
-		params.put("StringPath", StringPath);
+		
 
 		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
 				params);
@@ -123,12 +124,10 @@ public class FoodAndGrainController {
 	public ServerResponse<Object> getFoodAndGrainTitleList(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 
-		params.put("StringPath", StringPath);
-		// 检查权限
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
-				params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		User user = (User) httpServletRequest.getAttribute("user");
+		int role = user.getRole();
+		if (role != 1 && role != 4) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
 		}
 
 		return foodAndGrainService.getFoodAndGrainTitleList(params);
@@ -140,15 +139,7 @@ public class FoodAndGrainController {
 	@RequestMapping(value = "getFoodAndGrainPublicList", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<Object> getFoodAndGrainPublicList(HttpServletRequest httpServletRequest,
-			@RequestBody Map<String, Object> params) {
-
-		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
-				params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-		}
+			@RequestBody Map<String, Object> params) {	
 
 		return foodAndGrainService.getFoodAndGrainPublicList(params);
 
@@ -159,14 +150,6 @@ public class FoodAndGrainController {
 	@ResponseBody
 	public ServerResponse<Object> getFoodAndGrainDetails(HttpServletRequest httpServletRequest, @RequestParam long id) {
 
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("StringPath", StringPath);
-		// 检查权限
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
-				params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-		}
 		return foodAndGrainService.getFoodAndGrainDetails(id);
 
 	}

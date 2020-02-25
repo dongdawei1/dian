@@ -21,11 +21,15 @@ public class Const {
   
     public static final String PCAPPID = "DIANTOP";
     public static final String APPAPPID = "DIANTOA";
+    public static final String APPAPPIDP = "p";  //pc
+    public static final String APPAPPIDA = "a";  //pc
     
     public static final String PCAPI = "/api/v1/vp/";  //pc
     public static final String APPAPI = "/api/v1/va/"; //app
     public static final String APIV1 = "/api/v1/";
     public static final String APIV3 = "/api/v3/";  //图片上传相关
+    
+    public static final String APIV5 = "/api/v5/";  //共用创建操作接口
     
     public static final String APIV2 = "/api/v2/"; //登陆获取用户信息相关
     
@@ -39,6 +43,7 @@ public class Const {
     
     public interface RedisCacheExtime{
         int REDIS_SESSION_EXTIME = 60 * 1000;//1000分钟
+        int REDIS_SESSION_EXTIMEAPP = 60 * 72000;// 存放20天
         int REDIS_SESSION_CommonMenu = 60 * 3600;//3600分钟
         int REDIS_ORDER_TIME=60 * 45;//订单存放45分钟
     }

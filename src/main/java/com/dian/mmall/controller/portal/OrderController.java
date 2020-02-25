@@ -1,14 +1,8 @@
 package com.dian.mmall.controller.portal;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,40 +12,29 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dian.config.WeChatConfig;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.OrderService;
-import com.dian.mmall.service.release.WineAndTablewareService;
-import com.dian.mmall.util.CheckLand;
 import com.dian.mmall.util.IpUtils;
-import com.dian.mmall.util.WXPayUtil;
 
 @Controller
 @RequestMapping(Const.PCAPI+"order/")
 public class OrderController {
-	private String StringPath = "/home/order";
+
 	@Autowired
 	private OrderService orderService;
-	@Autowired
-	private WeChatConfig weChatConfig;
 
-	// 零售商创建批发订单
+
+	// 零售商创建批发订单  TODO  没有调用
 	@RequestMapping(value = "create_wholesaleCommodity_order", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<String> create_wholesaleCommodity_order(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-    	User user =	(User) httpServletRequest.getAttribute("user"); 
+    	//User user =	(User) httpServletRequest.getAttribute("user"); 
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return serverResponse1;
-		}
-
-		return orderService.create_wholesaleCommodity_order(user.getId(), params);
+		return null;//orderService.create_wholesaleCommodity_order(user.getId(), params);
 
 	}
 
@@ -70,19 +53,20 @@ public class OrderController {
 		return orderService.create_order_evaluation(user, params);
 
 	}
-
-	// 商户发布采购订单
+   //创建订单
 	@RequestMapping(value = "create_purchase_order", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<String> create_purchase_order(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-    	User user =	(User) httpServletRequest.getAttribute("user"); 
+		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
 
 		if (user.getRole() != 1 && user.getRole() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
-
+        if(user.getIsAuthentication()!=2) {
+        	return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+        }
 		return orderService.create_purchase_order(user, params);
 
 	}

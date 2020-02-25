@@ -17,7 +17,7 @@ import com.dian.mmall.service.PurchaseCreateOrderVoService;
 import com.dian.mmall.util.CheckLand;
 
 @Controller
-@RequestMapping(Const.PCAPI + "orderVoAddCommonMenu/")
+@RequestMapping(Const.PCAPI  + "orderVoAddCommonMenu/")
 public class PurchaseCreateOrderVoController {
 	@Autowired
 	private PurchaseCreateOrderVoService purchaseCreateOrderVoService;

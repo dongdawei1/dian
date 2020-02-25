@@ -25,7 +25,9 @@
 	<select id="getRealName"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		id,CONCAT(addressDetailed,addressDianming)addressDetailed,contact
+		id, userId,
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
+		contact
 		,consigneeName,
 		email,detailed,eag,gender,companyName,provincesId,
 		cityId,districtCountyId,isReceipt,authentiCationStatus,authentiCationFailure
@@ -34,7 +36,9 @@
 	<select id="getUserRealName"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		id,CONCAT(addressDetailed,addressDianming)addressDetailed,contact
+		id,
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
+		contact
 		,consigneeName,licenseUrl,
 		email,detailed,eag,gender,companyName,provincesId,
 		cityId,districtCountyId,authentiCationStatus,authentiCationFailure
@@ -82,7 +86,8 @@
 		select
 
 		id,
-		userId,provincesId,cityId,districtCountyId,CONCAT(addressDetailed,addressDianming)addressDetailed,
+		userId,provincesId,cityId,districtCountyId,
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
 		contact,consigneeName,authentiCationStatus,authentiCationFailure,email,createTime,licenseUrl,
 		detailed,eag,gender,userName,userType,examineName,examineTime,companyName,isReceipt,addReceiptTime,
 		examineAddReceiptName,commitAddReceiptName,qianyueTime,qianyueDetailed
@@ -96,7 +101,8 @@
 	<select id="getRealNameById"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
+		detailed,companyName
 		from t_user_realname
 		where authentiCationStatus=2 and id=#{id}
 	</select>
@@ -104,14 +110,16 @@
 	<select id="getRealNameByuserId"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
+		detailed,companyName
 		from t_user_realname
 		where authentiCationStatus=2 and userId=#{userId}
 	</select>
 	<select id="getRealNameByIdContact"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		CONCAT(addressDetailed,addressDianming)addressDetailed,detailed,companyName,consigneeName,contact
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
+		detailed,companyName,consigneeName,contact
 		from
 		t_user_realname
 		where authentiCationStatus=2 and id=#{id}
@@ -141,7 +149,9 @@
 	<select id="admin_select_addOrder"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact,email,consigneeName,detailed,userName
+		id,userId,
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
+		contact,email,consigneeName,detailed,userName
 		,companyName,addReceiptTime,isReceipt,
 		qianyueTime,qianyueDetailed
 		from
@@ -173,7 +183,9 @@
 	<select id="admin_select_signingOrder"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact,email,consigneeName,detailed,userName
+		id,userId,
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
+		contact,email,consigneeName,detailed,userName
 		,companyName,addReceiptTime,isReceipt,
 		qianyueTime,qianyueDetailed
 		from
@@ -222,7 +234,9 @@
 	<select id="admin_select_signingOrderById"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact
+		id,userId,
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
+		contact
 		,consigneeName,
 		detailed,companyName,provincesId,
 		cityId,districtCountyId
@@ -234,7 +248,9 @@
 	<select id="admin_select_realNameByContact"
 		resultType="com.dian.mmall.pojo.user.RealName">
 		select
-		id,userId,CONCAT(addressDetailed,addressDianming)addressDetailed,contact
+		id,userId,
+		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
+		contact
 		,consigneeName,
 		detailed,companyName,provincesId,
 		cityId,districtCountyId
