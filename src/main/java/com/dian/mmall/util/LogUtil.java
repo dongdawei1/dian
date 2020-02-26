@@ -22,18 +22,16 @@ public class LogUtil {
 				// 定期更换加密方式
 				String tockenString = MD5Util.setTocken(user.getId(), user.getCreateTime(), Const.PCAPPID);
 				CookieUtil.writeLoginToken(httpServletResponse, tockenString);
-				// 把用户session当做key存到数据库中，时长是 30分钟
+				// 把用户session当做key存到数据库中，
 				RedisShardedPoolUtil.setEx(tockenString, userString, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
 				return ServerResponse.createBySuccess(user);
 			} else if (appId.equals("a")) {
 				String tockenString = MD5Util.setTocken(user.getId(), user.getCreateTime(), Const.APPAPPID);
-				// 把用户session当做key存到数据库中，时长是 30分钟
+				// 把用户session当做key存到数据库中，
 				RedisShardedPoolUtil.setEx(tockenString, userString, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
 				Map<String, Object>  map=new HashMap<String, Object>();
 				map.put("dian_token", tockenString);
 				map.put("user", user);
-				System.out.println(userString);
-				System.out.println(JsonUtil.obj2String(map));
 				return ServerResponse.createBySuccess(map);//);
 			}
 		}

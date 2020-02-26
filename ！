@@ -1,0 +1,26 @@
+i
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Committer: unknown <abudongdawei_v@didiglobal.com>
+#
+# On branch master
+# Your branch is up to date with 'origin/master'.
+#
+# Changes to be committed:
+#	modified:   src/main/java/com/dian/comController/LoginController.java
+#	modified:   src/main/java/com/dian/config/AuthorityInterceptorConfig.java
+#	new file:   src/main/java/com/dian/createController/CrAndUpController.java
+#	new file:   src/main/java/com/dian/guolvAndlanjie/CrAndUpAuthorityInterceptor.java
+#	modified:   src/main/java/com/dian/guolvAndlanjie/ImgAuthorityInterceptor.java
+#	modified:   src/main/java/com/dian/guolvAndlanjie/LogAuthorityInterceptor.java
+#	modified:   src/main/java/com/dian/mmall/common/Const.java
+#	modified:   src/main/java/com/dian/mmall/controller/portal/DepartmentStoreController.java
+#	modified:   src/main/java/com/dian/mmall/controller/portal/DispatcherController.java
+#	modified:   src/main/java/com/dian/mmall/controller/portal/FoodAndGrainController.java
+#	modified:   src/main/java/com/dian/mmall/controller/portal/OrderController.java
+#	modified:   src/main/java/com/dian/mmall/controller/portal/PurchaseCreateOrderVoController.java
+#	modified:   src/main/java/com/dian/mmall/service/impl/OrderServiceImpl.java
+#	modified:   src/main/java/com/dian/mmall/util/CookieUtil.java
+#	modified:   src/main/resources/mybatis/mapper/realNameMapper.xml
+#

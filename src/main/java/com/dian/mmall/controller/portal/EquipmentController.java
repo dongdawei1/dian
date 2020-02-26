@@ -1,6 +1,5 @@
 package com.dian.mmall.controller.portal;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,13 +17,10 @@ import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.EquipmentService;
-import com.dian.mmall.util.CheckLand;
 
 @Controller
 @RequestMapping(Const.PCAPI + "equipment/")
 public class EquipmentController {
-
-	private String StringPath = "/home/equipment";
 
 	@Autowired
 	private EquipmentService equipmentService;
@@ -36,10 +32,11 @@ public class EquipmentController {
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return serverResponse1;
+		if (user.getRole() != 1 && user.getRole() != 3) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return equipmentService.create_equipment(user, params);
@@ -55,10 +52,11 @@ public class EquipmentController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 3) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return equipmentService.get_myEquipment_list(user, params);
@@ -74,10 +72,11 @@ public class EquipmentController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 3) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return equipmentService.operation_userequipment(user, params);
@@ -90,10 +89,14 @@ public class EquipmentController {
 	@ResponseBody
 	public ServerResponse<Object> get_userequipment_id(HttpServletRequest httpServletRequest, @RequestParam long id) {
 		User user = (User) httpServletRequest.getAttribute("user");
-		int role = user.getRole();
-		if (role != 1 && role != 3) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
+		// 检查权限
+		if (user.getRole() != 1 && user.getRole() != 3) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+
 		return equipmentService.get_userequipment_id(user.getId(), id);
 
 	}
@@ -106,11 +109,8 @@ public class EquipmentController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 
-		params.put("StringPath", StringPath);
-
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return equipmentService.getequipmentList(params);
@@ -124,18 +124,15 @@ public class EquipmentController {
 	public ServerResponse<Object> getEquipmentReleaseTitleList(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
-		params.put("StringPath", StringPath);
-		// 检查权限
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return equipmentService.getEquipmentReleaseTitleList(params);
 
 	}
 
-	// 公开展示灭虫装修等列表
+	// 公开电器
 
 	@RequestMapping(value = "getEquipmentPublicList", method = RequestMethod.POST)
 	@ResponseBody
@@ -143,13 +140,9 @@ public class EquipmentController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
-
 		return equipmentService.getEquipmentPublicList(params);
 
 	}
@@ -159,12 +152,8 @@ public class EquipmentController {
 	@ResponseBody
 	public ServerResponse<Object> getEquipmentDetails(HttpServletRequest httpServletRequest, @RequestParam long id) {
 		User user = (User) httpServletRequest.getAttribute("user");
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("StringPath", StringPath);
-		// 检查权限
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 		return equipmentService.getEquipmentDetails(id);
 

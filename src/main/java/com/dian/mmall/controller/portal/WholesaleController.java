@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dian.mmall.common.Const;
+import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.WholesaleService;
@@ -21,23 +22,18 @@ import com.dian.mmall.util.CheckLand;
 @RequestMapping(Const.PCAPI+"wholesale/")
 public class WholesaleController {
 	
-	private String StringPath="/home/wholesaleMarket";
-	
 	@Autowired
 	private WholesaleService wholesaleService;
 	
-	
+	/**市场名*/
 	@RequestMapping(value = "getwholesale", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<Object> getwholesale(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 		User user =	(User) httpServletRequest.getAttribute("user"); 
-    	//检查权限
-     	params.put("StringPath", StringPath);
-     	ServerResponse<String>	serverResponse1=CheckLand.checke_see(user,params);
-    	if(serverResponse1.getStatus()!=0) {
-    		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-    	}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 
 		return wholesaleService.getwholesale(params);
 

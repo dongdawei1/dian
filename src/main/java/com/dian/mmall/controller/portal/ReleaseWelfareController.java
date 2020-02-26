@@ -44,11 +44,11 @@ public class ReleaseWelfareController {
 	public ServerResponse<String> create_position(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
-		// 检查权限
-		params.put("StringPath", recruitWorkers);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return serverResponse1;
+		if (user.getRole() != 1 && user.getRole() != 5 && user.getRole() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return releaseWelfareService.create_position(user, params);
@@ -63,11 +63,11 @@ public class ReleaseWelfareController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		// 检查权限
-		params.put("StringPath", recruitWorkers);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 5 && user.getRole() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return releaseWelfareService.get_position_list(user, params);
@@ -82,11 +82,8 @@ public class ReleaseWelfareController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		// 检查权限
-		params.put("StringPath", recruitWorkers);
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return releaseWelfareService.get_position_all(user, params);
@@ -102,10 +99,11 @@ public class ReleaseWelfareController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", recruitWorkers);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 5 && user.getRole() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return releaseWelfareService.position_operation(user, params);
@@ -130,7 +128,7 @@ public class ReleaseWelfareController {
 					list.add(positions[i].getPositionType());
 				}
 			}
-		} else if (role == 5) {
+		} else if (role == 5) {  //暂时未做
 			for (int i = 0; i < positions.length; i++) {
 				if (positions[i].getRoleId() == 5) {
 					list.add(positions[i].getPositionType());

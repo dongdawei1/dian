@@ -1,6 +1,6 @@
 package com.dian.mmall.controller.portal;
 
-import java.util.HashMap;
+
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,15 +17,12 @@ import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
-import com.dian.mmall.service.release.FoodAndGrainService;
 import com.dian.mmall.service.release.WineAndTablewareService;
-import com.dian.mmall.util.CheckLand;
 
 @Controller
 @RequestMapping(Const.PCAPI + "wineAndTableware/")
 public class WineAndTablewareController {
 
-	private String StringPath = "/home/wineAndTableware";
 	@Autowired
 	private WineAndTablewareService wineAndTablewareService;
 
@@ -36,10 +33,11 @@ public class WineAndTablewareController {
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return serverResponse1;
+		if (user.getRole() != 1 && user.getRole() != 5) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return wineAndTablewareService.create_wineAndTableware(user, params);
@@ -54,11 +52,11 @@ public class WineAndTablewareController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 5) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return wineAndTablewareService.get_myWineAndTableware_list(user, params);
@@ -73,13 +71,12 @@ public class WineAndTablewareController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 5) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
-
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 		return wineAndTablewareService.operation_userWineAndTableware(user, params);
 
 	}
@@ -105,14 +102,12 @@ public class WineAndTablewareController {
 	@ResponseBody
 	public ServerResponse<Object> getWineAndTablewareTitleList(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		params.put("StringPath", StringPath);
-		// 检查权限
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
-				params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-		}
 
+		User user = (User) httpServletRequest.getAttribute("user");
+
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 		return wineAndTablewareService.getWineAndTablewareTitleList(params);
 
 	}
@@ -124,14 +119,11 @@ public class WineAndTablewareController {
 	public ServerResponse<Object> getWineAndTablewarePublicList(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 
-		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
-				params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-		}
+		User user = (User) httpServletRequest.getAttribute("user");
 
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 		return wineAndTablewareService.getWineAndTablewarePublicList(params);
 
 	}
@@ -141,13 +133,10 @@ public class WineAndTablewareController {
 	@ResponseBody
 	public ServerResponse<Object> getWineAndTablewareDetails(HttpServletRequest httpServletRequest,
 			@RequestParam long id) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("StringPath", StringPath);
-		// 检查权限
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see((User) httpServletRequest.getAttribute("user"),
-				params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		User user = (User) httpServletRequest.getAttribute("user");
+
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 		return wineAndTablewareService.getWineAndTablewareDetails(id);
 

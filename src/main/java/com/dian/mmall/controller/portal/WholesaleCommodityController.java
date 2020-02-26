@@ -1,6 +1,5 @@
 package com.dian.mmall.controller.portal;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,12 +17,10 @@ import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.WholesaleCommodityService;
-import com.dian.mmall.util.CheckLand;
 
 @Controller
 @RequestMapping(Const.PCAPI + "wholesaleCommodity/")
 public class WholesaleCommodityController {
-	private String StringPath = "/home/wholesaleMarket";
 	@Autowired
 	private WholesaleCommodityService wholesaleCommodityService;
 
@@ -34,10 +31,11 @@ public class WholesaleCommodityController {
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return serverResponse1;
+		if (user.getRole() != 1 && user.getRole() != 13) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return wholesaleCommodityService.create_wholesaleCommodity(user, params);
@@ -51,10 +49,8 @@ public class WholesaleCommodityController {
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return wholesaleCommodityService.get_wholesaleCommodity_serviceType(user.getId(), params);
@@ -67,11 +63,8 @@ public class WholesaleCommodityController {
 	public ServerResponse<Object> wholesaleCommodity_serviceType(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
-		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return wholesaleCommodityService.wholesaleCommodity_serviceType(params);
@@ -85,10 +78,11 @@ public class WholesaleCommodityController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 13) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return wholesaleCommodityService.get_myWholesaleCommodity_list(user.getId(), params);
@@ -102,10 +96,11 @@ public class WholesaleCommodityController {
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return serverResponse1;
+		if (user.getRole() != 1 && user.getRole() != 13) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 		return wholesaleCommodityService.operation_userWholesaleCommodity(user.getId(), params);
 	}
@@ -118,28 +113,28 @@ public class WholesaleCommodityController {
 			@RequestParam long id) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 13) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 		return wholesaleCommodityService.get_userWholesaleCommodity_id(user.getId(), id);
 
 	}
 
-	// 公开展示灭虫装修等列表
+	// 公开列表
 
 	@RequestMapping(value = "getWholesaleCommodityPublicList", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<Object> getWholesaleCommodityPublicList(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
-		// 检查权限
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() == 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return wholesaleCommodityService.getWholesaleCommodityPublicList(params);
@@ -154,13 +149,12 @@ public class WholesaleCommodityController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("StringPath", StringPath);
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() == 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
-
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 		return wholesaleCommodityService.getWholesaleCommodityPublicId(id);
 
 	}

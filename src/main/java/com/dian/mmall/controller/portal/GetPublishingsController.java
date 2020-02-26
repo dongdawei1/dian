@@ -28,7 +28,6 @@ import com.dian.mmall.util.RedisShardedPoolUtil;
 @Controller
 @RequestMapping(Const.PCAPI + "getPublishings/")
 public class GetPublishingsController {
-	String recruitWorkers = "/home/recruitWorkers";
 
 	@Autowired
 	private GetPublishingsService getPublishingsService;
@@ -44,9 +43,8 @@ public class GetPublishingsController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 //        selectType:1   //1是查询职位 ，2是查询 简历

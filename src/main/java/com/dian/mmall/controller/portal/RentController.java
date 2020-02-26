@@ -38,19 +38,28 @@ public class RentController {
 		if (releaseType == null || releaseType.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
 		}
+
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 		int createType = Integer.valueOf(releaseType);
 		if (createType == 14) {
-			params.put("StringPath", "/home/lease");
+
+			// 检查权限
+			if (user.getRole() != 1 && user.getRole() != 2 && user.getRole() != 3 && user.getRole() != 6) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+			}
+
 		} else if (createType == 15) {
-			params.put("StringPath", "/home/rentalBooth");
+			// 检查权限
+			if (user.getRole() != 1 && user.getRole() != 4 && user.getRole() != 5 && user.getRole() != 6
+					&& user.getRole() != 13) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+			}
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
 		}
-		// 检查权限
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return serverResponse1;
-		}
+
 		return rentService.create_rent(user, params);
 
 	}
@@ -62,18 +71,15 @@ public class RentController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		int role = user.getRole();
-		if (role == 2 || role == 3) {
-			params.put("StringPath", "/home/lease");
-		} else {
-			params.put("StringPath", "/home/rentalBooth");
+
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		// 检查权限
-
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getRole() != 1 && user.getRole() != 2 && user.getRole() != 3 && user.getRole() != 6
+				&& user.getRole() != 4 && user.getRole() != 5 && user.getRole() != 13) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
 
 		return rentService.get_myRent_list(user, params);
@@ -88,22 +94,30 @@ public class RentController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		// 检查权限
 		String releaseType = params.get("releaseType").toString().trim();
 		if (releaseType == null || releaseType.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
 		}
+
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
 		int createType = Integer.valueOf(releaseType);
 		if (createType == 14) {
-			params.put("StringPath", "/home/lease");
+
+			// 检查权限
+			if (user.getRole() != 1 && user.getRole() != 2 && user.getRole() != 3 && user.getRole() != 6) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+			}
+
 		} else if (createType == 15) {
-			params.put("StringPath", "/home/rentalBooth");
+			// 检查权限
+			if (user.getRole() != 1 && user.getRole() != 4 && user.getRole() != 5 && user.getRole() != 6
+					&& user.getRole() != 13) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+			}
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-		}
-		ServerResponse<String> serverResponse1 = CheckLand.getCreateRole(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
 		}
 
 		return rentService.operation_userment(user, params);
@@ -116,9 +130,8 @@ public class RentController {
 	@ResponseBody
 	public ServerResponse<Object> get_userrent_id(HttpServletRequest httpServletRequest, @RequestParam long id) {
 		User user = (User) httpServletRequest.getAttribute("user");
-		int role = user.getRole();
-		if (role != 1 && role != 2 && role != 3 && role != 4 && role != 5 && role != 6) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 		return rentService.get_userrent_id(user.getId(), id);
 
@@ -131,22 +144,8 @@ public class RentController {
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		String releaseType = params.get("releaseType").toString().trim();
-		if (releaseType == null || releaseType.equals("")) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-		}
-		int createType = Integer.valueOf(releaseType);
-		if (createType == 14) {
-			params.put("StringPath", "/home/lease");
-		} else if (createType == 15) {
-			params.put("StringPath", "/home/rentalBooth");
-		} else {
-			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-		}
-
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return rentService.getServiceDetailedList(params);
@@ -161,21 +160,8 @@ public class RentController {
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		String releaseType = params.get("releaseType").toString().trim();
-		if (releaseType == null || releaseType.equals("")) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-		}
-		int createType = Integer.valueOf(releaseType);
-		if (createType == 14) {
-			params.put("StringPath", "/home/lease");
-		} else if (createType == 15) {
-			params.put("StringPath", "/home/rentalBooth");
-		} else {
-			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
-		}
-		ServerResponse<String> serverResponse1 = CheckLand.checke_see(user, params);
-		if (serverResponse1.getStatus() != 0) {
-			return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
 		return rentService.getrentList(params);
@@ -187,9 +173,8 @@ public class RentController {
 	@ResponseBody
 	public ServerResponse<Object> get_rent_id(HttpServletRequest httpServletRequest, @RequestParam long id) {
 
-		int role = ((User) httpServletRequest.getAttribute("user")).getRole();
-		if (role != 1 && role != 2 && role != 3 && role != 4 && role != 5 && role != 6 && role != 11) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
+		if (((User) httpServletRequest.getAttribute("user")).getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 		return rentService.get_rent_id(id);
 
