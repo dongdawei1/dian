@@ -83,22 +83,13 @@ public class RealNameController {
 		return serverResponse;
 	}
 
-	// 获取实名信息
-	@RequestMapping(value = "getRealName", method = RequestMethod.GET)
-	@ResponseBody
-	public ServerResponse<Object> getRealName(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse) {
 
-		return realNameService.getRealName((User) httpServletRequest.getAttribute("user"));
-
-	}
 
 	// 获取实名信息
 	@RequestMapping(value = "getUserRealName", method = RequestMethod.GET)
 	@ResponseBody
 	public ServerResponse<Object> getUserRealName(HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse) {
-
 		return realNameService.getUserRealName((User) httpServletRequest.getAttribute("user"));
 
 	}

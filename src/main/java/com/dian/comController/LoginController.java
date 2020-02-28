@@ -24,6 +24,7 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.yanzhengma.CheckPicCode;
 import com.dian.mmall.service.IUserService;
+import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LogUtil;
@@ -53,7 +54,7 @@ public class LoginController {
 
 		ServerResponse<Object> response = iUserService.login(params);
 		if (response.getStatus() == ResponseCode.SUCCESS.getCode()) {
-			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User)response.getData());		
+			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User) response.getData());
 		} else {
 			return response;
 		}
@@ -72,12 +73,10 @@ public class LoginController {
 		}
 		ServerResponse<Object> serverResponse = iUserService.createUser(params);
 		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
-			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User)serverResponse.getData());		
+			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User) serverResponse.getData());
 		}
 		return serverResponse;
 	}
-	
-	
 
 	// 获取验证码 @RequestBody Map<String,Object> params
 	@ResponseBody
@@ -121,8 +120,31 @@ public class LoginController {
 		String userJsonStr = RedisShardedPoolUtil.get(loginToken);
 		User user = JsonUtil.string2Obj(userJsonStr, User.class);
 		if (user != null) {
+			log.warn("用户有loginToken,redis中查询失败 {}",loginToken);
 			return ServerResponse.createBySuccess(user);
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+	}
+
+	@Autowired
+	private RealNameService realNameService;
+
+	// 获取实名信息
+	@RequestMapping(value = "getRealName", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getRealName(HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse) {
+		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+		if (StringUtils.isEmpty(loginToken)) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+		}
+		String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+		User user = JsonUtil.string2Obj(userJsonStr, User.class);
+		if (user == null) {
+			log.warn("用户有loginToken,redis中查询失败 {}",loginToken);
+			return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
+		}
+		return realNameService.getRealName(user);
+
 	}
 }
