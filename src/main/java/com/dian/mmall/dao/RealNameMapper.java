@@ -80,4 +80,7 @@ public interface RealNameMapper {
 
 	Integer getIsReceipt(long userId);
 
+
+	RealName admin_select_realNameByUsername(String userName);
+
 }

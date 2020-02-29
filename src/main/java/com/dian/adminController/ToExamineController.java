@@ -1,4 +1,4 @@
-package com.dian.mmall.controller.portal;
+package com.dian.adminController;
 
 import java.util.Map;
 
@@ -39,7 +39,7 @@ import com.dian.mmall.util.RedisPoolUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
-@RequestMapping(Const.PCAPI+"toExamine/")
+@RequestMapping(Const.APIV5+"toExamine/")
 public class ToExamineController {
 	//管理员接口审批
 	
@@ -423,4 +423,19 @@ public class ToExamineController {
         
     } 
     
+    
+    
+    //创建广告前查询实名信息
+    @RequestMapping(value = "admin_guangggao_realName",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<Object> admin_guangggao_realName(HttpServletRequest httpServletRequest,@RequestParam String userName){
+    	//TODO只有管理员才能调用
+    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
+     	if(serverResponse.getStatus()!=0 ) {
+     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+     	}
+     		
+        return realNameService.admin_guangggao_realName(userName.trim());
+        
+    } 
 }

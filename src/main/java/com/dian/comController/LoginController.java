@@ -54,7 +54,7 @@ public class LoginController {
 
 		ServerResponse<Object> response = iUserService.login(params);
 		if (response.getStatus() == ResponseCode.SUCCESS.getCode()) {
-			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User) response.getData());
+			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User) response.getData(),1);
 		} else {
 			return response;
 		}
@@ -73,7 +73,7 @@ public class LoginController {
 		}
 		ServerResponse<Object> serverResponse = iUserService.createUser(params);
 		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
-			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User) serverResponse.getData());
+			return LogUtil.setTocken(request.getHeader("appid"), httpServletResponse, (User) serverResponse.getData(),2);
 		}
 		return serverResponse;
 	}
@@ -114,6 +114,8 @@ public class LoginController {
 	public ServerResponse<Object> getUserInfo(HttpServletRequest httpServletRequest, @RequestParam String uuid) {
 
 		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+		
+		System.out.println("LoginController.getUserInfo()"+loginToken);
 		if (StringUtils.isEmpty(loginToken)) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
 		}

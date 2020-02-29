@@ -2,7 +2,6 @@ package com.dian.guolvAndlanjie;
 
 import java.io.PrintWriter;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,12 +10,12 @@ import org.slf4j.Logger;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.util.CookieUtil;
+import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.IpUtils;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
@@ -42,11 +41,16 @@ public class LogAuthorityInterceptor implements HandlerInterceptor {
 			// 登录判断
 			if (user != null) {
 				String appId = request.getHeader("appid");
-				if(appId.equals(Const.APPAPPIDP)) {
-				// 更新时长 pc 的所有get请求增加 市场，app增加时间去crAndUp拦截器中
-				RedisShardedPoolUtil.expire(loginToken, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+				if (appId.equals(Const.APPAPPIDP)) {
+					// 更新时长 pc 的所有get请求增加 市场，app增加时间去crAndUp拦截器中
+					RedisShardedPoolUtil.expire(loginToken, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+				} else {
+					int week = DateTimeUtil.getWeek();
+					if (week == 1 || week == 3) {
+						RedisShardedPoolUtil.expire(loginToken, Const.RedisCacheExtime.REDIS_SESSION_EXTIMEAPP);
+					}
 				}
-				//把用户放入请求中
+				// 把用户放入请求中
 				request.setAttribute("user", user);
 				return true;
 			}
@@ -60,9 +64,8 @@ public class LogAuthorityInterceptor implements HandlerInterceptor {
 				.obj2String(ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage())));
 		out.flush(); // geelynote 这里要关闭流
 		out.close();
-		
-		log.warn("no log {} ",IpUtils.getIpAddr(request));
-		
+
+		log.warn("no log {} ", IpUtils.getIpAddr(request));
 		return false;// 这里虽然已经输出，但是还会走到controller，所以要return false
 	}
 

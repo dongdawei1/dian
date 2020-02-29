@@ -14,12 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class LogUtil {
-	public static ServerResponse<Object> setTocken(String appId, HttpServletResponse httpServletResponse, User user) {
+	public static ServerResponse<Object> setTocken(String appId, HttpServletResponse httpServletResponse, User user,int type ) {
 		if (appId != null && !appId.equals("")) {
 			String userString = JsonUtil.obj2String(user);
 			if (appId.equals(Const.APPAPPIDP)) {
 				// 删除以前的登陆
+				if(type==1) {
 				RedisPoolUtil.delectKeyP(user);
+				}
 				// 定期更换加密方式
 				String tockenString = MD5Util.setTocken(user.getId(), user.getCreateTime(), Const.PCAPPID);
 				CookieUtil.writeLoginToken(httpServletResponse, tockenString);
@@ -27,7 +29,9 @@ public class LogUtil {
 				RedisShardedPoolUtil.setEx(tockenString, userString, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
 				return ServerResponse.createBySuccess(user);
 			} else if (appId.equals(Const.APPAPPIDA)) {
+				if(type==1) {
 				RedisPoolUtil.delectKeyA(user);
+				}
 				String tockenString = MD5Util.setTocken(user.getId(), user.getCreateTime(), Const.APPAPPID);
 				// 把用户session当做key存到数据库中，
 				RedisShardedPoolUtil.setEx(tockenString, userString, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);

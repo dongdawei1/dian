@@ -257,32 +257,10 @@ public class RedisPoolUtil {
 		Jedis jedis = RedisPool.getJedis();
 
 		// DIANTOP3C38516C11C9CF959D0BCCC08057
-
-		// PCAPPID = "DIANTOP";
-		// RedisPoolUtil.main()DIANTOP
-		String aString = "1DI4ANTOP3C38516C11C9CF959D0BCCC08057";
-
-		String aString2 = aString.substring(0, Const.PCAPPID.length());
-
-		System.out.println("RedisPoolUtil.main()" + aString2);
-
-		// ==0
-		// System.out.println("RedisPoolUtil.main()"+aString.indexOf(Const.PCAPPID)==0);
-
-		RedisShardedPoolUtil.set("keyTest", "value");
-
-		User usetUser = new User();
-
-		usetUser.setUsername("z222222221");
-		usetUser.setId(1);
-		delectKeyAll(usetUser, "p");
-
-		// System.out.println( RedisPoolUtil.checkeKey(usetUser));
-//       Boolean value = RedisShardedPoolUtil.exists("keyTest");
-//   
-//        
-//        RedisShardedPoolUtil.setEx("keyex","valueex",60*10);
 //
+//		// PCAPPID = "DIANTOP";
+//		// RedisPoolUtil.main()DIANTOP
+
         Set<String> keyes=   jedis.keys("*");
         for(String key : keyes) {
         	System.out.println(key +"<--ddd");

@@ -20,7 +20,7 @@ import com.dian.mmall.service.OrderService;
 import com.dian.mmall.util.WXPayUtil;
 
 @Controller
-@RequestMapping(Const.PCAPI+"vx/")
+@RequestMapping(Const.WXAPI)
 public class WxPayController {
 	@Autowired
 	private OrderService orderService;

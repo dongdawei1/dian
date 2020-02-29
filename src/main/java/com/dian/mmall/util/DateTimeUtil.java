@@ -214,8 +214,16 @@ public class DateTimeUtil {
 		}
 
 	}
+	public static int getWeek() {
+		Date today = new Date();
+		Calendar c = Calendar.getInstance();
+		c.setTime(today);
+		return c.get(Calendar.DAY_OF_WEEK);
+	}
 
 	public static void main(String[] args) {
+		System.out.println(getWeek());
+		
     System.out.println(dateTimeToDateString((new Date()).getTime()-15*60*1000));
 		Date nowDate = new Date();
 //		long lon=1549641600000L;

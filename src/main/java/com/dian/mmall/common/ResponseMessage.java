@@ -78,6 +78,7 @@ public enum ResponseMessage {
 	cheshichaxunshibai("城市查询失败，请更换城市"),
 	weibaozhengxinxianquan("为保证用户信息安全，每天只能查询20次联系方式"),
 	chaxunshibai("查询失败"),
+	weichadaojieguo("未查询到实名信息"),
 	yifabuguojianli("已发布过简历"),
 	weifabuguojianli("未发布过简历"),
 	fabuleixingkong("发布类型不能为空"),
