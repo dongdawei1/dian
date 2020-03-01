@@ -4,7 +4,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
-import com.dian.guolvAndlanjie.CrAndUpAuthorityInterceptor;
+import com.dian.guolvAndlanjie.AdminAuthorityInterceptor;
 import com.dian.guolvAndlanjie.ImgAuthorityInterceptor;
 import com.dian.guolvAndlanjie.LogAuthorityInterceptor;
 import com.dian.mmall.common.Const;
@@ -36,7 +36,7 @@ public class AuthorityInterceptorConfig extends WebMvcConfigurationSupport {
 		registry.addInterceptor(imgAuthorityInterceptor()).addPathPatterns("/**").excludePathPatterns("/img/**");
 		// 拦截所有请求，通过判断是否有 AuthorityInterceptor() 实现类
 		registry.addInterceptor(logAuthorityInterceptor()).addPathPatterns(Const.APIV1 + "**");
-		registry.addInterceptor(crAndUpAuthorityInterceptor()).addPathPatterns(Const.APIV5 + "**");
+		registry.addInterceptor(adminAuthorityInterceptor()).addPathPatterns(Const.APIV5 + "**");
 
 	}
 
@@ -56,9 +56,9 @@ public class AuthorityInterceptorConfig extends WebMvcConfigurationSupport {
 		return new LogAuthorityInterceptor();
 	}
 
-	@Bean // 登陆拦截
-	public CrAndUpAuthorityInterceptor crAndUpAuthorityInterceptor() {
-		return new CrAndUpAuthorityInterceptor();
+	@Bean // 管理操作拦截
+	public AdminAuthorityInterceptor adminAuthorityInterceptor() {
+		return new AdminAuthorityInterceptor();
 	}
 
 }

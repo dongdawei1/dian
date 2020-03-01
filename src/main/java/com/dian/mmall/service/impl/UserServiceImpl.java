@@ -404,4 +404,13 @@ public class UserServiceImpl implements IUserService {
 		}
 	}
 
+	@Override
+	public ServerResponse<Object> selectUserById(long userId) {
+		User user = userMapper.selectUserById(userId);
+		if(user==null) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.huoquxinxishibai.getMessage());
+		}
+		return ServerResponse.createBySuccess(user);
+	}
+
 }

@@ -60,5 +60,9 @@ public class BunnerServiceImpl implements BunnerService {
 		 
 		 
 	}
+	@Override
+	public int getguanggaocount(long tableId, int tableName) {
+		return bunnerMapper.getguanggaocount(tableId, tableName);
+	}
 
 }

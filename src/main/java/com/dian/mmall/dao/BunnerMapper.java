@@ -12,4 +12,6 @@ public interface BunnerMapper {
 
 	List<DibuBunner> getBunnerList(Integer role, Integer permissionid, Integer bunnerType, String detailed, String date);
 
+	int getguanggaocount(long tableId, int permissionid);
+
 }

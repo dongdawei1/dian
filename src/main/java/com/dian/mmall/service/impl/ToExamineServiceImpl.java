@@ -50,6 +50,7 @@ import com.dian.mmall.pojo.zhiwei.Resume;
 import com.dian.mmall.service.LiushuiService;
 import com.dian.mmall.service.ToExamineService;
 import com.dian.mmall.service.UserAccountService;
+import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
@@ -541,6 +542,35 @@ public class ToExamineServiceImpl implements ToExamineService {
 		map.put("examineName", examineName);
 		return ServerResponse.createBySuccess(map);
 
+	}
+
+	@Autowired
+	private ReleaseWelfareService releaseWelfareService;
+	
+	@Override
+	public ServerResponse<Object> getUserCreate(User user) {
+		long userId=user.getId();
+		int role=user.getRole();
+		Map<String, Object> map = new HashMap<String, Object>();
+		/*dibubunner  表 permissionid 
+		 * 
+		 * //招聘permissionid==30
+		 *  店面/窗口出租permissionid==14
+		 */
+		if(role==2) {
+			//餐饮/酒店等企业可以发布    招聘，窗口出租  
+			//招聘permissionid==30
+			List<ReleaseWelfare> rwList=releaseWelfareService.adminGetzZWall(userId);
+			
+		}else if(role==3) {
+			//餐饮/酒店等企业可以发布    招聘，窗口出租  
+			//招聘permissionid==30
+			List<E>
+			
+		}
+		
+		
+		return null;
 	}
 
 }

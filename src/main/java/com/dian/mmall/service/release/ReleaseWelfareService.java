@@ -1,9 +1,11 @@
 package com.dian.mmall.service.release;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 
 public interface ReleaseWelfareService {
 
@@ -19,5 +21,6 @@ public interface ReleaseWelfareService {
 	ServerResponse getContact(User user, Map<String, Object> params);
 	
 	ServerResponse<Object> get_position_all(User user, Map<String, Object> params);
+	List<ReleaseWelfare> adminGetzZWall(long userId);
 
 }

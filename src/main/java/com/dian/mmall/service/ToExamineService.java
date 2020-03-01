@@ -21,4 +21,7 @@ public interface ToExamineService {
 
 	ServerResponse<String> admin_create_orderUser(String examineName, Map<String, Object> params);
 
+
+	ServerResponse<Object> getUserCreate(User user);
+
 }

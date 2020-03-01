@@ -32,4 +32,5 @@ long getUserReleaseWelfarePageno(String detailed, String position);
 List<ReleaseWelfare> getUserReleaseWelfareList(int pageLength, int pageSize, String detailed, String position);
 //查询商户联系方式
 ReleaseWelfare getReleaseWelfareById(int id, int queriesType);
+List<ReleaseWelfare> adminGetzZWall(long userId);
 }

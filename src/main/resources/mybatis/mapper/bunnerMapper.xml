@@ -16,5 +16,11 @@
       
     </select>
     
+
+   <select id="getguanggaocount" resultType="int">
+      select  count(*) from dibubunner 
+      where  tableName=#{tableName}    and tableId=#{tableId} and bunnerStatus in(1,0)
+    </select>
+   
    
 </mapper>

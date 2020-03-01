@@ -21,7 +21,7 @@ import com.dian.mmall.util.RedisShardedPoolUtil;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
-public class CrAndUpAuthorityInterceptor implements HandlerInterceptor {
+public class AdminAuthorityInterceptor implements HandlerInterceptor {
 	private int length = Const.APIV5.length() +"cr/".length();
 
 	// log.warn("类型转换",e);

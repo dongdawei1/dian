@@ -10,7 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
  * Created by geely
  */
 public class Const {
-    
+	public static final int ZHIWEIP=30;
+	
+	
+	
+	
 	public static final String SERVICETYPENO = "(商品类型不存在，如果合规请手动添加: )";
 	public static final String SERVICETYPEDAI = "(待审批的商品类型: )";
     public static final String CURRENT_USER = "currentUser";

@@ -42,4 +42,6 @@ public interface IUserService {
 	long selectUserId(User user);
 	//编辑用户基本信息
 	ServerResponse<String> update_information(long id, Map<String, Object> params);
+
+	ServerResponse<Object> selectUserById(long userId);
 }
