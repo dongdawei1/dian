@@ -16,7 +16,6 @@ public class Resume {
 	private long id;
 	
 	  private long userId;  //ol
-	  private String userName;
 	  @IsEmptyAnnotation(message="求职类型不能为空")
 	  private String position; //职位类型  ol
 	  @IsEmptyAnnotation(message="薪资不能为空")
@@ -61,7 +60,7 @@ public class Resume {
 	 
 	  private String contact;  //实名联系联系方式  ol
 	  private String consigneeName; //姓名 ol
-	 
+	  private Integer releaseType=31;
 	 
 	  private String userType;//用户类型 ol
 	

@@ -106,7 +106,8 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 						}
 						int releaseType=Integer.valueOf(releaseTypeString);
 						//工服101/百货102/绿植103/装饰用品104
-						if(releaseType!=101 && releaseType!=102 && releaseType!=103 && releaseType!=104 ) {
+						if(releaseType!=Const.GONGFUP && releaseType!=Const.BAIHUOP && 
+								releaseType!=Const.LVZHIP && releaseType!=Const.ZHUANGSHIP ) {
 							 return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 						}
 						int count=0;
@@ -186,10 +187,10 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 				    	if(serverResponse.getStatus()!=0) {	
 							return ServerResponse.createByErrorMessage(serverContact.getMsg());			
 						}
-				map.put("contact", EncrypDES.encryptPhone(contact));	
+			//	map.put("contact", EncrypDES.encryptPhone(contact));	
 				map.put("consigneeName", params.get("consigneeName").toString().trim());
-				map.put("detailed", realName.getDetailed());
-				map.put("realNameId", realName.getId());
+			//	map.put("detailed", realName.getDetailed());
+			//	map.put("realNameId", realName.getId());
 				}else {
 					return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());			
 				}
@@ -269,15 +270,20 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 		equipment_pagePage.setPageSize(pageSize);
 		equipment_pagePage.setCurrentPage(currentPage); //当前页
 		
-	    List<DepartmentStore> list_equipment  =	new ArrayList();
-	    List<DepartmentStore> list_equipmentall=  departmentStoreMapper.get_myDepartmentStore_list((currentPage-1)*pageSize,pageSize,releaseType,welfareStatus,user.getId());
 	    
-		for(DepartmentStore equipment :list_equipmentall) {
-			equipment.setContact(EncrypDES.decryptPhone(equipment.getContact()));
-			list_equipment.add(equipment);
+	    List<DepartmentStore> list_equipmentall=  departmentStoreMapper.get_myDepartmentStore_list((currentPage-1)*pageSize,pageSize,releaseType,welfareStatus,user.getId());
+	    RealName realName = realNameMapper.getRealName(user.getId());
+	    
+		for(int a=0;a<list_equipmentall.size();a++) {
+			DepartmentStore equipment=list_equipmentall.get(a);
+			equipment.setContact(EncrypDES.decryptPhone(realName.getContact()));
+			equipment.setDetailed(realName.getDetailed());
+			equipment.setRealNameId(realName.getCompanyName());
+			equipment.setExamineTime(realName.getAddressDetailed());
+			list_equipmentall.set(a, equipment);
 		}
 
-		equipment_pagePage.setDatas(list_equipment );
+		equipment_pagePage.setDatas(list_equipmentall );
 		return ServerResponse.createBySuccess(equipment_pagePage);
 	}
 
@@ -431,7 +437,8 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 		if(equipment==null) {
 			 return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());	
 		}
-		equipment.setContact(EncrypDES.decryptPhone(equipment.getContact()));
+		RealName realName = realNameMapper.getRealName(equipment.getUserId());
+		equipment.setContact(EncrypDES.decryptPhone(realName.getContact()));
 		return ServerResponse.createBySuccess(equipment);
 	}
 
@@ -592,7 +599,11 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 				if(equipment==null) {
 					 return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());	
 				}
-				equipment.setContact(EncrypDES.decryptPhone(equipment.getContact()));
+				RealName realName = realNameMapper.getRealName(equipment.getUserId());
+				equipment.setDetailed(realName.getDetailed());
+				equipment.setRealNameId(realName.getCompanyName());
+				equipment.setExamineTime(realName.getAddressDetailed());
+				equipment.setContact(EncrypDES.decryptPhone(realName.getContact()));
 				//处理图片
 				equipment.setPictureUrl(PictureUtil.listToString(equipment.getPictureUrl()));
 				Map<String,Object> map=new HashMap<String, Object>();
@@ -660,13 +671,18 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 		equipment_pagePage.setPageSize(pageSize);
 		equipment_pagePage.setCurrentPage(currentPage); //当前页
 		
-	    List<DepartmentStore> list_equipment  =	new ArrayList();
 	    List<DepartmentStore> list_equipmentall=  departmentStoreMapper.adminDepartmentStore((currentPage-1)*pageSize,pageSize,contact,releaseType);
 	    
 	    List<ServiceType> serviceTypeList=serviceTypeMapper.get_serviceTypeAll(releaseType);
 	    
-		for(DepartmentStore re :list_equipmentall) {
-			re.setContact(EncrypDES.decryptPhone(re.getContact()));
+		for(int a1=0;a1<list_equipmentall.size();a1++) {
+			DepartmentStore re=list_equipmentall.get(a1);
+			RealName realName = realNameMapper.getRealName(re.getUserId());
+			re.setContact(EncrypDES.decryptPhone(realName.getContact()));
+			re.setRealNameId(realName.getCompanyName());
+			re.setDetailed(realName.getDetailed());
+			re.setUpdateTime(realName.getAddressDetailed());
+			
 			String serviceTypeString=re.getServiceType();
 			long userId=re.getUserId();
 			boolean bo=false;
@@ -687,11 +703,15 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 				re.setEvaluateid(-1);
 				re.setServiceType(Const.SERVICETYPENO+serviceTypeString);
 			}
-			list_equipment.add(re);
+			list_equipmentall.set(a1, re);
 		}
 
-		equipment_pagePage.setDatas(list_equipment );
+		equipment_pagePage.setDatas(list_equipmentall );
 		return ServerResponse.createBySuccess(equipment_pagePage);
+	}
+	@Override
+	public List<DepartmentStore> adminGetDsall(long userId) {
+		return departmentStoreMapper.adminGetDsall(userId);
 	}
 
 }

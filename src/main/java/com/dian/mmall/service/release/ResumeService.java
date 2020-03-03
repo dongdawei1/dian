@@ -1,9 +1,11 @@
 package com.dian.mmall.service.release;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.pojo.zhiwei.Resume;
 
 public interface ResumeService {
    //创建简历
@@ -18,5 +20,6 @@ public interface ResumeService {
 	ServerResponse<Object> get_resume_all(User user, Map<String, Object> params);
 	//获取电话或者邮箱
 	ServerResponse getContact(User user, Map<String, Object> params);
+	List<Resume> adminGetResumeall(long userId);
 
 }

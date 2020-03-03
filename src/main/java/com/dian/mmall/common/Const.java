@@ -10,10 +10,23 @@ import org.springframework.beans.factory.annotation.Value;
  * Created by geely
  */
 public class Const {
+	public static final int SHUCAIP=4;
+	public static final int LIANGYOUP=5;
+	public static final int TIAOLIAO=6;
+	public static final int QINGJIEP=9;
+	public static final int ZHUOYIP=11;
+	public static final int SHUICHAN=29;
+	
 	public static final int ZHIWEIP=30;
+	public static final int DIANMIANP=14;
+	public static final int TANWEIP=15;
+	public static final int JIANLIP=31;
 	
-	
-	
+	//工服101/百货102/绿植103/装饰用品104
+	public static final int GONGFUP=101;
+	public static final int BAIHUOP=102;
+	public static final int LVZHIP=103;
+	public static final int ZHUANGSHIP=104;
 	
 	public static final String SERVICETYPENO = "(商品类型不存在，如果合规请手动添加: )";
 	public static final String SERVICETYPEDAI = "(待审批的商品类型: )";

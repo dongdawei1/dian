@@ -59,7 +59,20 @@ public class CookieUtil {
 		}
 		return null;
 	}
-
+	//pc端长传图片
+		public static String readLoginToken1(HttpServletRequest request) {
+				Cookie[] cks = request.getCookies();
+				if (cks != null) {
+					for (Cookie ck : cks) {
+						log.info("read cookieName:{},cookieValue:{}", ck.getName(), ck.getValue());
+						if (StringUtils.equals(ck.getName(), COOKIE_NAME)) {
+							log.info("return cookieName:{},cookieValue:{}", ck.getName(), ck.getValue());
+							return ck.getValue();
+						}
+					}
+				}
+			return null;
+		}
 	// X:domain=".happymmall.com"
 	// a:A.happymmall.com cookie:domain=A.happymmall.com;path="/"
 	// b:B.happymmall.com cookie:domain=B.happymmall.com;path="/"

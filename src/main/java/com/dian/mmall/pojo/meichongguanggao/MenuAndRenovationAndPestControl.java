@@ -1,7 +1,5 @@
 package com.dian.mmall.pojo.meichongguanggao;
 
-import java.util.Date;
-
 import com.dian.mmall.util.checknullandmax.IsEmptyAnnotation;
 import com.dian.mmall.util.checknullandmax.MaxSize;
 import com.dian.mmall.util.checknullandmax.MinSize;

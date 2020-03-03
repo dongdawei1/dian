@@ -1,8 +1,10 @@
 package com.dian.mmall.service.release;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.gongfu.DepartmentStore;
 import com.dian.mmall.pojo.user.User;
 
 public interface DepartmentStoreService {
@@ -22,5 +24,9 @@ public interface DepartmentStoreService {
 	ServerResponse<Object> getDepartmentStoreDetails(long id);
 
 	ServerResponse<Object> adminDepartmentStore(Map<String, Object> params);
+
+	List<DepartmentStore> adminGetDsall(long userId);
+
+	
 
 }

@@ -31,6 +31,7 @@ import com.dian.mmall.dao.releaseDao.RentMapper;
 import com.dian.mmall.dao.releaseDao.ResumeMapper;
 import com.dian.mmall.dao.releaseDao.WholesaleCommodityMapper;
 import com.dian.mmall.dao.releaseDao.WineAndTablewareMapper;
+import com.dian.mmall.pojo.CreateGanggaoVo;
 import com.dian.mmall.pojo.Liushui;
 import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.WholesaleCommodity;
@@ -40,6 +41,7 @@ import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
 import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.qianyue.Peixun;
+import com.dian.mmall.pojo.shichang.FoodAndGrain;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.OrderUser;
 import com.dian.mmall.pojo.user.RealName;
@@ -47,10 +49,15 @@ import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.pojo.zhiwei.Resume;
+import com.dian.mmall.service.BunnerService;
 import com.dian.mmall.service.LiushuiService;
 import com.dian.mmall.service.ToExamineService;
 import com.dian.mmall.service.UserAccountService;
+import com.dian.mmall.service.release.DepartmentStoreService;
+import com.dian.mmall.service.release.FoodAndGrainService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
+import com.dian.mmall.service.release.RentService;
+import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
@@ -96,9 +103,10 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private LiushuiService liushuiService;
 	@Autowired
 	private EvaluateMapper evaluateMapper;
-	
+
 	@Autowired
 	private WholesaleCommodityMapper wholesaleCommodityMapper;
+
 	// 全部审核
 	public ServerResponse<String> examineAll(User user, Map<String, Object> params) {
 		String userId = params.get("userId").toString().trim();
@@ -222,9 +230,9 @@ public class ToExamineServiceImpl implements ToExamineService {
 			DepartmentStore departmentStore = (DepartmentStore) BeanMapConvertUtil.convertMap(DepartmentStore.class,
 					params);
 			resultCount = departmentStoreMapper.examineDepartmentStore(departmentStore);
-		}else if (tabuleType == 35) {
-			WholesaleCommodity  wholesaleCommodity= (WholesaleCommodity) BeanMapConvertUtil.convertMap(WholesaleCommodity.class,
-					params);
+		} else if (tabuleType == 35) {
+			WholesaleCommodity wholesaleCommodity = (WholesaleCommodity) BeanMapConvertUtil
+					.convertMap(WholesaleCommodity.class, params);
 			resultCount = wholesaleCommodityMapper.examineWholesaleCommodity(wholesaleCommodity);
 		}
 
@@ -248,8 +256,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 		}
 
 		List<String> addressDetailedList = peixunMapper.getAddressDetailed(detailed, addressDetailed);
-	
-		
+
 		return ServerResponse.createBySuccess(addressDetailedList);
 	}
 
@@ -424,8 +431,8 @@ public class ToExamineServiceImpl implements ToExamineService {
 				// TODO 后期优化
 				liushui.setLiushuiStatus(1); // 1 初始，2 失败，3成功
 				userAccountServiceResponse = null;
-				userAccountServiceResponse= liushuiService.create_liushui(liushui);
-				
+				userAccountServiceResponse = liushuiService.create_liushui(liushui);
+
 				if (userAccountServiceResponse != null) {
 					if (userAccountServiceResponse.getStatus() != 0) {
 						return ServerResponse.createByErrorMessage(userAccountServiceResponse.getMsg());
@@ -433,18 +440,17 @@ public class ToExamineServiceImpl implements ToExamineService {
 				} else {
 					return ServerResponse.createByErrorMessage(ResponseMessage.chuangjianliushuishibai.getMessage());
 				}
-				
+
 				// 更新实名库
 				realNameMapper.admin_set_addOrder(realName);
-				
-				//创建 接单用户评价
-				Evaluate evaluate=new Evaluate();
+
+				// 创建 接单用户评价
+				Evaluate evaluate = new Evaluate();
 				evaluate.setPermissionid(-1);
 				evaluate.setUserId(userId);
 				evaluate.setReleaseid(-1);
 				evaluateMapper.adminAddOrderCreateEvaluate(evaluate);
-				
-				
+
 				return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
 
 			} else if ((boolean) checknullMap.get("result") == false) {
@@ -546,31 +552,532 @@ public class ToExamineServiceImpl implements ToExamineService {
 
 	@Autowired
 	private ReleaseWelfareService releaseWelfareService;
-	
+
+	@Autowired
+	private RentService rentService;
+
+	@Autowired
+	private BunnerService bunnerService;
+
+	@Autowired
+	private ResumeService resumeService;
+	@Autowired
+	private FoodAndGrainService foodAndGrainService;
+	@Autowired
+	private DepartmentStoreService departmentStoreService;
+
+	private int zhiweib = 1;
+	private int chuzub = 2;
+	private int jianlib = 3;
+	private int cailingshoub = 4;
+	private int baihuop = 5;
+
 	@Override
 	public ServerResponse<Object> getUserCreate(User user) {
-		long userId=user.getId();
-		int role=user.getRole();
-		Map<String, Object> map = new HashMap<String, Object>();
-		/*dibubunner  表 permissionid 
+		long userId = user.getId();
+		int role = user.getRole();
+		CreateGanggaoVo responseVo = new CreateGanggaoVo();
+
+		List<CreateGanggaoVo> listVos = new ArrayList<CreateGanggaoVo>();
+		/*
+		 * dibubunner 表 permissionid
 		 * 
-		 * //招聘permissionid==30
-		 *  店面/窗口出租permissionid==14
+		 * //招聘permissionid==30 店面/窗口出租permissionid==14
+		 * 
+		 * private boolean quxiaoguanggao=false; private boolean bianjiguanggao=false;
+		 * private boolean tianjiaguanggao=false; private boolean deletefabu=true;
 		 */
-		if(role==2) {
-			//餐饮/酒店等企业可以发布    招聘，窗口出租  
-			//招聘permissionid==30
-			List<ReleaseWelfare> rwList=releaseWelfareService.adminGetzZWall(userId);
-			
-		}else if(role==3) {
-			//餐饮/酒店等企业可以发布    招聘，窗口出租  
-			//招聘permissionid==30
-			List<E>
-			
+
+		int index = 0;
+		if (role == 2) {
+			// 餐饮/酒店等企业可以发布 招聘，窗口出租
+			// 招聘permissionid==30
+			List<ReleaseWelfare> rwList = releaseWelfareService.adminGetzZWall(userId);
+			if (rwList.size() > 0) {
+				for (int a = 0; a < rwList.size(); a++) {
+					CreateGanggaoVo createGanggaoRw = new CreateGanggaoVo();
+					createGanggaoRw.setTablenameid(zhiweib);
+					createGanggaoRw.setPermissionid(Const.ZHIWEIP);
+					createGanggaoRw.setPermissionName("招聘信息");
+					if (bunnerService.getguanggaocount(userId, createGanggaoRw.getPermissionid()) > 0) {
+						createGanggaoRw.setQuxiaoguanggao(true);
+						createGanggaoRw.setBianjiguanggao(true);
+						createGanggaoRw.setDeletefabu(false);
+					} else {
+						createGanggaoRw.setTianjiaguanggao(true);
+					}
+					createGanggaoRw.setDataObject(rwList.get(a));
+					listVos.set(index, createGanggaoRw);
+					index++;
+				}
+			}
+			// 窗口出租
+			List<Rent> rentList = rentService.adminGetRentall(userId);
+			if (rentList.size() > 0) {
+				for (int a = 0; a < rentList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(zhiweib);
+					Rent rent = rentList.get(a);
+					if (rent.getReleaseType() == Const.DIANMIANP) {
+						createGanggaoRe.setPermissionid(Const.DIANMIANP);
+						createGanggaoRe.setPermissionName("出租店面");
+					} else if (rent.getReleaseType() == Const.TANWEIP) {
+						createGanggaoRe.setPermissionid(Const.TANWEIP);
+						createGanggaoRe.setPermissionName("出租窗口");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(rent);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+
+		} else if (role == 3) {
+			// 厨具电器二手设备等
+			// 窗口出租
+			List<Rent> rentList = rentService.adminGetRentall(userId);
+			if (rentList.size() > 0) {
+				for (int a = 0; a < rentList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(zhiweib);
+					Rent rent = rentList.get(a);
+					if (rent.getReleaseType() == Const.DIANMIANP) {
+						createGanggaoRe.setPermissionid(Const.DIANMIANP);
+						createGanggaoRe.setPermissionName("出租店面");
+					} else if (rent.getReleaseType() == Const.TANWEIP) {
+						createGanggaoRe.setPermissionid(Const.TANWEIP);
+						createGanggaoRe.setPermissionName("出租窗口");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(rent);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+
+		} else if (role == 4) {
+			// 菜米蛋禽等零售
+			// 窗口出租
+			List<Rent> rentList = rentService.adminGetRentall(userId);
+			if (rentList.size() > 0) {
+				for (int a = 0; a < rentList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(zhiweib);
+					Rent rent = rentList.get(a);
+					if (rent.getReleaseType() == Const.DIANMIANP) {
+						createGanggaoRe.setPermissionid(Const.DIANMIANP);
+						createGanggaoRe.setPermissionName("出租店面");
+					} else if (rent.getReleaseType() == Const.TANWEIP) {
+						createGanggaoRe.setPermissionid(Const.TANWEIP);
+						createGanggaoRe.setPermissionName("出租窗口");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(rent);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+			// 简历
+			List<Resume> esumeList = resumeService.adminGetResumeall(userId);
+			if (esumeList.size() > 0) {
+				for (int a = 0; a < esumeList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(jianlib);
+					createGanggaoRe.setPermissionid(Const.JIANLIP);
+					createGanggaoRe.setPermissionName("个人简历（需手动加图）");
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(esumeList.get(a));
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+
+			// 零售
+			List<FoodAndGrain> fgList = foodAndGrainService.adminGetFgall(userId);
+			if (fgList.size() > 0) {
+				for (int a = 0; a < fgList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(cailingshoub);
+					FoodAndGrain foodAndGrain = fgList.get(a);
+					if (foodAndGrain.getReleaseType() == Const.SHUCAIP) {
+						createGanggaoRe.setPermissionid(Const.SHUCAIP);
+						createGanggaoRe.setPermissionName("零售蔬菜");
+					} else if (foodAndGrain.getReleaseType() == Const.LIANGYOUP) {
+						createGanggaoRe.setPermissionid(Const.LIANGYOUP);
+						createGanggaoRe.setPermissionName("零售粮油");
+					} else if (foodAndGrain.getReleaseType() == Const.TIAOLIAO) {
+						createGanggaoRe.setPermissionid(Const.TIAOLIAO);
+						createGanggaoRe.setPermissionName("零售调料/副食");
+					} else if (foodAndGrain.getReleaseType() == Const.QINGJIEP) {
+						createGanggaoRe.setPermissionid(Const.QINGJIEP);
+						createGanggaoRe.setPermissionName("零售清洁用品");
+
+					} else if (foodAndGrain.getReleaseType() == Const.ZHUOYIP) {
+						createGanggaoRe.setPermissionid(Const.ZHUOYIP);
+						createGanggaoRe.setPermissionName("零售桌椅");
+					} else if (foodAndGrain.getReleaseType() == Const.SHUICHAN) {
+						createGanggaoRe.setPermissionid(Const.SHUICHAN);
+						createGanggaoRe.setPermissionName("零售水产蛋禽");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(foodAndGrain);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+
+		} else if (role == 5) {
+			// 酒水/消毒餐具 招聘 店面出租
+			// 招聘permissionid==30
+			List<ReleaseWelfare> rwList = releaseWelfareService.adminGetzZWall(userId);
+			if (rwList.size() > 0) {
+				for (int a = 0; a < rwList.size(); a++) {
+					CreateGanggaoVo createGanggaoRw = new CreateGanggaoVo();
+					createGanggaoRw.setTablenameid(zhiweib);
+					createGanggaoRw.setPermissionid(Const.ZHIWEIP);
+					if (bunnerService.getguanggaocount(userId, createGanggaoRw.getPermissionid()) > 0) {
+						createGanggaoRw.setQuxiaoguanggao(true);
+						createGanggaoRw.setBianjiguanggao(true);
+						createGanggaoRw.setDeletefabu(false);
+					} else {
+						createGanggaoRw.setTianjiaguanggao(true);
+					}
+					createGanggaoRw.setDataObject(rwList.get(a));
+					listVos.set(index, createGanggaoRw);
+					index++;
+				}
+			}
+
+			// 窗口出租
+			List<Rent> rentList = rentService.adminGetRentall(userId);
+			if (rentList.size() > 0) {
+				for (int a = 0; a < rentList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(zhiweib);
+					Rent rent = rentList.get(a);
+					if (rent.getReleaseType() == Const.DIANMIANP) {
+						createGanggaoRe.setPermissionid(Const.DIANMIANP);
+						createGanggaoRe.setPermissionName("出租店面");
+					} else if (rent.getReleaseType() == Const.TANWEIP) {
+						createGanggaoRe.setPermissionid(Const.TANWEIP);
+						createGanggaoRe.setPermissionName("出租窗口");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(rent);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+
+		} else if (role == 6) {
+			// 专出租门脸和窗口
+			// 窗口出租
+			List<Rent> rentList = rentService.adminGetRentall(userId);
+			if (rentList.size() > 0) {
+				for (int a = 0; a < rentList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(zhiweib);
+					Rent rent = rentList.get(a);
+					if (rent.getReleaseType() == Const.DIANMIANP) {
+						createGanggaoRe.setPermissionid(Const.DIANMIANP);
+						createGanggaoRe.setPermissionName("出租店面");
+					} else if (rent.getReleaseType() == Const.TANWEIP) {
+						createGanggaoRe.setPermissionid(Const.TANWEIP);
+						createGanggaoRe.setPermissionName("出租窗口");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(rent);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+
+		} else if (role == 11) {
+			// 找工作 简历
+			List<Resume> esumeList = resumeService.adminGetResumeall(userId);
+			if (esumeList.size() > 0) {
+				for (int a = 0; a < esumeList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(jianlib);
+					createGanggaoRe.setPermissionid(Const.JIANLIP);
+					createGanggaoRe.setPermissionName("个人简历（需手动加图）");
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(esumeList.get(a));
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
 		}
-		
-		
+		// 工服101/百货102/绿植103/装饰用品104
+//		public static final int GONGFUP=101;
+//		public static final int BAIHUOP=102;
+//		public static final int LVZHIP=103;
+//		public static final int ZHUANGSHIP=104;
+		else if (role == 12) {
+			// 工服百货
+			List<DepartmentStore> esumeList = departmentStoreService.adminGetDsall(userId);
+			if (esumeList.size() > 0) {
+				for (int a = 0; a < esumeList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(baihuop);
+					DepartmentStore departmentStore = esumeList.get(a);
+					if (departmentStore.getReleaseType() == Const.GONGFUP) {
+						createGanggaoRe.setPermissionid(Const.GONGFUP);
+						createGanggaoRe.setPermissionName("市场工服");
+					} else if (departmentStore.getReleaseType() == Const.BAIHUOP) {
+						createGanggaoRe.setPermissionid(Const.BAIHUOP);
+						createGanggaoRe.setPermissionName("市场百货");
+					} else if (departmentStore.getReleaseType() == Const.LVZHIP) {
+						createGanggaoRe.setPermissionid(Const.LVZHIP);
+						createGanggaoRe.setPermissionName("市场绿植");
+					} else if (departmentStore.getReleaseType() == Const.ZHUANGSHIP) {
+						createGanggaoRe.setPermissionid(Const.ZHUANGSHIP);
+						createGanggaoRe.setPermissionName("市场装饰用品");
+					}
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(departmentStore);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+		} else if (role == 13) {
+			// 菜米禽蛋批发
+			// 窗口出租
+			List<Rent> rentList = rentService.adminGetRentall(userId);
+			if (rentList.size() > 0) {
+				for (int a = 0; a < rentList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(zhiweib);
+					Rent rent = rentList.get(a);
+					if (rent.getReleaseType() == Const.DIANMIANP) {
+						createGanggaoRe.setPermissionid(Const.DIANMIANP);
+						createGanggaoRe.setPermissionName("出租店面");
+					} else if (rent.getReleaseType() == Const.TANWEIP) {
+						createGanggaoRe.setPermissionid(Const.TANWEIP);
+						createGanggaoRe.setPermissionName("出租窗口");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(rent);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+
+		}
+
+		else if (role == 1) {
+			// 酒水/消毒餐具 招聘
+			// 招聘permissionid==30
+			List<ReleaseWelfare> rwList = releaseWelfareService.adminGetzZWall(userId);
+			if (rwList.size() > 0) {
+				for (int a = 0; a < rwList.size(); a++) {
+					CreateGanggaoVo createGanggaoRw = new CreateGanggaoVo();
+					createGanggaoRw.setTablenameid(zhiweib);
+					createGanggaoRw.setPermissionid(Const.ZHIWEIP);
+					if (bunnerService.getguanggaocount(userId, createGanggaoRw.getPermissionid()) > 0) {
+						createGanggaoRw.setQuxiaoguanggao(true);
+						createGanggaoRw.setBianjiguanggao(true);
+						createGanggaoRw.setDeletefabu(false);
+					} else {
+						createGanggaoRw.setTianjiaguanggao(true);
+					}
+					createGanggaoRw.setDataObject(rwList.get(a));
+					listVos.set(index, createGanggaoRw);
+					index++;
+				}
+			}
+			// 简历
+			List<Resume> esumeList = resumeService.adminGetResumeall(userId);
+			if (esumeList.size() > 0) {
+				for (int a = 0; a < esumeList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(jianlib);
+					createGanggaoRe.setPermissionid(Const.JIANLIP);
+					createGanggaoRe.setPermissionName("个人简历（需手动加图）");
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(esumeList.get(a));
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+			// 窗口出租
+			List<Rent> rentList = rentService.adminGetRentall(userId);
+			if (rentList.size() > 0) {
+				for (int a = 0; a < rentList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(zhiweib);
+					Rent rent = rentList.get(a);
+					if (rent.getReleaseType() == Const.DIANMIANP) {
+						createGanggaoRe.setPermissionid(Const.DIANMIANP);
+						createGanggaoRe.setPermissionName("出租店面");
+					} else if (rent.getReleaseType() == Const.TANWEIP) {
+						createGanggaoRe.setPermissionid(Const.TANWEIP);
+						createGanggaoRe.setPermissionName("出租窗口");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(rent);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+			// 零售
+			List<FoodAndGrain> fgList = foodAndGrainService.adminGetFgall(userId);
+			if (fgList.size() > 0) {
+				for (int a = 0; a < fgList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(cailingshoub);
+					FoodAndGrain foodAndGrain = fgList.get(a);
+					if (foodAndGrain.getReleaseType() == Const.SHUCAIP) {
+						createGanggaoRe.setPermissionid(Const.SHUCAIP);
+						createGanggaoRe.setPermissionName("零售蔬菜");
+					} else if (foodAndGrain.getReleaseType() == Const.LIANGYOUP) {
+						createGanggaoRe.setPermissionid(Const.LIANGYOUP);
+						createGanggaoRe.setPermissionName("零售粮油");
+					} else if (foodAndGrain.getReleaseType() == Const.TIAOLIAO) {
+						createGanggaoRe.setPermissionid(Const.TIAOLIAO);
+						createGanggaoRe.setPermissionName("零售调料/副食");
+					} else if (foodAndGrain.getReleaseType() == Const.QINGJIEP) {
+						createGanggaoRe.setPermissionid(Const.QINGJIEP);
+						createGanggaoRe.setPermissionName("零售清洁用品");
+
+					} else if (foodAndGrain.getReleaseType() == Const.ZHUOYIP) {
+						createGanggaoRe.setPermissionid(Const.ZHUOYIP);
+						createGanggaoRe.setPermissionName("零售桌椅");
+					} else if (foodAndGrain.getReleaseType() == Const.SHUICHAN) {
+						createGanggaoRe.setPermissionid(Const.SHUICHAN);
+						createGanggaoRe.setPermissionName("零售水产蛋禽");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(foodAndGrain);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+			// 找工作 简历
+			List<DepartmentStore> dsumeList = departmentStoreService.adminGetDsall(userId);
+			if (dsumeList.size() > 0) {
+				for (int a = 0; a < dsumeList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(baihuop);
+					DepartmentStore departmentStore = dsumeList.get(a);
+					if (departmentStore.getReleaseType() == Const.GONGFUP) {
+						createGanggaoRe.setPermissionid(Const.GONGFUP);
+						createGanggaoRe.setPermissionName("市场工服");
+					} else if (departmentStore.getReleaseType() == Const.BAIHUOP) {
+						createGanggaoRe.setPermissionid(Const.BAIHUOP);
+						createGanggaoRe.setPermissionName("市场百货");
+					} else if (departmentStore.getReleaseType() == Const.LVZHIP) {
+						createGanggaoRe.setPermissionid(Const.LVZHIP);
+						createGanggaoRe.setPermissionName("市场绿植");
+					} else if (departmentStore.getReleaseType() == Const.ZHUANGSHIP) {
+						createGanggaoRe.setPermissionid(Const.ZHUANGSHIP);
+						createGanggaoRe.setPermissionName("市场装饰用品");
+					}
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(departmentStore);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+
+			}
+
+		}
 		return null;
 	}
-
 }

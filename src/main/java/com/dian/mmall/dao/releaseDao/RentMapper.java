@@ -39,5 +39,7 @@ public interface RentMapper {
 
 	Rent get_rent_id(long id);
 
+	List<Rent> adminGetRentall(long userId);
+
 
 }

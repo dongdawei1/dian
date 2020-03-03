@@ -1,8 +1,10 @@
 package com.dian.mmall.service.release;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.chuzufang.Rent;
 import com.dian.mmall.pojo.user.User;
 
 public interface RentService {
@@ -22,5 +24,7 @@ public interface RentService {
 	ServerResponse<Object> getServiceDetailedList(Map<String, Object> params);
 
 	ServerResponse<Object> get_rent_id(long id);
+
+	List<Rent> adminGetRentall(long userId);
 
 }

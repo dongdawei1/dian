@@ -52,8 +52,8 @@ public class UploadDownController {
     @RequestMapping("upload")   //不写请求方式是 get和post都支持
     @ResponseBody
     public ServerResponse<Object> upload(@RequestParam MultipartFile picture, HttpServletRequest httpServletRequest) {
-       
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+    	
+    	String loginToken = CookieUtil.readLoginToken1(httpServletRequest);
     	if(StringUtils.isEmpty(loginToken)){
     		 return ServerResponse.createByErrorMessage(ResponseMessage.DengLuGuoQi.getMessage());
     	}
@@ -124,7 +124,7 @@ public class UploadDownController {
     @RequestMapping(value = "update" ,method = RequestMethod.POST)   //不写请求方式是 get和post都支持
     @ResponseBody
     public ServerResponse<String> update(@RequestBody Map<String, Object> params, HttpServletRequest httpServletRequest) {
-    	String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+    	String loginToken = CookieUtil.readLoginToken1(httpServletRequest);
     	if(StringUtils.isEmpty(loginToken)){
     		return ServerResponse.createByErrorMessage(ResponseMessage.DengLuGuoQi.getMessage());
     	}

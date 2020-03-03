@@ -30,4 +30,6 @@ public interface ResumeMapper {
 
 	Resume getResumeContactById(int id, int queriesType);
 
+	List<Resume> adminGetResumeall(long userId);
+
 }

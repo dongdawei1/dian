@@ -1,8 +1,10 @@
 package com.dian.mmall.service.release;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.shichang.FoodAndGrain;
 import com.dian.mmall.pojo.user.User;
 
 public interface FoodAndGrainService {
@@ -32,5 +34,8 @@ public interface FoodAndGrainService {
 
 
 	ServerResponse<Object> adminFoodAndGrain(Map<String, Object> params);
+
+
+	List<FoodAndGrain> adminGetFgall(long userId);
 
 }

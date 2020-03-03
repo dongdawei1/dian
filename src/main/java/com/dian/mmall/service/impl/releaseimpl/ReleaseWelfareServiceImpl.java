@@ -143,23 +143,23 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 		releaseWelfare_pagePage.setPageSize(pageSize);
 		releaseWelfare_pagePage.setCurrentPage(currentPage); // 当前页
 
-		List<ReleaseWelfare> list_releaseWelfare = new ArrayList();
 		List<ReleaseWelfare> list_releaseWelfareall = releaseWelfareMapper
 				.getReleaseWelfareAll((currentPage - 1) * pageSize, pageSize, userName, contact);
-		if (list_releaseWelfareall.size() > 0) {
-			for (ReleaseWelfare releaseWelfare : list_releaseWelfareall) {
+
+			for (int a=0;a<list_releaseWelfareall.size();a++ ) {
+				ReleaseWelfare releaseWelfare=list_releaseWelfareall.get(a);
 				RealName realName = realNameMapper.getRealName(releaseWelfare.getUserId());
 
 				releaseWelfare.setContact(EncrypDES.decryptPhone(realName.getContact()));
 				releaseWelfare.setDetailed(realName.getDetailed());
 				releaseWelfare.setRealNameId(realName.getAddressDetailed());
 				releaseWelfare.setCompanyName(realName.getCompanyName());
-				list_releaseWelfare.add(releaseWelfare);
+				list_releaseWelfareall.set(a, releaseWelfare);
 				realName = null;
 			}
-		}
+	
 
-		releaseWelfare_pagePage.setDatas(list_releaseWelfare);
+		releaseWelfare_pagePage.setDatas(list_releaseWelfareall);
 		return ServerResponse.createBySuccess(releaseWelfare_pagePage);
 	}
 

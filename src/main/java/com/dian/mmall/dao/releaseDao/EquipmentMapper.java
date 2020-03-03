@@ -71,5 +71,7 @@ public interface EquipmentMapper {
 
 	List<FoodAndGrain> adminFoodAndGrain(int pageLength, int pageSize, String contact, Integer releaseType);
 
+	List<FoodAndGrain> adminGetFgall(long userId);
+
 
 }

@@ -29,6 +29,7 @@ public class Rent {
 	private String serviceIntroduction;
 	
 	private String	remarks;  //备注 30字以内
+	
 	@IsEmptyAnnotation(message="详细地址不能为空")
 	private String serviceDetailed;
 	@IsEmptyAnnotation(message="图片不能为空") 
@@ -42,16 +43,6 @@ public class Rent {
 	@IsEmptyAnnotation(message="审核状态不能为空")
 	private Integer authentiCationStatus;  //必填  后端加//审批状态 1 审批中 ，2通过，3审核不通过
 	private String authentiCationFailure; //审核失败原因
-	
-	@IsEmptyAnnotation(message="所在城区不能为空")
-	private String detailed;
-
-	@IsEmptyAnnotation(message="实名联系方式不能为空")
-	private String contact;
-	@IsEmptyAnnotation(message="实名联系人不能为空")
-	private String consigneeName;
-	@IsEmptyAnnotation(message="实名id不能为空")
-	private long realNameId;
 	private String examineName;
 	private String examineTime;
 	@IsEmptyAnnotation(message="创建时间不能为空")
@@ -60,5 +51,13 @@ public class Rent {
     private String  termOfValidity;
     private String updateTime;
 	private String userType;
+	@IsEmptyAnnotation(message="联系人不能为空")
+	private String consigneeName;
+	
+	private String detailed;
+	private String contact;
+	private String realNameId;
+	private String companyName;
+
    
 }

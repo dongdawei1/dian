@@ -85,7 +85,7 @@
 	</select>
 
 
-	<!--广告查询全部 -->
+	<!--查询全部  管理员操作 -->
 	<select id="adminGetzZWall"
 		resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
 		select id, userId,position

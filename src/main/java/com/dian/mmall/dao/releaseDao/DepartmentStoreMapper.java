@@ -40,4 +40,6 @@ public interface DepartmentStoreMapper {
 
 	DepartmentStore getDepartmentStoreDetails(long id);
 
+	List<DepartmentStore> adminGetDsall(long userId);
+
 }
