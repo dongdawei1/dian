@@ -130,8 +130,15 @@ public class RedisPoolUtil {
 					if (userJedis.getUsername().equals(user.getUsername()) && userJedis.getId() == user.getId()) {
 						// 在这里替换tocken
 						RedisShardedPoolUtil.del(key);
-						RedisShardedPoolUtil.setEx(key, JsonUtil.obj2String(user),
-								Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+
+						if (key.indexOf(Const.PCAPPID) == 0) {
+							RedisShardedPoolUtil.setEx(key, JsonUtil.obj2String(user),
+									Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+						} else if (key.indexOf(Const.APPAPPID) == 0) {
+							RedisShardedPoolUtil.setEx(key, JsonUtil.obj2String(user),
+									Const.RedisCacheExtime.REDIS_SESSION_EXTIMEAPP);
+						}
+
 						return 0;
 					}
 				}
@@ -157,7 +164,7 @@ public class RedisPoolUtil {
 				String userJsonStr = RedisShardedPoolUtil.get(key);
 				if (userJsonStr.indexOf("username") != -1) {
 					User userJedis = JsonUtil.string2Obj(userJsonStr, User.class);
-					//log.info(userJedis.getUsername() + " - " + user.getUsername());
+					// log.info(userJedis.getUsername() + " - " + user.getUsername());
 					if (userJedis.getUsername().equals(user.getUsername()) && userJedis.getId() == user.getId()) {
 						// 在这 aString.indexOf(Const.PCAPPID)==0
 						// RedisShardedPoolUtil.del(key);
@@ -187,7 +194,7 @@ public class RedisPoolUtil {
 				String userJsonStr = RedisShardedPoolUtil.get(key);
 				if (userJsonStr.indexOf("username") != -1) {
 					User userJedis = JsonUtil.string2Obj(userJsonStr, User.class);
-					//log.info(userJedis.getUsername() + " - " + user.getUsername());
+					// log.info(userJedis.getUsername() + " - " + user.getUsername());
 					if (userJedis.getUsername().equals(user.getUsername()) && userJedis.getId() == user.getId()) {
 						// 在这 aString.indexOf(Const.PCAPPID)==0
 						// RedisShardedPoolUtil.del(key);
@@ -261,13 +268,13 @@ public class RedisPoolUtil {
 //		// PCAPPID = "DIANTOP";
 //		// RedisPoolUtil.main()DIANTOP
 
-        Set<String> keyes=   jedis.keys("*");
-        for(String key : keyes) {
-        	System.out.println(key +"<--ddd");
-        	String userJsonStr=RedisShardedPoolUtil.get(key);
-        	System.out.println( "userJsonStr-->"+  userJsonStr);
-        	//System.out.println( "jedis.pttl(key)-->"+  jedis.pttl(key));
-		 }
+		Set<String> keyes = jedis.keys("*");
+		for (String key : keyes) {
+			System.out.println(key + "<--ddd");
+			String userJsonStr = RedisShardedPoolUtil.get(key);
+			System.out.println("userJsonStr-->" + userJsonStr);
+			// System.out.println( "jedis.pttl(key)-->"+ jedis.pttl(key));
+		}
 
 //        System.out.println( "jedis.pttl(key)-->"+keyes.size());
 //        System.out.println( "jedis.pttl(key)-->");

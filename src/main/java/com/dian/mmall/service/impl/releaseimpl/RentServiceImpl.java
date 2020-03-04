@@ -26,6 +26,7 @@ import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.service.BunnerService;
 import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.service.release.RentService;
 import com.dian.mmall.util.AnnotationDealUtil;
@@ -52,6 +53,8 @@ public class RentServiceImpl implements RentService {
 	private GetPublishingsService getPublishingsService;
 	@Autowired
 	private CityMapper cityMapper;
+	@Autowired
+	private BunnerService bunnerService;
 
 	@Override
 	public ServerResponse<String> create_rent(User user, Map<String, Object> params) {
@@ -222,7 +225,9 @@ public class RentServiceImpl implements RentService {
 				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 			}
 			// map.put("contact", EncrypDES.encryptPhone(contact));
-
+			if (!EncrypDES.encryptPhone(contact).equals(realName.getContact())) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
+			}
 			map.put("consigneeName", params.get("consigneeName").toString().trim());
 
 		} else {
@@ -277,13 +282,12 @@ public class RentServiceImpl implements RentService {
 		rent.setPageSize(pageSize);
 		rent.setCurrentPage(currentPage); // 当前页
 
-	
 		List<Rent> list_rentall = rentMapper.get_myRent_list((currentPage - 1) * pageSize, pageSize, welfareStatus,
 				user.getId());
 
-		RealName realName=realNameMapper.getRealName(user.getId());
-		for (int a=0;a<list_rentall.size();a++) {
-			Rent rent_no=list_rentall.get(a);
+		RealName realName = realNameMapper.getRealName(user.getId());
+		for (int a = 0; a < list_rentall.size(); a++) {
+			Rent rent_no = list_rentall.get(a);
 			rent_no.setContact(EncrypDES.decryptPhone(realName.getContact()));
 			rent_no.setDetailed(realName.getDetailed());
 			rent_no.setRealNameId(realName.getAddressDetailed());
@@ -334,8 +338,8 @@ public class RentServiceImpl implements RentService {
 		rent_pagePage.setPageSize(pageSize);
 		rent_pagePage.setCurrentPage(currentPage); // 当前页
 		List<Rent> list_rentall = rentMapper.adminMent((currentPage - 1) * pageSize, pageSize, contact);
-		for (int a=0;a<list_rentall.size();a++) {
-			Rent re=list_rentall.get(a);
+		for (int a = 0; a < list_rentall.size(); a++) {
+			Rent re = list_rentall.get(a);
 			RealName realName = realNameMapper.getRealName(re.getUserId());
 			re.setContact(EncrypDES.decryptPhone(realName.getContact()));
 			re.setDetailed(realName.getDetailed());
@@ -348,6 +352,10 @@ public class RentServiceImpl implements RentService {
 		return ServerResponse.createBySuccess(rent_pagePage);
 	}
 
+	public int getreleaseType(long id) {
+		return rentMapper.getreleaseType(id);
+	}
+	
 	@Override
 	public ServerResponse<String> operation_userment(User user, Map<String, Object> params) {
 		String type = params.get("type").toString().trim();
@@ -363,6 +371,10 @@ public class RentServiceImpl implements RentService {
 			idLong = Long.valueOf(id);
 			if (userIdLong != user.getId()) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
+			}
+			// 有发布中或者未开始的广告不能操作
+			if (bunnerService.getguanggaocount(idLong, getreleaseType(idLong)) > 0) {
+				ServerResponse.createByErrorMessage(ResponseMessage.yougonggongxuanchuan.getMessage());
 			}
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String timeString = null;
@@ -402,7 +414,7 @@ public class RentServiceImpl implements RentService {
 				map.put("welfareStatus", 4);
 				map.put("userType", rent.getUserType());
 				map.put("releaseType", rent.getReleaseType());
-	
+
 				Rent rent_create = (Rent) BeanMapConvertUtil.convertMap(Rent.class, map);
 				// {result=true, message=验证通过} 返回结果
 				Map<String, Object> checknullMap = AnnotationDealUtil.validate(rent_create);
@@ -454,7 +466,7 @@ public class RentServiceImpl implements RentService {
 		if (rent == null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
 		}
-		RealName realName=realNameMapper.getRealName(userId);
+		RealName realName = realNameMapper.getRealName(userId);
 		rent.setContact(EncrypDES.decryptPhone(realName.getContact()));
 		rent.setDetailed(realName.getDetailed());
 		rent.setRealNameId(realName.getAddressDetailed());
@@ -590,7 +602,7 @@ public class RentServiceImpl implements RentService {
 			List<Rent> mrpList = rentMapper.getrentList((currentPage - 1) * pageSize, releaseType, pageSize,
 					fouseSizeGreater, fouseSizeLess, detailed, serviceDetailed);
 			for (int i = 0; i < mrpList.size(); i++) {
-				
+
 				Rent rent = mrpList.get(i);
 				RealName realName = realNameMapper.getRealName(rent.getUserId());
 				rent.setDetailed(realName.getDetailed());
@@ -598,7 +610,7 @@ public class RentServiceImpl implements RentService {
 				Picture picture = listObj3.get(0);
 				rent.setPictureUrl(picture.getPictureUrl());
 				mrpList.set(i, rent);
-				realName=null;
+				realName = null;
 			}
 
 			rent_pagePage.setDatas(mrpList);
@@ -670,7 +682,7 @@ public class RentServiceImpl implements RentService {
 			return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 		}
 		Rent rent = rentMapper.get_rent_id(id);
-	
+
 		if (rent == null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
 		}

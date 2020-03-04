@@ -75,5 +75,7 @@ public interface EquipmentMapper {
 
 	List<Equipment> adminGetEqall(long userId);
 
+	int getreleaseType(long id);
+
 
 }

@@ -20,7 +20,7 @@ import com.dian.mmall.util.CheckLand;
 
 @Controller
 @RequestMapping(Const.PCAPI+"wholesale/")
-public class WholesaleController {
+public class ShichangNameController {
 	
 	@Autowired
 	private WholesaleService wholesaleService;
@@ -30,11 +30,7 @@ public class WholesaleController {
 	@ResponseBody
 	public ServerResponse<Object> getwholesale(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
-		User user =	(User) httpServletRequest.getAttribute("user"); 
-		if (user.getIsAuthentication() != 2) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
-		}
-
+		
 		return wholesaleService.getwholesale(params);
 
 	}

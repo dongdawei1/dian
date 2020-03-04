@@ -59,7 +59,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 
 	@Autowired
 	private GetPublishingsService getPublishingsService;
-	
+
 	@Autowired
 	private BunnerService bunnerService;
 
@@ -84,7 +84,6 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 		Map<String, Object> checknullMap = AnnotationDealUtil.validate(releaseWelfare);
 		if ((boolean) checknullMap.get("result") == true && ((String) checknullMap.get("message")).equals("验证通过")) {
 			int count = releaseWelfareMapper.create_position(releaseWelfare);
-			System.out.println(releaseWelfare.toString());
 		} else if ((boolean) checknullMap.get("result") == false) {
 			return ServerResponse.createByErrorMessage((String) checknullMap.get("message"));
 		} else {
@@ -146,18 +145,17 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 		List<ReleaseWelfare> list_releaseWelfareall = releaseWelfareMapper
 				.getReleaseWelfareAll((currentPage - 1) * pageSize, pageSize, userName, contact);
 
-			for (int a=0;a<list_releaseWelfareall.size();a++ ) {
-				ReleaseWelfare releaseWelfare=list_releaseWelfareall.get(a);
-				RealName realName = realNameMapper.getRealName(releaseWelfare.getUserId());
+		for (int a = 0; a < list_releaseWelfareall.size(); a++) {
+			ReleaseWelfare releaseWelfare = list_releaseWelfareall.get(a);
+			RealName realName = realNameMapper.getRealName(releaseWelfare.getUserId());
 
-				releaseWelfare.setContact(EncrypDES.decryptPhone(realName.getContact()));
-				releaseWelfare.setDetailed(realName.getDetailed());
-				releaseWelfare.setRealNameId(realName.getAddressDetailed());
-				releaseWelfare.setCompanyName(realName.getCompanyName());
-				list_releaseWelfareall.set(a, releaseWelfare);
-				realName = null;
-			}
-	
+			releaseWelfare.setContact(EncrypDES.decryptPhone(realName.getContact()));
+			releaseWelfare.setDetailed(realName.getDetailed());
+			releaseWelfare.setRealNameId(realName.getAddressDetailed());
+			releaseWelfare.setCompanyName(realName.getCompanyName());
+			list_releaseWelfareall.set(a, releaseWelfare);
+			realName = null;
+		}
 
 		releaseWelfare_pagePage.setDatas(list_releaseWelfareall);
 		return ServerResponse.createBySuccess(releaseWelfare_pagePage);
@@ -412,6 +410,9 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 			if (serverResponse.getStatus() != 0) {
 				return ServerResponse.createByErrorMessage(serverContact.getMsg());
 			}
+			if (!EncrypDES.encryptPhone(contact).equals(realName.getContact())) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
+			}
 
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());
@@ -424,7 +425,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
 		map.put("userType", serverResponse.getMsg());
-		map.put("releaseType",Const.ZHIWEIP);
+		map.put("releaseType", Const.ZHIWEIP);
 		return ServerResponse.createBySuccess(map);
 
 	}
@@ -490,9 +491,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 	// 操作列
 	@Override
 	public ServerResponse<String> position_operation(User user, Map<String, Object> params) {
-     
-		
-		
+
 		String type = params.get("type").toString().trim();
 		String userId = params.get("userId").toString().trim();
 		String id = params.get("id").toString().trim();
@@ -503,13 +502,12 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 			}
 			long userIdLong = Long.valueOf(userId);
 			long idLong = Long.valueOf(id);
-			
-			//有发布中或者未开始的广告不能操作
-			if(bunnerService.getguanggaocount(idLong,Const.ZHIWEIP)>0) {
+
+			// 有发布中或者未开始的广告不能操作
+			if (bunnerService.getguanggaocount(idLong, Const.ZHIWEIP) > 0) {
 				ServerResponse.createByErrorMessage(ResponseMessage.yougonggongxuanchuan.getMessage());
 			}
-			
-			
+
 			if (userIdLong != user.getId()) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
 			}
@@ -737,7 +735,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 
 	@Override
 	public List<ReleaseWelfare> adminGetzZWall(long userId) {
-		
+
 		return releaseWelfareMapper.adminGetzZWall(userId);
 	}
 

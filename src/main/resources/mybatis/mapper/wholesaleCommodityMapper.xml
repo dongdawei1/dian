@@ -12,10 +12,16 @@
 		releaseType=#{releaseType} and userId =#{userId}
 	</select>
 
+	<!--发布过的条数 -->
+	<select id="getreleaseType" resultType="int">
+		select releaseType from
+		shichang_wholesaleCommodity where id =#{id}
+	</select>
+
 	<!--创建用户成功返回非0 -->
 	<insert id="create_wholesaleCommodity">
 		insert into shichang_wholesaleCommodity (
-		userId,releaseType,updateTime,createTime,pictureUrl,realNameId,
+		userId,releaseType,updateTime,createTime,pictureUrl,
 		serviceType,releaseTitle,
 		detailed,addressDetailed,commodityPacking,
 		cations,specifi,
@@ -23,12 +29,13 @@
 		commodityCountNo,commodityReserveNo,commoditySurplusNo,
 		remarks,serviceIntroduction,
 		reserve,deliveryType,deliveryCollect,
-		startTime,endTime,authentiCationStatus,welfareStatus,selectedOptions,serviceDetailed
+		startTime,endTime,authentiCationStatus,welfareStatus,selectedOptions
 
-		) values (
+		)
+		values (
 		#{userId}, #{releaseType}, #{updateTime},
 		#{createTime},#{pictureUrl},
-		#{realNameId},#{serviceType},#{releaseTitle},
+		#{serviceType},#{releaseTitle},
 		#{detailed},#{addressDetailed},
 		#{commodityPacking},
 		#{cations},#{specifi},#{commodityJiage},
@@ -36,7 +43,7 @@
 		#{remarks},#{serviceIntroduction},
 		#{reserve},#{deliveryType},#{deliveryCollect},
 		#{startTime},#{endTime},#{authentiCationStatus},#{welfareStatus},
-		#{selectedOptions},#{serviceDetailed}
+		#{selectedOptions}
 		)
 	</insert><!-- countNum -->
 
@@ -170,7 +177,7 @@
 	</select>
 
 
-	<!-- 审核分页总条数 -->
+	<!-- 审核分页总条数 有条件 -->
 	<select id="adminWholesaleCommodity_no_realName"
 		resultType="long">
 		select count(*) from shichang_wholesaleCommodity where
@@ -246,6 +253,7 @@
 		select id,userId,releaseType,serviceType,
 		releaseTitle,detailed,addressDetailed,commodityPacking,cations,specifi,
 		commodityJiage,commodityCountNo,serviceIntroduction,
+		authentiCationFailure,authentiCationStatus,
 		remarks,pictureUrl,deliveryType,deliveryCollect,
 		startTime,endTime,reserve,selectedOptions,createTime
 		from
@@ -260,7 +268,7 @@
 		update shichang_wholesaleCommodity set
 		updateTime=
 		#{updateTime},pictureUrl= #{pictureUrl},
-		realNameId=#{realNameId},releaseTitle=#{releaseTitle},
+		releaseTitle=#{releaseTitle},
 		detailed=#{detailed},addressDetailed=#{addressDetailed},
 		commodityPacking=#{commodityPacking},
 		cations=#{cations},specifi=#{specifi},commodityJiage=#{commodityJiage},
@@ -270,7 +278,7 @@
 		reserve=#{reserve},deliveryType=#{deliveryType},deliveryCollect=#{deliveryCollect},
 		startTime=#{startTime},endTime=#{endTime},authentiCationStatus=#{authentiCationStatus},
 		welfareStatus=#{welfareStatus},
-		selectedOptions=#{selectedOptions},authentiCationFailure=#{authentiCationFailure},serviceDetailed=#{serviceDetailed}
+		selectedOptions=#{selectedOptions},authentiCationFailure=#{authentiCationFailure}
 		where id=#{id}
 	</update><!-- countNum -->
 
@@ -285,9 +293,12 @@
 		where
 
 		releaseType=#{releaseType}
-		and serviceDetailed =#{selectedOptions}
+		and userId in (select userId
+		from
+		t_user_realname where detailed=#{selectedOptions} )
 		and
-		welfareStatus=1 and startTime
+		welfareStatus=1
+		and startTime
 		&lt; #{createTime} and endTime &gt;
 		#{createTime}
 
@@ -308,7 +319,11 @@
 		from shichang_wholesaleCommodity
 		where
 		releaseType=#{releaseType}
-		and serviceDetailed =#{selectedOptions}
+
+		and userId in (select userId
+		from t_user_realname where
+		detailed=#{selectedOptions} )
+
 		and
 		welfareStatus=1 and startTime
 		&lt; #{createTime} and endTime &gt;
@@ -333,10 +348,25 @@
 		commodityJiage,commoditySurplusNo,serviceIntroduction,
 		remarks,pictureUrl,deliveryType,deliveryCollect,
 		startTime,endTime,reserve,createTime,
-		evaluateid,servicFrequenc,realNameId
-		from shichang_wholesaleCommodity
+		evaluateid,servicFrequenc
+		from
+		shichang_wholesaleCommodity
 		where id=#{id} and welfareStatus=1
 	</select>
+
+	<select id="adminGetWcall"
+		resultType="com.dian.mmall.pojo.WholesaleCommodity">
+		select id,userId,releaseType,serviceType,
+		releaseTitle,detailed,addressDetailed,commodityPacking,cations,specifi,
+		commodityJiage,commoditySurplusNo,serviceIntroduction,
+		remarks,pictureUrl,deliveryType,deliveryCollect,
+		startTime,endTime,reserve,createTime,
+		evaluateid,servicFrequenc
+		from
+		shichang_wholesaleCommodity
+		where userId=#{userId} and welfareStatus in(1,2,4,5);
+	</select>
+
 
 
 
@@ -377,24 +407,27 @@
 		from
 		shichang_wholesaleCommodity
 		where
-		
+
 		releaseType=#{releaseType} and authentiCationStatus=2
 		GROUP BY
-		serviceType,commodityPacking ,cations,specifi
+		serviceType,commodityPacking
+		,cations,specifi
 		order by serviceType
 	</select>
 
 
 
 	<select id="getCommodityJiage" resultType="int">
-		select commodityJiage  
+		select commodityJiage
 		from shichang_wholesaleCommodity
 		where
 		releaseType=#{releaseType}
-		and authentiCationStatus=2
+		and
+		authentiCationStatus=2
 		and
 		commodityPacking=#{commodityPacking}
-		and serviceType=#{serviceType}
+		and
+		serviceType=#{serviceType}
 		<if test="commodityPacking!=1">
 			and specifi=#{specifi}
 			and cations=#{cations}

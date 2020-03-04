@@ -41,5 +41,7 @@ public interface RentMapper {
 
 	List<Rent> adminGetRentall(long userId);
 
+	int getreleaseType(long id);
+
 
 }

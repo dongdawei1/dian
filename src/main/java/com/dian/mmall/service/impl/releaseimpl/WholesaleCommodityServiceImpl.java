@@ -34,6 +34,7 @@ import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
+import com.dian.mmall.service.BunnerService;
 import com.dian.mmall.service.OrderService;
 import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.service.release.WholesaleCommodityService;
@@ -68,8 +69,10 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 	private WholesaleCommodityMapper wholesaleCommodityMapper;
 	@Autowired
 	private OrderService orderService;
+
+	
 	@Autowired
-	private RealNameService realNameService;
+	private BunnerService bunnerService;
 
 	@Override
 	public ServerResponse<String> create_wholesaleCommodity(User user, Map<String, Object> params) {
@@ -175,14 +178,16 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		// 判断实名信息是否正确
 		RealName realName = realNameMapper.getRealName(userId);
 		if (realName != null) {
-			map.put("realNameId", realName.getId());
-			map.put("serviceDetailed", realName.getDetailed());
+			String contact = params.get("contact").toString().trim();
+			if (!EncrypDES.encryptPhone(contact).equals(realName.getContact())) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
+			}
+			// map.put("realNameId", realName.getId());
+			// map.put("serviceDetailed", realName.getDetailed());
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());
 		}
-		
-		
-		
+
 		String serviceType = params.get("serviceType").toString().trim();
 		if (serviceType == null || serviceType.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinmingkong.getMessage());
@@ -238,12 +243,11 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			if (cations == null || cations.equals("")) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.guigekong.getMessage());
 			}
-            if(LegalCheck.isNumericFolse(cations)) {
-            	map.put("cations", cations);
-            }else {
-            	return ServerResponse.createByErrorMessage(ResponseMessage.guigecuowo.getMessage());
-            }
-			
+			if (LegalCheck.isNumericFolse(cations)) {
+				map.put("cations", cations);
+			} else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.guigecuowo.getMessage());
+			}
 
 		}
 
@@ -410,7 +414,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		return ServerResponse.createBySuccess(map);
 
 	}
-   //获取自己发布过的商品名
+
+	// 获取自己发布过的商品名
 	@Override
 	public ServerResponse<Object> get_wholesaleCommodity_serviceType(long userId, Map<String, Object> params) {
 		String releaseTypeString = params.get("releaseType").toString().trim();
@@ -463,7 +468,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		return ServerResponse.createBySuccess(wholesaleCommodityMapper.get_wholesaleCommodity_serviceType(userId, type,
 				commodityType, dateString, releaseType, serviceType, welfareStatus));
 	}
-   //公开列表中获取商品名
+
+	// 公开列表中获取商品名
 	@Override
 	public ServerResponse<Object> wholesaleCommodity_serviceType(Map<String, Object> params) {
 		String releaseTypeString = params.get("releaseType").toString().trim();
@@ -481,15 +487,15 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
 				List.class);
 		if (selectedOptions_list.size() != 3) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.shichangsuozaichengqukong.getMessage());	
-			
+			return ServerResponse.createByErrorMessage(ResponseMessage.shichangsuozaichengqukong.getMessage());
+
 		}
 
 		Integer provincesId = selectedOptions_list.get(0);
 		Integer cityId = selectedOptions_list.get(1);
 		Integer districtCountyId = selectedOptions_list.get(2);
 		// 判断省市区id是否正确
-		selectedOptions = "%"+ cityMapper.checkeCity(provincesId, cityId, districtCountyId)+"%";
+		selectedOptions = "%" + cityMapper.checkeCity(provincesId, cityId, districtCountyId) + "%";
 		// 商品名
 		String serviceType = params.get("serviceType").toString().trim();
 		if (serviceType != null && !serviceType.equals("")) {
@@ -498,14 +504,14 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 		String companyName = params.get("companyName").toString().trim();
 		String createTime = DateTimeUtil.dateToAll();
-		List<String> listString   = wholesaleCommodityMapper.wholesaleCommodity_serviceType(releaseType,
-				selectedOptions, serviceType, companyName, createTime);
-		if(listString.size()==0) {
-			selectedOptions = "%"+ cityMapper.checkeCityTuo(provincesId, cityId)+"%";
-			listString   = wholesaleCommodityMapper.wholesaleCommodity_serviceType(releaseType,
-					selectedOptions, serviceType, companyName, createTime);
+		List<String> listString = wholesaleCommodityMapper.wholesaleCommodity_serviceType(releaseType, selectedOptions,
+				serviceType, companyName, createTime);
+		if (listString.size() == 0) {
+			selectedOptions = "%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%";
+			listString = wholesaleCommodityMapper.wholesaleCommodity_serviceType(releaseType, selectedOptions,
+					serviceType, companyName, createTime);
 		}
-		
+
 		return ServerResponse.createBySuccess(listString);
 	}
 
@@ -799,9 +805,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		String pageSize_string = params.get("pageSize").toString().trim();
 		int currentPage = 0;
 		int pageSize = 0;
-  
-		System.out.print(params.toString());
-		
+
 		if (currentPage_string != null && currentPage_string != "") {
 			currentPage = Integer.parseInt(currentPage_string);
 			if (currentPage <= 0) {
@@ -875,6 +879,9 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		return ServerResponse.createBySuccess(equipment_pagePage);
 	}
 
+	public int getreleaseType(long id) {
+		return wholesaleCommodityMapper.getreleaseType( id);
+	}
 	@Override
 	public ServerResponse<String> operation_userWholesaleCommodity(long userId, Map<String, Object> params) {
 		String type = params.get("type").toString().trim();
@@ -888,6 +895,11 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			}
 
 			id = Long.valueOf(idString);
+
+			// 有发布中或者未开始的广告不能操作
+			if (bunnerService.getguanggaocount(id, getreleaseType(id)) > 0) {
+				ServerResponse.createByErrorMessage(ResponseMessage.yougonggongxuanchuan.getMessage());
+			}
 
 			int result = wholesaleCommodityMapper.checkout_count(id, userId);
 			if (result == 0) {
@@ -1048,7 +1060,9 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (wholesaleCommodity == null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
 		}
-		wholesaleCommodity.setAuthentiCationFailure(wholesaleCommodity.getCations());
+
+		wholesaleCommodity.setRealNameId(wholesaleCommodity.getCations());
+
 		ServerResponse<Object> serverResponse = orderService.get_conduct_order(id, 0);
 		if (serverResponse.getStatus() == 0) {
 			int orderStatus_count = (int) serverResponse.getData();
@@ -1066,7 +1080,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			return serverResponse;
 		}
 	}
-    //公开列表
+
+	// 公开列表
 	@Override
 	public ServerResponse<Object> getWholesaleCommodityPublicList(Map<String, Object> params) {
 		String currentPage_string = params.get("currentPage").toString().trim();
@@ -1159,14 +1174,10 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		WholesaleCommodity wholesaleCommodity = wholesaleCommodityMapper.getWholesaleCommodityPublicId(id);
 		if (wholesaleCommodity != null) {
-			ServerResponse<Object> serverResponse = realNameService
-					.getRealNameByIdContact(wholesaleCommodity.getRealNameId());
-			if (serverResponse.getStatus() != 0) {
-				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-			}
-			wholesaleCommodity.setPictureUrl(PictureUtil.listToString(wholesaleCommodity.getPictureUrl()));
-			RealName realName = (RealName) serverResponse.getData();
 
+			wholesaleCommodity.setPictureUrl(PictureUtil.listToString(wholesaleCommodity.getPictureUrl()));
+			RealName realName = realNameMapper.getRealName(wholesaleCommodity.getUserId());
+			realName.setContact(EncrypDES.decryptPhone(realName.getContact()));
 			Evaluate evaluate = new Evaluate();
 			if (wholesaleCommodity.getEvaluateid() != 0) {
 				evaluate = evaluateMapper.selectEvvaluateById(wholesaleCommodity.getEvaluateid());
@@ -1201,31 +1212,34 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 	@Override
 	public List<Integer> getCommodityJiage(WholesaleCommodity wholesaleCommodity) {
-		
-		List<Integer> list=wholesaleCommodityMapper.getCommodityJiage( wholesaleCommodity) ;
-		if(list.size()==0) {
-			String serviceDetailed =wholesaleCommodity.getServiceDetailed();
-			
-		    Matcher slashMatcher = Pattern.compile("/").matcher(serviceDetailed);
-		    int mIdx = 0;
-		    while(slashMatcher.find()) {
-		        mIdx++;
-		        if(mIdx == 2){
-		            break;
-		        }
-		    }
-		    mIdx =slashMatcher.start();
-		    serviceDetailed=serviceDetailed.substring(0, mIdx)+"%";	
-			wholesaleCommodity.setServiceDetailed(serviceDetailed);
-			list=wholesaleCommodityMapper.getCommodityJiage( wholesaleCommodity) ;
-			if(list.size()==0) {
-				wholesaleCommodity.setServiceDetailed(null);
-				list=wholesaleCommodityMapper.getCommodityJiage( wholesaleCommodity) ;
+
+		List<Integer> list = wholesaleCommodityMapper.getCommodityJiage(wholesaleCommodity);
+		if (list.size() == 0) {
+			String serviceDetailed = wholesaleCommodity.getServiceDetailed();
+
+			Matcher slashMatcher = Pattern.compile("/").matcher(serviceDetailed);
+			int mIdx = 0;
+			while (slashMatcher.find()) {
+				mIdx++;
+				if (mIdx == 2) {
+					break;
+				}
 			}
-		}	
+			mIdx = slashMatcher.start();
+			serviceDetailed = serviceDetailed.substring(0, mIdx) + "%";
+			wholesaleCommodity.setServiceDetailed(serviceDetailed);
+			list = wholesaleCommodityMapper.getCommodityJiage(wholesaleCommodity);
+			if (list.size() == 0) {
+				wholesaleCommodity.setServiceDetailed(null);
+				list = wholesaleCommodityMapper.getCommodityJiage(wholesaleCommodity);
+			}
+		}
 		return list;
 	}
 
-	
+	@Override
+	public List<WholesaleCommodity> adminGetWcall(long userId) {
+		return wholesaleCommodityMapper.adminGetWcall( userId);
+	}
 
 }

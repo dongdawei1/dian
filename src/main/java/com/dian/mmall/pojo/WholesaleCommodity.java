@@ -23,8 +23,8 @@ public class WholesaleCommodity {
 
 	private Integer servicFrequenc;// 交易次数
 
-	@IsEmptyAnnotation(message = "实名id不能为空")
-	private long realNameId;//
+
+	
 
 	@IsEmptyAnnotation(message = "发布类型不能为空")
 	private Integer releaseType;
@@ -114,7 +114,9 @@ public class WholesaleCommodity {
 	private String examineTime;
 	private String isValidity;
 	private IsButten isButten;// 保留字段
-	@IsEmptyAnnotation(message = "实名城市不能为空")
+
 	private String serviceDetailed;
+	
+	private String realNameId;//
 
 }

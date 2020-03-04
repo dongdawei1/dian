@@ -32,4 +32,6 @@ public interface ResumeMapper {
 
 	List<Resume> adminGetResumeall(long userId);
 
+	int getreleaseType(long id);
+
 }

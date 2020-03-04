@@ -33,6 +33,7 @@ import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.pojo.zhiwei.Resume;
+import com.dian.mmall.service.BunnerService;
 import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.AnnotationDealUtil;
@@ -60,6 +61,8 @@ public class ResumeServiceImp implements ResumeService {
 
 	@Autowired
 	private NumberOfQueriesMapper numberOfQueriesMapper;
+	@Autowired
+	private BunnerService bunnerService;
 
 	// 创建和编辑简历type=1 创建 && type=2 编辑
 	public ServerResponse<String> create_resume(User user, Map<String, Object> params) {
@@ -124,7 +127,7 @@ public class ResumeServiceImp implements ResumeService {
 			}
 			map.put("updateTime", createTime);
 			map.put("createTime", createTime);
-			
+
 		} else {
 			if (resume == null) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.weifabuguojianli.getMessage());
@@ -268,13 +271,13 @@ public class ResumeServiceImp implements ResumeService {
 			if (!EncrypDES.decryptPhone(realName.getContact()).equals(contact)) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
 			}
-		// 手机不存	map.put("contact", realName.getContact());
+			// 手机不存 map.put("contact", realName.getContact());
 			// 判断实名姓名
 			String consigneeName = realName.getConsigneeName();
 			if (!consigneeName.equals(params.get("consigneeName").toString().trim())) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
 			}
-		//实名不存	map.put("consigneeName", consigneeName);
+			// 实名不存 map.put("consigneeName", consigneeName);
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());
 		}
@@ -326,12 +329,15 @@ public class ResumeServiceImp implements ResumeService {
 		if (resume == null) {
 			return ServerResponse.createBySuccess();
 		}
-		RealName realName=realNameMapper.getRealName(userId);
+		RealName realName = realNameMapper.getRealName(userId);
 		resume.setContact(EncrypDES.decryptPhone(realName.getContact()));
 		resume.setConsigneeName(realName.getConsigneeName());
 		return ServerResponse.createBySuccess(resume);
 	}
 
+	public int getreleaseType(long id) {
+		return resumeMapper.getreleaseType(id);
+	}
 //操作
 	@Override
 	public ServerResponse<String> operation_resume(User user, Map<String, Object> params) {
@@ -352,6 +358,12 @@ public class ResumeServiceImp implements ResumeService {
 			if (userIdLong != user.getId()) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
 			}
+
+			// 有发布中或者未开始的广告不能操作
+			if (bunnerService.getguanggaocount(idLong, getreleaseType(idLong)) > 0) {
+				ServerResponse.createByErrorMessage(ResponseMessage.yougonggongxuanchuan.getMessage());
+			}
+
 			String timeString = DateTimeUtil.dateToAll();
 			String a_few_days_later = DateTimeUtil.a_few_days_later(90);
 			int result = 0;
@@ -409,7 +421,7 @@ public class ResumeServiceImp implements ResumeService {
 			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
 		}
 
-		String userName = null;//params.get("userName").toString().trim();
+		String userName = null;// params.get("userName").toString().trim();
 		String contact = params.get("contact").toString().trim();
 
 		if (contact.length() != 11 && contact != null && !contact.equals("")) {
@@ -427,18 +439,17 @@ public class ResumeServiceImp implements ResumeService {
 		releaseWelfare_pagePage.setPageSize(pageSize);
 		releaseWelfare_pagePage.setCurrentPage(currentPage); // 当前页
 
-		
 		List<Resume> list_resumeall = resumeMapper.getRresumeAll((currentPage - 1) * pageSize, pageSize, userName,
 				contact);
 		if (list_resumeall.size() > 0) {
-			for (int a=0;a<list_resumeall.size();a++) {
-				Resume resume=list_resumeall.get(a);
-				RealName realName=realNameMapper.getRealName(resume.getUserId());
+			for (int a = 0; a < list_resumeall.size(); a++) {
+				Resume resume = list_resumeall.get(a);
+				RealName realName = realNameMapper.getRealName(resume.getUserId());
 				resume.setContact(EncrypDES.decryptPhone(realName.getContact()));
 				resume.setConsigneeName(realName.getConsigneeName());
 				resume.setContact(EncrypDES.decryptPhone(resume.getContact()));
 				list_resumeall.set(a, resume);
-				realName=null;
+				realName = null;
 			}
 		}
 
@@ -471,16 +482,16 @@ public class ResumeServiceImp implements ResumeService {
 		} else {
 			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
 		}
-		String provinces_id=null;
-		String city_id =null;
-		String district_county_id =null;
-		
+		String provinces_id = null;
+		String city_id = null;
+		String district_county_id = null;
+
 		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
 				List.class);
 		if (selectedOptions_list.size() == 3) {
-			provinces_id= selectedOptions_list.get(0)+"";
-			city_id = selectedOptions_list.get(1)+"";
-			district_county_id = selectedOptions_list.get(2)+"";
+			provinces_id = selectedOptions_list.get(0) + "";
+			city_id = selectedOptions_list.get(1) + "";
+			district_county_id = selectedOptions_list.get(2) + "";
 			// 判断省市区id是否正确
 		}
 
@@ -536,8 +547,7 @@ public class ResumeServiceImp implements ResumeService {
 			if (resume == null) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
 			}
-			
-			
+
 			numberOfQueries = new NumberOfQueries();
 			numberOfQueries.setCountQueries(1);
 			numberOfQueries.setQueriesType(eslectType);
@@ -563,7 +573,7 @@ public class ResumeServiceImp implements ResumeService {
 			}
 			numberOfQueriesMapper.updateNumberOfQueries(numberOfQueries);
 		}
-		RealName realName=realNameMapper.getRealName(resume.getUserId());
+		RealName realName = realNameMapper.getRealName(resume.getUserId());
 		// 1电话2邮箱
 		if (queriesType == 1) {
 			returnMap.put("contact", EncrypDES.decryptPhone(realName.getContact()));

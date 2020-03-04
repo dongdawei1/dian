@@ -86,6 +86,8 @@ public class ToExamineController {
 		serverResponse = realNameService.examineRealName(user, params, loginToken);
 		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
 			User shenheUser = (User) serverResponse.getData();
+			
+			
 			int result = RedisPoolUtil.checkeKey(shenheUser);
 			if (result == 0) {
 				return ServerResponse.createBySuccessMessage("成功用户登录");
@@ -470,15 +472,7 @@ public class ToExamineController {
      		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
      	}	
      	User user=(User) serverResponse.getData();
-     	
-     	serverResponse=toExamineService.getUserCreate(user);
-     			if(serverResponse.getStatus()!=0 ) {
-     	     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-     	     	}	
-     	Map<String, List<Object>> map=null;
-     	
-     	
-        return realNameService.admin_guangggao_realName(userName.trim());
+        return toExamineService.getUserCreate(user);
         
     }
 }

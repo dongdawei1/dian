@@ -42,4 +42,6 @@ public interface DepartmentStoreMapper {
 
 	List<DepartmentStore> adminGetDsall(long userId);
 
+	int getreleaseType(long id);
+
 }

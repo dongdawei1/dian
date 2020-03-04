@@ -1,8 +1,10 @@
 package com.dian.mmall.service.release;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
 import com.dian.mmall.pojo.user.User;
 
 public interface MenuAndRenovationAndPestControlService {
@@ -22,6 +24,7 @@ public interface MenuAndRenovationAndPestControlService {
 	ServerResponse<Object> getReleaseTitleList(Map<String, Object> params);
 	//公开查看详情
 	ServerResponse<Object> getMrpDetails(long id);
+	List<MenuAndRenovationAndPestControl> adminGetMraall(long userId);
 	
 
 }

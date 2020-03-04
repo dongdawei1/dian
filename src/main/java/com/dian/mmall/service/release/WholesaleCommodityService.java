@@ -46,5 +46,8 @@ public interface WholesaleCommodityService {
 	 List<Integer> getCommodityJiage(WholesaleCommodity wholesaleCommodity);
 
 
+	List<WholesaleCommodity> adminGetWcall(long userId);
+
+
 	
 }

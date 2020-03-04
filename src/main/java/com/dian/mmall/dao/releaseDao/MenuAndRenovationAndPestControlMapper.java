@@ -45,5 +45,9 @@ public interface MenuAndRenovationAndPestControlMapper {
 		//促销活动根据id查找服务标题 
 		MenuAndRenovationAndPestControl getMrpBunner(long id);
 
+		List<MenuAndRenovationAndPestControl> adminGetMraall(long userId);
+
+		int getreleaseType(long id);
+
 
 }

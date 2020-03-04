@@ -61,4 +61,8 @@ public interface WholesaleCommodityMapper {
 
 	List<Integer> getCommodityJiage(WholesaleCommodity wholesaleCommodity);
 
+	int getreleaseType(long id);
+
+	List<WholesaleCommodity> adminGetWcall(long userId);
+
 }

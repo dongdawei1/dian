@@ -15,6 +15,11 @@
 		where welfareStatus!=3 and userId=#{userId}
 	</select>
 
+<!--可见全部条数 -->
+	<select id="getreleaseType" resultType="int">
+		select releaseType from resume where id=#{id}
+	</select>
+
 
 	<!--创建用户成功返回非0 -->
 	<insert id="create_resume">

@@ -30,6 +30,7 @@ import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
+import com.dian.mmall.service.BunnerService;
 import com.dian.mmall.service.release.WineAndTablewareService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
@@ -58,6 +59,8 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 	private CityMapper cityMapper;
 	@Autowired
 	private EvaluateMapper evaluateMapper;
+	@Autowired
+	private BunnerService bunnerService;
 
 	@Override
 	public ServerResponse<String> create_wineAndTableware(User user, Map<String, Object> params) {
@@ -183,6 +186,9 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 			if (serverResponse.getStatus() != 0) {
 				return ServerResponse.createByErrorMessage(serverContact.getMsg());
 			}
+			if (!EncrypDES.encryptPhone(contact).equals(realName.getContact())) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
+			}
 			// map.put("contact", EncrypDES.encryptPhone(contact));
 			map.put("consigneeName", params.get("consigneeName").toString().trim());
 			// map.put("detailed", realName.getDetailed());
@@ -281,6 +287,9 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 		return ServerResponse.createBySuccess(equipment_pagePage);
 	}
 
+	public int getreleaseType(long id) {
+		return wineAndTablewareMapper.getreleaseType(id);
+	}
 	@Override
 	public ServerResponse<String> operation_userWineAndTableware(User user, Map<String, Object> params) {
 		String type = params.get("type").toString().trim();
@@ -296,6 +305,11 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 			idLong = Long.valueOf(id);
 			if (userIdLong != user.getId()) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
+			}
+
+			// 有发布中或者未开始的广告不能操作
+			if (bunnerService.getguanggaocount(idLong, getreleaseType(idLong)) > 0) {
+				ServerResponse.createByErrorMessage(ResponseMessage.yougonggongxuanchuan.getMessage());
 			}
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String timeString = null;
@@ -576,7 +590,7 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 		if (equipment == null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
 		}
-		
+
 		RealName realName = realNameMapper.getRealName(equipment.getUserId());
 
 		equipment.setContact(EncrypDES.decryptPhone(realName.getContact()));
@@ -694,7 +708,7 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 
 	@Override
 	public List<WineAndTableware> adminGetWtall(long userId) {
-		
+
 		return wineAndTablewareMapper.adminGetWtall(userId);
 	}
 

@@ -10,6 +10,9 @@
 		welfareStatus!=3 and
 		releaseType=#{releaseType} and userId =#{userId}
 	</select>
+	<select id="getreleaseType" resultType="int">
+		select releaseType from  rent where id =#{id}
+	</select>
 
 	<!--创建用户成功返回非0 -->
 	<insert id="create_rent">

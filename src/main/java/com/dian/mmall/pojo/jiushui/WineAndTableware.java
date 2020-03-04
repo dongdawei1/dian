@@ -1,5 +1,7 @@
 package com.dian.mmall.pojo.jiushui;
 
+import java.util.List;
+
 import com.dian.mmall.util.checknullandmax.IsEmptyAnnotation;
 import com.dian.mmall.util.checknullandmax.MaxSize;
 import com.dian.mmall.util.checknullandmax.MinSize;
@@ -74,4 +76,5 @@ public class WineAndTableware {
 	private String contact; //以下是备用
 	private String realNameId;
 	private String detailed; //
+	
 }

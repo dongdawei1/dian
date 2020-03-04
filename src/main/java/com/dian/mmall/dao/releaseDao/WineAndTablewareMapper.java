@@ -39,5 +39,7 @@ public interface WineAndTablewareMapper {
 	WineAndTableware getWineAndTablewareDetails(long id);
 
 	List<WineAndTableware> adminGetWtall(long userId);
+
+	int getreleaseType(long id);
 	
 }

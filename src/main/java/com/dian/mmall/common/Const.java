@@ -32,8 +32,12 @@ public class Const {
 	public static final int CANJUP=8;
 	//32电器设备维修，33设备出售，34二手设备
 	public static final int SHEBEIXIUP=32;
-	public static final int SHEBEIMAI=33;
-	public static final int SHEBEIJIU=34;
+	public static final int SHEBEIMAIP=33;
+	public static final int SHEBEIJIUP=34;
+	//13菜谱 ，17装修，19灭虫
+	public static final int CAIPIP=13;
+	public static final int ZHUANGXIUP=17;
+	public static final int MIECHONGP=19;
 	
 	public static final String SERVICETYPENO = "(商品类型不存在，如果合规请手动添加: )";
 	public static final String SERVICETYPEDAI = "(待审批的商品类型: )";

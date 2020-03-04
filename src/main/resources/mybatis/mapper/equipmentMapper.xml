@@ -6,8 +6,15 @@
 
 	<!--发布过的条数 -->
 	<select id="countNum" resultType="int">
-		select count(*) from equipment where welfareStatus!=3 and
-		releaseType=#{releaseType} and userId =#{userId}
+		select count(*) from equipment
+		where welfareStatus!=3 and
+		releaseType=#{releaseType} and userId
+		=#{userId}
+	</select>
+	<!--getreleaseType -->
+	<select id="getreleaseType" resultType="int">
+		select releaseType from
+		equipment where id =#{id}
 	</select>
 
 	<!--创建用户成功返回非0 -->
@@ -19,7 +26,8 @@
 		serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus,
 		serviceAndprice,serviceType,termOfValidity
 		) values (
-		#{userId}, #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
+		#{userId},
+		#{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
 		#{consigneeName},#{userType},
 		#{serviceDetailed},
 		#{remarks},#{serviceIntroduction},
@@ -34,7 +42,8 @@
 		select count(*) from equipment where authentiCationStatus in(1,3) and
 		releaseType in(18,33,34)
 		<if test="_parameter!=null and _parameter.trim()!=''">and userId in (select
-		userId from t_user_realname where contact=#{contact} )  </if>
+			userId from t_user_realname where contact=#{contact} )
+		</if>
 	</select>
 
 	<!-- 审核分页 -->
@@ -47,9 +56,11 @@
 		consigneeName,createTime,
 		updateTime,userType,examineName,examineTime
 		from equipment
-		where authentiCationStatus in(1,3) and releaseType in(18,33,34)
+		where authentiCationStatus in(1,3) and releaseType
+		in(18,33,34)
 		<if test="contact!=null and contact.trim()!=''">and userId in (select
-		userId from t_user_realname where contact=#{contact} )    </if>
+			userId from t_user_realname where contact=#{contact} )
+		</if>
 		order by createTime
 		limit #{pageLength}, #{pageSize}
 	</select>
@@ -92,9 +103,11 @@
 	<update id="operation_userequipment">
 		update equipment set
 		<if test="type==1 "> updateTime=#{timeString} ,
-			termOfValidity=#{termOfValidity}</if>
+			termOfValidity=#{termOfValidity}
+		</if>
 		<if test="type==2 "> updateTime=#{timeString} ,
-			termOfValidity=#{termOfValidity} ,welfareStatus=1</if>
+			termOfValidity=#{termOfValidity} ,welfareStatus=1
+		</if>
 		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
 		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
 		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
@@ -113,7 +126,8 @@
 		serviceDetailed,authentiCationStatus,authentiCationFailure,
 		consigneeName,createTime
 		from equipment
-		where welfareStatus!=3 and userId=#{userId} and id=#{id}
+		where welfareStatus!=3 and
+		userId=#{userId} and id=#{id}
 	</select>
 
 
@@ -125,7 +139,8 @@
 		remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},serviceType=#{serviceType},serviceAndprice=#{serviceAndprice},
 		releaseTitle=#{releaseTitle},updateTime=#{updateTime},termOfValidity=#{termOfValidity},
 		consigneeName=#{consigneeName}
-		where welfareStatus!=3 and userId=#{userId} and id=#{id}
+		where welfareStatus!=3 and
+		userId=#{userId} and id=#{id}
 	</update>
 
 
@@ -136,7 +151,8 @@
 		<if test="type==1 "> DISTINCT releaseTitle </if>
 		<if test="type==2 "> DISTINCT serviceType </if>
 		from equipment where welfareStatus=1 and releaseType=#{releaseType}
-		and userId in (select userId from t_user_realname where detailed like #{detailed})
+		and userId in (select userId from t_user_realname where detailed like
+		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
 	</select>
@@ -145,8 +161,9 @@
 
 	<select id="getEquipmentListNo" resultType="long">
 		select count(*) from equipment where welfareStatus=1 and
-		releaseType=#{releaseType} 
-		and userId in (select userId from t_user_realname where detailed like #{detailed})
+		releaseType=#{releaseType}
+		and userId in (select userId from t_user_realname where detailed like
+		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType =#{serviceType}   </if>
 	</select>
@@ -157,7 +174,8 @@
 		select
 		id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed
 		from equipment where welfareStatus=1 and releaseType=#{releaseType}
-		and userId in (select userId from t_user_realname where detailed like #{detailed})
+		and userId in (select userId from t_user_realname where detailed like
+		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType =#{serviceType}   </if>
 		order by updateTime desc
@@ -183,10 +201,11 @@
 		consigneeName,createTime,
 		updateTime,serviceDetailed,termOfValidity
 		from equipment
-		where welfareStatus in(1,2,4,5) and userId=#{userId} and releaseType in(4,5,6,9,11,29)
+		where welfareStatus in(1,2,4,5) and userId=#{userId} and
+		releaseType in(4,5,6,9,11,29)
 	</select>
 
-	<!--管理查询全部电器-->
+	<!--管理查询全部电器 -->
 	<select id="adminGetEqall"
 		resultType="com.dian.mmall.pojo.weixiuAnddianqi.Equipment">
 		select id,userId,evaluateid,servicFrequenc,releaseType,
@@ -194,7 +213,8 @@
 		consigneeName,createTime,
 		updateTime,serviceDetailed,termOfValidity
 		from equipment
-		where welfareStatus in(1,2,4,5) and userId=#{userId} and releaseType in(32,33,34)
+		where welfareStatus in(1,2,4,5) and userId=#{userId} and
+		releaseType in(32,33,34)
 	</select>
 
 
@@ -210,7 +230,8 @@
 		serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus,
 		serviceAndprice,serviceType,termOfValidity
 		) values (
-		#{userId}, #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
+		#{userId},
+		#{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
 		#{consigneeName},
 		#{userType},
 		#{serviceDetailed},
@@ -236,7 +257,8 @@
 		consigneeName,createTime,
 		updateTime,serviceDetailed,termOfValidity
 		from equipment
-		where welfareStatus!=3 and userId=#{userId} and releaseType=#{releaseType}
+		where welfareStatus!=3 and userId=#{userId} and
+		releaseType=#{releaseType}
 		<if test="welfareStatus!=null">and welfareStatus=#{welfareStatus}   </if>
 		order by updateTime desc
 		limit #{pageLength}, #{pageSize}
@@ -245,9 +267,11 @@
 	<update id="operation_userFoodAndGrain">
 		update equipment set
 		<if test="type==1 "> updateTime=#{timeString} ,
-			termOfValidity=#{termOfValidity}</if>
+			termOfValidity=#{termOfValidity}
+		</if>
 		<if test="type==2 "> updateTime=#{timeString} ,
-			termOfValidity=#{termOfValidity} ,welfareStatus=1</if>
+			termOfValidity=#{termOfValidity} ,welfareStatus=1
+		</if>
 		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
 		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
 		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
@@ -277,7 +301,8 @@
 		remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},serviceType=#{serviceType},serviceAndprice=#{serviceAndprice},
 		releaseTitle=#{releaseTitle},updateTime=#{updateTime},termOfValidity=#{termOfValidity},
 		consigneeName=#{consigneeName}
-		where welfareStatus!=3 and userId=#{userId} and id=#{id}
+		where welfareStatus!=3 and
+		userId=#{userId} and id=#{id}
 	</update>
 
 	<!-- 查看该实名城市下发布过服务的标题 -->
@@ -286,7 +311,8 @@
 		<if test="type==1 "> DISTINCT releaseTitle </if>
 		<if test="type==2 "> DISTINCT serviceType </if>
 		from equipment where welfareStatus=1 and releaseType=#{releaseType}
-		and userId in (select userId from t_user_realname where detailed like #{detailed})
+		and userId in (select userId from t_user_realname where detailed like
+		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
 	</select>
@@ -296,8 +322,9 @@
 
 	<select id="getFoodAndGrainPublicListNo" resultType="long">
 		select count(*) from equipment where welfareStatus=1 and
-		releaseType=#{releaseType} 
-		 and userId in (select userId from t_user_realname where detailed like #{detailed})
+		releaseType=#{releaseType}
+		and userId in (select userId from t_user_realname where detailed like
+		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType =#{serviceType}   </if>
 	</select>
@@ -308,7 +335,8 @@
 		select
 		id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed
 		from equipment where welfareStatus=1 and releaseType=#{releaseType}
-		 and userId in (select userId from t_user_realname where detailed like #{detailed})
+		and userId in (select userId from t_user_realname where detailed like
+		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType =#{serviceType}   </if>
 		order by updateTime desc
@@ -333,7 +361,8 @@
 		select count(*) from equipment where authentiCationStatus in(1,3) and
 		releaseType=#{releaseType}
 		<if test="contact!=null and contact.trim()!=''">and userId in (select
-			userId from t_user_realname where contact=#{contact} )
+			userId from t_user_realname where
+			contact=#{contact} )
 		</if>
 	</select>
 
@@ -347,9 +376,11 @@
 		consigneeName,createTime,
 		updateTime,userType,examineName,examineTime
 		from equipment
-		where authentiCationStatus in(1,3) and releaseType=#{releaseType}
+		where authentiCationStatus in(1,3) and
+		releaseType=#{releaseType}
 		<if test="contact!=null and contact.trim()!=''">and userId in (select
-			userId from t_user_realname where contact=#{contact} )
+			userId from t_user_realname where
+			contact=#{contact} )
 		</if>
 		order by createTime
 		limit #{pageLength}, #{pageSize}

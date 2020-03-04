@@ -30,6 +30,7 @@ import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
+import com.dian.mmall.service.BunnerService;
 import com.dian.mmall.service.release.EquipmentService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
@@ -58,7 +59,8 @@ public class EquipmentServiceImpl implements EquipmentService {
 	private CityMapper cityMapper;
 	@Autowired
 	private EvaluateMapper evaluateMapper;
-
+	@Autowired
+	private BunnerService bunnerService;
 	@Override
 	public ServerResponse<String> create_equipment(User user, Map<String, Object> params) {
 
@@ -103,8 +105,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 		if (releaseTypeString == null || releaseTypeString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
 		}
+		// 32电器设备维修，33设备出售，34二手设备
 		int releaseType = Integer.valueOf(releaseTypeString);
-		if (releaseType != 18 && releaseType != 33 && releaseType != 34) {
+		if (releaseType != Const.SHEBEIXIUP && releaseType != Const.SHEBEIMAIP && releaseType != Const.SHEBEIJIUP) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 		}
 		int count = 0;
@@ -184,7 +187,10 @@ public class EquipmentServiceImpl implements EquipmentService {
 			if (serverResponse.getStatus() != 0) {
 				return ServerResponse.createByErrorMessage(serverContact.getMsg());
 			}
-			// map.put("contact", EncrypDES.encryptPhone(contact));
+			if (!EncrypDES.encryptPhone(contact).equals(realName.getContact())) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
+			}
+
 			map.put("consigneeName", params.get("consigneeName").toString().trim());
 			// map.put("detailed", realName.getDetailed());
 			// map.put("realNameId", realName.getId());
@@ -262,15 +268,15 @@ public class EquipmentServiceImpl implements EquipmentService {
 
 		List<ServiceType> serviceTypeList = serviceTypeMapper.get_serviceTypeAll(18);
 
-		for (int a1=0;a1<list_equipmentall.size();a1++) {
-			Equipment re=list_equipmentall.get(a1);
+		for (int a1 = 0; a1 < list_equipmentall.size(); a1++) {
+			Equipment re = list_equipmentall.get(a1);
 			long userId = re.getUserId();
 			RealName realName = realNameMapper.getRealName(userId);
 			re.setContact(EncrypDES.decryptPhone(realName.getContact()));
 			re.setDetailed(realName.getDetailed());
 			re.setRealNameId(realName.getAddressDetailed());
 			re.setUpdateTime(realName.getCompanyName());
-			
+
 			String serviceTypeString = re.getServiceType();
 
 			boolean bo = false;
@@ -362,6 +368,10 @@ public class EquipmentServiceImpl implements EquipmentService {
 		return ServerResponse.createBySuccess(equipment_pagePage);
 	}
 
+	public int getreleaseType(long id) {
+		return equipmentMapper.getreleaseType(id);
+	}
+	
 	@Override
 	public ServerResponse<String> operation_userequipment(User user, Map<String, Object> params) {
 		String type = params.get("type").toString().trim();
@@ -378,6 +388,11 @@ public class EquipmentServiceImpl implements EquipmentService {
 			if (userIdLong != user.getId()) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
 			}
+			// 有发布中或者未开始的广告不能操作
+			if (bunnerService.getguanggaocount(idLong, getreleaseType(idLong)) > 0) {
+				ServerResponse.createByErrorMessage(ResponseMessage.yougonggongxuanchuan.getMessage());
+			}
+
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String timeString = null;
 			String termOfValidity = DateTimeUtil.a_few_days_later(90);
@@ -702,7 +717,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
 	@Override
 	public List<Equipment> adminGetEqall(long userId) {
-		
+
 		return equipmentMapper.adminGetEqall(userId);
 	}
 }

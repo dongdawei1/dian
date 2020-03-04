@@ -13,6 +13,11 @@
 		and userId =#{userId}
 	</select>
 
+	<!--发布过的条数 -->
+	<select id="getreleaseType" resultType="int">
+		select releaseType from
+		wineandtableware where id =#{id}
+	</select>
 	<!--创建用户成功返回非0 -->
 	<insert id="create_wineAndTableware">
 		insert into wineandtableware (
@@ -63,7 +68,8 @@
 		select count(*) from wineandtableware where authentiCationStatus
 		in(1,3) and releaseType=#{releaseType}
 		<if test="contact!=null and contact.trim()!=''">and userId in (select
-			userId from t_user_realname where contact=#{contact} )
+			userId from t_user_realname where
+			contact=#{contact} )
 		</if>
 	</select>
 
@@ -80,7 +86,8 @@
 		where authentiCationStatus in(1,3) and
 		releaseType=#{releaseType}
 		<if test="contact!=null and contact.trim()!=''">and userId in (select
-			userId from t_user_realname where contact=#{contact} )
+			userId from t_user_realname where
+			contact=#{contact} )
 		</if>
 		order by createTime
 		limit #{pageLength}, #{pageSize}
@@ -147,7 +154,8 @@
 		select count(*) from wineandtableware where welfareStatus=1 and
 		releaseType=#{releaseType}
 		and userId in (select userId
-		from t_user_realname where detailed like
+		from
+		t_user_realname where detailed like
 		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 	</select>
