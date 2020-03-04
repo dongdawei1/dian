@@ -119,7 +119,7 @@
 		resultType="com.dian.mmall.pojo.gongfu.DepartmentStore">
 		select id,userId,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
-		serviceDetailed,
+		serviceDetailed,authentiCationStatus,authentiCationFailure,
 		consigneeName,createTime,termOfValidity
 		from
 		departmentstore

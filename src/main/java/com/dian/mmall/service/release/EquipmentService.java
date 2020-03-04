@@ -1,9 +1,11 @@
 package com.dian.mmall.service.release;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 
 public interface EquipmentService {
 
@@ -24,5 +26,7 @@ public interface EquipmentService {
 	ServerResponse<Object> getEquipmentPublicList(Map<String, Object> params);
 
 	ServerResponse<Object> getEquipmentDetails(long id);
+
+	List<Equipment> adminGetEqall(long userId);
 
 }

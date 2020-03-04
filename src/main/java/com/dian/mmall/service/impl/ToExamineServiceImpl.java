@@ -54,10 +54,13 @@ import com.dian.mmall.service.LiushuiService;
 import com.dian.mmall.service.ToExamineService;
 import com.dian.mmall.service.UserAccountService;
 import com.dian.mmall.service.release.DepartmentStoreService;
+import com.dian.mmall.service.release.EquipmentService;
 import com.dian.mmall.service.release.FoodAndGrainService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.service.release.RentService;
 import com.dian.mmall.service.release.ResumeService;
+import com.dian.mmall.service.release.WholesaleCommodityService;
+import com.dian.mmall.service.release.WineAndTablewareService;
 import com.dian.mmall.util.AnnotationDealUtil;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
@@ -565,12 +568,17 @@ public class ToExamineServiceImpl implements ToExamineService {
 	private FoodAndGrainService foodAndGrainService;
 	@Autowired
 	private DepartmentStoreService departmentStoreService;
-
+	@Autowired
+	private WineAndTablewareService wineAndTablewareService;
+	@Autowired
+	private EquipmentService equipmentService;
 	private int zhiweib = 1;
 	private int chuzub = 2;
 	private int jianlib = 3;
 	private int cailingshoub = 4;
-	private int baihuop = 5;
+	private int baihuob = 5;
+	private int jiub = 6;
+	private int dianqib = 7;
 
 	@Override
 	public ServerResponse<Object> getUserCreate(User user) {
@@ -616,7 +624,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (rentList.size() > 0) {
 				for (int a = 0; a < rentList.size(); a++) {
 					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
-					createGanggaoRe.setTablenameid(zhiweib);
+					createGanggaoRe.setTablenameid(chuzub);
 					Rent rent = rentList.get(a);
 					if (rent.getReleaseType() == Const.DIANMIANP) {
 						createGanggaoRe.setPermissionid(Const.DIANMIANP);
@@ -646,7 +654,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (rentList.size() > 0) {
 				for (int a = 0; a < rentList.size(); a++) {
 					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
-					createGanggaoRe.setTablenameid(zhiweib);
+					createGanggaoRe.setTablenameid(chuzub);
 					Rent rent = rentList.get(a);
 					if (rent.getReleaseType() == Const.DIANMIANP) {
 						createGanggaoRe.setPermissionid(Const.DIANMIANP);
@@ -669,6 +677,37 @@ public class ToExamineServiceImpl implements ToExamineService {
 				}
 			}
 
+			// 电器设备
+			List<Equipment> eqList = equipmentService.adminGetEqall(userId);
+			if (eqList.size() > 0) {
+				for (int a = 0; a < eqList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(dianqib);
+					Equipment rent = eqList.get(a);
+					if (rent.getReleaseType() == Const.SHEBEIXIUP) {
+						createGanggaoRe.setPermissionid(Const.SHEBEIXIUP);
+						createGanggaoRe.setPermissionName("电器设备维修");
+					} else if (rent.getReleaseType() == Const.SHEBEIMAI) {
+						createGanggaoRe.setPermissionid(Const.SHEBEIMAI);
+						createGanggaoRe.setPermissionName("电器设备销售新");
+					} else if (rent.getReleaseType() == Const.SHEBEIJIU) {
+						createGanggaoRe.setPermissionid(Const.SHEBEIJIU);
+						createGanggaoRe.setPermissionName("电器设备二手");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(rent);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+
 		} else if (role == 4) {
 			// 菜米蛋禽等零售
 			// 窗口出租
@@ -676,7 +715,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (rentList.size() > 0) {
 				for (int a = 0; a < rentList.size(); a++) {
 					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
-					createGanggaoRe.setTablenameid(zhiweib);
+					createGanggaoRe.setTablenameid(chuzub);
 					Rent rent = rentList.get(a);
 					if (rent.getReleaseType() == Const.DIANMIANP) {
 						createGanggaoRe.setPermissionid(Const.DIANMIANP);
@@ -788,7 +827,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (rentList.size() > 0) {
 				for (int a = 0; a < rentList.size(); a++) {
 					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
-					createGanggaoRe.setTablenameid(zhiweib);
+					createGanggaoRe.setTablenameid(chuzub);
 					Rent rent = rentList.get(a);
 					if (rent.getReleaseType() == Const.DIANMIANP) {
 						createGanggaoRe.setPermissionid(Const.DIANMIANP);
@@ -810,6 +849,34 @@ public class ToExamineServiceImpl implements ToExamineService {
 					index++;
 				}
 			}
+			// 消毒餐具酒水
+			List<WineAndTableware> wtList = wineAndTablewareService.adminGetWtall(userId);
+			if (wtList.size() > 0) {
+				for (int a = 0; a < wtList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(jiub);
+					WineAndTableware wt = wtList.get(a);
+
+					if (wt.getReleaseType() == Const.JIUSHUIP) {
+						createGanggaoRe.setPermissionid(Const.JIUSHUIP);
+						createGanggaoRe.setPermissionName("酒水饮料");
+					} else if (wt.getReleaseType() == Const.CANJUP) {
+						createGanggaoRe.setPermissionid(Const.CANJUP);
+						createGanggaoRe.setPermissionName("消毒餐具");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(wt);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
 
 		} else if (role == 6) {
 			// 专出租门脸和窗口
@@ -818,7 +885,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (rentList.size() > 0) {
 				for (int a = 0; a < rentList.size(); a++) {
 					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
-					createGanggaoRe.setTablenameid(zhiweib);
+					createGanggaoRe.setTablenameid(chuzub);
 					Rent rent = rentList.get(a);
 					if (rent.getReleaseType() == Const.DIANMIANP) {
 						createGanggaoRe.setPermissionid(Const.DIANMIANP);
@@ -875,7 +942,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (esumeList.size() > 0) {
 				for (int a = 0; a < esumeList.size(); a++) {
 					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
-					createGanggaoRe.setTablenameid(baihuop);
+					createGanggaoRe.setTablenameid(baihuob);
 					DepartmentStore departmentStore = esumeList.get(a);
 					if (departmentStore.getReleaseType() == Const.GONGFUP) {
 						createGanggaoRe.setPermissionid(Const.GONGFUP);
@@ -909,7 +976,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (rentList.size() > 0) {
 				for (int a = 0; a < rentList.size(); a++) {
 					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
-					createGanggaoRe.setTablenameid(zhiweib);
+					createGanggaoRe.setTablenameid(chuzub);
 					Rent rent = rentList.get(a);
 					if (rent.getReleaseType() == Const.DIANMIANP) {
 						createGanggaoRe.setPermissionid(Const.DIANMIANP);
@@ -981,7 +1048,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (rentList.size() > 0) {
 				for (int a = 0; a < rentList.size(); a++) {
 					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
-					createGanggaoRe.setTablenameid(zhiweib);
+					createGanggaoRe.setTablenameid(chuzub);
 					Rent rent = rentList.get(a);
 					if (rent.getReleaseType() == Const.DIANMIANP) {
 						createGanggaoRe.setPermissionid(Const.DIANMIANP);
@@ -1048,7 +1115,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 			if (dsumeList.size() > 0) {
 				for (int a = 0; a < dsumeList.size(); a++) {
 					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
-					createGanggaoRe.setTablenameid(baihuop);
+					createGanggaoRe.setTablenameid(baihuob);
 					DepartmentStore departmentStore = dsumeList.get(a);
 					if (departmentStore.getReleaseType() == Const.GONGFUP) {
 						createGanggaoRe.setPermissionid(Const.GONGFUP);
@@ -1075,6 +1142,69 @@ public class ToExamineServiceImpl implements ToExamineService {
 					index++;
 				}
 
+			}
+
+			// 工服百货
+			List<DepartmentStore> deList = departmentStoreService.adminGetDsall(userId);
+			if (deList.size() > 0) {
+				for (int a = 0; a < deList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(baihuob);
+					DepartmentStore departmentStore = deList.get(a);
+					if (departmentStore.getReleaseType() == Const.GONGFUP) {
+						createGanggaoRe.setPermissionid(Const.GONGFUP);
+						createGanggaoRe.setPermissionName("市场工服");
+					} else if (departmentStore.getReleaseType() == Const.BAIHUOP) {
+						createGanggaoRe.setPermissionid(Const.BAIHUOP);
+						createGanggaoRe.setPermissionName("市场百货");
+					} else if (departmentStore.getReleaseType() == Const.LVZHIP) {
+						createGanggaoRe.setPermissionid(Const.LVZHIP);
+						createGanggaoRe.setPermissionName("市场绿植");
+					} else if (departmentStore.getReleaseType() == Const.ZHUANGSHIP) {
+						createGanggaoRe.setPermissionid(Const.ZHUANGSHIP);
+						createGanggaoRe.setPermissionName("市场装饰用品");
+					}
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(departmentStore);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
+			}
+			// 电器设备
+			List<Equipment> eqList = equipmentService.adminGetEqall(userId);
+			if (eqList.size() > 0) {
+				for (int a = 0; a < eqList.size(); a++) {
+					CreateGanggaoVo createGanggaoRe = new CreateGanggaoVo();
+					createGanggaoRe.setTablenameid(dianqib);
+					Equipment rent = eqList.get(a);
+					if (rent.getReleaseType() == Const.SHEBEIXIUP) {
+						createGanggaoRe.setPermissionid(Const.SHEBEIXIUP);
+						createGanggaoRe.setPermissionName("电器设备维修");
+					} else if (rent.getReleaseType() == Const.SHEBEIMAI) {
+						createGanggaoRe.setPermissionid(Const.SHEBEIMAI);
+						createGanggaoRe.setPermissionName("电器设备销售新");
+					} else if (rent.getReleaseType() == Const.SHEBEIJIU) {
+						createGanggaoRe.setPermissionid(Const.SHEBEIJIU);
+						createGanggaoRe.setPermissionName("电器设备二手");
+					}
+
+					if (bunnerService.getguanggaocount(userId, createGanggaoRe.getPermissionid()) > 0) {
+						createGanggaoRe.setQuxiaoguanggao(true);
+						createGanggaoRe.setBianjiguanggao(true);
+						createGanggaoRe.setDeletefabu(false);
+					} else {
+						createGanggaoRe.setTianjiaguanggao(true);
+					}
+					createGanggaoRe.setDataObject(rent);
+					listVos.set(index, createGanggaoRe);
+					index++;
+				}
 			}
 
 		}

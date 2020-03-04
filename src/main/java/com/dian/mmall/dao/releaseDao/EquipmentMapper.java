@@ -73,5 +73,7 @@ public interface EquipmentMapper {
 
 	List<FoodAndGrain> adminGetFgall(long userId);
 
+	List<Equipment> adminGetEqall(long userId);
+
 
 }

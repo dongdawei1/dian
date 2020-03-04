@@ -1,8 +1,10 @@
 package com.dian.mmall.service.release;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.user.User;
 
 public interface WineAndTablewareService {
@@ -22,5 +24,7 @@ public interface WineAndTablewareService {
 	ServerResponse<Object> getWineAndTablewareDetails(long id);
 
 	ServerResponse<Object> adminWineAndTableware(Map<String, Object> params);
+
+	List<WineAndTableware> adminGetWtall(long userId);
 
 }

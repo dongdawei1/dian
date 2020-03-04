@@ -2,148 +2,194 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dian.mmall.dao.releaseDao.WineAndTablewareMapper">
-     
-     <!--发布过的条数  -->
-     <select id="countNum" resultType="int">
-        select count(*) from wineandtableware where welfareStatus!=3  and releaseType=#{releaseType} and userId =#{userId}
-    </select>
-         
-          <!--创建用户成功返回非0  -->
-     <insert id="create_wineAndTableware"  >
-        insert into wineandtableware (
-        userId,releaseType,updateTime,createTime,pictureUrl,contact,
-        consigneeName,detailed,realNameId,userType,serviceDetailed,
-        remarks,
-        serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus,
-        serviceAndprice,serviceType
-        ) values (
-            #{userId},  #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
-            #{contact},#{consigneeName},#{detailed},
-            #{realNameId},#{userType},
-            #{serviceDetailed},
-            #{remarks},#{serviceIntroduction},
-            #{releaseTitle},#{authentiCationStatus},#{welfareStatus},
-            #{serviceAndprice},#{serviceType}
-        )
-    </insert><!-- countNum -->
-    
-    
-    
-        <!--用户查询分页总条数  --> 
-        <select id="get_myWineAndTableware_list_no"  resultType="long">
-        select count(*) from wineandtableware where welfareStatus!=3 and userId=#{userId}  and  releaseType=#{releaseType}  
-        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
-      
-       </select> 
-    <!--用户查询分页--> 
-        <select id="get_myWineAndTableware_list"  resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
-        select id,userId,evaluateid,servicFrequenc,releaseType,
-    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
-    welfareStatus,authentiCationStatus,authentiCationFailure,
-    detailed,contact,consigneeName,createTime,
-    updateTime,serviceDetailed
-       from wineandtableware       
-       where welfareStatus!=3 and userId=#{userId} and  releaseType=#{releaseType}
-        <if test="welfareStatus!=null">and  welfareStatus=#{welfareStatus}   </if>  
-       order by  updateTime desc
-        limit #{pageLength}, #{pageSize}
-    </select>
-    
-          <!-- 审核分页总条数 --> 
-        <select id="adminWineAndTableware_no"  resultType="long">
-        select count(*) from wineandtableware where authentiCationStatus in(1,3)  and releaseType=#{releaseType} 
-             <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if> 
-    </select> 
- 
-   <!-- 审核分页 -->
-        
-        <select id="adminWineAndTableware"  resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
-      select id,userId,releaseType,
-    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,serviceDetailed,
-    welfareStatus,authentiCationStatus,authentiCationFailure,
-    detailed,contact,consigneeName,createTime,
-    updateTime,userType,examineName,examineTime
-       from wineandtableware       
-       where authentiCationStatus in(1,3)  and releaseType=#{releaseType}
-         <if test="contact!=null and contact.trim()!=''">and  contact=#{contact}   </if>   
-       order by  createTime
-        limit #{pageLength}, #{pageSize}
-    </select> 
-    
-        <update id="examineEquipment" >
-       update wineandtableware set  
-       authentiCationStatus=#{authentiCationStatus},authentiCationFailure=#{authentiCationFailure},examineTime=#{examineTime},examineName=#{examineName},
-       welfareStatus=#{welfareStatus}
-        where userId=#{userId}  and id=#{id}
-    </update>
-     <!-- 操作列 -->
-         <update id="operation_userWineAndTableware" >
-       update wineandtableware set  
-      <if test="type==1 "> updateTime=#{timeString}</if>
-      <if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
-      <if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
-      <if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if> 
-        where userId=#{userId}  and id=#{id}
-      <if test="type==4 "> and welfareStatus not in(4,3)</if>
-    </update>
-    
-              <!--用户查询分页--> 
-    <select id="get_userWineAndTableware_id"  resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
-        select id,userId,releaseType,
-    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
-    serviceDetailed,
-    detailed,contact,consigneeName,createTime
-       from wineandtableware       
-       where welfareStatus!=3 and userId=#{userId} and id=#{id}
-    </select>
-         <!-- 用户编辑 -->
-       <update id="update_wineAndTableware" >
-       update wineandtableware set       
-    pictureUrl=#{pictureUrl},authentiCationStatus=#{authentiCationStatus},
-    welfareStatus=#{welfareStatus},serviceDetailed=#{serviceDetailed},
-    remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},serviceType=#{serviceType},serviceAndprice=#{serviceAndprice},
-    releaseTitle=#{releaseTitle},updateTime=#{updateTime},contact=#{contact},
-    consigneeName=#{consigneeName}
-     where welfareStatus!=3 and userId=#{userId} and id=#{id}
-    </update>
-    
-    
-    
-        <!-- 查看该实名城市下发布过服务的标题 -->
-     <select id="getWineAndTablewareTitleList"  resultType="String">
-        select
-             DISTINCT releaseTitle 
-          from wineandtableware where welfareStatus=1   and  releaseType=#{releaseType} and detailed like #{detailed}
-        <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>                
-    </select> 
-    
-       <!-- 公开列表分页总数 -->  
-     
-        <select id="getWineAndTablewarePublicListNo"  resultType="long">
-        select count(*) from wineandtableware where welfareStatus=1  and  releaseType=#{releaseType} and detailed like #{detailed}
-       <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>   
-    </select> 
-    
-      <!-- 公开列表分页概览 -->
-         <select id="getWineAndTablewarePublicList"  resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
-        select id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed 
-        from wineandtableware where welfareStatus=1   and  releaseType=#{releaseType}
-       and detailed like #{detailed}
-       <if test="releaseTitle!=null and releaseTitle.trim()!=''">and  releaseTitle like #{releaseTitle}   </if>    
-       order by updateTime desc
-        limit #{pageLength}, #{pageSize}
-    </select>
-    
-    
-         <!--用户查询分页--> 
-        <select id="getWineAndTablewareDetails"  resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
-        select id,userId,evaluateid,servicFrequenc,releaseType,
-    releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
-    detailed,contact,consigneeName,realNameId,createTime,
-    updateTime,serviceDetailed
-       from wineandtableware       
-       where welfareStatus=1 and id=#{id}       
-    </select>
-    
+<mapper
+	namespace="com.dian.mmall.dao.releaseDao.WineAndTablewareMapper">
+
+	<!--发布过的条数 -->
+	<select id="countNum" resultType="int">
+		select count(*) from
+		wineandtableware where welfareStatus!=3 and
+		releaseType=#{releaseType}
+		and userId =#{userId}
+	</select>
+
+	<!--创建用户成功返回非0 -->
+	<insert id="create_wineAndTableware">
+		insert into wineandtableware (
+		userId,releaseType,updateTime,createTime,pictureUrl,
+		consigneeName,userType,serviceDetailed,
+		remarks,
+		serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus,
+		serviceAndprice,serviceType
+		) values (
+		#{userId}, #{releaseType},
+		#{updateTime}, #{createTime},#{pictureUrl},
+		#{consigneeName},
+		#{userType}, #{serviceDetailed},
+		#{remarks},#{serviceIntroduction},
+		#{releaseTitle},#{authentiCationStatus},#{welfareStatus},
+		#{serviceAndprice},#{serviceType}
+		)
+	</insert><!-- countNum -->
+
+
+
+	<!--用户查询分页总条数 -->
+	<select id="get_myWineAndTableware_list_no" resultType="long">
+		select count(*) from wineandtableware where welfareStatus!=3 and
+		userId=#{userId} and releaseType=#{releaseType}
+		<if test="welfareStatus!=null">and welfareStatus=#{welfareStatus}   </if>
+
+	</select>
+	<!--用户查询分页 -->
+	<select id="get_myWineAndTableware_list"
+		resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
+		select id,userId,evaluateid,servicFrequenc,releaseType,
+		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
+		welfareStatus,authentiCationStatus,authentiCationFailure,
+		consigneeName,createTime,
+		updateTime,serviceDetailed
+		from
+		wineandtableware
+		where welfareStatus!=3 and userId=#{userId} and
+		releaseType=#{releaseType}
+		<if test="welfareStatus!=null">and welfareStatus=#{welfareStatus}   </if>
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+	<!-- 审核分页总条数 -->
+	<select id="adminWineAndTableware_no" resultType="long">
+		select count(*) from wineandtableware where authentiCationStatus
+		in(1,3) and releaseType=#{releaseType}
+		<if test="contact!=null and contact.trim()!=''">and userId in (select
+			userId from t_user_realname where contact=#{contact} )
+		</if>
+	</select>
+
+	<!-- 审核分页 -->
+
+	<select id="adminWineAndTableware"
+		resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
+		select id,userId,releaseType,
+		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,serviceDetailed,
+		welfareStatus,authentiCationStatus,authentiCationFailure,
+		consigneeName,createTime,
+		updateTime,userType,examineName,examineTime
+		from wineandtableware
+		where authentiCationStatus in(1,3) and
+		releaseType=#{releaseType}
+		<if test="contact!=null and contact.trim()!=''">and userId in (select
+			userId from t_user_realname where contact=#{contact} )
+		</if>
+		order by createTime
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+	<update id="examineEquipment">
+		update wineandtableware set
+		authentiCationStatus=#{authentiCationStatus},authentiCationFailure=#{authentiCationFailure},examineTime=#{examineTime},examineName=#{examineName},
+		welfareStatus=#{welfareStatus}
+		where userId=#{userId} and id=#{id}
+	</update>
+	<!-- 操作列 -->
+	<update id="operation_userWineAndTableware">
+		update wineandtableware set
+		<if test="type==1 "> updateTime=#{timeString}</if>
+		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
+		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
+		where userId=#{userId} and id=#{id}
+		<if test="type==4 "> and welfareStatus not in(4,3)</if>
+	</update>
+
+	<!--用户查询分页 -->
+	<select id="get_userWineAndTableware_id"
+		resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
+		select id,userId,releaseType,
+		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
+		serviceDetailed,authentiCationStatus,authentiCationFailure,
+		consigneeName,createTime
+		from wineandtableware
+		where welfareStatus!=3
+		and userId=#{userId} and id=#{id}
+	</select>
+	<!-- 用户编辑 -->
+	<update id="update_wineAndTableware">
+		update wineandtableware set
+		pictureUrl=#{pictureUrl},authentiCationStatus=#{authentiCationStatus},
+		welfareStatus=#{welfareStatus},serviceDetailed=#{serviceDetailed},
+		remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},serviceType=#{serviceType},serviceAndprice=#{serviceAndprice},
+		releaseTitle=#{releaseTitle},updateTime=#{updateTime},
+		consigneeName=#{consigneeName}
+		where welfareStatus!=3 and
+		userId=#{userId} and id=#{id}
+	</update>
+
+
+
+	<!-- 查看该实名城市下发布过服务的标题 -->
+	<select id="getWineAndTablewareTitleList" resultType="String">
+		select
+		DISTINCT releaseTitle
+		from wineandtableware where welfareStatus=1
+		and releaseType=#{releaseType}
+		and userId in (select userId
+		from
+		t_user_realname where detailed like
+		#{detailed})
+		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
+	</select>
+
+	<!-- 公开列表分页总数 -->
+
+	<select id="getWineAndTablewarePublicListNo" resultType="long">
+		select count(*) from wineandtableware where welfareStatus=1 and
+		releaseType=#{releaseType}
+		and userId in (select userId
+		from t_user_realname where detailed like
+		#{detailed})
+		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
+	</select>
+
+	<!-- 公开列表分页概览 -->
+	<select id="getWineAndTablewarePublicList"
+		resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
+		select
+		id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed
+		from wineandtableware where welfareStatus=1 and
+		releaseType=#{releaseType}
+		and userId in (select userId
+		from
+		t_user_realname where detailed like
+		#{detailed})
+		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+
+	<!--用户查询分页 -->
+	<select id="getWineAndTablewareDetails"
+		resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
+		select id,userId,evaluateid,servicFrequenc,releaseType,
+		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
+		consigneeName,createTime,
+		updateTime,serviceDetailed
+		from
+		wineandtableware
+		where welfareStatus=1 and id=#{id}
+	</select>
+	<!--管理查询全部 -->
+	<select id="adminGetWtall"
+		resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
+		select id,userId,evaluateid,servicFrequenc,releaseType,
+		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
+		consigneeName,createTime,
+		updateTime,serviceDetailed
+		from
+		wineandtableware
+		where welfareStatus in(1,2,4,5) and userId=#{userId}
+	</select>
+
 </mapper>

@@ -55,21 +55,23 @@ public class WineAndTableware {
 	@IsEmptyAnnotation(message = "审核状态不能为空")
 	private Integer authentiCationStatus; // 必填 后端加//审批状态 1 审批中 ，2通过，3审核不通过
 	private String authentiCationFailure; // 审核失败原因
-	@IsEmptyAnnotation(message = "销售城区不能为空")
-	private String detailed; // 后端传入置灰不可修改
 
-	@IsEmptyAnnotation(message = "联系方式不能为空")
-	private String contact;
+
+	
+	
 	@IsEmptyAnnotation(message = "联系人不能为空")
 	private String consigneeName;
 
-	@IsEmptyAnnotation(message = "实名id不能为空")
-	private Long realNameId;
-
+	 
+	
 	private String examineName;
 	private String examineTime;
 	@IsEmptyAnnotation(message = "创建时间不能为空")
 	private String createTime; // 必填
 	private String updateTime;
 	private String userType;
+	
+	private String contact; //以下是备用
+	private String realNameId;
+	private String detailed; //
 }

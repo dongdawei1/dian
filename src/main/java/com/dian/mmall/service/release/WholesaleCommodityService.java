@@ -6,6 +6,7 @@ import java.util.Map;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
+import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.user.User;
 
 import ch.qos.logback.core.status.Status;
@@ -43,4 +44,7 @@ public interface WholesaleCommodityService {
 	ServerResponse<Object> getWholesalecommodity(String selectedOptions,int releaseType);
 
 	 List<Integer> getCommodityJiage(WholesaleCommodity wholesaleCommodity);
+
+
+	
 }

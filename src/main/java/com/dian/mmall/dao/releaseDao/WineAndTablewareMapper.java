@@ -37,5 +37,7 @@ public interface WineAndTablewareMapper {
 			String detailed);
 
 	WineAndTableware getWineAndTablewareDetails(long id);
+
+	List<WineAndTableware> adminGetWtall(long userId);
 	
 }
