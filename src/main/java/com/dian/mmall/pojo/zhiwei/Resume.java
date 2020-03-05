@@ -63,7 +63,7 @@ public class Resume {
 	  private Integer releaseType=31;
 	 
 	  private String userType;//用户类型 ol
-	
+	  @IsEmptyAnnotation(message="失效时间不能为空")
 	  private String  termOfValidity;//职位有效期 创建时间加 90天
 
 }

@@ -121,7 +121,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 		}
 		map.put("releaseType", releaseType);
 		map.put("updateTime", createTime);
-		map.put("termOfValidity", DateTimeUtil.a_few_days_later(90));
+		map.put("termOfValidity",DateTimeUtil.a_few_days_later0(365));
 
 		// 判断是否实名
 		if (currentUser.getIsAuthentication() != 2) {
@@ -380,7 +380,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 		long idLong = 0;
 		if (type != null && !type.equals("") && userId != null && !userId.equals("") && id != null && !id.equals("")) {
 			int type_int = Integer.valueOf(type);
-			if (type_int < 1 || type_int > 6) {
+			if (type_int < 1 || type_int > 9) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 			}
 			long userIdLong = Long.valueOf(userId);
@@ -395,13 +395,13 @@ public class EquipmentServiceImpl implements EquipmentService {
 
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String timeString = null;
-			String termOfValidity = DateTimeUtil.a_few_days_later(90);
+			String termOfValidity = DateTimeUtil.a_few_days_later0(365);
 			int result = 0;
 			if (type_int == 1 || type_int == 2) {
 				timeString = formatter.format(new Date());
 				result = equipmentMapper.operation_userequipment(userIdLong, idLong, type_int, timeString,
 						termOfValidity);
-			} else if (type_int == 3 || type_int == 4 || type_int == 5) {
+			} else if (type_int == 3 || type_int == 4 || type_int == 5 ) {
 				timeString = formatter.format(new Date());
 				result = equipmentMapper.operation_userequipment(userIdLong, idLong, type_int, timeString,
 						termOfValidity);

@@ -54,7 +54,8 @@ public class MenuAndRenovationAndPestControl {
 	private String authentiCationFailure; //审核失败原因
 	
 	
-
+	@IsEmptyAnnotation(message="失效时间不能为空") 
+	private String termOfValidity;
 	
 	@IsEmptyAnnotation(message="实名联系人不能为空")
 	private String consigneeName;

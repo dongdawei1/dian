@@ -194,9 +194,9 @@ public class UserServiceImpl implements IUserService {
 
 //测试获取全部用户
 	@Override
-	public List<Map<String, Object>> getall() {
+	public List<Map<String, Object>> getall(int type) {
 		// TODO Auto-generated method stub
-		return userMapper.getall();
+		return userMapper.getall(type);
 	}
 
 	// 登陆
@@ -410,6 +410,7 @@ public class UserServiceImpl implements IUserService {
 		if(user==null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.huoquxinxishibai.getMessage());
 		}
+		user.setPassword(null);
 		return ServerResponse.createBySuccess(user);
 	}
 

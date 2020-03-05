@@ -26,7 +26,7 @@ public interface MenuAndRenovationAndPestControlMapper {
       //审核
 		int examineMrp(MenuAndRenovationAndPestControl releaseWelfare);
        //操作
-		int operation_usermrp(long userId, long id, int type, String timeString);
+		int operation_usermrp(long userId, long id, int type, String timeString, String termOfValidity);
 
 		
        //用户根据id查询

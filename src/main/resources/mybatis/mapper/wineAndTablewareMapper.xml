@@ -25,7 +25,7 @@
 		consigneeName,userType,serviceDetailed,
 		remarks,
 		serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus,
-		serviceAndprice,serviceType
+		serviceAndprice,serviceType,termOfValidity
 		) values (
 		#{userId}, #{releaseType},
 		#{updateTime}, #{createTime},#{pictureUrl},
@@ -33,7 +33,7 @@
 		#{userType}, #{serviceDetailed},
 		#{remarks},#{serviceIntroduction},
 		#{releaseTitle},#{authentiCationStatus},#{welfareStatus},
-		#{serviceAndprice},#{serviceType}
+		#{serviceAndprice},#{serviceType},#{termOfValidity}
 		)
 	</insert><!-- countNum -->
 
@@ -52,7 +52,7 @@
 		select id,userId,evaluateid,servicFrequenc,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
 		welfareStatus,authentiCationStatus,authentiCationFailure,
-		consigneeName,createTime,
+		consigneeName,createTime,termOfValidity,
 		updateTime,serviceDetailed
 		from
 		wineandtableware
@@ -80,7 +80,7 @@
 		select id,userId,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,serviceDetailed,
 		welfareStatus,authentiCationStatus,authentiCationFailure,
-		consigneeName,createTime,
+		consigneeName,createTime,termOfValidity,
 		updateTime,userType,examineName,examineTime
 		from wineandtableware
 		where authentiCationStatus in(1,3) and
@@ -101,13 +101,18 @@
 	</update>
 	<!-- 操作列 -->
 	<update id="operation_userWineAndTableware">
-		update wineandtableware set
-		<if test="type==1 "> updateTime=#{timeString}</if>
+		update wineandtableware set 
+		<if test="type==1 "> updateTime=#{timeString},termOfValidity=#{termOfValidity}</if>
 		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
-		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
-		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
+		<if test="type==4  or type==2 "> welfareStatus=1,updateTime=#{timeString},termOfValidity=#{termOfValidity}</if>
+		
+		<if test="type==5 ">welfareStatus=3,updateTime=#{timeString}</if>
+		
+		<if test="type==7 ">welfareStatus=5,updateTime=#{timeString},examineName='过期定时任务'</if>	
+		<if test="type==8 ">welfareStatus=3,updateTime=#{timeString},examineName='删除定时任务'</if>
 		where userId=#{userId} and id=#{id}
 		<if test="type==4 "> and welfareStatus not in(4,3)</if>
+		<if test="type==2 or type==8 "> and welfareStatus =5 and authentiCationStatus=2</if>
 	</update>
 
 	<!--用户查询分页 -->
@@ -116,7 +121,7 @@
 		select id,userId,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
 		serviceDetailed,authentiCationStatus,authentiCationFailure,
-		consigneeName,createTime
+		consigneeName,createTime,termOfValidity
 		from wineandtableware
 		where welfareStatus!=3
 		and userId=#{userId} and id=#{id}
@@ -128,7 +133,7 @@
 		welfareStatus=#{welfareStatus},serviceDetailed=#{serviceDetailed},
 		remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},serviceType=#{serviceType},serviceAndprice=#{serviceAndprice},
 		releaseTitle=#{releaseTitle},updateTime=#{updateTime},
-		consigneeName=#{consigneeName}
+		consigneeName=#{consigneeName},termOfValidity=#{termOfValidity}
 		where welfareStatus!=3 and
 		userId=#{userId} and id=#{id}
 	</update>
@@ -164,7 +169,7 @@
 	<select id="getWineAndTablewarePublicList"
 		resultType="com.dian.mmall.pojo.jiushui.WineAndTableware">
 		select
-		id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed
+		id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed,termOfValidity
 		from wineandtableware where welfareStatus=1 and
 		releaseType=#{releaseType}
 		and userId in (select userId
@@ -183,7 +188,7 @@
 		select id,userId,evaluateid,servicFrequenc,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
 		consigneeName,createTime,
-		updateTime,serviceDetailed
+		updateTime,serviceDetailed,termOfValidity
 		from
 		wineandtableware
 		where welfareStatus=1 and id=#{id}
@@ -194,10 +199,10 @@
 		select id,userId,evaluateid,servicFrequenc,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
 		consigneeName,createTime,
-		updateTime,serviceDetailed
+		updateTime,serviceDetailed,welfareStatus,termOfValidity
 		from
 		wineandtableware
-		where welfareStatus in(1,2,4,5) and userId=#{userId}
+		where welfareStatus=1 and userId=#{userId}
 	</select>
 
 </mapper>

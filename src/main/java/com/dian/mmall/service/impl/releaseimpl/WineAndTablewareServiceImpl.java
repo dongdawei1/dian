@@ -61,7 +61,7 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 	private EvaluateMapper evaluateMapper;
 	@Autowired
 	private BunnerService bunnerService;
-
+	
 	@Override
 	public ServerResponse<String> create_wineAndTableware(User user, Map<String, Object> params) {
 		ServerResponse<Object> serverResponse = check_evaluate(user, params, 1);
@@ -71,7 +71,7 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 		Map<String, Object> map = (Map<String, Object>) serverResponse.getData();
 		map.put("authentiCationStatus", 1);
 		map.put("welfareStatus", 4);
-
+		
 		WineAndTableware wineAndTableware = (WineAndTableware) BeanMapConvertUtil.convertMap(WineAndTableware.class,
 				map);
 		// {result=true, message=验证通过} 返回结果
@@ -99,7 +99,7 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("userId", userId);
-
+		map.put("termOfValidity",DateTimeUtil.a_few_days_later0(365));
 		String createTime = DateTimeUtil.dateToAll();
 
 		String releaseTypeString = params.get("releaseType").toString().trim();
@@ -166,7 +166,6 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 			map.put("pictureUrl", JsonUtil.obj2StringPretty(listObj4));
 		}
 
-		params.put("serviceAndprice", JsonUtil.obj2String(params.get("serviceAndprice")));
 
 		// 判断非法输入
 		ServerResponse<String> serverResponse = LegalCheck.legalCheckFrom(params);
@@ -212,7 +211,7 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 		map.put("serviceDetailed", serviceDetailed);
 
 		map.put("serviceType", params.get("serviceType").toString().trim());
-		map.put("serviceAndprice", params.get("serviceAndprice").toString().trim());
+		map.put("serviceAndprice", JsonUtil.obj2String(params.get("serviceAndprice")));
 		map.put("remarks", params.get("remarks").toString().trim());
 		map.put("serviceIntroduction", params.get("serviceIntroduction").toString().trim());
 		map.put("releaseTitle", params.get("releaseTitle").toString().trim());
@@ -298,7 +297,7 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 		long idLong = 0;
 		if (type != null && !type.equals("") && userId != null && !userId.equals("") && id != null && !id.equals("")) {
 			int type_int = Integer.valueOf(type);
-			if (type_int < 1 || type_int > 6) {
+			if (type_int < 1 || type_int > 9) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 			}
 			long userIdLong = Long.valueOf(userId);
@@ -318,11 +317,11 @@ public class WineAndTablewareServiceImpl implements WineAndTablewareService {
 			if (type_int == 1) {
 				timeString = formatter.format(new Date());
 				result = wineAndTablewareMapper.operation_userWineAndTableware(userIdLong, idLong, type_int,
-						timeString);
-			} else if (type_int == 3 || type_int == 4 || type_int == 5) {
+						timeString,DateTimeUtil.a_few_days_later0(365));
+			} else if (type_int == 3 || type_int == 4 || type_int == 5 || type_int == 2 ) {
 				timeString = formatter.format(new Date());
 				result = wineAndTablewareMapper.operation_userWineAndTableware(userIdLong, idLong, type_int,
-						timeString);
+						timeString,DateTimeUtil.a_few_days_later0(365));
 			}
 
 			else if (type_int == 6) {

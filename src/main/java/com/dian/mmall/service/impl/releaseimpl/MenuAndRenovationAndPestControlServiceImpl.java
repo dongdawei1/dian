@@ -73,6 +73,7 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 		Map<String, Object> map = (Map<String, Object>) serverResponse.getData();
 		map.put("authentiCationStatus", 1);
 		map.put("welfareStatus", 4);
+		
 
 		MenuAndRenovationAndPestControl menuAndRenovationAndPestControl = (MenuAndRenovationAndPestControl) BeanMapConvertUtil
 				.convertMap(MenuAndRenovationAndPestControl.class, map);
@@ -103,7 +104,7 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("userId", userId);
-
+		map.put("termOfValidity", DateTimeUtil.a_few_days_later0(365));
 		String createTime = DateTimeUtil.dateToAll();
 
 		String releaseTypeString = params.get("releaseType").toString().trim();
@@ -380,7 +381,7 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 		long idLong = 0;
 		if (type != null && !type.equals("") && userId != null && !userId.equals("") && id != null && !id.equals("")) {
 			int type_int = Integer.valueOf(type);
-			if (type_int < 1 || type_int > 6) {
+			if (type_int < 1 || type_int > 9) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 			}
 			long userIdLong = Long.valueOf(userId);
@@ -394,15 +395,16 @@ public class MenuAndRenovationAndPestControlServiceImpl implements MenuAndRenova
 			}
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String timeString = null;
+			//termOfValidity
 			int result = 0;
 			if (type_int == 1) {
 				timeString = formatter.format(new Date());
 				result = menuAndRenovationAndPestControlMapper.operation_usermrp(userIdLong, idLong, type_int,
-						timeString);
-			} else if (type_int == 3 || type_int == 4 || type_int == 5) {
+						timeString,DateTimeUtil.a_few_days_later0(365));
+			} else if (type_int == 2 || type_int == 3 || type_int == 4 || type_int == 5 || type_int == 7 || type_int == 8 ) {
 				timeString = formatter.format(new Date());
 				result = menuAndRenovationAndPestControlMapper.operation_usermrp(userIdLong, idLong, type_int,
-						timeString);
+						timeString,DateTimeUtil.a_few_days_later0(365));
 			} else if (type_int == 6) {
 				ServerResponse<Object> serverResponse = get_usermrp_id(user, idLong);
 				if (serverResponse.getStatus() != 0) {

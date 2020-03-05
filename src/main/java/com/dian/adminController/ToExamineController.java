@@ -1,5 +1,6 @@
 package com.dian.adminController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseCode;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.CreateGanggaoVo;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.BunnerService;
@@ -54,8 +56,6 @@ public class ToExamineController {
 	private ServiceTypeService serviceTypeService;
 	@Autowired
 	private IUserService iUserService;
-	
-
 
 	// 获取待实名
 	@RequestMapping(value = "getRealNameAll", method = RequestMethod.POST)
@@ -86,8 +86,7 @@ public class ToExamineController {
 		serverResponse = realNameService.examineRealName(user, params, loginToken);
 		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
 			User shenheUser = (User) serverResponse.getData();
-			
-			
+
 			int result = RedisPoolUtil.checkeKey(shenheUser);
 			if (result == 0) {
 				return ServerResponse.createBySuccessMessage("成功用户登录");
@@ -453,26 +452,38 @@ public class ToExamineController {
 	}
 
 	// 创建广告前查询实名信息
-	@RequestMapping(value = "admin_guangggao_realName",method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse<Object> admin_guangggao_realName(HttpServletRequest httpServletRequest,@RequestParam String userName){
-    	//TODO只有管理员才能调用
-    	ServerResponse<Object> serverResponse=CheckLand.checke_role(httpServletRequest);
-     	if(serverResponse.getStatus()!=0 ) {
-     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-     	}
-     	serverResponse=realNameService.admin_guangggao_realName(userName.trim());
-     	if(serverResponse.getStatus()!=0 ) {
-     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-     	}	
-     	RealName realName=(RealName) serverResponse.getData();
-     	
-     	serverResponse=iUserService.selectUserById(realName.getUserId());
-     	if(serverResponse.getStatus()!=0 ) {
-     		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-     	}	
-     	User user=(User) serverResponse.getData();
-        return toExamineService.getUserCreate(user);
-        
-    }
+	@RequestMapping(value = "admin_guangggao_realName", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> admin_guangggao_realName(HttpServletRequest httpServletRequest,
+			@RequestParam String userName) {
+		// TODO只有管理员才能调用
+		ServerResponse<Object> serverResponse = CheckLand.checke_role(httpServletRequest);
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		serverResponse = realNameService.admin_guangggao_realName(userName.trim());
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		RealName realName = (RealName) serverResponse.getData();
+
+		serverResponse = iUserService.selectUserById(realName.getUserId());
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		User user = (User) serverResponse.getData();
+		serverResponse = toExamineService.getUserCreate(user);
+		System.out.println(serverResponse);
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		List<CreateGanggaoVo> vos =  (List<CreateGanggaoVo>) serverResponse.getData();
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		map.put("realName", realName);
+		map.put("user", user);
+		map.put("vos", vos);
+		return ServerResponse.createBySuccess(map);
+
+	}
 }

@@ -117,7 +117,7 @@ public class ResumeServiceImp implements ResumeService {
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("userId", userId);
-
+		map.put("termOfValidity", DateTimeUtil.a_few_days_later0(90));
 		String createTime = DateTimeUtil.dateToAll();
 		// 判断是否超过可以发布的总数
 		Resume resume = resumeMapper.selectResumeById(userId);
@@ -338,6 +338,7 @@ public class ResumeServiceImp implements ResumeService {
 	public int getreleaseType(long id) {
 		return resumeMapper.getreleaseType(id);
 	}
+
 //操作
 	@Override
 	public ServerResponse<String> operation_resume(User user, Map<String, Object> params) {
@@ -346,7 +347,7 @@ public class ResumeServiceImp implements ResumeService {
 		String id = params.get("id").toString().trim();
 		if (type != null && !type.equals("") && userId != null && !userId.equals("") && id != null && !id.equals("")) {
 			int type_int = Integer.valueOf(type);
-			if (type_int < 1 || type_int > 6) {
+			if (type_int < 1 || type_int > 9) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 			}
 			long userIdLong = Long.valueOf(userId);
@@ -354,42 +355,46 @@ public class ResumeServiceImp implements ResumeService {
 			if (resume == null) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
 			}
-			long idLong = Long.valueOf(id);
+			
+			
 			if (userIdLong != user.getId()) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
 			}
-
+			long idLong = Long.valueOf(id);
 			// 有发布中或者未开始的广告不能操作
 			if (bunnerService.getguanggaocount(idLong, getreleaseType(idLong)) > 0) {
 				ServerResponse.createByErrorMessage(ResponseMessage.yougonggongxuanchuan.getMessage());
 			}
 
 			String timeString = DateTimeUtil.dateToAll();
-			String a_few_days_later = DateTimeUtil.a_few_days_later(90);
+			String a_few_days_later = DateTimeUtil.a_few_days_later0(90);
 			int result = 0;
+			resume.setUpdateTime(timeString);
 			if (type_int == 1) {
-				resume.setUpdateTime(timeString);
 				resume.setTermOfValidity(a_few_days_later);
 				result = resumeMapper.operation_resume(type_int, resume);
 			} else if (type_int == 2) {
-				resume.setUpdateTime(timeString);
 				resume.setWelfareStatus(2);
 				result = resumeMapper.operation_resume(type_int, resume);
 			} else if (type_int == 3) {
-				resume.setUpdateTime(timeString);
 				resume.setWelfareStatus(3);
 				result = resumeMapper.operation_resume(type_int, resume);
 			} else if (type_int == 4) {
-				resume.setUpdateTime(timeString);
 				resume.setTermOfValidity(a_few_days_later);
 				resume.setWelfareStatus(1);
 				result = resumeMapper.operation_resume(type_int, resume);
-			} else {
+			} else if (type_int == 5) {
+				resume.setTermOfValidity(a_few_days_later);
+				resume.setWelfareStatus(1);
+				result = resumeMapper.operation_resume(type_int, resume);
+			}  else {
 				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 			}
+			System.out.println("ResumeServiceImp.operation_resume()");
 			if (result > 0) {
 				return ServerResponse.createBySuccess();
 			}
+			System.out.println("R2222222");
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
 	}

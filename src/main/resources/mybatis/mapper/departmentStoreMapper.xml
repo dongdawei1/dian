@@ -113,11 +113,16 @@
 			termOfValidity=#{termOfValidity} ,welfareStatus=1
 		</if>
 		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
-		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString},termOfValidity=#{termOfValidity}</if>
 		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
+		
+		<if test="type==7 ">welfareStatus=5,updateTime=#{timeString},examineName='过期定时任务'
+		</if>
+		<if test="type==8 ">welfareStatus=3,updateTime=#{timeString},examineName='删除定时任务'
+		</if>
 		where userId=#{userId} and id=#{id}
 		<if test="type==4 "> and welfareStatus not in(4,3)</if>
-		<if test="type==2 "> and welfareStatus=5 and authentiCationStatus=2</if>
+		<if test="type==2 or type==8 "> and welfareStatus=5 and authentiCationStatus=2</if>
 	</update>
 
 
@@ -204,11 +209,11 @@
 		resultType="com.dian.mmall.pojo.gongfu.DepartmentStore">
 		select id,userId,evaluateid,servicFrequenc,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
-		consigneeName,createTime,
+		consigneeName,createTime,welfareStatus,
 		updateTime,serviceDetailed,termOfValidity
 		from departmentstore
 		where
-		welfareStatus in(1,2,4,5) and
+		welfareStatus=1 and
 		userId=#{userId}
 	</select>
 

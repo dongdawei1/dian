@@ -44,7 +44,7 @@ public class ReleaseWelfareController {
 	public ServerResponse<String> create_position(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
-		if (user.getRole() != 1 && user.getRole() != 5 && user.getRole() != 2) {
+		if (user.getRole() == 11 ) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
 		if (user.getIsAuthentication() != 2) {
@@ -63,7 +63,7 @@ public class ReleaseWelfareController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		if (user.getRole() != 1 && user.getRole() != 5 && user.getRole() != 2) {
+		if (user.getRole() == 11 ) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
 		if (user.getIsAuthentication() != 2) {
@@ -99,7 +99,7 @@ public class ReleaseWelfareController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		if (user.getRole() != 1 && user.getRole() != 5 && user.getRole() != 2) {
+		if (user.getRole() == 11 ) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
 		if (user.getIsAuthentication() != 2) {
@@ -128,15 +128,16 @@ public class ReleaseWelfareController {
 					list.add(positions[i].getPositionType());
 				}
 			}
-		} else if (role == 5) {  //暂时未做
-			for (int i = 0; i < positions.length; i++) {
-				if (positions[i].getRoleId() == 5) {
-					list.add(positions[i].getPositionType());
-				}
-			}
-		} else {
+		} 
+		 else if (role == 1){
 			for (int i = 0; i < positions.length; i++) {
 				list.add(positions[i].getPositionType());
+			}
+		}else  {  //暂时未做
+			for (int i = 0; i < positions.length; i++) {
+				if (positions[i].getRoleId() == 3) {
+					list.add(positions[i].getPositionType());
+				}
 			}
 		}
 		return ServerResponse.createBySuccess(list);

@@ -94,7 +94,8 @@ public class RentServiceImpl implements RentService {
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("userId", userId);
-
+		map.put("termOfValidity", DateTimeUtil.a_few_days_later0(90));
+		
 		String createTime = DateTimeUtil.dateToAll();
 
 		String releaseTypeString = params.get("releaseType").toString().trim();
@@ -140,7 +141,7 @@ public class RentServiceImpl implements RentService {
 			map.put("userType", serverResponse.getMsg());
 		}
 		map.put("updateTime", createTime);
-		map.put("termOfValidity", DateTimeUtil.a_few_days_later(90));
+		
 
 		// 判断是否实名
 		if (currentUser.getIsAuthentication() != 2) {
@@ -364,7 +365,7 @@ public class RentServiceImpl implements RentService {
 		long idLong = 0;
 		if (type != null && !type.equals("") && userId != null && !userId.equals("") && id != null && !id.equals("")) {
 			int type_int = Integer.valueOf(type);
-			if (type_int < 1 || type_int > 6) {
+			if (type_int < 1 || type_int > 9) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 			}
 			long userIdLong = Long.valueOf(userId);
@@ -378,12 +379,12 @@ public class RentServiceImpl implements RentService {
 			}
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String timeString = null;
-			String termOfValidity = DateTimeUtil.a_few_days_later(90);
+			String termOfValidity = DateTimeUtil.a_few_days_later0(90);
 			int result = 0;
 			if (type_int == 1 || type_int == 2) {
 				timeString = formatter.format(new Date());
 				result = rentMapper.operation_userment(userIdLong, idLong, type_int, timeString, termOfValidity);
-			} else if (type_int == 3 || type_int == 4 || type_int == 5) {
+			} else if (type_int == 3 || type_int == 4 || type_int == 5 ) {
 				timeString = formatter.format(new Date());
 				result = rentMapper.operation_userment(userIdLong, idLong, type_int, timeString, termOfValidity);
 			} else if (type_int == 6) {

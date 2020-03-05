@@ -76,5 +76,7 @@ public class WineAndTableware {
 	private String contact; //以下是备用
 	private String realNameId;
 	private String detailed; //
+	@IsEmptyAnnotation(message = "有效期不能为空")
+	private String termOfValidity;// 职位有效期 创建时间加
 	
 }

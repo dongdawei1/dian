@@ -42,7 +42,8 @@
 		select count(*) from equipment where authentiCationStatus in(1,3) and
 		releaseType in(18,33,34)
 		<if test="_parameter!=null and _parameter.trim()!=''">and userId in (select
-			userId from t_user_realname where contact=#{contact} )
+			userId from t_user_realname where
+			contact=#{contact} )
 		</if>
 	</select>
 
@@ -59,7 +60,8 @@
 		where authentiCationStatus in(1,3) and releaseType
 		in(18,33,34)
 		<if test="contact!=null and contact.trim()!=''">and userId in (select
-			userId from t_user_realname where contact=#{contact} )
+			userId from t_user_realname where
+			contact=#{contact} )
 		</if>
 		order by createTime
 		limit #{pageLength}, #{pageSize}
@@ -109,11 +111,17 @@
 			termOfValidity=#{termOfValidity} ,welfareStatus=1
 		</if>
 		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
-		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+		<if test="type==4 "> welfareStatus=1,termOfValidity=#{termOfValidity}
+			,updateTime=#{timeString}</if>
 		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
+
+		<if test="type==7 ">welfareStatus=5,updateTime=#{timeString},examineName='过期定时任务'
+		</if>
+		<if test="type==8 ">welfareStatus=3,updateTime=#{timeString},examineName='删除定时任务'
+		</if>
 		where userId=#{userId} and id=#{id}
 		<if test="type==4 "> and welfareStatus not in(4,3)</if>
-		<if test="type==2 "> and welfareStatus=5 and authentiCationStatus=2</if>
+		<if test="type==2 or type==8"> and welfareStatus=5 and authentiCationStatus=2</if>
 	</update>
 
 
@@ -124,9 +132,10 @@
 		select id,userId,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
 		serviceDetailed,authentiCationStatus,authentiCationFailure,
-		consigneeName,createTime
+		consigneeName,createTime,termOfValidity
 		from equipment
-		where welfareStatus!=3 and
+		where
+		welfareStatus!=3 and
 		userId=#{userId} and id=#{id}
 	</select>
 
@@ -162,7 +171,8 @@
 	<select id="getEquipmentListNo" resultType="long">
 		select count(*) from equipment where welfareStatus=1 and
 		releaseType=#{releaseType}
-		and userId in (select userId from t_user_realname where detailed like
+		and userId in (select userId from
+		t_user_realname where detailed like
 		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType =#{serviceType}   </if>
@@ -172,7 +182,7 @@
 	<select id="getEquipmentPublicList"
 		resultType="com.dian.mmall.pojo.weixiuAnddianqi.Equipment">
 		select
-		id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed
+		id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed,termOfValidity
 		from equipment where welfareStatus=1 and releaseType=#{releaseType}
 		and userId in (select userId from t_user_realname where detailed like
 		#{detailed})
@@ -199,10 +209,11 @@
 		select id,userId,evaluateid,servicFrequenc,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
 		consigneeName,createTime,
-		updateTime,serviceDetailed,termOfValidity
+		updateTime,serviceDetailed,termOfValidity,welfareStatus
 		from equipment
-		where welfareStatus in(1,2,4,5) and userId=#{userId} and
-		releaseType in(4,5,6,9,11,29)
+		where welfareStatus=1 and userId=#{userId} and
+		releaseType
+		in(4,5,6,9,11,29)
 	</select>
 
 	<!--管理查询全部电器 -->
@@ -211,9 +222,9 @@
 		select id,userId,evaluateid,servicFrequenc,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
 		consigneeName,createTime,
-		updateTime,serviceDetailed,termOfValidity
+		updateTime,serviceDetailed,termOfValidity,welfareStatus
 		from equipment
-		where welfareStatus in(1,2,4,5) and userId=#{userId} and
+		where welfareStatus=1 and userId=#{userId} and
 		releaseType in(32,33,34)
 	</select>
 
@@ -273,11 +284,16 @@
 			termOfValidity=#{termOfValidity} ,welfareStatus=1
 		</if>
 		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
-		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString},termOfValidity=#{termOfValidity}</if>
 		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
+		<if test="type==7 ">welfareStatus=5,updateTime=#{timeString},examineName='过期定时任务'
+		</if>
+		<if test="type==8 ">welfareStatus=3,updateTime=#{timeString},examineName='删除定时任务'
+		</if>
+		
 		where userId=#{userId} and id=#{id}
 		<if test="type==4 "> and welfareStatus not in(4,3)</if>
-		<if test="type==2 "> and welfareStatus=5 and authentiCationStatus=2</if>
+		<if test="type==2 or type==8"> and welfareStatus=5 and authentiCationStatus=2</if>
 	</update>
 
 
@@ -287,7 +303,7 @@
 		resultType="com.dian.mmall.pojo.shichang.FoodAndGrain">
 		select id,userId,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceType,serviceAndprice,
-		serviceDetailed,
+		serviceDetailed,termOfValidity,
 		consigneeName,createTime,authentiCationStatus,authentiCationFailure
 		from equipment
 		where welfareStatus!=3 and userId=#{userId} and id=#{id}
@@ -323,7 +339,8 @@
 	<select id="getFoodAndGrainPublicListNo" resultType="long">
 		select count(*) from equipment where welfareStatus=1 and
 		releaseType=#{releaseType}
-		and userId in (select userId from t_user_realname where detailed like
+		and userId in (select userId from
+		t_user_realname where detailed like
 		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType =#{serviceType}   </if>
@@ -333,7 +350,7 @@
 	<select id="getFoodAndGrainPublicList"
 		resultType="com.dian.mmall.pojo.shichang.FoodAndGrain">
 		select
-		id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed
+		id,servicFrequenc,releaseTitle,pictureUrl,serviceType,serviceDetailed,termOfValidity
 		from equipment where welfareStatus=1 and releaseType=#{releaseType}
 		and userId in (select userId from t_user_realname where detailed like
 		#{detailed})

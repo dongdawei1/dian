@@ -10,7 +10,7 @@
 		select id,userId,position,experience,salary,education,
 		describeOne,email,welfareStatus,isPublishContact,createTime,updateTime,authentiCationStatus,
 		authentiCationFailure,detailed,addressDetailed,
-		gender,age
+		gender,age,termOfValidity
 		from resume
 		where welfareStatus!=3 and userId=#{userId}
 	</select>
@@ -27,14 +27,14 @@
 		userId,position,experience,salary,education,
 		describeOne,email,welfareStatus,isPublishContact,createTime,updateTime,authentiCationStatus,
 		detailed,addressDetailed,
-		gender,age,userType,releaseType
+		gender,age,userType,releaseType,termOfValidity
 		) values (
 		#{userId},
 		#{position}, #{experience}, #{salary},#{education},
 		#{describeOne},#{email},#{welfareStatus},#{isPublishContact},
 		#{createTime},#{updateTime},#{authentiCationStatus},
 		#{detailed},#{addressDetailed},
-		#{gender},#{age},#{userType},#{releaseType}
+		#{gender},#{age},#{userType},#{releaseType},termOfValidity
 		)
 	</insert>
 	<!--操作 -->
@@ -47,10 +47,21 @@
 		<if test="type==4 ">
 			,termOfValidity=#{resume.termOfValidity},welfareStatus=#{resume.welfareStatus}
 		</if>
+		<if test="type==5 ">
+			,termOfValidity=#{resume.termOfValidity},welfareStatus=#{resume.welfareStatus}
+		</if>
+		
+		<if test="type==7 ">,welfareStatus=#{resume.welfareStatus},examineName='过期定时任务'
+		</if>
+		<if test="type==8 ">,welfareStatus=#{resume.welfareStatus},examineName='删除定时任务'
+		</if>
+		
 		where userId=#{resume.userId} and id=#{resume.id}
 		<if test="type==1 ">and welfareStatus in(1,5)</if>
 		<if test="type==2 "> and welfareStatus =1</if>
-		<if test="type==4 "> and welfareStatus in(2,5)</if>
+		<if test="type==4 or type==5"> and welfareStatus in(2,5) and authentiCationStatus=2</if>
+		<if test="type==8 "> and welfareStatus =5</if>
+		
 	</update>
 
 	<update id="update_resume">
@@ -105,7 +116,7 @@
 	<!--用户查询分页 -->
 	<select id="getUserRresumeList"
 		resultType="com.dian.mmall.pojo.zhiwei.Resume">
-		select id, userId,position
+		select id, userId,position,termOfValidity
 		,experience,salary,education,describeOne,isPublishContact,
 		createTime,updateTime,detailed,addressDetailed,age,gender,termOfValidity
 		from resume where welfareStatus=1
@@ -133,10 +144,10 @@
 	<!--管理查询全部 -->
 	<select id="adminGetResumeall"
 		resultType="com.dian.mmall.pojo.zhiwei.Resume">
-		select id, userId,position
-		,experience,salary,education,describeOne,isPublishContact,
+		select id, userId,position,termOfValidity
+		,experience,salary,education,describeOne,isPublishContact,welfareStatus,
 		createTime,updateTime,detailed,addressDetailed,age,gender,termOfValidity
-		from resume where welfareStatus in(1,2,4,5) and userId=#{userId}
+		from resume where welfareStatus=1 and userId=#{userId}
 
 	</select>
 

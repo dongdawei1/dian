@@ -267,7 +267,7 @@
 		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
 		contact,consigneeName,
 		detailed,companyName,provincesId,
-		cityId,districtCountyId,authentiCationStatus
+		cityId,districtCountyId,authentiCationStatus,userType
 		from t_user_realname where userName=#{userName}
 	</select>
 

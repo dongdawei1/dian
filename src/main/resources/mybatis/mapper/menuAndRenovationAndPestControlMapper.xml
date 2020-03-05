@@ -7,12 +7,15 @@
 
 	<!--发布过的条数 -->
 	<select id="countNum" resultType="int">
-		select count(*) from menuandrenovationandpestcontrol where welfareStatus!=3
-		and releaseType=#{releaseType} and userId =#{userId}
+		select count(*) from
+		menuandrenovationandpestcontrol where welfareStatus!=3
+		and
+		releaseType=#{releaseType} and userId =#{userId}
 	</select>
-<!--发布过的条数 -->
+	<!--发布过的条数 -->
 	<select id="getreleaseType" resultType="int">
-		select releaseType from menuandrenovationandpestcontrol where  id =#{id}
+		select releaseType from
+		menuandrenovationandpestcontrol where id =#{id}
 	</select>
 
 
@@ -21,13 +24,15 @@
 		insert into menuandrenovationandpestcontrol (
 		userId,releaseType,updateTime,createTime,pictureUrl,
 		consigneeName,userType,serviceDetailed,
-		startPrice,remarks,
+		startPrice,remarks,termOfValidity,
 		serviceIntroduction,releaseTitle,authentiCationStatus,welfareStatus
-		) values (
-		#{userId}, #{releaseType}, #{updateTime}, #{createTime},#{pictureUrl},
+		)
+		values (
+		#{userId}, #{releaseType}, #{updateTime},
+		#{createTime},#{pictureUrl},
 		#{consigneeName},#{userType},
 		#{serviceDetailed},#{startPrice},
-		#{remarks},#{serviceIntroduction},
+		#{remarks},#{termOfValidity},#{serviceIntroduction},
 		#{releaseTitle},#{authentiCationStatus},#{welfareStatus}
 		)
 	</insert><!-- countNum -->
@@ -46,10 +51,11 @@
 		select id,userId,evaluateid,servicFrequenc,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,startPrice,
 		welfareStatus,authentiCationStatus,authentiCationFailure,
-		consigneeName,createTime,
+		consigneeName,createTime,termOfValidity,
 		updateTime,serviceDetailed
 		from menuandrenovationandpestcontrol
-		where welfareStatus!=3 and userId=#{userId}
+		where welfareStatus!=3 and
+		userId=#{userId}
 		<if test="welfareStatus!=null">and welfareStatus=#{welfareStatus}   </if>
 		<if test="releaseType!=null">and releaseType=#{releaseType}   </if>
 		order by updateTime desc
@@ -77,9 +83,10 @@
 		select id,userId,evaluateid,servicFrequenc,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,startPrice,
 		welfareStatus,authentiCationStatus,authentiCationFailure,
-		consigneeName,createTime,
+		consigneeName,createTime,termOfValidity,
 		updateTime,serviceDetailed,examineName,examineTime,userType
-		from menuandrenovationandpestcontrol
+		from
+		menuandrenovationandpestcontrol
 		where authentiCationStatus in(1,3)
 		<if test="contact!=null and contact.trim()!=''">and userId in (select
 			userId from t_user_realname where
@@ -103,12 +110,24 @@
 	<!-- 刷新，隐藏等操作 -->
 	<update id="operation_usermrp">
 		update menuandrenovationandpestcontrol set
-		<if test="type==1 "> updateTime=#{timeString}  </if>
-		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
-		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+		<if test="type==1 "> updateTime=#{timeString} ,
+			termOfValidity=#{termOfValidity} </if>
+		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString}</if>
+		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString},
+			termOfValidity=#{termOfValidity}</if>
 		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
+		
+		<if test="type==2 "> updateTime=#{timeString} ,
+			termOfValidity=#{termOfValidity} ,welfareStatus=1
+		</if>
+		
+		<if test="type==7 ">welfareStatus=5,updateTime=#{timeString},examineName='过期定时任务'
+		</if>
+		<if test="type==8 ">welfareStatus=3,updateTime=#{timeString},examineName='删除定时任务'
+		</if>
 		where userId=#{userId} and id=#{id}
 		<if test="type==4 "> and welfareStatus not in(4,3)</if>
+		<if test="type==2 or type==8"> and welfareStatus=5 and authentiCationStatus=2</if>
 	</update>
 
 	<!-- 用户根据id查询自己发布的 -->
@@ -117,9 +136,10 @@
 		select id,userId,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,startPrice,
 		consigneeName,serviceDetailed,
-		welfareStatus,authentiCationStatus,authentiCationFailure,createTime
+		welfareStatus,authentiCationStatus,authentiCationFailure,createTime,termOfValidity
 		from menuandrenovationandpestcontrol
-		where welfareStatus!=3 and userId=#{userId} and id=#{id}
+		where welfareStatus!=3 and
+		userId=#{userId} and id=#{id}
 	</select>
 
 	<!-- 用户编辑 -->
@@ -128,16 +148,17 @@
 		releaseTitle=#{releaseTitle},serviceIntroduction=#{serviceIntroduction},
 		remarks=#{remarks},pictureUrl=#{pictureUrl},startPrice=#{startPrice},
 		serviceDetailed=#{serviceDetailed},updateTime=#{updateTime},
-		authentiCationStatus=#{authentiCationStatus},welfareStatus=#{welfareStatus}
-
-		where welfareStatus!=3 and userId=#{userId} and id=#{id}
+		authentiCationStatus=#{authentiCationStatus},welfareStatus=#{welfareStatus},
+		termOfValidity=#{termOfValidity}
+		where welfareStatus!=3 and
+		userId=#{userId} and id=#{id}
 	</update>
 
 	<!-- 公开列表分页总数 -->
 
 	<select id="getmrpListNo" resultType="long">
 		select count(*) from menuandrenovationandpestcontrol where
-		welfareStatus=1 and releaseType=#{releaseType} 
+		welfareStatus=1 and releaseType=#{releaseType}
 		and userId in (select userId
 		from t_user_realname where detailed like
 		#{detailed})
@@ -148,11 +169,12 @@
 	<select id="getmrpList"
 		resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
 		select
-		id,userId,servicFrequenc,releaseTitle,pictureUrl,startPrice,serviceDetailed
+		id,userId,servicFrequenc,releaseTitle,pictureUrl,startPrice,serviceDetailed,termOfValidity
 		from menuandrenovationandpestcontrol where welfareStatus=1 and
 		releaseType=#{releaseType}
 		and userId in (select userId
-		from t_user_realname where detailed like
+		from
+		t_user_realname where detailed like
 		#{detailed})
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle = #{releaseTitle}   </if>
 		order by updateTime desc
@@ -161,7 +183,7 @@
 	<!-- 查看该实名城市下发布过服务的标题 -->
 	<select id="getReleaseTitleList" resultType="String">
 		select DISTINCT releaseTitle from menuandrenovationandpestcontrol
-		where welfareStatus=1 and releaseType=#{releaseType} 
+		where welfareStatus=1 and releaseType=#{releaseType}
 		and userId in (select userId
 		from t_user_realname where detailed like
 		#{detailed})
@@ -173,18 +195,21 @@
 		select id,userId,evaluateid,servicFrequenc,releaseType,
 		releaseTitle,serviceIntroduction,remarks,
 		pictureUrl,startPrice,
-		consigneeName,createTime,serviceDetailed
-		from menuandrenovationandpestcontrol where welfareStatus=1 and id=#{id}
+		consigneeName,createTime,serviceDetailed,termOfValidity
+		from
+		menuandrenovationandpestcontrol where welfareStatus=1 and id=#{id}
 
 	</select>
-		<!-- 查看详情 -->
+	<!-- 查看详情 -->
 	<select id="adminGetMraall"
 		resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
 		select id,userId,evaluateid,servicFrequenc,releaseType,
-		releaseTitle,serviceIntroduction,remarks,
+		releaseTitle,serviceIntroduction,remarks,termOfValidity,
 		pictureUrl,startPrice,
-		consigneeName,createTime,serviceDetailed
-		from menuandrenovationandpestcontrol where welfareStatus in(1,2,4,5) and userId=#{userId}
+		consigneeName,createTime,serviceDetailed,welfareStatus
+		from
+		menuandrenovationandpestcontrol where welfareStatus=1 and
+		userId=#{userId}
 
 	</select>
 
@@ -194,7 +219,8 @@
 	<!-- 公开列表分页概览 -->
 	<select id="getMrpBunner"
 		resultType="com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl">
-		select id,servicFrequenc,releaseTitle,pictureUrl,startPrice,serviceDetailed
+		select
+		id,servicFrequenc,releaseTitle,pictureUrl,startPrice,serviceDetailed
 		from menuandrenovationandpestcontrol
 		where welfareStatus=1 and id=#{id}
 	</select>

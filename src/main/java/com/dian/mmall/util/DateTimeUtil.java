@@ -67,7 +67,13 @@ public class DateTimeUtil {
 		calendar.add(Calendar.DATE, length);
 		return DateTimeUtil.dateToStr(calendar.getTime(), "yyyy-MM-dd HH:mm:ss");
 	}
+	public static String a_few_days_later0(int length) {
 
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.DATE, length);
+		return DateTimeUtil.dateToStr(calendar.getTime(), "yyyy-MM-dd");
+	}
 	public static String dateToDay() {
 
 		DateTime dateTime = new DateTime(new Date());

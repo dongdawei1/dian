@@ -32,7 +32,7 @@ public interface IUserService {
     ServerResponse checkAdminRole(User user);
 
     //测试mybaits
-	List<Map<String, Object>> getall();
+	List<Map<String, Object>> getall(int type);
 
 	//注册检查用户名是否可用
 	ServerResponse<String> checkUsername(String username);

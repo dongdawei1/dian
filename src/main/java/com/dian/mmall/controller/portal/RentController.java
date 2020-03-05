@@ -53,7 +53,7 @@ public class RentController {
 		} else if (createType == 15) {
 			// 检查权限
 			if (user.getRole() != 1 && user.getRole() != 4 && user.getRole() != 5 && user.getRole() != 6
-					&& user.getRole() != 13) {
+					&& user.getRole() != 13 && user.getRole() != 12) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 			}
 		} else {
@@ -78,7 +78,7 @@ public class RentController {
 
 		// 检查权限
 		if (user.getRole() != 1 && user.getRole() != 2 && user.getRole() != 3 && user.getRole() != 6
-				&& user.getRole() != 4 && user.getRole() != 5 && user.getRole() != 13) {
+				&& user.getRole() != 4 && user.getRole() != 5 && user.getRole() != 13 && user.getRole() != 12) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
 
@@ -113,7 +113,7 @@ public class RentController {
 		} else if (createType == 15) {
 			// 检查权限
 			if (user.getRole() != 1 && user.getRole() != 4 && user.getRole() != 5 && user.getRole() != 6
-					&& user.getRole() != 13) {
+					&& user.getRole() != 13 && user.getRole() != 12) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 			}
 		} else {

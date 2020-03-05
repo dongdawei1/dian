@@ -5,7 +5,8 @@
 <mapper
 	namespace="com.dian.mmall.dao.releaseDao.ReleaseWelfareMapper">
 	<select id="countReleaseWelfare" resultType="int">
-		select count(*) from release_welfare where userId=#{userId} and
+		select count(*) from
+		release_welfare where userId=#{userId} and
 		welfareStatus!=3
 	</select>
 
@@ -14,8 +15,10 @@
 	<select id="getReleaseWelfarePageno" resultType="long">
 		select count(*) from release_welfare where authentiCationStatus
 		in(1,3)
-				<if test="userName!=null and userName.trim()!=''">and userId in(select userId from t_user_realname where companyName like #{userName})        </if>
-		<if test="contact!=null and contact.trim()!=''">and userId in(select userId from t_user_realname where contact=#{contact})     </if>
+		<if test="userName!=null and userName.trim()!=''">and userId in(select userId from t_user_realname where
+			companyName like #{userName})        </if>
+		<if test="contact!=null and contact.trim()!=''">and userId in(select userId from t_user_realname where
+			contact=#{contact})     </if>
 
 
 	</select>
@@ -23,8 +26,10 @@
 	<select id="getReleaseWelfareAll"
 		resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
 		select * from release_welfare where authentiCationStatus in(1,3)
-		<if test="userName!=null and userName.trim()!=''">and userId in(select userId from t_user_realname where companyName like #{userName})        </if>
-		<if test="contact!=null and contact.trim()!=''">and userId in(select userId from t_user_realname where contact=#{contact})     </if>
+		<if test="userName!=null and userName.trim()!=''">and userId in(select userId from t_user_realname where
+			companyName like #{userName})        </if>
+		<if test="contact!=null and contact.trim()!=''">and userId in(select userId from t_user_realname where
+			contact=#{contact})     </if>
 
 		order by createTime limit #{pageLength}, #{pageSize}
 	</select>
@@ -72,7 +77,8 @@
 		workingAddress,termOfValidity from
 		release_welfare where welfareStatus=1
 		<if test="position!=null and position.trim()!=''">and position=#{position}   </if>
-		<if test="detailed!=null and detailed.trim()!=''">and userId in(select userId from t_user_realname where detailed like #{detailed})    </if>
+		<if test="detailed!=null and detailed.trim()!=''">and userId in(select userId from t_user_realname where
+			detailed like #{detailed})    </if>
 		order by updateTime desc
 		limit #{pageLength}, #{pageSize}
 	</select>
@@ -80,43 +86,56 @@
 	<!--可见全部条数 -->
 	<select id="getUserReleaseWelfarePageno" resultType="long">
 		select count(*) from release_welfare where welfareStatus=1
-		<if test="detailed!=null and detailed.trim()!=''">and userId in(select userId from t_user_realname where detailed like #{detailed} )   </if>
+		<if test="detailed!=null and detailed.trim()!=''">and userId in(select userId from t_user_realname where
+			detailed like #{detailed} )   </if>
 		<if test="position!=null and position.trim()!=''">and position=#{position}   </if>
 	</select>
 
 
-	<!--查询全部  管理员操作 -->
+	<!--查询全部 管理员操作 -->
 	<select id="adminGetzZWall"
 		resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
 		select id, userId,position
 		,number,welfare,salary,education,experience,describeOne,introductoryAward,gender,age,isPublishContact,
-		createTime,updateTime,welfareStatus,termOfValidity,workingAddress ,releaseType from
-		release_welfare where welfareStatus in(1,2,4,5) and userId=#{userId}
-	
+		createTime,updateTime,welfareStatus,termOfValidity,workingAddress
+		,releaseType from
+		release_welfare where welfareStatus=1 and
+		userId=#{userId}
+
 	</select>
 
 
 	<!-- 刷新，隐藏等操作 -->
 	<update id="position_operation">
-		update release_welfare set
-		<if test="type==1 "> updateTime=#{timeString} ,termOfValidity=#{timeString}
+		update release_welfare set updateTime=#{timeString}
+		<if test="type==1 "> ,termOfValidity=#{termOfValidity}
 		</if>
-		<if test="type==2 ">welfareStatus=1,termOfValidity=#{timeString} </if>
-		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
-		<if test="type==4 ">
-			welfareStatus=1,updateTime=#{timeString},termOfValidity=#{timeString}
+		<if test="type==2 ">,welfareStatus=1,termOfValidity=#{termOfValidity} </if>
+		<if test="type==3 "> ,welfareStatus=2 </if>
+		<if test="type==4 ">,welfareStatus=1,termOfValidity=#{termOfValidity}</if>
+
+		<if test="type==5 "> ,welfareStatus=3</if>
+
+		<if test="type==7 ">,welfareStatus=5,examineName='过期定时任务'
 		</if>
-		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
+		<if test="type==8 ">,welfareStatus=3,examineName='删除定时任务'
+		</if>
+
 		where userId=#{userId} and id=#{id}
 		<if test="type==4 "> and welfareStatus not in(4,5)</if>
+		<if test="type==2 or type==8"> and welfareStatus=5 and authentiCationStatus=2</if>
+
 	</update>
+
 	<!-- 重新编辑 -->
 	<update id="position_operation_edit">
-		update release_welfare set addressConsistency=#{addressConsistency},
+		update release_welfare set
+		addressConsistency=#{addressConsistency},
 		workingAddress=#{workingAddress},updateTime=#{updateTime},
 		isPublishContact=#{isPublishContact},describeOne=#{describeOne},
-		email=#{email},welfareStatus=4 ,authentiCationStatus=1 where
-		userId=#{userId} and id=#{id}
+		email=#{email},welfareStatus=4 ,authentiCationStatus=1
+		,termOfValidity=#{termOfValidity}
+		where userId=#{userId} and id=#{id}
 	</update>
 
 
@@ -131,17 +150,18 @@
 	</update>
 
 
-	
+
 
 	<!--创建用户成功返回非0 -->
 	<insert id="create_position">
 		insert into release_welfare (
-		userId, position, number, salary,welfare,education,
+		userId, position,
+		number, salary,welfare,education,
 		experience,describeOne,introductoryAward,gender,age,email,
 		welfareStatus,isPublishContact,createTime,updateTime,workingAddress,
 		authentiCationStatus,addressConsistency,
 		userType,termOfValidity,consigneeName,releaseType
-		) values (             
+		) values (
 		#{userId}, #{position}, #{number}, #{salary},#{welfare},
 		#{education},#{experience},#{describeOne},#{introductoryAward},#{gender},#{age},#{email},
 		#{welfareStatus},#{isPublishContact},#{createTime},#{updateTime},

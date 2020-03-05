@@ -23,7 +23,7 @@ public interface ReleaseWelfareMapper {
   //分页查询自己发布的职位
   List<ReleaseWelfare> get_position_list_all(int pageLength, int pageSize, String position, Integer welfareStatus, long userId);
   //除编辑以外的所有操作
-int position_operation(long userId, long id, int type, String timeString);
+int position_operation(long userId, long id, int type, String timeString, String termOfValidity);
 //审核失败后重新发布
 int position_operation_edit(ReleaseWelfare releaseWelfare);
 //根据查询条件查询出全部

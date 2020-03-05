@@ -17,7 +17,7 @@ public interface WineAndTablewareMapper {
 
 	List<WineAndTableware> get_myWineAndTableware_list(int pageLength, int pageSize, Integer releaseType, Integer welfareStatus, long userId);
 
-	int operation_userWineAndTableware(long userId, long id, int type, String timeString);
+	int operation_userWineAndTableware(long userId, long id, int type, String timeString, String termOfValidity);
 
 	int update_wineAndTableware(WineAndTableware equipment_create);
 

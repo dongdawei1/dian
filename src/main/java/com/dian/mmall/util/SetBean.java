@@ -18,11 +18,11 @@ public static ServerResponse<String> setRole(Integer role){
 		}else if(role==3  ) {
 			return ServerResponse.createBySuccessMessage("厨/电/二手设备");
 		}else if(role==4  ) {
-			return ServerResponse.createBySuccessMessage("粮油菜水产清洁桌椅零售");
+			return ServerResponse.createBySuccessMessage("市场零售商");
 		}else if( role==5   ) {
 			return ServerResponse.createBySuccessMessage("酒水/消毒餐具");
 		}else if(role==12 ) {
-			return ServerResponse.createBySuccessMessage("工服/百货/绿植/装饰用品");
+			return ServerResponse.createBySuccessMessage("工服/百货/绿植");
 		}else if(role==6) {
 			return ServerResponse.createBySuccessMessage("商铺/摊位出租");
 		}else if( role==11  ) {
@@ -34,7 +34,7 @@ public static ServerResponse<String> setRole(Integer role){
 		}else if(role==7 ) {
 			return ServerResponse.createBySuccessMessage("装修广告灭虫");
 		}else if(role==13 ) {
-			return ServerResponse.createBySuccessMessage("粮油菜水产清洁桌椅批发");
+			return ServerResponse.createBySuccessMessage("市场批发商");
 		}else if(role==10 ) {
 			return ServerResponse.createBySuccessMessage("淘特色农产品");
 		}

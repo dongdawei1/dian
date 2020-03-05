@@ -11,7 +11,9 @@
     </select>-->
 
     <select id="getall" resultType="java.util.Map">
-        select * from t_user 
+        select * from 
+        <if test="_parameter==1"> t_user    </if>
+         
     </select>
     
     <select id="checkUsername" resultType="com.dian.mmall.pojo.user.User" parameterType="string" >

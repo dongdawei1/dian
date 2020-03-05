@@ -12,7 +12,7 @@ import com.dian.mmall.pojo.user.User;
 public interface UserMapper {
 //测试mybatis
 //	@Select("select * from t_user")
-	List<Map<String, Object>> getall();
+	List<Map<String, Object>> getall(int type);
 //    int deleteByPrimaryKey(Integer id);
 //
 //    int insert(User record);

@@ -77,8 +77,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 		String timeString = formatter.format(new Date());
 		params.put("createTime", timeString);
 		params.put("updateTime", timeString);
-		params.put("termOfValidity", DateTimeUtil.a_few_days_later(60));
-		System.out.println(params);
+		
 		ReleaseWelfare releaseWelfare = (ReleaseWelfare) BeanMapConvertUtil.convertMap(ReleaseWelfare.class, params);
 		// {result=true, message=验证通过} 返回结果
 		Map<String, Object> checknullMap = AnnotationDealUtil.validate(releaseWelfare);
@@ -167,6 +166,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 		// 判断用户id与 tocken是否一致
 		long userId = Long.valueOf(params.get("userId").toString().trim());
 		map.put("userId", userId);
+		map.put("termOfValidity", DateTimeUtil.a_few_days_later0(30));
 		// 判断是否超过可以发布的总数
 		if (releaseWelfareMapper.countReleaseWelfare(userId) >= ReleaseCount.create_position.getCount()) {
 			return ServerResponse.createByErrorMessage(
@@ -497,7 +497,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 		String id = params.get("id").toString().trim();
 		if (type != null && !type.equals("") && userId != null && !userId.equals("") && id != null && !id.equals("")) {
 			int type_int = Integer.valueOf(type);
-			if (type_int < 1 || type_int > 6) {
+			if (type_int < 1 || type_int > 9) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 			}
 			long userIdLong = Long.valueOf(userId);
@@ -514,15 +514,9 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String timeString = null;
 			int result = 0;
-			if (type_int == 1) {
+			 if (type_int == 1 || type_int == 2 || type_int == 3 || type_int == 4 || type_int == 5 || type_int == 7 || type_int == 8 ) {
 				timeString = formatter.format(new Date());
-				result = releaseWelfareMapper.position_operation(userIdLong, idLong, type_int, timeString);
-			} else if (type_int == 2) {
-				timeString = DateTimeUtil.a_few_days_later(60);
-				result = releaseWelfareMapper.position_operation(userIdLong, idLong, type_int, timeString);
-			} else if (type_int == 3 || type_int == 4 || type_int == 5) {
-				timeString = formatter.format(new Date());
-				result = releaseWelfareMapper.position_operation(userIdLong, idLong, type_int, timeString);
+				result = releaseWelfareMapper.position_operation(userIdLong, idLong, type_int, timeString,DateTimeUtil.a_few_days_later0(30));
 			} else if (type_int == 6) {
 				// 判断非法输入
 				ServerResponse<String> serverResponse = LegalCheck.legalCheckFrom(params);

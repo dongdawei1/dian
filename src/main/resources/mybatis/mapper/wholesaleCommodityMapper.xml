@@ -361,7 +361,7 @@
 		commodityJiage,commoditySurplusNo,serviceIntroduction,
 		remarks,pictureUrl,deliveryType,deliveryCollect,
 		startTime,endTime,reserve,createTime,
-		evaluateid,servicFrequenc
+		evaluateid,servicFrequenc,welfareStatus
 		from
 		shichang_wholesaleCommodity
 		where userId=#{userId} and welfareStatus in(1,2,4,5);

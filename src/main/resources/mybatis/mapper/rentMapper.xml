@@ -104,11 +104,15 @@
 			termOfValidity=#{termOfValidity} ,welfareStatus=1
 		</if>
 		<if test="type==3 "> welfareStatus=2,updateTime=#{timeString} </if>
-		<if test="type==4 "> welfareStatus=1,updateTime=#{timeString}</if>
+		<if test="type==4 "> welfareStatus=1,termOfValidity=#{termOfValidity},updateTime=#{timeString}</if>
 		<if test="type==5 "> welfareStatus=3,updateTime=#{timeString}</if>
+		<if test="type==7 ">welfareStatus=5,updateTime=#{timeString},examineName='过期定时任务'
+		</if>
+		<if test="type==8 ">welfareStatus=3,updateTime=#{timeString},examineName='删除定时任务'
+		</if>
 		where userId=#{userId} and id=#{id}
 		<if test="type==4 "> and welfareStatus not in(4,3)</if>
-		<if test="type==2 "> and welfareStatus=5 and authentiCationStatus=2</if>
+		<if test="type==2 or type==8"> and welfareStatus=5 and authentiCationStatus=2</if>
 	</update>
 
 
@@ -169,7 +173,7 @@
 	<!-- 公开列表分页概览 -->
 	<select id="getrentList"
 		resultType="com.dian.mmall.pojo.chuzufang.Rent">
-		select id,userId,releaseTitle,pictureUrl,fouseSize from rent where
+		select id,userId,releaseTitle,pictureUrl,fouseSize,termOfValidity from rent where
 		welfareStatus=1 and releaseType=#{releaseType}
 		and userId in (select
 		userId from t_user_realname where detailed like #{detailed})
@@ -188,7 +192,7 @@
 		resultType="com.dian.mmall.pojo.chuzufang.Rent">
 		select id,userId,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceDetailed,fouseSize,
-		consigneeName,createTime
+		consigneeName,createTime,termOfValidity
 		from rent
 		where welfareStatus =1 and id=#{id}
 
@@ -199,9 +203,9 @@
 		resultType="com.dian.mmall.pojo.chuzufang.Rent">
 		select id,userId,releaseType,
 		releaseTitle,serviceIntroduction,remarks,pictureUrl,serviceDetailed,fouseSize,
-		consigneeName,createTime
+		consigneeName,createTime,welfareStatus,termOfValidity
 		from rent
-		where welfareStatus in(1,2,4,5) and userId=#{userId}
+		where welfareStatus=1 and userId=#{userId}
 	</select>
 
 </mapper>

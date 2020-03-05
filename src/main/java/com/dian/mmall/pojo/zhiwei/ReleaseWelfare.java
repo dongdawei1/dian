@@ -50,7 +50,7 @@ public class ReleaseWelfare {
 	private String workingAddress; // 工作地址，默认填充实名中的地址，可以修改
 	private Integer addressConsistency;// 工作地址是否与实名地址一致 1一致，2不一致
 	@IsEmptyAnnotation(message = "有效期不能为空")
-	private String termOfValidity;// 职位有效期 创建时间加 30天
+	private String termOfValidity;// 职位有效期 创建时间加
 	@IsEmptyAnnotation(message = "联系人不能为空")
 	private String consigneeName; // 联系人姓名 回显置灰 不可修改
 	
