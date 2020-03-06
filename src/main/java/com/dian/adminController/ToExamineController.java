@@ -83,10 +83,10 @@ public class ToExamineController {
 
 		User user = (User) serverResponse.getData();
 		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+		
 		serverResponse = realNameService.examineRealName(user, params, loginToken);
 		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
 			User shenheUser = (User) serverResponse.getData();
-
 			int result = RedisPoolUtil.checkeKey(shenheUser);
 			if (result == 0) {
 				return ServerResponse.createBySuccessMessage("成功用户登录");
@@ -486,4 +486,21 @@ public class ToExamineController {
 		return ServerResponse.createBySuccess(map);
 
 	}
+	
+	// 创建广告前查询实名信息
+	@RequestMapping(value = "adminupall", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> adminupall(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		// TODO只有管理员才能调用
+		ServerResponse<Object> serverResponse = CheckLand.checke_role(httpServletRequest);
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		User user = (User) serverResponse.getData();
+		
+		return toExamineService.adminupall(user.getUsername(),params);
+
+	}
+	
 }

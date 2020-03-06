@@ -50,7 +50,7 @@ public class RealNameServiceImpl implements RealNameService {
 
 	// 创建实名认证
 	@Override
-	public ServerResponse<String> newRealName(User user, String loginToken, Map<String, Object> params) {
+	public ServerResponse<Object> newRealName(User user, String loginToken, Map<String, Object> params) {
 		String isbusiness_string = params.get("isbusiness").toString().trim();
 //		if(!isbusiness_string.equals("true") && !isbusiness_string.equals("false") ) {
 //		return	ServerResponse.createByErrorMessage(ResponseMessage.YongHuLeiXingCuoWu.getMessage());
@@ -62,7 +62,7 @@ public class RealNameServiceImpl implements RealNameService {
 		ServerResponse<String> serverResponse = LegalCheck.legalCheckFrom(params_map);
 		// 检查是否有非法输入
 		if (serverResponse.getStatus() != 0) {
-			return serverResponse;
+			return  ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
 
 		long user_id = user.getId();
@@ -96,7 +96,7 @@ public class RealNameServiceImpl implements RealNameService {
 		// 判断手机号是否合法
 		serverResponse = LegalCheck.legalCheckMobilePhone(contact);
 		if (serverResponse.getStatus() != 0) {
-			return serverResponse;
+			return  ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
 
 		String consignee_name = params_map.get("consignee_name").toString().trim();
@@ -186,7 +186,7 @@ public class RealNameServiceImpl implements RealNameService {
 				serverResponse = SetBean.setRole(user.getRole());
 				// 检查是否有非法输入
 				if (serverResponse.getStatus() != 0) {
-					return serverResponse;
+					return  ServerResponse.createByErrorMessage(serverResponse.getMsg());
 				}
 				realName.setUserType(serverResponse.getMsg());
 				// 检查id是否已经存在
@@ -211,7 +211,7 @@ public class RealNameServiceImpl implements RealNameService {
 				User currentUser = userMapper.selectUserById(user_id);
 				currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
 				currentUser.setPassword(null);
-				return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
+				return ServerResponse.createBySuccess(currentUser);
 			} catch (Exception e) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
 			}
@@ -245,7 +245,7 @@ public class RealNameServiceImpl implements RealNameService {
 				serverResponse = SetBean.setRole(user.getRole());
 				// 检查是否有非法输入
 				if (serverResponse.getStatus() != 0) {
-					return serverResponse;
+					return  ServerResponse.createByErrorMessage(serverResponse.getMsg());
 				}
 				realName.setUserType(serverResponse.getMsg());
 
@@ -266,7 +266,7 @@ public class RealNameServiceImpl implements RealNameService {
 				User currentUser = userMapper.selectUserById(user_id);
 				currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
 				currentUser.setPassword(null);
-				return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
+				return ServerResponse.createBySuccess(currentUser);
 			} catch (Exception e) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
 			}
@@ -302,7 +302,7 @@ public class RealNameServiceImpl implements RealNameService {
 				serverResponse = SetBean.setRole(user.getRole());
 				// 检查是否有非法输入
 				if (serverResponse.getStatus() != 0) {
-					return serverResponse;
+					return  ServerResponse.createByErrorMessage(serverResponse.getMsg());
 				}
 				realName.setUserType(serverResponse.getMsg());
 
@@ -324,7 +324,7 @@ public class RealNameServiceImpl implements RealNameService {
 				currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
 				currentUser.setPassword(null);
 
-				return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
+				return ServerResponse.createBySuccess(currentUser);
 			} catch (Exception e) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
 			}
@@ -360,7 +360,7 @@ public class RealNameServiceImpl implements RealNameService {
 	// 重新实名updateRealName
 
 	@Override
-	public ServerResponse<String> updateRealName(User user, String loginToken, Map<String, Object> params) {
+	public ServerResponse<Object> updateRealName(User user, String loginToken, Map<String, Object> params) {
 
 		String isbusinessString = params.get("isbusiness").toString().trim();
 
@@ -371,7 +371,7 @@ public class RealNameServiceImpl implements RealNameService {
 		ServerResponse<String> serverResponse = LegalCheck.legalCheckFrom(params_map);
 		// 检查是否有非法输入
 		if (serverResponse.getStatus() != 0) {
-			return serverResponse;
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
 		User currentUser1 = userMapper.selectUserById(userId);
 		if (currentUser1 != null) {
@@ -413,7 +413,7 @@ public class RealNameServiceImpl implements RealNameService {
 		// 判断手机号是否合法
 		serverResponse = LegalCheck.legalCheckMobilePhone(contact);
 		if (serverResponse.getStatus() != 0) {
-			return serverResponse;
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
 		String consigneeName = params_map.get("consigneeName").toString().trim();
 		if (consigneeName == null || consigneeName.equals("")) {
@@ -462,7 +462,8 @@ public class RealNameServiceImpl implements RealNameService {
 					ServerResponse<String> serverResponseString = setPictureUrl(
 							(ArrayList<Picture>) params_map.get("licenseUrl"), realName1.getLicenseUrl());
 					if (serverResponseString.getStatus() != 0) {
-						return serverResponseString;
+						return ServerResponse.createByErrorMessage(serverResponseString.getMsg());
+						
 					}
 					realName.setLicenseUrl(serverResponseString.getMsg());
 					realName.setId(realName1.getId());
@@ -500,7 +501,7 @@ public class RealNameServiceImpl implements RealNameService {
 				User currentUser = userMapper.selectUserById(userId);
 				currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
 				currentUser.setPassword(null);
-				return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
+				return ServerResponse.createBySuccess(currentUser);
 			} catch (Exception e) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
 			}
@@ -552,7 +553,7 @@ public class RealNameServiceImpl implements RealNameService {
 				User currentUser = userMapper.selectUserById(userId);
 				currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
 				currentUser.setPassword(null);
-				return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
+				return ServerResponse.createBySuccess(currentUser);
 
 			} catch (Exception e) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
@@ -617,7 +618,7 @@ public class RealNameServiceImpl implements RealNameService {
 				User currentUser = userMapper.selectUserById(userId);
 				currentUser.setMobilePhone(EncrypDES.decryptPhone(currentUser.getMobilePhone()));
 				currentUser.setPassword(null);
-				return ServerResponse.createBySuccessMessage(JsonUtil.obj2String(currentUser));
+				return ServerResponse.createBySuccess(currentUser);
 
 			} catch (Exception e) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());

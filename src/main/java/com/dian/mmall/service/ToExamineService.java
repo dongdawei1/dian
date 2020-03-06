@@ -24,4 +24,7 @@ public interface ToExamineService {
 
 	ServerResponse<Object> getUserCreate(User user);
 
+
+	ServerResponse<String> adminupall(String username, Map<String, Object> params);
+
 }

@@ -120,8 +120,12 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (releaseTypeString == null || releaseTypeString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
 		}
+		//批发 401菜 ，405粮油出售，406调料/副食出售,429水产/禽蛋出售,409清洁用品
+
 		int releaseType = Integer.valueOf(releaseTypeString);
-		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
+		if (releaseType != Const.PCAIP && releaseType != Const.PYOUP
+				&& releaseType != Const.PTIAOLIAOP && releaseType != Const.PSHUICHANP
+				&& releaseType != Const.PQINGJIEP) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 		}
 		int count = 0;
@@ -192,7 +196,21 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (serviceType == null || serviceType.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinmingkong.getMessage());
 		}
-		count = serviceTypeMapper.getserviceTypeNameCount(releaseType, serviceType, 2);
+	
+		int che=0;
+		if (releaseType == 401) {
+			che = 4;
+		}
+		else if (releaseType == 405) {
+			che = 5;
+		} else if (releaseType == 406) {
+			che = 6;
+		} else if (releaseType == 429) {
+			che = 29;
+		} else if (releaseType == 409) {
+			che = 9;
+		}
+		count = serviceTypeMapper.getserviceTypeNameCount(che, serviceType, 2);
 		if (count == 0) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinchaxunshibai.getMessage());
 		}
@@ -424,9 +442,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
-		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
-		}
+		
 
 		String welfareStatusString = params.get("welfareStatus").toString().trim();
 		// 发布状态
@@ -478,9 +494,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
-		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
-		}
+	
 
 		String selectedOptions = null;
 
@@ -496,6 +510,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		Integer districtCountyId = selectedOptions_list.get(2);
 		// 判断省市区id是否正确
 		selectedOptions = "%" + cityMapper.checkeCity(provincesId, cityId, districtCountyId) + "%";
+		System.out.println("444444"+selectedOptions);
 		// 商品名
 		String serviceType = params.get("serviceType").toString().trim();
 		if (serviceType != null && !serviceType.equals("")) {
@@ -523,9 +538,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
-		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
-		}
+		
 
 		String welfareStatusString = params.get("welfareStatus").toString().trim();
 		// 发布状态
@@ -829,9 +842,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		Integer releaseType = null;
 		if (releaseTypeString != null && !releaseTypeString.equals("")) {
 			releaseType = Integer.valueOf(releaseTypeString);
-			if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 29 && releaseType != 9) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
-			}
+			
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
 		}
@@ -1114,9 +1125,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
-		if (releaseType != 4 && releaseType != 5 && releaseType != 6 && releaseType != 9 && releaseType != 29) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
-		}
+		
 
 		String selectedOptions = null;
 

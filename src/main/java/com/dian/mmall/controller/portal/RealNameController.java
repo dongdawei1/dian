@@ -28,6 +28,8 @@ import com.dian.mmall.service.RealNameService;
 import com.dian.mmall.util.CheckLand;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
+import com.dian.mmall.util.LogUtil;
+import com.dian.mmall.util.RedisPoolUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
 @Controller
@@ -45,20 +47,15 @@ public class RealNameController {
 		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
 		User user = (User) httpServletRequest.getAttribute("user");
 
-		ServerResponse<String> serverResponse = realNameService.newRealName(user, loginToken, params);
+		ServerResponse<Object> serverResponse = realNameService.newRealName(user, loginToken, params);
 
 		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
 
-			CookieUtil.delLoginToken(httpServletRequest, httpServletResponse);
-			RedisShardedPoolUtil.del(loginToken);
-			CookieUtil.writeLoginToken(httpServletResponse, session.getId());
-			// 把用户session当做key存到数据库中，时长是 30分钟
-			RedisShardedPoolUtil.setEx(session.getId(), serverResponse.getMsg(),
-					Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+			RedisPoolUtil.checkeKey((User) serverResponse.getData());
 			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
 		}
 
-		return serverResponse;
+		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 	}
 
 	// 重新用户实名
@@ -68,19 +65,13 @@ public class RealNameController {
 			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, HttpSession session) {
 		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
 		User user = (User) httpServletRequest.getAttribute("user");
-		ServerResponse<String> serverResponse = realNameService.updateRealName(user, loginToken, params);
+		ServerResponse<Object> serverResponse = realNameService.updateRealName(user, loginToken, params);
 
 		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
-
-			CookieUtil.delLoginToken(httpServletRequest, httpServletResponse);
-			RedisShardedPoolUtil.del(loginToken);
-			CookieUtil.writeLoginToken(httpServletResponse, session.getId());
-			// 把用户session当做key存到数据库中，时长是 30分钟
-			RedisShardedPoolUtil.setEx(session.getId(), serverResponse.getMsg(),
-					Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+			RedisPoolUtil.checkeKey((User) serverResponse.getData());
 			return ServerResponse.createBySuccessMessage(ResponseMessage.ChengGong.getMessage());
 		}
-		return serverResponse;
+		return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 	}
 
 

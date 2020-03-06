@@ -19,6 +19,21 @@
 		&lt; #{dateString}
 	</select>
 
+	<!-- 管理删除操作 -->
+	<update id="adminupall">
+		update
+		<if test="tablenameid ==1"> release_welfare   </if>
+		<if test="tablenameid ==9"> shichang_wholesalecommodity   </if>
+		<if test="tablenameid ==5"> departmentstore  </if>
+		<if test="tablenameid==7 or tablenameid==4"> equipment    </if>
+		<if test="tablenameid==2"> rent    </if>
+		<if test="tablenameid==8"> menuandrenovationandpestcontrol    </if>
+		<if test="tablenameid==3"> resume    </if>
+		<if test="tablenameid ==6"> wineandtableware  </if>
+		set
+		updateTime=#{updateTime}, examineName=#{username}, welfareStatus=3
+		where id=#{id}
+	</update>
 
 	<!-- 定时任务更新 为失效 -->
 	<update id="upall">
@@ -46,12 +61,12 @@
 		<if test="a==4"> menuandrenovationandpestcontrol    </if>
 		<if test="a==5"> resume    </if>
 		<if test="a==6"> departmentstore    </if>
-	set
-	updateTime=#{dateString}, examineName='删除定',welfareStatus=3
-	where
-	termOfValidity &lt; #{termOfValidity}
-	and welfareStatus in (2,4,5)
+		set
+		updateTime=#{dateString}, examineName='删除定',welfareStatus=3
+		where
+		termOfValidity &lt; #{termOfValidity}
+		and welfareStatus in (2,4,5)
 	</update>
-	
+
 
 </mapper>

@@ -144,7 +144,7 @@
 	<!--管理查询全部 -->
 	<select id="adminGetResumeall"
 		resultType="com.dian.mmall.pojo.zhiwei.Resume">
-		select id, userId,position,termOfValidity
+		select id, userId,position,termOfValidity,email
 		,experience,salary,education,describeOne,isPublishContact,welfareStatus,
 		createTime,updateTime,detailed,addressDetailed,age,gender,termOfValidity
 		from resume where welfareStatus=1 and userId=#{userId}

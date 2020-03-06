@@ -45,12 +45,23 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 
 	@Override
 	public ServerResponse<Object> get_serviceType(Integer releaseType, String serviceType, Long userId) {
-		if (releaseType > 0 && releaseType < 200) {
+		if (releaseType > 0 && releaseType < 500) {
 
 			if (serviceType != null && !serviceType.equals("")) {
 				serviceType = "%" + serviceType + "%";
 			}
-
+			if (releaseType == 401) {
+				releaseType = 4;
+			}
+			else if (releaseType == 405) {
+				releaseType = 5;
+			} else if (releaseType == 406) {
+				releaseType = 6;
+			} else if (releaseType == 429) {
+				releaseType = 29;
+			} else if (releaseType == 409) {
+				releaseType = 9;
+			}
 			return ServerResponse.createBySuccess(serviceTypeMapper.get_serviceType(releaseType, serviceType, userId));
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.ShuRuBuHeFa.getMessage());
@@ -96,7 +107,18 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 			} else if (releaseType == 4 || releaseType == 5 || releaseType == 6 || releaseType == 29 || releaseType == 9
 					|| releaseType == 11 || releaseType == 7 || releaseType == 8 || releaseType == 101
 					|| releaseType == 102 || releaseType == 103 || releaseType == 104) {
-				releaseType = Integer.valueOf(releaseTypeString);
+				//releaseType = releaseType;
+			} else if (releaseType == 401) {
+				releaseType = 4;
+			}
+			else if (releaseType == 405) {
+				releaseType = 5;
+			} else if (releaseType == 406) {
+				releaseType = 6;
+			} else if (releaseType == 429) {
+				releaseType = 29;
+			} else if (releaseType == 409) {
+				releaseType = 9;
 			}
 
 			// TODO 新加就在这里设置
@@ -193,15 +215,26 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 		}
 	}
 
-	//带示例图片的商品名
+	// 带示例图片的商品名
 	@Override
 	public ServerResponse<Object> get_serviceTypeUrl(Integer releaseType, String serviceType, long userId) {
-		if (releaseType > 0 && releaseType < 200) {
+		if (releaseType > 0 && releaseType <500) {
 
 			if (serviceType != null && !serviceType.equals("")) {
 				serviceType = "%" + serviceType + "%";
 			}
-
+			if (releaseType == 401) {
+				releaseType = 4;
+			}
+			else if (releaseType == 405) {
+				releaseType = 5;
+			} else if (releaseType == 406) {
+				releaseType = 6;
+			} else if (releaseType == 429) {
+				releaseType = 29;
+			} else if (releaseType == 409) {
+				releaseType = 9;
+			}
 			List<ServiceType> list = serviceTypeMapper.get_serviceTypeUrl(releaseType, serviceType);
 
 			for (int i = 0; i < list.size(); i++) {

@@ -75,7 +75,11 @@
 		select DISTINCT serviceType from shichang_wholesaleCommodity
 		where
 		releaseType=#{releaseType}
-		and serviceDetailed like #{selectedOptions}
+		and userId in (select userId
+		from
+		t_user_realname where detailed like
+		#{selectedOptions})
+	
 		and welfareStatus=1 and startTime &lt; #{createTime} and endTime &gt;
 		#{createTime}
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>

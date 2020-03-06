@@ -38,6 +38,12 @@ public class Const {
 	public static final int CAIPIP=13;
 	public static final int ZHUANGXIUP=17;
 	public static final int MIECHONGP=19;
+	//批发 401菜 ，405粮油出售，406调料/副食出售,429水产/禽蛋出售,409清洁用品
+	public static final int PCAIP=401;
+	public static final int PYOUP=405;
+	public static final int PTIAOLIAOP=406;
+	public static final int PSHUICHANP=429;
+	public static final int PQINGJIEP=409;
 	
 	public static final String SERVICETYPENO = "(商品类型不存在，如果合规请手动添加: )";
 	public static final String SERVICETYPEDAI = "(待审批的商品类型: )";

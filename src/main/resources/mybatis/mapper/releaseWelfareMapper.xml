@@ -96,7 +96,8 @@
 	<select id="adminGetzZWall"
 		resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
 		select id, userId,position
-		,number,welfare,salary,education,experience,describeOne,introductoryAward,gender,age,isPublishContact,
+		,number,welfare,salary,education,experience,describeOne,introductoryAward,gender,
+		age,isPublishContact,consigneeName,
 		createTime,updateTime,welfareStatus,termOfValidity,workingAddress
 		,releaseType from
 		release_welfare where welfareStatus=1 and

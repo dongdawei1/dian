@@ -69,6 +69,7 @@ public enum ResponseMessage {
 	youxiaoqibuhefa("有效期在超过范围"),
 	canshuyouwu("操作参数有误"),
 	yougonggongxuanchuan("有广告宣传，不能操作，请联系客服"),
+	yougonggongxuan("有广告宣传，不能操作，请联系技术"),
 	yonghuidbucunzai("用户ID不存在"),
 	huoquxinxishibai("获取用户信息失败"),
 	caozuoleixincuowu("操作类型错误"),

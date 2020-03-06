@@ -13,4 +13,6 @@ public interface OrderExampleTimerMapper {
 
 	void delall(int a, String dateString, String termOfValidity);
 
+	int adminupall(long id, int tablenameid, String username, String updateTime);
+
 }
