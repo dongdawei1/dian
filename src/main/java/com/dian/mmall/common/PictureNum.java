@@ -13,6 +13,7 @@ public enum PictureNum {
 	jiushui("酒水",8),
 	gongfubaihuo("工服百货",5),
 	shucaishili("蔬菜示例",1),
+	guanggao("广告示例",1), //不能删
 	pifashangpin("批发商品",5);
 //	  LEASE("店面/窗口出租",14),
 //	   RENTALBOOTH("摊位出租转让",15),

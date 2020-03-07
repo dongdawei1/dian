@@ -1613,11 +1613,11 @@ public class ToExamineServiceImpl implements ToExamineService {
 	public ServerResponse<String> adminupall(String username, Map<String, Object> params) {
 		int tablenameid = Integer.parseInt(params.get("tablenameid").toString().trim());
 		long id = Long.parseLong(params.get("id").toString().trim());
-		int permissionid=Integer.parseInt(params.get("permissionid").toString().trim());
+		int permissionid = Integer.parseInt(params.get("permissionid").toString().trim());
 		if (bunnerService.getguanggaocount(id, permissionid) > 0) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yougonggongxuan.getMessage());
 		}
-		int a = omap.adminupall(id,tablenameid,username,DateTimeUtil.dateToAll());
+		int a = omap.adminupall(id, tablenameid, username, DateTimeUtil.dateToAll());
 		if (a > 0) {
 			return ServerResponse.createBySuccessMessage(ResponseMessage.caozuochenggong.getMessage());
 		}

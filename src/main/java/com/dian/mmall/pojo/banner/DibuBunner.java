@@ -15,8 +15,9 @@ public class DibuBunner {
 	
 	private Integer permissionid; //在哪个菜单下展示
 	
-	private Integer bunnerType; //1是底部
-	private Integer tableName; //至能配置有查看权限有交集的类型
+	private Integer bunnerType; //0首页弹窗，1首页轮播，2详情页轮播，3边测独立窗口，4其他
+	private Integer tablenameid; //至能配置有查看权限有交集的类型
+	
 	private long tableId;
 	private long createId;
 	private String updateTime;
@@ -34,7 +35,7 @@ public class DibuBunner {
 	private String examineName; //创建人员
 	private String imgUrl; //图片地址
 	private String createTime; //活动创建时间
-	
-	
-	
+	private long 	userId;//广告发布人id
+	private Integer 	fanwei;//范围 0全国优先级最高，1全市，2全区
+	private Integer 	moren;//是否是默认 0是1不是，先查1
 }

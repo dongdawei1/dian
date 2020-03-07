@@ -56,7 +56,8 @@ public class ToExamineController {
 	private ServiceTypeService serviceTypeService;
 	@Autowired
 	private IUserService iUserService;
-
+	@Autowired
+	private BunnerService bunnerService;
 	// 获取待实名
 	@RequestMapping(value = "getRealNameAll", method = RequestMethod.POST)
 	@ResponseBody
@@ -83,7 +84,7 @@ public class ToExamineController {
 
 		User user = (User) serverResponse.getData();
 		String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-		
+
 		serverResponse = realNameService.examineRealName(user, params, loginToken);
 		if (serverResponse.getStatus() == ResponseCode.SUCCESS.getCode()) {
 			User shenheUser = (User) serverResponse.getData();
@@ -477,7 +478,7 @@ public class ToExamineController {
 		if (serverResponse.getStatus() != 0) {
 			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
-		List<CreateGanggaoVo> vos =  (List<CreateGanggaoVo>) serverResponse.getData();
+		List<CreateGanggaoVo> vos = (List<CreateGanggaoVo>) serverResponse.getData();
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		map.put("realName", realName);
@@ -486,8 +487,8 @@ public class ToExamineController {
 		return ServerResponse.createBySuccess(map);
 
 	}
-	
-	// 创建广告前查询实名信息
+
+	// 管理删除 发布
 	@RequestMapping(value = "adminupall", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<String> adminupall(HttpServletRequest httpServletRequest,
@@ -498,9 +499,37 @@ public class ToExamineController {
 			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 		}
 		User user = (User) serverResponse.getData();
-		
-		return toExamineService.adminupall(user.getUsername(),params);
+		ServerResponse<String> serverResponse1 = toExamineService.adminupall(user.getUsername(), params);
+		if (serverResponse1.getStatus() == 0) {
+			return ServerResponse.createBySuccessMessage(serverResponse1.getMsg());
+		}
+		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+
+	}
+	// 创建广告前查询实名信息
+	@RequestMapping(value = "isguanggao", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> isguanggao(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		ServerResponse<Object> serverResponse = CheckLand.checke_role(httpServletRequest);
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		return bunnerService.isguanggao(params);
 
 	}
 	
+	// 创建广告前查询实名信息
+		@RequestMapping(value = "crguanggao", method = RequestMethod.POST)
+		@ResponseBody
+		public ServerResponse<String> crguanggao(HttpServletRequest httpServletRequest,
+				@RequestBody Map<String, Object> params) {
+			ServerResponse<Object> serverResponse = CheckLand.checke_role(httpServletRequest);
+			if (serverResponse.getStatus() != 0) {
+				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+			}
+			User user = (User) serverResponse.getData();
+			return bunnerService.crguanggao(user,params);
+
+		}
 }

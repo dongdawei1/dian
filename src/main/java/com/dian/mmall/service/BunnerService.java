@@ -1,6 +1,9 @@
 package com.dian.mmall.service;
 
+import java.util.Map;
+
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.user.User;
 
 public interface BunnerService {
 
@@ -9,5 +12,13 @@ public interface BunnerService {
 
 
 	int getguanggaocount(long tableId, int permissionid);
+
+
+
+
+	ServerResponse<Object> isguanggao(Map<String, Object> params);
+
+
+	ServerResponse<String> crguanggao(User user, Map<String, Object> params);
 
 }

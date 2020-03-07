@@ -15,4 +15,6 @@ public interface OrderExampleTimerMapper {
 
 	int adminupall(long id, int tablenameid, String username, String updateTime);
 
+	String getcoutn(int tablenameid, long tableId, long userId);
+
 }

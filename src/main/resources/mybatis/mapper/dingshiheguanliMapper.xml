@@ -35,6 +35,25 @@
 		where id=#{id}
 	</update>
 
+	<select id="getcoutn" resultType="String">
+		select 
+		 <if test="tablenameid ==9"> endTime  </if>    
+		 <if test="tablenameid !=9"> termOfValidity  </if>  
+		  from
+		<if test="tablenameid ==1"> release_welfare   </if>
+		<if test="tablenameid ==9"> shichang_wholesalecommodity   </if>
+		<if test="tablenameid ==5"> departmentstore  </if>
+		<if test="tablenameid==7 or tablenameid==4"> equipment    </if>
+		<if test="tablenameid==2"> rent    </if>
+		<if test="tablenameid==8"> menuandrenovationandpestcontrol    </if>
+		<if test="tablenameid==3"> resume    </if>
+		<if test="tablenameid ==6"> wineandtableware  </if>
+		where authentiCationStatus=2 and welfareStatus=1 and userId=#{userId}
+		and  id=#{tableId}
+	</select>
+
+
+
 	<!-- 定时任务更新 为失效 -->
 	<update id="upall">
 		update

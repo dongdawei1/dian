@@ -139,8 +139,40 @@ public class DateTimeUtil {
 		}
 
 	}
+	/**
+	 * 判断时间大小
+	 * 
+	 */
+	public static ServerResponse<Object> isdaxiao(String str, String termOfValidity) {
 
-	
+		boolean flag = false;
+		Date nowDate = null;
+		Date pastDate = null;
+		// 格式化日期
+		SimpleDateFormat sdf = new SimpleDateFormat(STANDARD_FORMAT, Locale.CHINA);
+		// 在日期字符串非空时执行
+		if (str != null && !"".equals(str)) {
+			try {
+				// 将字符串转为日期格式，如果此处字符串为非合法日期就会抛出异常。
+				pastDate = sdf.parse(str);
+				nowDate = sdf.parse(termOfValidity);
+				// 调用Date里面的before方法来做判断
+				flag = pastDate.before(nowDate);
+				if (flag) {
+					// System.out.println("该日期早于termOfValidity");
+					return ServerResponse.createBySuccess(!flag);
+				} else {
+					// System.out.println("该日期晚于termOfValidity");
+					return ServerResponse.createBySuccess(!flag);
+				}
+			} catch (ParseException e) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqicuowo.getMessage());
+			}
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.jiageyouxiaoqikong.getMessage());
+		}
+
+	}
 	/**
 	 * 判断是否是过去的日期
 	 * 
@@ -228,10 +260,10 @@ public class DateTimeUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(getWeek());
-		
-    System.out.println(dateTimeToDateString((new Date()).getTime()-15*60*1000));
-		Date nowDate = new Date();
+	//	System.out.println(getWeek());
+//		
+//    System.out.println(dateTimeToDateString((new Date()).getTime()-15*60*1000));
+//		Date nowDate = new Date();
 //		long lon=1549641600000L;
 //		System.out.println(nowDate);
 //		System.out.println(lon);
@@ -252,31 +284,9 @@ public class DateTimeUtil {
 //,"policyEndTime":1580917799000,"policyInitBeginTime":1549641600000,"policyInitEndTime":1580918399000,"productCode":"AG13","productType":"SHOP","groupPlanId":-1,"planId":0,"maxInsuredAmount":0.0,"premiumRate":0.0,"waitPeriodTime":31507200000,"payRate":0.0,"insuredAmount":0.0,"initType":0,"sourceType":27,"sourceTradeNo":"1806525fa2a316a4c072af7650872867","shouldReciveTime":31507200000,"frontCategoryId":null,"payOrderId":"288397016306532358","insurantName":"沉沉额","insurantBirthday":294854400000,"insurantCertNo":"110101197905077336","insurantCertNoEnc":"AbH4rZaaG+yCpD90+7CNc8VCm3QxmJiKhU8mBj+MpRU=","insurantCertNoType":1,"insurantGender":1,"insurantMobile":null,"insurantMobileEnc":null,"insurantRelationToApplicant":2,"originStatus":3}],"httpStatus":200,"errorCode":0,"errorMsg":"ok"},"status":200}||_msg=http外部请求成功响应||spanid=860003276045ec0||traceid=0a60647a5e3be1ec0001b25e00002020
 // "policyEndTime":1581177599000,"policyInitBeginTime":1581004800000,"policyInitEndTime":1612627199000,"productCode":"AG13","productType":"SHOP","groupPlanId":-1,"planId":0,"maxInsuredAmount":0.0,"premiumRate":0.0,"waitPeriodTime":31507200000,"payRate":0.0,"insuredAmount":0.0,"initType":0,"sourceType":27,"sourceTradeNo":"1806525fa2a316a4c072af7650872867","shouldReciveTime":31507200000,"frontCategoryId":null,"payOrderId":"288397016306532358","insurantName":"沉沉额","insurantBirthday":294854400000,"insurantCertNo":"110101197905077336","insurantCertNoEnc":"AbH4rZaaG+yCpD90+7CNc8VCm3QxmJiKhU8mBj+MpRU=","insurantCertNoType":1,"insurantGender":1,"insurantMobile":null,"insurantMobileEnc":null,"insurantRelationToApplicant":2,"originStatus":3}],"httpStatus":200,"errorCode":0,"errorMsg":"ok"},"status":200}||_msg=http外部请求成功响应||spanid=82060109f9f1c1b||traceid=0a60647a5e3bd5180001b25e00001920
 
-		System.out.println("policyEndTime  上边成功下边失败");
-		System.out.println(dateTimeToDateString(1580917799000L));
-		System.out.println(dateTimeToDateString(1581177599000L));
-		System.out.println("policyInitBeginTime");
-		System.out.println(dateTimeToDateString(1549641600000L));
-		System.out.println(dateTimeToDateString(1581004800000L));
-		System.out.println("policyInitEndTime");
-		System.out.println(dateTimeToDateString(1580918399000L));
-		System.out.println(dateTimeToDateString(1612627199000L));
 		
-		
-		
-		SimpleDateFormat sdf = new SimpleDateFormat(STANDARD_FORMAT, Locale.CHINA);
-		
-		DateTime dateTime = new DateTime(strToDate(a_few_days_later(-2)));
-		dateTime.toString("yyyy-MM-dd");
-		System.out.println(dateTime.toString("yyyy-MM-dd"));
-		// dateCompare(0);ServerResponse [status=0, msg=null, data=true]
-		System.out.println(DateTimeUtil.strToDate("2019-12-27 09:00:00"));
-
-		System.out.println(strToDate(a_few_days_later(-2)).toString());
-
-		// Wed Jan 01 10:20:59 CST 2020
-		System.out.println(new Date());
-		System.out.println(DateTimeUtil.strToDate("2010-01-01 11:11:11", "yyyy-MM-dd HH:mm:ss"));
+		System.out.println(DateTimeUtil.isPastDate("2110-01-01 11:11:11", 1));
+		System.out.println(DateTimeUtil.isdaxiao("2010-01-01 11:11:13", "2010-01-01 11:11:12"));
 
 	}
 

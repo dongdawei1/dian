@@ -14,4 +14,10 @@ public interface BunnerMapper {
 
 	int getguanggaocount(long tableId, int permissionid);
 
+	List<DibuBunner> getisguanggao(String detailed, int fanwei, int bunnerType, int moren);
+
+	int getisguanggaocount(String detailed, int fanwei, int bunnerType, int moren, String startTime, String endTime);
+
+	void creatdu(DibuBunner dibuBunner);
+
 }
