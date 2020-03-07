@@ -27,16 +27,70 @@
 		and bunnerStatus
 		in(1,0)
 	</select>
-	<!-- 创建广告前查询时间段有无冲突 -->
-	<select id="getisguanggaocount" resultType="int">
-		select count(*) from dibubunner
-		where bunnerType=#{bunnerType} and
-		bunnerStatus in(0,1) and moren=#{moren} 
-		and ( endTime &gt;= #{endTime} or endTime &gt;= #{startTime})
-		<if test="fanwei==1 or fanwei==3"> and detailed like #{detailed}</if>
-		<if test="fanwei==2 or fanwei==4"> and detailed= #{detailed}</if>
-	</select>
+	
+	
 
+	<!-- 全国首页弹窗 -->
+	<select id="quanguoshouyetanchuan" resultType="int">
+		select count(*)
+		from dibubunner
+		where bunnerType=0 and
+		bunnerStatus in(0,1) and moren=1
+		and ( endTime &gt;= #{endTime} or endTime &gt;= #{startTime})
+	</select>
+	<!-- 全省市首页弹窗 -->
+	<select id="quanshishouyetanchuan" resultType="int">
+		select count(*)
+		from dibubunner
+		where bunnerType=0 and  and fanwei=1 and
+		bunnerStatus in(0,1) and moren=1
+		and detailed like #{detailed}
+		and ( endTime &gt;= #{endTime} or endTime
+		&gt;= #{startTime})
+	</select>
+	<!-- 县 区页弹窗 -->
+	<select id="quanqushouyetanchuan" resultType="int">
+		select count(*)
+		from dibubunner
+		where bunnerType=0 and fanwei=2 and
+		bunnerStatus in(0,1) and moren=1
+		and detailed = #{detailed}
+		and ( endTime &gt;= #{endTime} or endTime
+		&gt;= #{startTime})
+	</select>
+	
+		<!-- 全国首页情页轮播轮播 -->
+	<select id="guoshouyelunbo" resultType="int">
+		select count(*)
+		from dibubunner
+		where bunnerType=#{bunnerType} and
+		bunnerStatus in(0,1) and moren=1
+		and ( endTime &gt;= #{endTime} or endTime &gt;= #{startTime})
+	</select>
+	
+	<!-- 全省市首页情页轮播 -->
+	<select id="shishouyelunbo" resultType="int">
+		select count(*)
+		from dibubunner
+		where bunnerType=#{bunnerType} and  fanwei=1 and
+		bunnerStatus in(0,1) and moren=1
+		and detailed like #{detailed}
+		and ( endTime &gt;= #{endTime} or endTime
+		&gt;= #{startTime})
+	</select>
+	<!-- 全区县首页情页轮播 -->
+	<select id="qushouyelunbo" resultType="int">
+		select count(*)
+		from dibubunner
+		where bunnerType=#{bunnerType} and  fanwei=2 and
+		bunnerStatus in(0,1) and moren=1
+		and detailed = #{detailed}
+		and ( endTime &gt;= #{endTime} or endTime
+		&gt;= #{startTime})
+	</select>
+	
+	
+	
 	<!-- 创建广告 -->
 
 	<insert id="creatdu">
@@ -65,8 +119,9 @@
 	<select id="getisguanggao"
 		resultType="com.dian.mmall.pojo.banner.DibuBunner">
 		select id, startTime,endTime,userId,examineName,moren,detailed,
-		bunnerStatus ,bunnerType ,releaseType from dibubunner
-		where bunnerType=#{bunnerType} and bunnerStatus in(0,1) and
+		bunnerStatus ,bunnerType ,releaseType,fanwei from dibubunner
+		where
+		bunnerType=#{bunnerType} and bunnerStatus in(0,1) and
 		moren=#{moren}
 		<if test="fanwei==1 or fanwei==3"> and detailed like #{detailed}</if>
 		<if test="fanwei==2 or fanwei==4"> and detailed= #{detailed}</if>
