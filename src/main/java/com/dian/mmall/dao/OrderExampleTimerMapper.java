@@ -17,4 +17,7 @@ public interface OrderExampleTimerMapper {
 
 	String getcoutn(int tablenameid, long tableId, long userId);
 
+	void timer_guanggaoguoqi(String dateString);
+	void timer_guanggaoshengxiao(String dateString);
+	
 }

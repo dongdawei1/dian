@@ -21,4 +21,10 @@ public interface BunnerService {
 
 	ServerResponse<String> crguanggao(User user, Map<String, Object> params);
 
+
+	ServerResponse<Object> agetguangaoAll(Map<String, Object> params);
+
+
+	ServerResponse<String> aupguangao(User user, Map<String, Object> params);
+
 }

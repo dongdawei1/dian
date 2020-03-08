@@ -87,5 +87,24 @@
 		and welfareStatus in (2,4,5)
 	</update>
 
+	<!-- 定时任务更新 广告更新为失效 -->
+	<update id="timer_guanggaoguoqi">
+		update dibubunner 
+		set
+		updateTime=#{dateString}, examineName='过期定', bunnerStatus=2
+		where
+		endTime  &lt;=  #{dateString}
+		and moren!=0
+	</update>
+	
+	<!-- 定时任务更新 广告更新为生效 -->
+	<update id="timer_guanggaoshengxiao">
+		update dibubunner 
+		set
+		updateTime=#{dateString},  bunnerStatus=1
+		where
+		startTime &lt;=  #{dateString}
+		and bunnerStatus=0
+	</update>
 
 </mapper>

@@ -232,7 +232,6 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public ServerResponse<String> checkUsername(String username) {
 		User user1 = userMapper.checkUsername(username);
-		System.out.println(user1);
 		if (user1 == null) {
 			return ServerResponse.createBySuccessMessage(ResponseMessage.YongHuMingKeYong.getMessage());
 		}
@@ -411,6 +410,15 @@ public class UserServiceImpl implements IUserService {
 			return ServerResponse.createByErrorMessage(ResponseMessage.huoquxinxishibai.getMessage());
 		}
 		user.setPassword(null);
+		return ServerResponse.createBySuccess(user);
+	}
+
+	@Override
+	public ServerResponse<Object> getuserbyname(String userName) {
+		User user= userMapper.checkUsername(userName);
+		if (user == null) {
+			return ServerResponse.createByError();
+		}
 		return ServerResponse.createBySuccess(user);
 	}
 

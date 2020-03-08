@@ -44,4 +44,6 @@ public interface IUserService {
 	ServerResponse<String> update_information(long id, Map<String, Object> params);
 
 	ServerResponse<Object> selectUserById(long userId);
+
+	ServerResponse<Object> getuserbyname(String userName);
 }

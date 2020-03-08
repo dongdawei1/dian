@@ -35,4 +35,34 @@ public interface BunnerMapper {
 
 	int shihexianshouyelunbo(String startTime, String endTime, int bunnerType, String detailed);
 
+	long agetguangaoAll(long userId, String detailed, int fanwei);
+
+	List<DibuBunner> agetguangAll(int pageLength, int pageSize, long userId, String detailed, int fanwei);
+
+	int guanguanggao(String updateTime, long userId, String examineName, int id, int bunnerStatus);
+
+	DibuBunner agetguanggao(long id);
+
+	int guoshou(String startTime, String endTime, int bunnerType);
+
+	int quanguoshouyetanchuan1(String startTime, String endTime, long id);
+
+	int quanshihexianshouyetanchuan1(String startTime, String endTime, String detailed, long id);
+
+	int quanshishouyetanchuan1(String startTime, String endTime, String detailed, long id);
+
+	int quanqushouyetanchuan1(String startTime, String endTime, String detailed, long id);
+
+	int guoshouyelunbo1(String startTime, String endTime, int bunnerType, long id);
+
+	int guoshou1(String startTime, String endTime, int bunnerType, long id);
+
+	int shihexianshouyelunbo1(String startTime, String endTime, int bunnerType, String detailed, long id);
+
+	int shishouyelunbo1(String startTime, String endTime, int bunnerType, String detailed, long id);
+
+	int qushouyelunbo1(String startTime, String endTime, int bunnerType, String detailed, long id);
+
+	int endbunner(DibuBunner dibuBunner);
+
 }

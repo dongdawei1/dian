@@ -10,4 +10,8 @@ public interface OrderExampleTimerService {
 
 	void delall(int a, String dateString, String termOfValidity);
 
+	void timer_guanggaoguoqi(String dateString);
+
+	void timer_guanggaoshengxiao(String dateString);
+
 }

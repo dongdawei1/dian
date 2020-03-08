@@ -32,4 +32,16 @@ public class OrderExampleTimerServiceImpl implements OrderExampleTimerService{
 		
 	}
 
+	@Override
+	public void timer_guanggaoguoqi(String dateString) {
+		omap.timer_guanggaoguoqi(dateString);
+		
+	}
+
+	@Override
+	public void timer_guanggaoshengxiao(String dateString) {
+		omap.timer_guanggaoshengxiao(dateString);
+		
+	}
+
 }

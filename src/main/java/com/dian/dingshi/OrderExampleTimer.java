@@ -35,8 +35,22 @@ public class OrderExampleTimer {
 	@Autowired
 	private OrderExampleTimerService orderExampleTimerService;
 
-	// 每天00点00分01秒时执行,过期定时任务
+	// 每天00点40分01秒时执行,全部过期定时任务
 	@Scheduled(cron = "01 00 00 * * ?")
+	public void timer_guanggaoguoqi() {
+		String dateString = DateTimeUtil.dateToAll();
+		orderExampleTimerService.timer_guanggaoguoqi(dateString);
+	}
+
+	// 每天00点40分01秒时执行,全部过期定时任务
+	@Scheduled(cron = "01 03 00 * * ?")
+	public void timer_guanggaoshengxiao() {
+		String dateString = DateTimeUtil.dateToAll();
+		orderExampleTimerService.timer_guanggaoshengxiao(dateString);
+	}
+
+	// 每天00点40分01秒时执行,全部过期定时任务
+	@Scheduled(cron = "01 40 00 * * ?")
 	public void timer_guoqi() {
 		String dateString = DateTimeUtil.dateToAll();
 		for (int a = 1; a < 7; a++) {
@@ -57,14 +71,13 @@ public class OrderExampleTimer {
 		}
 	}
 
-	
-	// 每天01点00分01秒时执行 删除定时任务
+	// 每天01点00分01秒时执行 全部删除定时任务
 	@Scheduled(cron = "01 00 01 * * ?")
 	public void timer_shanchu() {
 		String dateString = DateTimeUtil.dateToAll();
-		String termOfValidity =DateTimeUtil.a_few_days_later(-30);
+		String termOfValidity = DateTimeUtil.a_few_days_later(-30);
 		for (int a = 1; a < 7; a++) {
-			orderExampleTimerService.delall(a, dateString,termOfValidity);
+			orderExampleTimerService.delall(a, dateString, termOfValidity);
 			if (a == 1) {
 				log.warn("table-{}, id-{} ->删除", "wineandtableware", a);
 			} else if (a == 2) {
@@ -80,7 +93,7 @@ public class OrderExampleTimer {
 			}
 		}
 	}
-	
+
 	// 每天00点30分01秒时执行
 	@Scheduled(cron = "01 30 00 * * ?")
 	public void timerShanchu() {

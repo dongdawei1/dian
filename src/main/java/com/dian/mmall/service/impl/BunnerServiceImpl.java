@@ -9,6 +9,7 @@ import org.apache.ibatis.javassist.expr.NewArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
@@ -18,6 +19,7 @@ import com.dian.mmall.dao.OrderExampleTimerMapper;
 import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.releaseDao.MenuAndRenovationAndPestControlMapper;
+import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.banner.DibuBunner;
 import com.dian.mmall.pojo.chuzufang.Rent;
@@ -31,9 +33,13 @@ import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.pojo.zhiwei.Resume;
 import com.dian.mmall.service.BunnerService;
+import com.dian.mmall.service.IUserService;
 import com.dian.mmall.service.impl.releaseimpl.MenuAndRenovationAndPestControlServiceImpl;
+import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.DateTimeUtil;
+import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
+import com.dian.mmall.util.Strin;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +56,9 @@ public class BunnerServiceImpl implements BunnerService {
 	private CityMapper cityMapper;
 	@Autowired
 	private OrderExampleTimerMapper omap;
+
+	@Autowired
+	private IUserService iUserService;
 
 	@Autowired
 	private MenuAndRenovationAndPestControlMapper menuAndRenovationAndPestControlMapper;
@@ -355,18 +364,18 @@ public class BunnerServiceImpl implements BunnerService {
 
 				if (bunnerType == 0) {
 					if (fanwei == 0) {
-						//全国
+						// 全国
 						co = bunnerMapper.quanguoshouyetanchuan(startTime, endTime);
 						if (co > 0) {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
 						}
 					} else if (fanwei == 1) {
-						//全国
+						// 全国
 						co = bunnerMapper.quanguoshouyetanchuan(startTime, endTime);
 						if (co > 0) {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
 						}
-						//全省
+						// 全省
 						co = bunnerMapper.quanshihexianshouyetanchuan(startTime, endTime,
 								"%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%");
 						if (co > 0) {
@@ -396,7 +405,7 @@ public class BunnerServiceImpl implements BunnerService {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
 						}
 					} else if (fanwei == 1) {
-						co = bunnerMapper.guoshouyelunbo(startTime, endTime, bunnerType);
+						co = bunnerMapper.guoshou(startTime, endTime, bunnerType);
 						if (co > 2) {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
 						}
@@ -406,7 +415,7 @@ public class BunnerServiceImpl implements BunnerService {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
 						}
 					} else if (fanwei == 2) {
-						co = bunnerMapper.guoshouyelunbo(startTime, endTime, bunnerType);
+						co = bunnerMapper.guoshou(startTime, endTime, bunnerType);
 						if (co > 2) {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
 						}
@@ -430,6 +439,434 @@ public class BunnerServiceImpl implements BunnerService {
 			return ServerResponse.createBySuccessMessage(ResponseMessage.caozuochenggong.getMessage());
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
+	}
+
+	@Override
+	public ServerResponse<Object> agetguangaoAll(Map<String, Object> params) {
+//		  userName: '',
+//          selectedOptions: [],//城市detailed
+//          fanwei:'',
+//          //分页开始
+//          currentPage: 1,
+//          pageSize: 20,//每页显示的数量
+
+		String currentPage_string = params.get("currentPage").toString().trim();
+		String pageSize_string = params.get("pageSize").toString().trim();
+		int currentPage = 0;
+		int pageSize = 0;
+
+		if (currentPage_string != null && currentPage_string != "") {
+			currentPage = Integer.parseInt(currentPage_string);
+			if (currentPage <= 0) {
+				return ServerResponse.createByErrorMessage("页数不能小于0");
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入页数");
+		}
+
+		if (pageSize_string != null && !pageSize_string.equals("")) {
+			pageSize = Integer.parseInt(pageSize_string);
+			if (pageSize <= 0) {
+				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+			}
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		}
+
+		int fanwei = -1;
+		String string = params.get("fanwei").toString().trim();
+		if (string != null && !string.equals("")) {
+			fanwei = Integer.parseInt(string);
+		}
+
+		String detailed = null;
+
+		if (fanwei != 0) {
+			List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
+					List.class);
+			if (selectedOptions_list.size() == 3) {
+				Integer provincesId = selectedOptions_list.get(0);
+				Integer cityId = selectedOptions_list.get(1);
+				Integer districtCountyId = selectedOptions_list.get(2);
+				if (fanwei == 2) {
+					detailed = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+				}
+				detailed = "%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%";
+				if (detailed.length() < 2) {
+					ServerResponse.createByErrorMessage(ResponseMessage.cheshichaxunshibai.getMessage());
+				}
+			}
+		}
+
+		String userName = params.get("userName").toString().trim();
+		long userId = 0;
+		if (userName != null && !userName.equals("")) {
+			ServerResponse<Object> serverResponse = iUserService.getuserbyname(userName);
+			if (serverResponse.getStatus() == 0) {
+				userId = ((User) serverResponse.getData()).getId();
+			} else {
+				ServerResponse.createByErrorMessage(ResponseMessage.huoquxinxishibai.getMessage());
+			}
+
+		}
+
+		Page<DibuBunner> equipment_pagePage = new Page<DibuBunner>();
+
+		long zongtiaoshu = bunnerMapper.agetguangaoAll(userId, detailed, fanwei);
+		if (zongtiaoshu == 0) {
+			ServerResponse.createByErrorMessage(ResponseMessage.jieguokong.getMessage());
+		}
+		equipment_pagePage.setTotalno(zongtiaoshu);
+		equipment_pagePage.setPageSize(pageSize);
+		equipment_pagePage.setCurrentPage(currentPage); // 当前页
+
+		// 查询list
+		List<DibuBunner> dibuBunner = bunnerMapper.agetguangAll((currentPage - 1) * pageSize, pageSize, userId,
+				detailed, fanwei);
+
+		if (userId != 0) {
+			for (int a = 0; a < dibuBunner.size(); a++) {
+				DibuBunner di = dibuBunner.get(a);
+				di.setIntroduceList(userName);
+				dibuBunner.set(a, di);
+			}
+		} else {
+			for (int a = 0; a < dibuBunner.size(); a++) {
+				DibuBunner di = dibuBunner.get(a);
+				ServerResponse<Object> serverResponse = iUserService.selectUserById(di.getUserId());
+				if (serverResponse.getStatus() == 0) {
+					di.setIntroduceList(((User) serverResponse.getData()).getUsername());
+				}
+				dibuBunner.set(a, di);
+			}
+		}
+
+		equipment_pagePage.setDatas(dibuBunner);
+		return ServerResponse.createBySuccess(equipment_pagePage);
+
+	}
+
+	@Override
+	public ServerResponse<String> aupguangao(User user, Map<String, Object> params) {
+		String typeString = params.get("type").toString().trim();
+		String idString = params.get("id").toString().trim();
+		if (typeString != null && !typeString.equals("")) {
+			int type = Integer.valueOf(typeString);
+			// 1编辑，2马上发布，3关闭发布
+			int retult = 0;
+			String updateTime = DateTimeUtil.dateToAll();
+			int id = Integer.valueOf(idString);
+			if (type == 3) {
+				retult = bunnerMapper.guanguanggao(updateTime, user.getId(), user.getUsername(), id, 3);
+			} else if (type == 1 || type == 2) {
+				if (type == 2) {
+					ServerResponse<String> response = checke(id, null, type);
+					if (response.getStatus() != 0) {
+						return response;
+					}
+					retult = bunnerMapper.guanguanggao(updateTime, user.getId(), user.getUsername(), id, 1);
+				} else if (type == 1) {
+					int tablenameid = Integer.parseInt(params.get("tablenameid").toString().trim());
+					long tableId = Long.parseLong(params.get("tableId").toString().trim());
+					long userId = Long.parseLong(params.get("userId").toString().trim());
+
+					String termOfValidity = omap.getcoutn(tablenameid, tableId, userId) + " 00:00:00";
+					List<String> value1_list = JsonUtil.list2Obj((List<String>) params.get("value1"), List.class,
+							String.class);
+					if (value1_list.size() != 2) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.fabushijiancuowu.getMessage());
+					}
+					String startTime = value1_list.get(0);
+					String endTime = value1_list.get(1);
+
+					// 判断时间是否小于当前时间
+					ServerResponse<Object> serverResponseObject = DateTimeUtil.isPastDate(startTime, 1);
+					if (serverResponseObject.getStatus() == 0) {
+						if (!(boolean) serverResponseObject.getData()) {
+							return ServerResponse.createByErrorMessage(ResponseMessage.fabuishicuowo.getMessage());
+						}
+					} else {
+						return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
+					}
+					serverResponseObject = DateTimeUtil.isPastDate(endTime, 1);
+					if (serverResponseObject.getStatus() == 0) {
+						if (!(boolean) serverResponseObject.getData()) {
+							return ServerResponse
+									.createByErrorMessage(ResponseMessage.fabuijieshushicuowo.getMessage());
+						}
+					} else {
+						return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
+					}
+					// 判断时间 是否小于 发布结束时间
+					serverResponseObject = DateTimeUtil.isdaxiao(startTime, termOfValidity);
+					if (serverResponseObject.getStatus() == 0) {
+						if ((boolean) serverResponseObject.getData()) {
+							return ServerResponse.createByErrorMessage(ResponseMessage.fabuishicuo.getMessage());
+						}
+					} else {
+						return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
+					}
+					serverResponseObject = DateTimeUtil.isdaxiao(endTime, termOfValidity);
+					if (serverResponseObject.getStatus() == 0) {
+						if ((boolean) serverResponseObject.getData()) {
+							return ServerResponse.createByErrorMessage(ResponseMessage.fabuishicuo.getMessage());
+						}
+					} else {
+						return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
+					}
+					
+					int fanwei = Integer.parseInt(params.get("fanwei").toString().trim());
+					if (fanwei != 0 && fanwei != 1 && fanwei != 2 && fanwei != 3 && fanwei != 4) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.fabuchengshi.getMessage());
+					}
+					DibuBunner cheBunner = cheBunner = bunnerMapper.agetguanggao(id);
+					String detailed=null;
+					if (fanwei == 3 || fanwei == 4) {
+
+						List<Integer> selectedOptions_list = JsonUtil
+								.string2Obj(params.get("selectedOptions").toString().trim(), List.class);
+
+						if (selectedOptions_list.size() == 3) {
+							Integer provincesId = selectedOptions_list.get(0);
+							Integer cityId = selectedOptions_list.get(1);
+							Integer districtCountyId = selectedOptions_list.get(2);
+
+							detailed = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+							if (detailed == null) {
+								return ServerResponse
+										.createByErrorMessage(ResponseMessage.ChengShichaxunshibai.getMessage());
+							}
+						}
+					}else {
+						detailed=cheBunner.getDetailed();				}
+					
+					// 范围范围 0全国优先级最高，1全市，2全区 ,3手动全市省，4手动县区
+					if (fanwei == 3) {
+						fanwei = 1;
+					} else if (fanwei == 4) {
+						fanwei = 2;
+					}
+//				         bunnerType: 1,//0首页弹窗，1首页轮播，2详情页轮播，3边测独立窗口，4其他
+//				         moren: 1,//是否是默认 0是1不是，先查1
+
+					int bunnerType = Integer.parseInt(params.get("bunnerType").toString().trim());
+					if (bunnerType != 0 && bunnerType != 1 && bunnerType != 2) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.fabuweizhi.getMessage());
+					}
+					int moren = Integer.parseInt(params.get("moren").toString().trim());
+					if (moren != 0 && moren != 1) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixing.getMessage());
+					}
+					
+
+					String dibuBunnerbiaoti = params.get("dibuBunnerbiaoti").toString().trim();
+					String url = params.get("url").toString().trim();
+					if (dibuBunnerbiaoti == null || url == null || dibuBunnerbiaoti.equals("") || url.equals("")) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.shurucuowo.getMessage());
+					}
+
+					
+
+					// 检查图片
+					ServerResponse<String> serverResponseString = setPictureUrl(
+							(ArrayList<Picture>) params.get("imgUrl"), cheBunner.getImgUrl());
+					if (serverResponseString.getStatus() != 0) {
+						return serverResponseString;
+					}
+
+					DibuBunner dibuBunner = new DibuBunner();
+					dibuBunner.setCreateId(user.getId());
+					dibuBunner.setImgUrl(serverResponseString.getMsg());
+					dibuBunner.setExamineName(user.getUsername());
+					dibuBunner.setStartTime(startTime);
+					dibuBunner.setEndTime(endTime);
+					dibuBunner.setDetailed(detailed);
+					dibuBunner.setMoren(moren);
+					dibuBunner.setFanwei(fanwei);
+					dibuBunner.setDibuBunnerbiaoti(dibuBunnerbiaoti);
+					dibuBunner.setBunnerType(bunnerType);
+					dibuBunner.setUpdateTime(updateTime);
+					dibuBunner.setId(id);
+					ServerResponse<String> response = checke(id, dibuBunner, type);
+					if (response.getStatus() != 0) {
+						return response;
+					}
+
+					retult = bunnerMapper.endbunner(dibuBunner);
+				}
+
+			} else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.caozuoleixincuowu.getMessage());
+			}
+			if (retult > 0) {
+				try {
+					List<Picture> listObj4 = JsonUtil.list2Obj((ArrayList<Picture>) params.get("imgUrl"), List.class,
+							Picture.class);
+					for (int a = 0; a < listObj4.size(); a++) {
+						Picture picture = listObj4.get(a);
+						if (picture.getUseStatus() == 2) {
+							FileControl.deleteFile(Const.PATH_E_IMG + picture.getUserName());
+							pictureMapper.updatePicture(picture.getId());
+
+						}
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				return ServerResponse.createBySuccessMessage(ResponseMessage.caozuochenggong.getMessage());
+
+			}
+			return ServerResponse.createByErrorMessage(ResponseMessage.caozuoshibai.getMessage());
+
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.caozuoleixincuowu.getMessage());
+		}
+
+	}
+
+	private ServerResponse<String> checke(long id, DibuBunner dibuBunner, int type) {
+		// 1编辑，2马上开启发布
+		DibuBunner cheBunner = cheBunner = bunnerMapper.agetguanggao(id);
+		if (cheBunner == null) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
+		}
+		if (type == 2) {
+			if (cheBunner.getMoren() == 0) {
+				return ServerResponse.createBySuccess();
+			}
+			return checkefabu(cheBunner);
+		} else if (type == 1) {
+			return checkefabu(dibuBunner);
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.caozuoleixincuowu.getMessage());
+	}
+
+	private ServerResponse<String> checkefabu(DibuBunner dibuBunner) {
+		int co = 0;
+		//// bunnerType 0首页弹窗，1首页轮播，2详情页轮播，3边测独立窗口，4其他
+//         fanwei: 2,//范围范围 0全国优先级最高，1全市，2全区 ,3手动全市省，4手动县区
+
+		int bunnerType = dibuBunner.getBunnerType();
+		int fanwei = dibuBunner.getFanwei();
+		String startTime = dibuBunner.getStartTime();
+		String endTime = dibuBunner.getEndTime();
+		String detailed = dibuBunner.getDetailed();
+		String shengdetailed = null;
+		ServerResponse<String> response = Strin.setTocken(detailed, 2);
+		if (response.getStatus() == 0) {
+			shengdetailed = "%" + response.getMsg() + "%";
+		}
+		long id = dibuBunner.getId();
+		if (bunnerType == 0) {
+			if (fanwei == 0) {
+				// 全国
+				co = bunnerMapper.quanguoshouyetanchuan1(startTime, endTime, id);
+				if (co > 0) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+			} else if (fanwei == 1) {
+				// 全国
+				co = bunnerMapper.quanguoshouyetanchuan1(startTime, endTime, id);
+				if (co > 0) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+				// 全省
+				co = bunnerMapper.quanshihexianshouyetanchuan1(startTime, endTime, shengdetailed, id);
+				if (co > 0) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+
+			} else if (fanwei == 2) {
+				co = bunnerMapper.quanguoshouyetanchuan1(startTime, endTime, id);
+				if (co > 0) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+				co = bunnerMapper.quanshishouyetanchuan1(startTime, endTime, shengdetailed, id);
+				if (co > 0) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+				co = bunnerMapper.quanqushouyetanchuan1(startTime, endTime, detailed, id);
+
+				if (co > 0) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+			}
+		} else if (bunnerType == 1 || bunnerType == 2) {
+			if (fanwei == 0) {
+				co = bunnerMapper.guoshouyelunbo1(startTime, endTime, bunnerType, id);
+				if (co > 2) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+			} else if (fanwei == 1) {
+				co = bunnerMapper.guoshou1(startTime, endTime, bunnerType, id);
+				if (co > 2) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+				int shi = bunnerMapper.shihexianshouyelunbo1(startTime, endTime, bunnerType, shengdetailed, id);
+				if (co + shi > 2) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+			} else if (fanwei == 2) {
+				co = bunnerMapper.guoshou1(startTime, endTime, bunnerType, id);
+				if (co > 2) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+				int shi = bunnerMapper.shishouyelunbo1(startTime, endTime, bunnerType, shengdetailed, id);
+				if (co + shi > 2) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+				int qu = bunnerMapper.qushouyelunbo1(startTime, endTime, bunnerType, detailed, id);
+				if (co + shi + qu > 2) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
+				}
+			}
+		}
+		return ServerResponse.createBySuccess();
+	}
+
+	// 编辑时检查图片并重新赋值
+	public ServerResponse<String> setPictureUrl(Object object, String PictureUrl) {
+		// 前端传入
+		List<Picture> listObj3 = JsonUtil.list2Obj((ArrayList<Picture>) object, List.class, Picture.class);
+		// 数据库查询
+		List<Picture> listObj4 = JsonUtil.string2Obj(PictureUrl, List.class, Picture.class);
+		if (listObj3.size() == 0 || listObj4.size() == 0) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());
+		}
+		List<Picture> listObjCun = new ArrayList<Picture>();
+
+		// 处理编辑后
+		for (int a3 = 0; a3 < listObj3.size(); a3++) {
+			Picture picture = listObj3.get(a3);
+			long id3 = picture.getId();
+			int useStatus = picture.getUseStatus();
+			if (useStatus == 1) {
+				// 1上传更新为3使用
+				pictureMapper.updatePictureUse(id3);
+				picture.setUseStatus(3);
+				listObjCun.add(picture);
+			} else if (useStatus == 3) {
+
+				boolean fanduanshifouweiyijingchunli = false;
+
+				for (int a4 = 0; a4 < listObj4.size(); a4++) {
+					if (id3 == listObj4.get(a4).getId()) {
+						listObjCun.add(picture);
+						fanduanshifouweiyijingchunli = true;
+						break;
+					}
+				}
+				if (fanduanshifouweiyijingchunli == false) {
+					return ServerResponse.createByErrorMessage(ResponseMessage.benditupianbucunzai.getMessage());
+				}
+			}
+		}
+		if (listObjCun.size() > 0) {
+			return ServerResponse.createBySuccessMessage(JsonUtil.obj2StringPretty(listObjCun));
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());
+
 	}
 
 }

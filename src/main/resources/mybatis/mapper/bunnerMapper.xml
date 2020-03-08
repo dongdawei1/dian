@@ -40,6 +40,18 @@
 		#{startTime})
 	</select>
 
+	<!-- 全国首页弹窗修改 -->
+	<select id="quanguoshouyetanchuan1" resultType="int">
+		select count(*)
+		from dibubunner
+		where bunnerType=0 and
+		bunnerStatus in(0,1) and moren=1
+		and ( endTime &gt;= #{endTime} or endTime &gt;=
+		#{startTime}) and
+		id!=#{id}
+	</select>
+
+
 	<!-- 创建 全省市首页弹窗 查询 全省市的 发布总数 -->
 	<select id="quanshihexianshouyetanchuan" resultType="int">
 		select
@@ -51,6 +63,19 @@
 		and (
 		endTime &gt;= #{endTime} or endTime
 		&gt;= #{startTime})
+	</select>
+
+	<!-- 编辑 全省市首页弹窗 查询 全省市的 发布总数 -->
+	<select id="quanshihexianshouyetanchuan1" resultType="int">
+		select
+		count(*)
+		from dibubunner
+		where bunnerType=0 and fanwei in(1,2) and
+		bunnerStatus in(0,1) and moren=1
+		and detailed like #{detailed}
+		and (
+		endTime &gt;= #{endTime} or endTime
+		&gt;= #{startTime}) and id!=#{id}
 	</select>
 
 	<!-- 全省市首页弹窗 -->
@@ -65,6 +90,18 @@
 		or endTime
 		&gt;= #{startTime})
 	</select>
+	<!-- 编辑全省市首页弹窗 -->
+	<select id="quanshishouyetanchuan1" resultType="int">
+		select count(*)
+		from dibubunner
+		where bunnerType=0 and fanwei=1 and
+		bunnerStatus in(0,1)
+		and moren=1
+		and detailed like #{detailed}
+		and ( endTime &gt;= #{endTime}
+		or endTime
+		&gt;= #{startTime}) and id!=#{id}
+	</select>
 	<!-- 县 区页弹窗 -->
 	<select id="quanqushouyetanchuan" resultType="int">
 		select count(*)
@@ -78,16 +115,70 @@
 		&gt;= #{startTime})
 	</select>
 
+	<!-- 编辑 县 区页弹窗 -->
+	<select id="quanqushouyetanchuan1" resultType="int">
+		select count(*)
+		from dibubunner
+		where bunnerType=0 and fanwei=2 and
+		bunnerStatus in(0,1)
+		and moren=1
+		and detailed = #{detailed}
+		and ( endTime &gt;= #{endTime} or
+		endTime
+		&gt;= #{startTime}) and id!=#{id}
+	</select>
+
 	<!-- 全国首页情页轮播轮播 -->
 	<select id="guoshouyelunbo" resultType="int">
 		select count(*)
 		from
 		dibubunner
-		where bunnerType=#{bunnerType} and fanwei=0 and
+		where bunnerType=#{bunnerType} and
 		bunnerStatus
-		in(0,1) and moren=1
+		in(0,1) and
+		moren=1
 		and ( endTime &gt;= #{endTime} or endTime &gt;=
 		#{startTime})
+	</select>
+	<!-- 编辑全国首页情页轮播轮播 -->
+	<select id="guoshouyelunbo1" resultType="int">
+		select count(*)
+		from
+		dibubunner
+		where bunnerType=#{bunnerType} and
+		bunnerStatus
+		in(0,1) and
+		moren=1
+		and ( endTime &gt;= #{endTime} or endTime &gt;=
+		#{startTime})
+		and id!=#{id}
+	</select>
+
+	<!-- 全国首页情页轮播轮播 范围是0 -->
+	<select id="guoshou" resultType="int">
+		select count(*)
+		from
+		dibubunner
+		where bunnerType=#{bunnerType} and fanwei=0 and
+		bunnerStatus
+		in(0,1) and
+		moren=1
+		and ( endTime &gt;= #{endTime} or endTime &gt;=
+		#{startTime})
+	</select>
+
+	<!--编辑 全国首页情页轮播轮播 范围是0 -->
+	<select id="guoshou1" resultType="int">
+		select count(*)
+		from
+		dibubunner
+		where bunnerType=#{bunnerType} and fanwei=0 and
+		bunnerStatus
+		in(0,1) and
+		moren=1
+		and ( endTime &gt;= #{endTime} or endTime &gt;=
+		#{startTime})
+		and id!=#{id}
 	</select>
 
 	<!-- 全省市首页情页轮播 -->
@@ -103,7 +194,19 @@
 		#{endTime} or endTime
 		&gt;= #{startTime})
 	</select>
-
+	<!-- 编辑全省市首页情页轮播 -->
+	<select id="shishouyelunbo1" resultType="int">
+		select count(*)
+		from
+		dibubunner
+		where bunnerType=#{bunnerType} and fanwei=1 and
+		bunnerStatus
+		in(0,1) and moren=1
+		and detailed like #{detailed}
+		and ( endTime &gt;=
+		#{endTime} or endTime
+		&gt;= #{startTime}) and id!=#{id}
+	</select>
 	<!-- 全省市首页详情页轮播 -->
 	<select id="shihexianshouyelunbo" resultType="int">
 		select count(*)
@@ -113,9 +216,25 @@
 		bunnerStatus
 		in(0,1) and moren=1
 		and detailed like #{detailed}
-		and ( endTime &gt;=
+		and (
+		endTime &gt;=
 		#{endTime} or endTime
 		&gt;= #{startTime})
+	</select>
+
+	<!-- 编辑全省市首页详情页轮播 -->
+	<select id="shihexianshouyelunbo1" resultType="int">
+		select count(*)
+		from
+		dibubunner
+		where bunnerType=#{bunnerType} and fanwei in(1,2) and
+		bunnerStatus
+		in(0,1) and moren=1
+		and detailed like #{detailed}
+		and (
+		endTime &gt;=
+		#{endTime} or endTime
+		&gt;= #{startTime}) and id!=#{id}
 	</select>
 	<!-- 全区县首页情页轮播 -->
 	<select id="qushouyelunbo" resultType="int">
@@ -131,7 +250,19 @@
 		&gt;= #{startTime})
 	</select>
 
-
+<!-- 编辑 全区县首页情页轮播 -->
+	<select id="qushouyelunbo1" resultType="int">
+		select count(*)
+		from
+		dibubunner
+		where bunnerType=#{bunnerType} and fanwei=2 and
+		bunnerStatus
+		in(0,1) and moren=1
+		and detailed = #{detailed}
+		and ( endTime &gt;=
+		#{endTime} or endTime
+		&gt;= #{startTime}) and id!=#{id}
+	</select>
 
 	<!-- 创建广告 -->
 
@@ -169,6 +300,62 @@
 		<if test="fanwei==2 or fanwei==4"> and detailed= #{detailed}</if>
 	</select>
 
+	<!-- 条件查询全部 -->
+	<select id="agetguangaoAll" resultType="long">
+		select count(*)
+		from
+		dibubunner
+		where bunnerStatus in (0,1,2,3)
+		<if test="userId !=0 "> and userId=#{userId} </if>
+		<if test="fanwei ==-1 and detailed !=null and  detailed.trim()!=''">and detailed = #{detailed}  </if>
+		<if test="fanwei ==2 and detailed !=null and  detailed.trim()!=''">and detailed = #{detailed}  </if>
+		<if test="fanwei ==1 and detailed !=null and  detailed.trim()!=''">and detailed like #{detailed}  </if>
+	</select>
+	<!-- 条件查询全部 -->
+	<select id="agetguangAll"
+		resultType="com.dian.mmall.pojo.banner.DibuBunner">
+		select *
+		from
+		dibubunner
+		where bunnerStatus in (0,1,2,3)
+		<if test="userId !=0 "> and userId=#{userId} </if>
+		<if test="fanwei ==-1 and detailed !=null and  detailed.trim()!=''">and detailed = #{detailed}  </if>
+		<if test="fanwei ==2 and detailed !=null and  detailed.trim()!=''">and detailed = #{detailed}  </if>
+		<if test="fanwei ==1 and detailed !=null and  detailed.trim()!=''">and detailed like #{detailed}  </if>
+		limit #{pageLength}, #{pageSize}
+	</select>
 
+	<!-- 管理关闭 -->
+	<update id="guanguanggao">
+		update dibubunner
+		set
+		updateTime=#{updateTime},
+		bunnerStatus=#{bunnerStatus} ,examineName=#{examineName}
+		where id=#{id}
+	</update>
+	
+	
+	<!-- 管理编辑 -->
+	<update id="endbunner">
+		update dibubunner
+		set
+		updateTime=#{updateTime},createId=#{createId},examineName=#{examineName},
+		startTime=#{startTime} ,endTime=#{endTime},detailed=#{detailed},
+		moren=#{moren},fanwei=#{fanwei},dibuBunnerbiaoti=#{dibuBunnerbiaoti},
+		bunnerType=#{bunnerType},imgUrl=#{imgUrl}
+				where id=#{id}
+	</update>
+	
+	
+	<!-- 根据id查询 -->
+	<select id="agetguanggao"
+		resultType="com.dian.mmall.pojo.banner.DibuBunner">
+		select id ,bunnerType,permissionid,tablenameid,imgUrl,
+		tableId,detailed,startTime,endTime,fanwei,moren
+		from
+		dibubunner
+		where
+		id=#{id}
+	</select>
 
 </mapper>

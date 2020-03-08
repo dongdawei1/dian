@@ -23,6 +23,7 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
 import com.dian.mmall.util.MD5Util;
+import com.dian.mmall.util.Strin;
 import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer.FromDecimalArguments;
 
 public class Test1 {
@@ -33,10 +34,13 @@ public class Test1 {
 		System.out.println(float1/4);
 		System.out.println(new Double(10*0.06).intValue());
     StringBuffer serviceDetailed = new StringBuffer("北京市/市辖区/东城区");
+   
     
-    float a1=1/100;
-    System.out.println( Math.ceil(1.0/100));
-    String string = "%北京市/市辖区/东城区/东w城区%";
+    
+    String string = "北京市/市辖区/东城区/东w城区%";
+    
+System.out.println(Strin.setTocken(string, 2).getMsg());
+    
     //这里是获取"/"符号的位置
     Matcher slashMatcher = Pattern.compile("/").matcher(string);
     int mIdx = 0;
@@ -45,14 +49,16 @@ public class Test1 {
         System.out.println(slashMatcher.group());
         mIdx++;
         //当"/"符号第三次出现的位置
-        if(mIdx == 3){
+        if(mIdx == 2){
             break;
         }
     }
     
     
+    
+   // %北京市/市辖区/东城区%  北京市/市辖区%
     System.out.println(string.substring(0, slashMatcher.start())+"%");
-    System.out.println((int)10/2);
+ 
     
     int a=1;
     

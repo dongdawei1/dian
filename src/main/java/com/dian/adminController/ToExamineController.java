@@ -519,7 +519,7 @@ public class ToExamineController {
 
 	}
 	
-	// 创建广告前查询实名信息
+	// 创建广告
 		@RequestMapping(value = "crguanggao", method = RequestMethod.POST)
 		@ResponseBody
 		public ServerResponse<String> crguanggao(HttpServletRequest httpServletRequest,
@@ -530,6 +530,32 @@ public class ToExamineController {
 			}
 			User user = (User) serverResponse.getData();
 			return bunnerService.crguanggao(user,params);
+
+		}
+		
+		// 获取全部广告
+		@RequestMapping(value = "agetguangaoAll", method = RequestMethod.POST)
+		@ResponseBody
+		public ServerResponse<Object> agetguangaoAll(HttpServletRequest httpServletRequest,
+				@RequestBody Map<String, Object> params) {
+			ServerResponse<Object> serverResponse = CheckLand.checke_role(httpServletRequest);
+			if (serverResponse.getStatus() != 0) {
+				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+			}
+			return bunnerService.agetguangaoAll(params);
+
+		}
+		// 获取全部广告
+		@RequestMapping(value = "aupguangao", method = RequestMethod.POST)
+		@ResponseBody
+		public ServerResponse<String> aupguangao(HttpServletRequest httpServletRequest,
+				@RequestBody Map<String, Object> params) {
+			ServerResponse<Object> serverResponse = CheckLand.checke_role(httpServletRequest);
+			if (serverResponse.getStatus() != 0) {
+				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+			}
+			User user = (User) serverResponse.getData();
+			return bunnerService.aupguangao(user,params);
 
 		}
 }

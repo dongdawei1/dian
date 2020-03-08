@@ -89,6 +89,7 @@ public enum ResponseMessage {
 	weibaozhengxinxianquan("为保证用户信息安全，每天只能查询20次联系方式"),
 	chaxunshibai("查询失败"),
 	weichadaojieguo("未查询到实名信息"),
+	
 	yifabuguojianli("已发布过简历"),
 	weifabuguojianli("未发布过简历"),
 	fabuleixingkong("发布类型不能为空"),
@@ -140,6 +141,7 @@ public enum ResponseMessage {
 	baozhuangfangshikong("包装方式不能为空"),
 	baozhuangfangshicuowo("包装方式选择错误"),
 	danweikong("单位不能为空"),
+	jieguokong("查询结果为空"),
 	danweicuowo("单位不存在"),
 	danweiyubaozhuangbupipei("选择的单位与包装不匹配"),
 	guigekong("包装规格不能为空"),
