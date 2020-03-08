@@ -28,7 +28,7 @@ public enum ResponseMessage {
    	BianJiChengGongChongXinDengLu("编辑成功重新登陆"),
 	YongHuLeiXingCuoWu("用户类型错误"),
 	ChengShiBuHeFa("城市输入不合法"),
-	ciquyushijianduan("此区域该时间段已有发布"),
+	ciquyushijianduan("此区域该时间段已达发布总数上限,请扩大显示城市范围确认"),
 	ChengShichaxunshibai("城市查询失败"),
 	fabuweizhi("发布位置不合法"),
 	fabuleixing("优先级别不合法"),

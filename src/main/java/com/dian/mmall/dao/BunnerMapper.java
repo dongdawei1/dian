@@ -16,7 +16,6 @@ public interface BunnerMapper {
 
 	List<DibuBunner> getisguanggao(String detailed, int fanwei, int bunnerType, int moren);
 
-	//int getisguanggaocount(String detailed, int fanwei, int bunnerType, int moren, String startTime, String endTime);
 
 	void creatdu(DibuBunner dibuBunner);
 
@@ -31,5 +30,9 @@ public interface BunnerMapper {
 	int shishouyelunbo(String startTime, String endTime, int bunnerType, String detailed);
 
 	int qushouyelunbo(String startTime, String endTime, int bunnerType, String detailed);
+
+	int quanshihexianshouyetanchuan(String startTime, String endTime, String detailed);
+
+	int shihexianshouyelunbo(String startTime, String endTime, int bunnerType, String detailed);
 
 }

@@ -122,18 +122,18 @@ public class BunnerServiceImpl implements BunnerService {
 			}
 
 			int fanwei = Integer.parseInt(params.get("fanwei").toString().trim());
-			if(fanwei==3) {
-				fanwei=1;
-			}else if(fanwei==4) {
-				fanwei=2;
+			if (fanwei == 3) {
+				fanwei = 1;
+			} else if (fanwei == 4) {
+				fanwei = 2;
 			}
-			
+
 			if (fanwei == 0) {
 				String detailed = null;
 				map.put("detailed", "全国");
 				List<DibuBunner> lsTanchuang = bunnerMapper.getisguanggao(detailed, fanwei, bunnerType, moren);
 				map.put("listdi", lsTanchuang);
-			} else if (fanwei == 1 ) {
+			} else if (fanwei == 1) {
 				String detailed = "%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%";
 				if (detailed.equals("%%")) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
@@ -141,7 +141,7 @@ public class BunnerServiceImpl implements BunnerService {
 				map.put("detailed", detailed);
 				List<DibuBunner> lsTanchuang = bunnerMapper.getisguanggao(detailed, fanwei, bunnerType, moren);
 				map.put("listdi", lsTanchuang);
-			} else if (fanwei == 2 ) {
+			} else if (fanwei == 2) {
 				String detailed = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
 				if (detailed == null) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
@@ -256,11 +256,11 @@ public class BunnerServiceImpl implements BunnerService {
 			if (fanwei != 0 && fanwei != 1 && fanwei != 2 && fanwei != 3 && fanwei != 4) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.fabuchengshi.getMessage());
 			}
-			//范围范围 0全国优先级最高，1全市，2全区 ,3手动全市省，4手动县区
-			if(fanwei==3) {
-				fanwei=1;
-			}else if(fanwei==4) {
-				fanwei=2;
+			// 范围范围 0全国优先级最高，1全市，2全区 ,3手动全市省，4手动县区
+			if (fanwei == 3) {
+				fanwei = 1;
+			} else if (fanwei == 4) {
+				fanwei = 2;
 			}
 
 			String dibuBunnerbiaoti = params.get("dibuBunnerbiaoti").toString().trim();
@@ -355,16 +355,19 @@ public class BunnerServiceImpl implements BunnerService {
 
 				if (bunnerType == 0) {
 					if (fanwei == 0) {
+						//全国
 						co = bunnerMapper.quanguoshouyetanchuan(startTime, endTime);
 						if (co > 0) {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
 						}
 					} else if (fanwei == 1) {
+						//全国
 						co = bunnerMapper.quanguoshouyetanchuan(startTime, endTime);
 						if (co > 0) {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
 						}
-						co = bunnerMapper.quanshishouyetanchuan(startTime, endTime,
+						//全省
+						co = bunnerMapper.quanshihexianshouyetanchuan(startTime, endTime,
 								"%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%");
 						if (co > 0) {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
@@ -397,7 +400,7 @@ public class BunnerServiceImpl implements BunnerService {
 						if (co > 2) {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
 						}
-						int shi = bunnerMapper.shishouyelunbo(startTime, endTime, bunnerType,
+						int shi = bunnerMapper.shihexianshouyelunbo(startTime, endTime, bunnerType,
 								"%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%");
 						if (co + shi > 2) {
 							return ServerResponse.createByErrorMessage(ResponseMessage.ciquyushijianduan.getMessage());
