@@ -39,7 +39,7 @@ public class Test1 {
     
     String string = "北京市/市辖区/东城区/东w城区%";
     
-System.out.println(Strin.setTocken(string, 2).getMsg());
+System.out.println(Strin.setTocken(string, 2).getMsg());  //北京市/市辖区
     
     //这里是获取"/"符号的位置
     Matcher slashMatcher = Pattern.compile("/").matcher(string);

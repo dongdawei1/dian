@@ -27,4 +27,7 @@ public interface BunnerService {
 
 	ServerResponse<String> aupguangao(User user, Map<String, Object> params);
 
+
+	ServerResponse<Object> getpguang(User user, Integer permissionid, Integer bunnerType, String appid);
+
 }

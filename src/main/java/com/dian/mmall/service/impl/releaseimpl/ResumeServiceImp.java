@@ -150,7 +150,7 @@ public class ResumeServiceImp implements ResumeService {
 		}
 		// 转男女code为字符串
 		String genString = params.get("gender").toString().trim();
-		if (genString.equals("") || genString == null) {
+		if ( genString == null || genString.equals("") ) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.xingbiebuhefa.getMessage());
 		}
 		int gender = Integer.valueOf(genString);
@@ -164,7 +164,7 @@ public class ResumeServiceImp implements ResumeService {
 
 		// 判断是否公开电话
 		String isPublishContactString = params.get("isPublishContact").toString().trim();
-		if (isPublishContactString.equals("") || isPublishContactString == null) {
+		if (isPublishContactString == null || isPublishContactString.equals("")  ) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shifougongkaidianhualeixingcuowu.getMessage());
 		}
 		int isPublishContact = Integer.valueOf(isPublishContactString);
@@ -174,7 +174,7 @@ public class ResumeServiceImp implements ResumeService {
 		map.put("isPublishContact", isPublishContact);
 		// 判断邮箱和联系方式必须有一个公开email
 		String email = params.get("email").toString().trim();
-		if (isPublishContact == 2 && (email.equals("") || email == null)) {
+		if (isPublishContact == 2 && (email == null || email.equals("")  )) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.gongkaidianhuahuozheshuruyouxiang.getMessage());
 		}
 
@@ -390,11 +390,11 @@ public class ResumeServiceImp implements ResumeService {
 			}  else {
 				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 			}
-			System.out.println("ResumeServiceImp.operation_resume()");
+	
 			if (result > 0) {
 				return ServerResponse.createBySuccess();
 			}
-			System.out.println("R2222222");
+
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.yonghuidbucunzai.getMessage());
 	}
@@ -417,7 +417,7 @@ public class ResumeServiceImp implements ResumeService {
 			return ServerResponse.createByErrorMessage("请正确输入页数");
 		}
 
-		if (pageSize_string != null && pageSize_string != "") {
+		if (pageSize_string != null && !pageSize_string.equals("")) {
 			pageSize = Integer.parseInt(pageSize_string);
 			if (pageSize <= 0) {
 				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
@@ -469,7 +469,7 @@ public class ResumeServiceImp implements ResumeService {
 		int currentPage = 0;
 		int pageSize = 0;
 
-		if (currentPage_string != null && currentPage_string != "") {
+		if (currentPage_string != null && !currentPage_string.equals("")) {
 			currentPage = Integer.parseInt(currentPage_string);
 			if (currentPage <= 0) {
 				return ServerResponse.createByErrorMessage("页数不能小于0");
@@ -479,7 +479,7 @@ public class ResumeServiceImp implements ResumeService {
 			return ServerResponse.createByErrorMessage("请正确输入页数");
 		}
 
-		if (pageSize_string != null && pageSize_string != "") {
+		if (pageSize_string != null && !pageSize_string.equals("")) {
 			pageSize = Integer.parseInt(pageSize_string);
 			if (pageSize <= 0) {
 				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");

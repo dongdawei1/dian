@@ -581,7 +581,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		int currentPage = 0;
 		int pageSize = 0;
 
-		if (currentPage_string != null && currentPage_string != "") {
+		if (currentPage_string != null && !currentPage_string.equals("")) {
 			currentPage = Integer.parseInt(currentPage_string);
 			if (currentPage <= 0) {
 				return ServerResponse.createByErrorMessage("页数不能小于0");
@@ -591,7 +591,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			return ServerResponse.createByErrorMessage("请正确输入页数");
 		}
 
-		if (pageSize_string != null && pageSize_string != "") {
+		if (pageSize_string != null && !pageSize_string.equals("")) {
 			pageSize = Integer.parseInt(pageSize_string);
 			if (pageSize <= 0) {
 				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
@@ -819,7 +819,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		int currentPage = 0;
 		int pageSize = 0;
 
-		if (currentPage_string != null && currentPage_string != "") {
+		if (currentPage_string != null && !currentPage_string.equals("")) {
 			currentPage = Integer.parseInt(currentPage_string);
 			if (currentPage <= 0) {
 				return ServerResponse.createByErrorMessage("页数不能小于0");
@@ -829,7 +829,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			return ServerResponse.createByErrorMessage("请正确输入页数");
 		}
 
-		if (pageSize_string != null && pageSize_string != "") {
+		if (pageSize_string != null && !pageSize_string.equals("")) {
 			pageSize = Integer.parseInt(pageSize_string);
 			if (pageSize <= 0) {
 				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
@@ -871,8 +871,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		long zongtiaoshu = 0;
 		List<WholesaleCommodity> list_equipmentall = null;
 
-		if ((contact.equals("") || contact == null) && (detailed == null || detailed.equals(""))
-				&& (companyName.equals("") || companyName == null)) {
+		if ((contact == null || contact.equals("")  ) && (detailed == null || detailed.equals(""))
+				&& (companyName == null || companyName.equals("") )) {
 			zongtiaoshu = wholesaleCommodityMapper.adminWholesaleCommodity_no(0, releaseType);
 			list_equipmentall = wholesaleCommodityMapper.adminWholesaleCommodity((currentPage - 1) * pageSize, pageSize,
 					0, releaseType);
@@ -1100,7 +1100,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		int currentPage = 0;
 		int pageSize = 0;
 
-		if (currentPage_string != null && currentPage_string != "") {
+		if (currentPage_string != null && !currentPage_string.equals("")) {
 			currentPage = Integer.parseInt(currentPage_string);
 			if (currentPage <= 0) {
 				return ServerResponse.createByErrorMessage("页数不能小于0");
@@ -1110,7 +1110,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			return ServerResponse.createByErrorMessage("请正确输入页数");
 		}
 
-		if (pageSize_string != null && pageSize_string != "") {
+		if (pageSize_string != null && !pageSize_string.equals("")) {
 			pageSize = Integer.parseInt(pageSize_string);
 			if (pageSize <= 0) {
 				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");

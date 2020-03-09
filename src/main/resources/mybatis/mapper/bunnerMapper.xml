@@ -358,4 +358,24 @@
 		id=#{id}
 	</select>
 
+
+	<!-- 根据id查询 -->
+	<select id="getpguang"
+		resultType="com.dian.mmall.pojo.banner.DibuBunner">
+		select id ,bunnerType,permissionid,url,imgUrl,
+		dibuBunnerbiaoti
+		from
+		dibubunner
+		where
+		bunnerType=#{bunnerType}  and fanwei=#{fanwei} and moren=#{moren}
+		and bunnerStatus=1
+		
+		<if test="fanwei !=0">and detailed like #{detailed} </if>
+		order by updateTime desc
+		<if test="bunnerType ==0">limit 0, 1 </if>
+		<if test="bunnerType !=0">limit 0, 3 </if>
+		
+		
+	</select>
+
 </mapper>

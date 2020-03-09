@@ -65,4 +65,6 @@ public interface BunnerMapper {
 
 	int endbunner(DibuBunner dibuBunner);
 
+	List<DibuBunner> getpguang(Integer bunnerType, int fanwei, int moren, String detailed);
+
 }

@@ -33,4 +33,15 @@ public class DibuBunnerController {
 		return bunnerService.getBunnerList(user.getRole(), permissionid, bunnerType, user.getId());
 
 	}
+	
+	//用这个获取广告
+	@RequestMapping(value = "getpguang", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getpguang(HttpServletRequest httpServletRequest, @RequestParam Integer permissionid,
+			@RequestParam Integer bunnerType) {
+		User user = (User) httpServletRequest.getAttribute("user");
+        String appid= httpServletRequest.getHeader("appid");
+		return bunnerService.getpguang(user, permissionid, bunnerType, appid);
+
+	}
 }

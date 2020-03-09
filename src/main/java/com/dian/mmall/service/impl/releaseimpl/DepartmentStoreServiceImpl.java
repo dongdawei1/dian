@@ -519,7 +519,7 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 		int currentPage = 0;
 		int pageSize = 0;
 
-		if (currentPage_string != null && currentPage_string != "") {
+		if (currentPage_string != null && !currentPage_string.equals("")) {
 			currentPage = Integer.parseInt(currentPage_string);
 			if (currentPage <= 0) {
 				return ServerResponse.createByErrorMessage("页数不能小于0");
@@ -529,7 +529,7 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 			return ServerResponse.createByErrorMessage("请正确输入页数");
 		}
 
-		if (pageSize_string != null && pageSize_string != "") {
+		if (pageSize_string != null && !pageSize_string.equals("")) {
 			pageSize = Integer.parseInt(pageSize_string);
 			if (pageSize <= 0) {
 				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
@@ -632,7 +632,7 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 		int currentPage = 0;
 		int pageSize = 0;
 
-		if (currentPage_string != null && currentPage_string != "") {
+		if (currentPage_string != null && !currentPage_string.equals("")) {
 			currentPage = Integer.parseInt(currentPage_string);
 			if (currentPage <= 0) {
 				return ServerResponse.createByErrorMessage("页数不能小于0");
@@ -642,7 +642,7 @@ public class DepartmentStoreServiceImpl implements DepartmentStoreService {
 			return ServerResponse.createByErrorMessage("请正确输入页数");
 		}
 
-		if (pageSize_string != null && pageSize_string != "") {
+		if (pageSize_string != null && !pageSize_string.equals("")) {
 			pageSize = Integer.parseInt(pageSize_string);
 			if (pageSize <= 0) {
 				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");

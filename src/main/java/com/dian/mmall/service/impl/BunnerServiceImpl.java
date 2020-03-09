@@ -615,13 +615,13 @@ public class BunnerServiceImpl implements BunnerService {
 					} else {
 						return ServerResponse.createByErrorMessage(serverResponseObject.getMsg());
 					}
-					
+
 					int fanwei = Integer.parseInt(params.get("fanwei").toString().trim());
 					if (fanwei != 0 && fanwei != 1 && fanwei != 2 && fanwei != 3 && fanwei != 4) {
 						return ServerResponse.createByErrorMessage(ResponseMessage.fabuchengshi.getMessage());
 					}
 					DibuBunner cheBunner = cheBunner = bunnerMapper.agetguanggao(id);
-					String detailed=null;
+					String detailed = null;
 					if (fanwei == 3 || fanwei == 4) {
 
 						List<Integer> selectedOptions_list = JsonUtil
@@ -638,9 +638,10 @@ public class BunnerServiceImpl implements BunnerService {
 										.createByErrorMessage(ResponseMessage.ChengShichaxunshibai.getMessage());
 							}
 						}
-					}else {
-						detailed=cheBunner.getDetailed();				}
-					
+					} else {
+						detailed = cheBunner.getDetailed();
+					}
+
 					// 范围范围 0全国优先级最高，1全市，2全区 ,3手动全市省，4手动县区
 					if (fanwei == 3) {
 						fanwei = 1;
@@ -658,15 +659,12 @@ public class BunnerServiceImpl implements BunnerService {
 					if (moren != 0 && moren != 1) {
 						return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixing.getMessage());
 					}
-					
 
 					String dibuBunnerbiaoti = params.get("dibuBunnerbiaoti").toString().trim();
 					String url = params.get("url").toString().trim();
 					if (dibuBunnerbiaoti == null || url == null || dibuBunnerbiaoti.equals("") || url.equals("")) {
 						return ServerResponse.createByErrorMessage(ResponseMessage.shurucuowo.getMessage());
 					}
-
-					
 
 					// 检查图片
 					ServerResponse<String> serverResponseString = setPictureUrl(
@@ -867,6 +865,112 @@ public class BunnerServiceImpl implements BunnerService {
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.tupianbunnegkong.getMessage());
 
+	}
+
+	@Override
+	public ServerResponse<Object> getpguang(User user, Integer permissionid, Integer bunnerType, String appid) {
+		String detailed = realNameMapper.getDetailed(user.getId());
+		if (detailed == null || detailed.equals("")) {
+			return ServerResponse.createByError();
+		}
+
+		if (bunnerType != 0 && bunnerType != 1 && bunnerType != 2) {
+			return ServerResponse.createByErrorMessage("我问问");
+		}
+
+		// bunnerType 0首页弹窗，1首页轮播，2详情页轮播
+		int fanwei = 0; // 0全国优先级最高，1全市，2全区
+		int moren = 1; // 1优先，0默认
+		// String date = DateTimeUtil.dateToAll();
+
+		List<DibuBunner> listBunner = bunnerMapper.getpguang(bunnerType, fanwei, moren, null);
+		int size = listBunner.size();
+		if (bunnerType == 0) {
+			if (size > 0) {
+				return cekckappid(appid, listBunner);
+			}
+			String shengdetailed = "%" + Strin.setTocken(detailed, 2).getMsg() + "%";
+			fanwei = 1;
+			listBunner = bunnerMapper.getpguang(bunnerType, fanwei, moren, shengdetailed);
+			size = listBunner.size();
+			if (size > 0) {
+				return cekckappid(appid, listBunner);
+			}
+			String qudetailed = "%" + detailed + "%";
+			fanwei = 2;
+			listBunner = bunnerMapper.getpguang(bunnerType, fanwei, moren, qudetailed);
+			size = listBunner.size();
+			if (size > 0) {
+				return cekckappid(appid, listBunner);
+			}
+			fanwei = 0; // 0全国优先级最高，1全市，2全区
+			moren = 0;
+			listBunner = bunnerMapper.getpguang(bunnerType, fanwei, moren, null);
+			size = listBunner.size();
+			if (size > 0) {
+				return cekckappid(appid, listBunner);
+			}
+			return ServerResponse.createBySuccess(listBunner);
+		}
+		if (bunnerType == 1 || bunnerType == 2) {
+			if (size > 2) {
+				return cekckappid(appid, listBunner);
+			}
+			String shengdetailed = "%" + Strin.setTocken(detailed, 2).getMsg() + "%";
+			fanwei = 1;
+			List<DibuBunner> shenglistBunner = bunnerMapper.getpguang(bunnerType, fanwei, moren, shengdetailed);
+			int shengsize = shenglistBunner.size();
+			if (size + shengsize > 2) {
+				listBunner.addAll(shenglistBunner);
+				return cekckappid(appid, listBunner);
+			}
+			String qudetailed = "%" + detailed + "%";
+			fanwei = 2;
+			List<DibuBunner> qulistBunner = bunnerMapper.getpguang(bunnerType, fanwei, moren, qudetailed);
+			int qusize = qulistBunner.size();
+			if (size + shengsize + qusize > 2) {
+				listBunner.addAll(shenglistBunner);
+				listBunner.addAll(qulistBunner);
+				return cekckappid(appid, listBunner);
+			}
+
+			fanwei = 0; // 0全国优先级最高，1全市，2全区
+			moren = 0;
+			List<DibuBunner> molistBunner = bunnerMapper.getpguang(bunnerType, fanwei, moren, null);
+			int mosize = molistBunner.size();
+			if (mosize > 0) {
+				if (size + shengsize + qusize == 0) {
+					return cekckappid(appid, molistBunner);
+				} else {
+					for (DibuBunner d : molistBunner) {
+						listBunner.add(d);
+						if (listBunner.size() > 2) {
+							break;
+						}
+
+					}
+					return cekckappid(appid, listBunner);
+				}
+
+			}
+			if (size + shengsize + qusize > 0) {
+				listBunner.addAll(shenglistBunner);
+				listBunner.addAll(qulistBunner);
+				return cekckappid(appid, listBunner);
+			}
+			return ServerResponse.createBySuccess(listBunner);
+
+		}
+
+		return ServerResponse.createByError();
+	}
+
+	private ServerResponse<Object> cekckappid(String appid, List<DibuBunner> listBunner) {
+		System.out.println("BunnerServiceImpl.cekckappid()"+appid);
+		if (appid.equals(Const.APPAPPIDP)) {
+			return ServerResponse.createBySuccess(listBunner);
+		}
+		return null;
 	}
 
 }
