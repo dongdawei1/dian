@@ -9,6 +9,7 @@ public enum ResponseMessage {
    ZhuCeShiBai("注册失败"),
    gongsimingchengkong("公司/企业/个人名称不能为空"),
    shichangming("市场名称不能为空"),
+   
    ChuangJianYongHuShiBai("创建用户失败"),
    YanZhengMaCuoWu("验证码错误或失效"),
    qingqiuxinxiyouwu("请求信息有误"),

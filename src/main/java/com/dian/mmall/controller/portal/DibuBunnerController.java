@@ -41,6 +41,9 @@ public class DibuBunnerController {
 			@RequestParam Integer bunnerType) {
 		User user = (User) httpServletRequest.getAttribute("user");
         String appid= httpServletRequest.getHeader("appid");
+        System.out.println("DibuBunnerController.getpguang()"+user);
+        System.out.println("DibuBunnerController.getpguang()"+appid);
+       // return ServerResponse.createBySuccess("aa");
 		return bunnerService.getpguang(user, permissionid, bunnerType, appid);
 
 	}

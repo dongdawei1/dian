@@ -871,11 +871,13 @@ public class BunnerServiceImpl implements BunnerService {
 	public ServerResponse<Object> getpguang(User user, Integer permissionid, Integer bunnerType, String appid) {
 		String detailed = realNameMapper.getDetailed(user.getId());
 		if (detailed == null || detailed.equals("")) {
-			return ServerResponse.createByError();
+			//return ServerResponse.createByError(); TODO未实名也给默认返回
+			detailed="北京市/市辖区/东城区";
+			
 		}
 
 		if (bunnerType != 0 && bunnerType != 1 && bunnerType != 2) {
-			return ServerResponse.createByErrorMessage("我问问");
+			return ServerResponse.createByErrorMessage(ResponseMessage.qingqiuxinxiyouwu.getMessage());
 		}
 
 		// bunnerType 0首页弹窗，1首页轮播，2详情页轮播
@@ -947,11 +949,9 @@ public class BunnerServiceImpl implements BunnerService {
 						if (listBunner.size() > 2) {
 							break;
 						}
-
 					}
 					return cekckappid(appid, listBunner);
 				}
-
 			}
 			if (size + shengsize + qusize > 0) {
 				listBunner.addAll(shenglistBunner);
@@ -966,11 +966,18 @@ public class BunnerServiceImpl implements BunnerService {
 	}
 
 	private ServerResponse<Object> cekckappid(String appid, List<DibuBunner> listBunner) {
-		System.out.println("BunnerServiceImpl.cekckappid()"+appid);
 		if (appid.equals(Const.APPAPPIDP)) {
 			return ServerResponse.createBySuccess(listBunner);
+		} else if (appid.equals(Const.APPAPPIDA)) {
+			for (int a = 0; a < listBunner.size(); a++) {
+				DibuBunner bunner = listBunner.get(a);
+				String string=bunner.getUrl();
+				bunner.setUrl(Strin.setTockenapp(bunner.getUrl(), 2).getMsg());
+				listBunner.set(a, bunner);
+			}
+			return ServerResponse.createBySuccess(listBunner);
 		}
-		return null;
+		return ServerResponse.createByError();
 	}
 
 }

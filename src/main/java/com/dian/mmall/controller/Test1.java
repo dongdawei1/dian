@@ -36,11 +36,14 @@ public class Test1 {
     StringBuffer serviceDetailed = new StringBuffer("北京市/市辖区/东城区");
    
     
-    
-    String string = "北京市/市辖区/东城区/东w城区%";
+  //  /details
+    String string = "/details/wineAndTablewareDetails/10/8";
     
 System.out.println(Strin.setTocken(string, 2).getMsg());  //北京市/市辖区
-    
+
+System.out.println(Strin.setTockenapp(string, 2).getMsg());     
+
+
     //这里是获取"/"符号的位置
     Matcher slashMatcher = Pattern.compile("/").matcher(string);
     int mIdx = 0;

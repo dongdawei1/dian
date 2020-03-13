@@ -120,6 +120,7 @@ public class LoginController {
 			return ServerResponse.createByErrorMessage(ResponseMessage.HuoQuDengLuXinXiShiBai.getMessage());
 		}
 		String userJsonStr = RedisShardedPoolUtil.get(loginToken);
+		System.out.println("LoginController.getUserInfo(2222222)"+userJsonStr);
 		User user = JsonUtil.string2Obj(userJsonStr, User.class);
 		if (user != null) {
 			log.warn("用户有loginToken,redis中查询失败 {}",loginToken);

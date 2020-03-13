@@ -119,7 +119,9 @@ public class RedisPoolUtil {
 	public static int checkeKey(User user) {
 		Jedis jedis = null;
 		// 0有成功替换，1没有，2异常
+		
 		try {
+			int result=2;
 			jedis = RedisPool.getJedis();
 			Set<String> keys = jedis.keys("*");
 			for (String key : keys) {
@@ -134,12 +136,16 @@ public class RedisPoolUtil {
 						if (key.indexOf(Const.PCAPPID) == 0) {
 							RedisShardedPoolUtil.setEx(key, JsonUtil.obj2String(user),
 									Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
+							result=0;
+							System.out.println("tihuan3331appp"+userJsonStr);
 						} else if (key.indexOf(Const.APPAPPID) == 0) {
 							RedisShardedPoolUtil.setEx(key, JsonUtil.obj2String(user),
 									Const.RedisCacheExtime.REDIS_SESSION_EXTIMEAPP);
+							result=0;
+							System.out.println("tihuan3331aaaaa"+userJsonStr);
 						}
 
-						return 0;
+						
 					}
 				}
 

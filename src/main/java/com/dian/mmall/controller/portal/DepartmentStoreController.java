@@ -36,8 +36,6 @@ public class DepartmentStoreController {
 
 		User user = (User) httpServletRequest.getAttribute("user");
 		// 检查权限
-		// 检查权限
-
 		if (user.getRole() != 1 && user.getRole() != 12) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
