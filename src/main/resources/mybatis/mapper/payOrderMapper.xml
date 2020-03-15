@@ -5,29 +5,43 @@
 <mapper namespace="com.dian.mmall.dao.PayOrderMapper">
 	<!-- public Employee getEmpById(Integer id); -->
 
-	<select id="getPayOrderByOrderId" resultType="com.dian.mmall.pojo.PayOrder">
+	<select id="getPayOrderByOrderId"
+		resultType="com.dian.mmall.pojo.PayOrder">
+		SELECT
+		id,userId,orderId,nonceStr,body,state,
+		outTradeNo,spbillCreateIp,tradeType,totalFee,
+		createTime,payTime,updateTime,meg,payType
+		FROM payOrder WHERE
+		orderId=#{orderId} and del=0 and tradeType=#{tradeType}
+		<if test="state==9">and state in(1,3)</if>
+		<if test="state!=9">and state=#{state}</if>
+	</select>
+
+	<select id="pcAadAppAll"
+		resultType="com.dian.mmall.pojo.PayOrder">
 		SELECT
 		id,userId,orderId,nonceStr,body,state,
 		outTradeNo,spbillCreateIp,tradeType,totalFee,
 		createTime,payTime,updateTime,meg,payType
 		FROM payOrder WHERE
 		orderId=#{orderId} and del=0 
-		<if test="state==9">and state in(1,3)</if>
-		<if test="state!=9">and state=#{state}</if>
+		<if test="state==9">and state in(0,1,3)</if>
 	</select>
 
 	<select id="get_pay_order_all" resultType="int">
 		SELECT
 		count(*)
-		FROM payOrder WHERE
-		userId=#{userId} and del=0  and state=0
+		FROM
+		payOrder WHERE
+		userId=#{userId} and del=0 and state=0
 	</select>
 
-	<select id="get_pay_order_byOrderId" resultType="com.dian.mmall.pojo.PayOrder">
+	<select id="get_pay_order_byOrderId"
+		resultType="com.dian.mmall.pojo.PayOrder">
 		SELECT
 		id,userId,orderId,state
 		FROM payOrder WHERE
-		orderId=#{orderId} and del=#{del}  and userId=#{userId}
+		orderId=#{orderId} and del=#{del} and userId=#{userId} and tradeType=#{tradeType}
 	</select>
 
 
@@ -51,13 +65,14 @@
 		where id=#{id}
 	</update>
 
-	<select id="getCallbackPayOrder" resultType="com.dian.mmall.pojo.PayOrder">
+	<select id="getCallbackPayOrder"
+		resultType="com.dian.mmall.pojo.PayOrder">
 		SELECT
 		id,orderId,totalFee
 		FROM payOrder WHERE
 		outTradeNo=#{outTradeNo} and del=0 and state=#{state}
 	</select>
-	
+
 	<update id="callbackUpdate">
 		update payOrder set
 		updateTime=#{updateTime},state=#{state},meg=#{meg},
@@ -66,17 +81,18 @@
 		<if test="state==2 or state==4">, del=#{del}</if>
 		where id=#{id}
 	</update>
-	
-	
-	<select id="timerSelsetPayOrder" resultType="com.dian.mmall.pojo.PayOrder">
+
+
+	<select id="timerSelsetPayOrder"
+		resultType="com.dian.mmall.pojo.PayOrder">
 		SELECT
 		id,orderId,totalFee,outTradeNo
 		FROM payOrder WHERE
 		createTime &lt;= #{createTime} and del=#{del} and state=#{state}
 	</select>
-	
-	
-	
+
+
+
 	<!-- <select id="getall" resultType="java.util.Map"> select * from t_user 
 		</select> <select id="checkUsername" resultType="com.dian.mmall.pojo.user.User" 
 		parameterType="string" > select id,username, password,role,isAuthentication,mobilePhone 

@@ -9,7 +9,7 @@ import com.dian.mmall.pojo.PayOrder;
 @Mapper
 public interface PayOrderMapper {
 
-	PayOrder getPayOrderByOrderId(long orderId,int state);
+	PayOrder getPayOrderByOrderId(long orderId,int state, String tradeType);
 
 	int createPyOrder(PayOrder payOrder);
 
@@ -24,6 +24,8 @@ public interface PayOrderMapper {
 
 	int get_pay_order_all(long userId);
 
-	PayOrder get_pay_order_byOrderId(long userId, long orderId, int del);
+	PayOrder get_pay_order_byOrderId(long userId, long orderId, int del, String tradeType);
+
+	List<PayOrder> pcAadAppAll(long orderId, int state);
 
 }

@@ -118,7 +118,25 @@ public class OrderController {
 		return orderService.native_pay_order(user, spbillCreateIp, id);
 
 	}
+	// app生成支付单
+		@RequestMapping(value = "native_pay_order_app", method = RequestMethod.GET)
+		@ResponseBody
+		public ServerResponse<Object> native_pay_order_app(HttpServletRequest httpServletRequest, @RequestParam long id) {
+	    	User user =	(User) httpServletRequest.getAttribute("user"); 
+			// 检查权限
 
+			if (user.getRole() != 1 && user.getRole() != 2) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+			}
+
+			String spbillCreateIp = IpUtils.getIpAddr(httpServletRequest);
+			return orderService.native_pay_order_app(user, spbillCreateIp, id);
+
+		}
+	
+	
+	
+	
 	/**
 	 * 获取是否有待支付的支付订单
 	 */
@@ -150,9 +168,10 @@ public class OrderController {
 		if (user.getRole() != 1 && user.getRole() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
-
-		
-		return orderService.get_pay_order_byOrderId(user.getId(), orderId);
+   
+     
+     
+		return orderService.get_pay_order_byOrderId(user.getId(), orderId,httpServletRequest.getHeader("appid"));
 
 	}
 

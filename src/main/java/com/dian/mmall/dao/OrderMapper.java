@@ -43,4 +43,6 @@ public interface OrderMapper {
 	List<Order> mySaleOrder(int pageLength, int pageSize, Integer releaseType, String giveTakeTime, long userId,
 			int orderStatus);
 
+	Order getOrderByIdyichang(long orderId);
+
 }
