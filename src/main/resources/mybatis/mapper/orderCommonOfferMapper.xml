@@ -22,6 +22,14 @@
 		orderFormId=#{orderFormId}
 		and commodStatus=0
 	</select>
+   <!--查询此订单改接单用户是否已经报价  -->
+	<select id="getmybaojia"  resultType="int">
+		select count(*) from order_common_offer
+		where
+		orderFormId=#{orderFormId}
+		and commodStatus=#{commodStatus}  and saleUserId=#{saleUserId}
+	</select>
+
 
 
 	<select id="getSuccess"
@@ -70,6 +78,34 @@
 		where orderFormId=#{orderFormId} and saleUserId=#{saleUserId}
 	</update>
 	
+	<update id="uptateGuanDanById">
+		update order_common_offer set
+		updateTime=#{updateTime},commodStatus=2
+		where id=#{id}
+	</update>
+	
+	 <insert id="createCommonMenu"> insert into order_common_offer ( 
+		commodityZongJiage,saleUserId ,orderFormId,createTime,
+		updateTime,commodStatus,contact,consigneeName,saleUserAddressDetailed
+		) 
+		
+		values (
+		 #{commodityZongJiage},#{saleUserId} ,#{orderFormId},#{createTime},
+		 #{updateTime},#{commodStatus},#{contact},#{consigneeName},#{saleUserAddressDetailed}
+		 ) </insert>
+		
+		
+		<select id="getId"
+		resultType="long">
+		select id from order_common_offer
+		where
+		 orderFormId=#{orderFormId}
+		and saleUserId=#{saleUserId}
+		and createTime=#{createTime}
+		and commodStatus=#{commodStatus}
+	</select>
+		
+		
 	<!--创建用户成功返回非0 <insert id="createCommonMenu"> insert into common_menu ( 
 		userId,servicetypeId ) values ( #{userId},#{servicetypeId} ) </insert> <update 
 		id="updateCommonMenu"> update common_menu set servicetypeId=#{servicetypeId} 

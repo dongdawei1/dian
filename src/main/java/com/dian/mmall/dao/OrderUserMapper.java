@@ -13,4 +13,6 @@ public interface OrderUserMapper {
 
 	int updateOrderUser(OrderUser orderUser);
 
+	int upyue(OrderUser orderUser);
+
 }

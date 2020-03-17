@@ -67,4 +67,10 @@ public class OrderUser {
 	@IsEmptyAnnotation(message = "经验方式不能为空")
 	private String contractNo;// 1合同编号
 	private Integer branch;// 服务分
+	
+	@IsEmptyAnnotation(message = "金额不能为空")
+	private long amount;//金额分
+	
+	private long dongjieAmount;//金额分
+	private long shengyuAmount;//金额分
 }

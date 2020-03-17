@@ -14,6 +14,22 @@
 		#{receiptsAndPayments},#{accountNo},#{liushuiStatus},#{createTime})
 	</insert>
 
+	<select id="getjinxingliushui"
+		resultType="com.dian.mmall.pojo.Liushui">
+		select id,userId,amount from liushui
+		where liushuiStatus=#{liushuiStatus} and dingdanId=#{dingdanId} and receivablesUserId=0
+	</select>
+
+<!-- 解冻 -->
+	<update id="tongbu_jiedong">
+		update liushui set
+		updateTime=#{updateTime},payment=#{payment},
+		liushuiStatus=#{liushuiStatus}
+		
+		where id=#{id}
+		<if test="liushuiStatus ==6 or liushuiStatus ==7"> and liushuiStatus = 3 </if>
+	</update>
+
 	<!-- <select id="admin_select_userAccount_byId" resultType="int"> select 
 		count(*) from t_useraccount where userId=#{userId} </select> <select id="admin_select_userAccount" 
 		resultType="com.dian.mmall.pojo.user.UserAccount"> select userId,balance, 

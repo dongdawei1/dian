@@ -197,5 +197,17 @@
 	</select>
 
 	<!-- 接单企业首页除抢单中的全部订单结束 -->
+	
+	
+	<select id="getOrderByIdyichang"
+		resultType="com.dian.mmall.pojo.Order">
+		select
+		id,giveTakeTime,createTime,releaseType,commoditySnapshot,commodityZongJiage,
+		orderStatus,saleUserId,collectTime,balanceMoney,payStatus
+		from orderform
+		where
+		id=#{orderId} 
+		
+	</select>
 
 </mapper>

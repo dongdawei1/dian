@@ -39,7 +39,7 @@ public class Liushui {
 	@IsEmptyAnnotation(message = "创建时间不能为空")
 	private String createTime;
 	
-	private String dingdanId; //订单ID
+	private long dingdanId; //订单ID
 	
 	private Integer liushuiStatus; // 1 初始，2 失败，3成功
 	

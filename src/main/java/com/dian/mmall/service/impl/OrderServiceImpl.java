@@ -16,11 +16,14 @@ import com.dian.config.WeChatConfig;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.dao.LiushuiMapper;
 import com.dian.mmall.dao.OrderMapper;
+import com.dian.mmall.dao.OrderUserMapper;
 import com.dian.mmall.dao.PayOrderMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.dao.goumaidingdan.OrderCommonOfferMapper;
 import com.dian.mmall.dao.releaseDao.EvaluateMapper;
+import com.dian.mmall.pojo.Liushui;
 import com.dian.mmall.pojo.Order;
 import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.PayOrder;
@@ -32,6 +35,7 @@ import com.dian.mmall.pojo.goumaidingdan.PurchaseSeeOrderVo;
 import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.tupian.Picture;
+import com.dian.mmall.pojo.user.OrderUser;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.OrderService;
@@ -68,6 +72,12 @@ public class OrderServiceImpl implements OrderService {
 	private WeChatConfig weChatConfig; // 读取配置文件中配置微信的字段
 	@Autowired
 	private PayOrderMapper payOrderMapper;
+
+	@Autowired
+	private OrderUserMapper orderUserMapper;
+
+	@Autowired
+	private LiushuiMapper liushuiMapper;
 
 	@Override
 	public synchronized ServerResponse<String> create_wholesaleCommodity_order(long userId,
@@ -268,35 +278,6 @@ public class OrderServiceImpl implements OrderService {
 		// saleUserIdDeng 登陆的userId
 		int type = Integer.parseInt(params.get("type").toString().trim());
 		long id = Long.parseLong(params.get("id").toString().trim());
-//		if (keySet.size() > 0) {
-//			System.out.println(isredis + "____________2222");
-//			for (String key : keySet) {
-//				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
-//				String orderJsonStr = RedisPoolUtil.get(key);
-//				Order order = JsonUtil.string2Obj(orderJsonStr, Order.class);
-//
-//				if (id == order.getId() && user.getId() == order.getPurchaseUserId()) {
-//					isredis = true;
-//					// 这里处理
-//					ServerResponse<String> serverResponseImpl = operation_purchase_order_impl(type, order, params,
-//							isredis);
-//					if (serverResponseImpl.getStatus() == 0) {
-//
-//						// 删除redis中的key
-//						RedisPoolUtil.del(key);
-//						return ServerResponse.createBySuccess();
-//					} else {
-//						return serverResponseImpl;
-//					}
-//
-//				}
-//			}
-//		}
-
-//		System.out.println(isredis + "____________3333333");
-//		if (!isredis) {
-//			System.out.println(isredis + "____________44444");
-		// 找不到去数据库找，
 		Order order = orderMapper.getOrderById(id, user.getId());
 
 		if (order != null) {
@@ -311,9 +292,7 @@ public class OrderServiceImpl implements OrderService {
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
 		}
-//		}
-//		System.out.println(isredis + "____________555555");
-		// return ServerResponse.createBySuccess();
+
 	}
 
 	/**
@@ -330,21 +309,64 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
+	 * 根据订单id查询报价人员名单 ，返回setPurchaseSeeOrderVo
+	 */
+	private List<OrderCommonOfferEvaluateVo> guanShanReason1(long orderId, int type) {
+		List<OrderCommonOfferEvaluateVo> listOrderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
+		// guanShanReason 把报价的集合放到这个字段中 ，要处理状态 commodStatus ==0 的 预创建的多个
+		List<OrderCommonOffer> orderCommonOffer_list = orderCommonOfferMapper.getInitial(orderId);
+		int leng = orderCommonOffer_list.size();
+		if (leng > 0) {
+			for (int a = 0; a < leng; a++) {
+				OrderCommonOffer offer = orderCommonOffer_list.get(a);
+				if (type == 18) {
+					offer.setContact("选择后可见");
+					offer.setConsigneeName("选择后可见");
+				}
+
+				offer.setCommodityZongJiage(offer.getCommodityZongJiage() / 100);
+
+				Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(offer.getSaleUserId());
+				// orderCommonOffer_list.set(a, offer);
+				OrderCommonOfferEvaluateVo orderCommonOfferEvaluateVo = new OrderCommonOfferEvaluateVo();
+				orderCommonOfferEvaluateVo.setEvaluate(evaluate);
+				orderCommonOfferEvaluateVo.setOrderCommonOffer(offer);
+				listOrderCommonOfferEvaluateVo.add(orderCommonOfferEvaluateVo);
+			}
+		}
+		return listOrderCommonOfferEvaluateVo;
+	}
+
+	/**
+	 * 查询报价成功的 返回setPurchaseSeeOrderVo
+	 */
+	private List<OrderCommonOfferEvaluateVo> getOrderCommonOffer(long orderId, long saleUserId) {
+
+		List<OrderCommonOfferEvaluateVo> listOrderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
+		// guanShanReason 给名字 地址即可 commodStatus ==1 的 成功
+		OrderCommonOffer orderCommonOffer = orderCommonOfferMapper.getSuccess(orderId, saleUserId);
+		orderCommonOffer.setContact(EncrypDES.decryptPhone(orderCommonOffer.getContact()));
+		orderCommonOffer.setCommodityZongJiage(orderCommonOffer.getCommodityZongJiage() / 100);
+
+		Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(saleUserId);
+
+		OrderCommonOfferEvaluateVo orderCommonOfferEvaluateVo = new OrderCommonOfferEvaluateVo();
+		orderCommonOfferEvaluateVo.setEvaluate(evaluate);
+		orderCommonOfferEvaluateVo.setOrderCommonOffer(orderCommonOffer);
+		listOrderCommonOfferEvaluateVo.add(orderCommonOfferEvaluateVo);
+		return listOrderCommonOfferEvaluateVo;
+	}
+
+	/**
 	 * 我的订单页 获取 3天内 创建的订单
 	 */
 	@Override
 	public ServerResponse<Object> get_conduct_purchase_order(User user) {
 
-//		String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + "*";
-//		Set<String> keySet = RedisPoolUtil.keys(keyString);
-
 		List<Order> orders = new ArrayList<Order>();
 
 		String between = DateTimeUtil.betweenAnd(1);
 		String and = DateTimeUtil.betweenAnd(2);
-
-		// if (keySet.size() == 0) {
-		// 查询数据库有无关单的数据
 
 		orders = orderMapper.get_shut_orders(user.getId(), between, and, null, 0);
 
@@ -367,133 +389,75 @@ public class OrderServiceImpl implements OrderService {
 			purchaseSeeOrderVo_sub = null;
 		}
 
-//		} else {
-//
-//			purchaseSeeOrderVo = new PurchaseSeeOrderVo();
-//			listPurchaseSeeOrderVo = new ArrayList<PurchaseSeeOrderVo>();
-//
-//			// 获取redis中存在的id
-//			List<String> orderStatus_liStrings = new ArrayList<String>();
-//			for (String key : keySet) {
-//				PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
-//
-//				long pttl = RedisPoolUtil.pttl(key);
-//				if (pttl > (15 * 60 - 20) * 1000) {
-//					String orderJsonStr = RedisPoolUtil.get(key);
-//					Order order = JsonUtil.string2Obj(orderJsonStr, Order.class);
-//
-//					orderStatus_liStrings.add(order.getId() + "");
-//					// guanShanReason 这个字段临时返给前端抢单的order_common_offer列表
-//					// 开启长连接
-//					purchaseSeeOrderVo.setVoSocket(0);
-//					purchaseSeeOrderVo_sub.setVoSocket(0);
-//					purchaseSeeOrderVo_sub.setOrderStatuName("报价中");
-//					purchaseSeeOrderVo_sub.setOrderStatu11(true);
-//					purchaseSeeOrderVo_sub.setVoOrder(order);
-//					purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(guanShanReason(order.getId()));
-//					// 刚发布的没有抢单报价
-//					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
-//
-//				}
-//			}
-//			// 添加不在redis中的订单
-//			List<Order> orders_notin = new ArrayList<Order>();
-//
-//			if (orderStatus_liStrings.size() > 0) {
-//				orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings, 2);
-//
-//			} else {
-//				orders_notin = orderMapper.get_shut_orders(user.getId(), between, and, orderStatus_liStrings, 1);
-//			}
-//
-//			if (orders_notin.size() > 0) {
-//				for (Order order : orders_notin) {
-//					PurchaseSeeOrderVo purchaseSeeOrderVo_sub = setPurchaseSeeOrderVo(order);
-//					if (purchaseSeeOrderVo_sub.getVoSocket() == 0) {
-//						purchaseSeeOrderVo.setVoSocket(0);
-//					}
-//					listPurchaseSeeOrderVo.add(purchaseSeeOrderVo_sub);
-//					purchaseSeeOrderVo_sub = null;
-//
-//				}
-//			}
-//
-//		}
-
 		purchaseSeeOrderVo.setListPurchaseSeeOrderVo(listPurchaseSeeOrderVo);
 		return ServerResponse.createBySuccess(purchaseSeeOrderVo);
 	}
 
 	/**
-	 * 根据订单id查询报价人员名单 ，返回setPurchaseSeeOrderVo
-	 */
-	private List<OrderCommonOfferEvaluateVo> guanShanReason(long orderId) {
-		List<OrderCommonOfferEvaluateVo> listOrderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
-		// guanShanReason 把报价的集合放到这个字段中 ，要处理状态 commodStatus ==0 的 预创建的多个
-		List<OrderCommonOffer> orderCommonOffer_list = orderCommonOfferMapper.getInitial(orderId);
-		int leng = orderCommonOffer_list.size();
-		if (leng > 0) {
-			for (int a = 0; a < leng; a++) {
-				OrderCommonOffer offer = orderCommonOffer_list.get(a);
-				offer.setCommodityZongJiage(offer.getCommodityZongJiage() / 100);
-//				if (offer.getOldOrNew() != 0 && offer.getRecommend() != 0) {
-//					//设置手机号和用户名
-//				}
-//				offer.setConsigneeName("选择后可见");
-//				offer.setContact("选择后可见");
-
-				Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(offer.getSaleUserId());
-				// orderCommonOffer_list.set(a, offer);
-				OrderCommonOfferEvaluateVo orderCommonOfferEvaluateVo = new OrderCommonOfferEvaluateVo();
-				orderCommonOfferEvaluateVo.setEvaluate(evaluate);
-				orderCommonOfferEvaluateVo.setOrderCommonOffer(offer);
-				listOrderCommonOfferEvaluateVo.add(orderCommonOfferEvaluateVo);
-			}
-		}
-		return listOrderCommonOfferEvaluateVo;
-	}
-
-	/**
-	 * 查询抢单成功的 返回setPurchaseSeeOrderVo
-	 */
-	private List<OrderCommonOfferEvaluateVo> getOrderCommonOffer(long orderId, long saleUserId) {
-
-		List<OrderCommonOfferEvaluateVo> listOrderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
-		// guanShanReason 给名字 地址即可 commodStatus ==1 的 成功
-		OrderCommonOffer orderCommonOffer = orderCommonOfferMapper.getSuccess(orderId, saleUserId);
-		orderCommonOffer.setContact(EncrypDES.decryptPhone(orderCommonOffer.getContact()));
-		orderCommonOffer.setCommodityZongJiage(orderCommonOffer.getCommodityZongJiage() / 100);
-
-		Evaluate evaluate = evaluateMapper.selectEvvaluateByUserId(saleUserId);
-
-		OrderCommonOfferEvaluateVo orderCommonOfferEvaluateVo = new OrderCommonOfferEvaluateVo();
-		orderCommonOfferEvaluateVo.setEvaluate(evaluate);
-		orderCommonOfferEvaluateVo.setOrderCommonOffer(orderCommonOffer);
-		listOrderCommonOfferEvaluateVo.add(orderCommonOfferEvaluateVo);
-		return listOrderCommonOfferEvaluateVo;
-	}
-
-	/**
-	 * 返回get_conduct_purchase_order方法 的订单+抢单人员的VO
+	 * 实现我的订单页 获取 3天内 创建的订单
 	 */
 	private PurchaseSeeOrderVo setPurchaseSeeOrderVo(Order order) {
 		int orderStatus = order.getOrderStatus();
 		PurchaseSeeOrderVo purchaseSeeOrderVo_sub = new PurchaseSeeOrderVo();
 		List<OrderCommonOfferEvaluateVo> rderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
+
+		long nowDateLong = new Date().getTime();
+
+		String updateTime = DateTimeUtil.dateToAll();
 		if (orderStatus == 11) {
-			// 开启长连接
-			purchaseSeeOrderVo_sub.setVoSocket(0);
-			purchaseSeeOrderVo_sub.setOrderStatuName("报价中");
-			purchaseSeeOrderVo_sub.setOrderStatu11(true);
-			rderCommonOfferEvaluateVo = guanShanReason(order.getId());
-			if (rderCommonOfferEvaluateVo.size() > 0) {
-				for (int a = 0; a < rderCommonOfferEvaluateVo.size(); a++) {
-					OrderCommonOfferEvaluateVo subVo = rderCommonOfferEvaluateVo.get(a);
-					subVo.getOrderCommonOffer().setContact("选择后可见");
-					subVo.getOrderCommonOffer().setConsigneeName("选择后可见");
-					rderCommonOfferEvaluateVo.set(a, subVo);
+			// 开启长连接 confirmTime
+			long createTimeLong = DateTimeUtil.strToDate(order.getCreateTime()).getTime();
+
+			// 超过报价时间有报价更新为 18 无报价更新为17
+			if ((nowDateLong - createTimeLong) >= 30 * 60 * 1000 && (nowDateLong - createTimeLong) < 45 * 60 * 1000) {
+				// 已经到报价时间
+				int initialCount = orderCommonOfferMapper.getInitialCount(order.getId());
+				if (initialCount > 0) {
+					// 有报价更新为 orderStatus==18
+					order.setOrderStatus(18);
+					order.setUpdateTime(updateTime);
+					String confirmTime = DateTimeUtil.dateTimeToDateString(
+							(new Date()).getTime() + 15 * 60 * 100);
+					order.setConfirmTime(confirmTime);
+
+					tongbu_gengxin_uporder(order);
+					// 开启长连接
+					purchaseSeeOrderVo_sub.setVoSocket(0);
+					purchaseSeeOrderVo_sub.setOrderStatu18(true);
+					purchaseSeeOrderVo_sub.setOrderStatuName("待选择供货商");
+					rderCommonOfferEvaluateVo = guanShanReason1(order.getId(), 18);
+
+				} else {
+					// 没有报价的更新为 17 无销售商报价重新发布
+					order.setOrderStatus(17);
+					order.setUpdateTime(updateTime);
+					tongbu_gengxin_uporder(order);
+					purchaseSeeOrderVo_sub.setOrderStatu17(true);
+					purchaseSeeOrderVo_sub.setOrderStatuName("无销售商报价超时关闭");
+				}
+			}
+			// 大于45分钟直接更新为失败 (防止定时任务 有问题)
+			else if ((nowDateLong - createTimeLong) >= 45 * 60 * 1000) {
+				order.setUpdateTime(updateTime);
+				order.setOrderStatus(3);
+				purchaseSeeOrderVo_sub.setOrderStatuName("超时关单");
+				purchaseSeeOrderVo_sub.setOrderStatu3(true);
+				tongbu_gengxin_uporder(order);
+				// 检查有无报价者有解冻保证金，没有更新成失效
+				int initialCount = orderCommonOfferMapper.getInitialCount(order.getId());
+				if (initialCount > 0) {
+					tongbu_jiedong_baozhengjin(order.getId(), 3);
 				}
 
+			} else {
+				// 小于30分钟
+				String confirmTime=	DateTimeUtil.dateTimeToDateString(DateTimeUtil.strToDate(order.getCreateTime()).getTime()+30*60*100);
+				order.setConfirmTime(confirmTime);
+				purchaseSeeOrderVo_sub.setOrderStatu11(true);
+				purchaseSeeOrderVo_sub.setVoSocket(0);
+				purchaseSeeOrderVo_sub.setOrderStatuName("报价中");
+				order.setOrderStatus(11);
+				rderCommonOfferEvaluateVo = guanShanReason1(order.getId(), 18);
 			}
 
 			purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
@@ -503,20 +467,41 @@ public class OrderServiceImpl implements OrderService {
 
 		} else if (orderStatus == 18) {
 			// 开启长连接
-			purchaseSeeOrderVo_sub.setOrderStatuName("待选择商家");
-			purchaseSeeOrderVo_sub.setOrderStatu18(true);
-			rderCommonOfferEvaluateVo = guanShanReason(order.getId());
-			if (rderCommonOfferEvaluateVo.size() > 0) {
-				for (int a = 0; a < rderCommonOfferEvaluateVo.size(); a++) {
-					OrderCommonOfferEvaluateVo subVo = rderCommonOfferEvaluateVo.get(a);
-					subVo.getOrderCommonOffer().setContact("选择后可见");
-					subVo.getOrderCommonOffer().setConsigneeName("选择后可见");
-					rderCommonOfferEvaluateVo.set(a, subVo);
-				}
+			long oUpDateLong = DateTimeUtil.strToDate(order.getUpdateTime()).getTime();
+			if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
+				order.setUpdateTime(updateTime);
+				order.setOrderStatus(20);
+				tongbu_gengxin_uporder(order);
+				tongbu_jiedong_baozhengjin(order.getId(), 3);
+				purchaseSeeOrderVo_sub.setOrderStatuName("未支付质保金");
+				purchaseSeeOrderVo_sub.setOrderStatu20(true);
 
+			} else {
+				purchaseSeeOrderVo_sub.setVoSocket(0);
+				purchaseSeeOrderVo_sub.setOrderStatuName("待选择商家");
+				purchaseSeeOrderVo_sub.setOrderStatu18(true);
+				rderCommonOfferEvaluateVo = guanShanReason1(order.getId(), 18);
 			}
-
 			purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
+		} else if (orderStatus == 12) {
+			long oUpDateLong = DateTimeUtil.strToDate(order.getUpdateTime()).getTime();
+			if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
+				order.setUpdateTime(updateTime);
+				order.setOrderStatus(19);
+				tongbu_gengxin_uporder(order);
+				tongbu_jiedong_baozhengjin(order.getId(), 3);
+				purchaseSeeOrderVo_sub.setOrderStatuName("未支付质保金关单");
+
+			} else {
+				purchaseSeeOrderVo_sub.setOrderStatuName("待支付定金(报价的6%)");
+				purchaseSeeOrderVo_sub.setOrderStatu12(true);
+				order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
+				String confirmTime=	DateTimeUtil.dateTimeToDateString(DateTimeUtil.strToDate(order.getUpdateTime()).getTime()+15*60*100);
+				order.setConfirmTime(confirmTime);
+				
+				purchaseSeeOrderVo_sub
+						.setListOrderCommonOfferEvaluateVo(getOrderCommonOffer(order.getId(), order.getSaleUserId()));
+			}
 		} else {
 
 			if (orderStatus == 3) {
@@ -545,21 +530,9 @@ public class OrderServiceImpl implements OrderService {
 				} else if (orderStatus == 6) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("已完成");
 					purchaseSeeOrderVo_sub.setOrderStatu6(true);
-				} else if (orderStatus == 12) {
-
-					purchaseSeeOrderVo_sub.setOrderStatuName("待支付定金(报价的6%)");
-					purchaseSeeOrderVo_sub.setOrderStatu12(true);
-				} else if (orderStatus == 13) {
-					// 开启长连接
-					purchaseSeeOrderVo_sub.setVoSocket(0);
-					purchaseSeeOrderVo_sub.setOrderStatuName("待销售商支付质保金(报价的20%)");
-					purchaseSeeOrderVo_sub.setOrderStatu13(true);
 				} else if (orderStatus == 16) {
 					purchaseSeeOrderVo_sub.setOrderStatuName("待确认收货");
 					purchaseSeeOrderVo_sub.setOrderStatu16(true);
-				} else if (orderStatus == 21) {
-					purchaseSeeOrderVo_sub.setOrderStatuName("支付失败请重新支付");
-					purchaseSeeOrderVo_sub.setOrderStatu21(true);
 				}
 				order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
 				purchaseSeeOrderVo_sub
@@ -572,6 +545,74 @@ public class OrderServiceImpl implements OrderService {
 		return purchaseSeeOrderVo_sub;
 	}
 
+	/** _______________根据时间处理订单开始__________________ */
+
+	private synchronized void tongbu_gengxin_uporder(Order order) {
+		orderMapper.operation_purchase_order(order);
+	}
+
+	private synchronized void tongbu_jiedong_baozhengjin(long orderId, int type) {
+		// 3是关单全部退
+		// 1 初始，2 失败，3成功,4投诉不解冻，5无投诉解冻成功，6抢单失败退款
+		if (type == 3) {
+			List<OrderCommonOffer> ol = orderCommonOfferMapper.getInitial(orderId);
+			List<Liushui> liushui = liushuiMapper.getjinxingliushui(orderId, 3);
+			for (int a = 0; a < ol.size(); a++) {
+				OrderCommonOffer orderCommonOffer = ol.get(a);
+				for (int liu = 0; liu < liushui.size(); liu++) {
+					Liushui liushui2 = liushui.get(liu);
+					if (orderCommonOffer.getSaleUserId() == liushui2.getUserId()) {
+						tongbu_jiedong_gengxin_yue(liushui2);
+						continue;
+					}
+				}
+			}
+		}
+	}
+
+	// 解冻和退款
+	private synchronized void tongbu_jiedong_gengxin_yue(Liushui liushui2) {
+		liushui2.setLiushuiStatus(6);
+		liushui2.setPayment("解冻");
+		OrderUser orderUser = orderUserMapper.getOrderUserById(liushui2.getUserId());
+		orderUser.setShengyuAmount(orderUser.getShengyuAmount() + liushui2.getAmount());
+		orderUser.setDongjieAmount(orderUser.getDongjieAmount() - liushui2.getAmount());
+		int re = tongbu_gengxin_yue(orderUser);
+		if (re > 0) {
+			// TODO 通知解冻情况
+			tongbu_jiedong(liushui2);
+		} else {
+			liushui2.setLiushuiStatus(7);
+			liushui2.setPayment("解冻失败");
+			tongbu_jiedong(liushui2);
+		}
+		uptate_guandan(liushui2.getDingdanId(), liushui2.getUserId());
+	}
+
+	// 解冻
+	private synchronized void tongbu_jiedong(Liushui liushui) {
+		liushui.setUpdateTime(DateTimeUtil.dateToAll());
+		liushuiMapper.tongbu_jiedong(liushui);
+
+	}
+
+	// 更新余额
+	private synchronized int tongbu_gengxin_yue(OrderUser orderUser) {
+		orderUser.setUpdateTime(DateTimeUtil.dateToAll());
+		return orderUserMapper.upyue(orderUser);
+
+	}
+
+	// 更新抢单表
+	private void uptate_guandan(long id, long saleUserId) {
+		orderCommonOfferMapper.uptateGuanDan(id, saleUserId, DateTimeUtil.dateToAll());
+
+	}
+
+	// 调微信 关单去,并更新支付表
+
+	/** _______________根据时间处理订单结束__________________ */
+
 	/**
 	 * 实现用户（抢单人员，购买商，定时任务） 操作和定时任务操作， 改变订单状态 operation_purchase_order
 	 */
@@ -579,7 +620,8 @@ public class OrderServiceImpl implements OrderService {
 		// 更新数据库，订单表，抢单表，找到了操作 更新数据库，订单表，抢单表， 发通知给抢单人员
 //		状态 =11 时 显示关单键  和 确认键  关单后端 传 3，确认传13 -->
 //
-//		关单后状态==3或者17   显示开启键   开启后端 传 11， 
+//		关单后状态==3或者17 （超时无人接单）  显示开启键   
+		// 开启后端 传 11，
 //		确认后状态==13  显示待确认总价 按键  置灰    销售商点击确认价格
 //      
 //		支付成功状态==4  显示 待收货 不可点击   送货者状态4时显示 已送到 传 operationRow(scope.row,16)  点击后状态变成16-->
@@ -589,9 +631,7 @@ public class OrderServiceImpl implements OrderService {
 //		状态==5 显示待评价      向后端传 6  订单更新为 6 完成评价
 		String updateTime = DateTimeUtil.dateToAll();
 		long id = order.getId();
-
 		order.setUpdateTime(updateTime);
-
 		List<OrderCommonOffer> list_evaluates = orderCommonOfferMapper.getInitial(order.getId());
 
 		try {
@@ -728,7 +768,19 @@ public class OrderServiceImpl implements OrderService {
 				order.setOrderStatus(type);
 				orderMapper.operation_purchase_order(order);
 				// TODO 通知给抢单成功人员 userID 用户已经收货，订单完成
-			} else {
+			} else if (type == 20) {
+				// 签单者没有支付质保金 只有13 才能操作
+				order.setOrderStatus(type);
+				int r = orderMapper.operation_purchase_order(order);
+				// TODO 通知抢单人员，
+
+				if (r > 0) {
+					// 调用退款接口
+				}
+
+			}
+
+			else {
 				return ServerResponse.createByErrorMessage(ResponseMessage.canshuyouwu.getMessage());
 			}
 
@@ -749,8 +801,8 @@ public class OrderServiceImpl implements OrderService {
 		if (orders.size() > 0) {
 			long nowDateLong = new Date().getTime();
 			String updateTime = DateTimeUtil.dateToAll();
-
 			for (Order o : orders) {
+
 				int orderStatus = o.getOrderStatus();
 				long createTimeLong = DateTimeUtil.strToDate(o.getCreateTime()).getTime();
 
@@ -762,35 +814,32 @@ public class OrderServiceImpl implements OrderService {
 							// 有报价更新为 orderStatus==18
 							o.setOrderStatus(18);
 							o.setUpdateTime(updateTime);
-							orderMapper.operation_purchase_order(o);
+							tongbu_gengxin_uporder(o);
 						} else {
 							// 没有报价的更新为 17
 							o.setOrderStatus(17);
-							orderMapper.operation_purchase_order(o);
+							o.setUpdateTime(updateTime);
+							tongbu_gengxin_uporder(o);
 						}
 					}
-				} else if (orderStatus == 13) {
-
-					// 销售商到时见未确认 更新为 20 ，最后一次更新时间+15分钟 用 updateTime
-
-					long oUpDateLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
-					if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
+				} else if (orderStatus == 18) {
+					if ((nowDateLong - createTimeLong) >= 45 * 60 * 1000) {
+						// 留15分钟给采购者选择销售商，超时关单为3
+						o.setOrderStatus(3);
 						o.setUpdateTime(updateTime);
-						o.setOrderStatus(20);
-						orderMapper.operation_purchase_order(o);
-						// TODO 记录下 这个销售商
-						// 更新抢单表
-						orderCommonOfferMapper.uptateGuanDan(o.getId(), o.getSaleUserId(), updateTime);
-						// TODO 发消息给这个销售商
+						tongbu_gengxin_uporder(o);
+						// 有报价才会是18直接去退保证金
+						tongbu_jiedong_baozhengjin(o.getId(), 3);
 					}
-				} else if (orderStatus == 12 || orderStatus == 21) {
+				} else if (orderStatus == 12 ) {
 					// 判断是否在支付中 0表示未支付，1表示已经支付，2支付失败关单，3支付金额与实际金额不一致，4超时关单
 					List<PayOrder> pcAadAppAll = payOrderMapper.pcAadAppAll(o.getId(), 9);
 
 					if (pcAadAppAll.size() == 0) {
 						o.setUpdateTime(updateTime);
 						o.setOrderStatus(19);
-						orderMapper.operation_purchase_order(o);
+						tongbu_gengxin_uporder(o);
+						tongbu_jiedong_baozhengjin(o.getId(), 3);
 					} else {
 						for (int a = 0; a < pcAadAppAll.size(); a++) {
 							PayOrder payOrder = pcAadAppAll.get(a);
@@ -800,12 +849,10 @@ public class OrderServiceImpl implements OrderService {
 								if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
 									o.setUpdateTime(updateTime);
 									o.setOrderStatus(19);
-									orderMapper.operation_purchase_order(o);
-									// 更新抢单表
-									orderCommonOfferMapper.uptateGuanDan(o.getId(), o.getSaleUserId(), updateTime);
-									// 调微信 关单去,并更新支付表
+									tongbu_gengxin_uporder(o);
+									tongbu_jiedong_baozhengjin(o.getId(), 3);
+									// 调用微信关单
 									closeorderWX(payOrder);
-									// TODO 发消息给这个销售商,购买者未支付定金关单
 								}
 							} else if (payOrder.getState() == 1 || payOrder.getState() == 3) {
 								// 先去查询一下支付结果再根据支付结果处理
@@ -817,15 +864,8 @@ public class OrderServiceImpl implements OrderService {
 						}
 					}
 
-				} else if (orderStatus == 18) {
-					if ((nowDateLong - createTimeLong) >= 45 * 60 * 1000) {
-						// 留15分钟给采购者选择销售商，超时关单为3
-						o.setOrderStatus(3);
-						orderMapper.operation_purchase_order(o);
-						// TODO 发消息给全部 接单的销售商
-						List<OrderCommonOffer> lists = orderCommonOfferMapper.getInitial(o.getId());
-					}
 				}
+
 			}
 		}
 	}
@@ -996,35 +1036,36 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	// 支付定金生成二维码（ 第一步统一下单生成二维码）
 	@Override
-	public synchronized ServerResponse<String> native_pay_order(User user, String spbillCreateIp, long id) {
+	public ServerResponse<String> native_pay_order(User user, String spbillCreateIp, long id) {
 		// 检查订单信息，获取支付金额
-		 ServerResponse<Object>  response= native_pay_order_imp(user, spbillCreateIp, id, NATIVE);
-		 if(response.getStatus()==0) {
-				return  ServerResponse.createBySuccess(((HashMap<String, Object>) response.getData()).get("url").toString());
-			}
-			 return  ServerResponse.createBySuccessMessage(response.getMsg());
+		ServerResponse<Object> response = native_pay_order_imp(user, spbillCreateIp, id, NATIVE);
+		if (response.getStatus() == 0) {
+			return ServerResponse.createBySuccess(((HashMap<String, Object>) response.getData()).get("url").toString());
+		}
+		return ServerResponse.createBySuccessMessage(response.getMsg());
 	}
 
 	/**
 	 * 微信生成账单
-	 * **/
+	 **/
 	@Override
 	public ServerResponse<Object> native_pay_order_app(User user, String spbillCreateIp, long id) {
 		// 检查订单信息，获取支付金额
-		 ServerResponse<Object>  response=native_pay_order_imp(user, spbillCreateIp, id, APP);
-		if(response.getStatus()==0) {
-			return  ServerResponse.createBySuccess(response.getData());
+		ServerResponse<Object> response = native_pay_order_imp(user, spbillCreateIp, id, APP);
+		if (response.getStatus() == 0) {
+			return ServerResponse.createBySuccess(response.getData());
 		}
-		 return  ServerResponse.createBySuccessMessage(response.getMsg());
+		return ServerResponse.createBySuccessMessage(response.getMsg());
 	}
-	
-	
-	private String NATIVE="NATIVE";
-	private String APP="APP";
+
+	private String NATIVE = "NATIVE";
+	private String APP = "APP";
+
 	/**
 	 * pc生成二维码,app生成链接
 	 */
-	public ServerResponse<Object> native_pay_order_imp(User user, String spbillCreateIp, long id, String tradeType) {
+	public synchronized ServerResponse<Object> native_pay_order_imp(User user, String spbillCreateIp, long id,
+			String tradeType) {
 		// 检查订单信息，获取支付金额
 		Order order = orderMapper.getOrderById(id, user.getId());
 
@@ -1068,16 +1109,16 @@ public class OrderServiceImpl implements OrderService {
 			payOrderMapper.createPyOrder(payOrder);
 
 			payOrder = payOrderMapper.getPayOrderByOrderId(id, 0, tradeType);
-			ServerResponse<String> response=unifiedOrder(payOrder);
-			if(response.getStatus()==0) {
-				 HashMap<String, Object> map=new HashMap<String, Object>();
-				 System.out.println(response.getData());
-		         map.put("url", response.getData());
-		         map.put("payOrder", payOrder);
-			return ServerResponse.createBySuccess(map);
+			ServerResponse<String> response = unifiedOrder(payOrder);
+			if (response.getStatus() == 0) {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				System.out.println(response.getData());
+				map.put("url", response.getData());
+				map.put("payOrder", payOrder);
+				return ServerResponse.createBySuccess(map);
 			}
-			return  ServerResponse.createByErrorMessage(response.getMsg());
-		   
+			return ServerResponse.createByErrorMessage(response.getMsg());
+
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
 		}
@@ -1161,18 +1202,17 @@ public class OrderServiceImpl implements OrderService {
 
 			}
 			// 更新数据库
-		
-			
-			if(payOrder.getTradeType().equals(NATIVE)) {
+
+			if (payOrder.getTradeType().equals(NATIVE)) {
 				payOrder.setMeg(unifiedOrderMap.get("code_url"));
 				payOrderMapper.unifiedUptaePayOrder(payOrder);
 				return ServerResponse.createBySuccess(unifiedOrderMap.get("code_url"));
-			}else if(payOrder.getTradeType().equals(APP)) {
+			} else if (payOrder.getTradeType().equals(APP)) {
 				payOrder.setMeg(unifiedOrderMap.get("prepay_id"));
 				payOrderMapper.unifiedUptaePayOrder(payOrder);
 				return ServerResponse.createBySuccess(unifiedOrderMap.get("prepay_id"));
 			}
-			
+
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.zhuanghuanshujuxmlToMap.getMessage() + "null");
 	}
@@ -1245,9 +1285,9 @@ public class OrderServiceImpl implements OrderService {
 			// 更新支付表
 			payOrderMapper.callbackUpdate(payOrder);
 			// 更新订单表 支付失败可以再次发起
-			order.setOrderStatus(21);
-			order.setPayStatus(0);
-			callbackUpDateOrder(order);
+//			order.setOrderStatus(21);
+//			order.setPayStatus(0);
+//			callbackUpDateOrder(order);
 			return ServerResponse.createBySuccess();
 		}
 		return ServerResponse.createByError();
@@ -1378,16 +1418,14 @@ public class OrderServiceImpl implements OrderService {
 	 */
 
 	@Override
-	public ServerResponse<String> get_pay_order_byOrderId(long userId, long orderId,String appid) {
+	public ServerResponse<String> get_pay_order_byOrderId(long userId, long orderId, String appid) {
 		PayOrder payOrder = null;
-		if(appid.equals(Const.APPAPPIDP)) {
-			payOrder = payOrderMapper.get_pay_order_byOrderId(userId, orderId, 0,NATIVE);
-		}else {
-			payOrder = payOrderMapper.get_pay_order_byOrderId(userId, orderId, 0,APP);
+		if (appid.equals(Const.APPAPPIDP)) {
+			payOrder = payOrderMapper.get_pay_order_byOrderId(userId, orderId, 0, NATIVE);
+		} else {
+			payOrder = payOrderMapper.get_pay_order_byOrderId(userId, orderId, 0, APP);
 		}
-		
-		
-		
+
 		if (payOrder == null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
 		}
@@ -1678,6 +1716,103 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createBySuccess(order_pagePage);
 	}
 
-	
+	/* _______________________________接单开始___________________________ */
+	/**
+	 * 报价
+	 */
 
+	@Override
+	public synchronized ServerResponse<Object> createjiedan(long userId, Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		OrderUser orderUser = orderUserMapper.getOrderUserById(userId);
+		if (orderUser.getAuthentiCationStatus() != 1) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.feijiedanyonghu.getMessage());
+		}
+
+		String idString = params.get("id").toString().trim();
+
+		if (idString == null || idString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanxinxyouwu.getMessage());
+		}
+		long id = Long.parseLong(idString);
+		Order order = orderMapper.getOrderByIdyichang(id);
+		if (order == null) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanxinxyouwu.getMessage());
+		}
+		if (order.getOrderStatus() != 11 && order.getOrderStatus() != 18) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanzhuanggaibian.getMessage());
+		}
+
+		int initialCount = orderCommonOfferMapper.getmybaojia(id, userId, 0);
+		if (initialCount > 0) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chongfubaojia.getMessage());
+		}
+
+		long commodityZongJiage = Long.parseLong(params.get("commodityZongJiage").toString().trim()) * 100;
+
+		long shengyuAmount = orderUser.getShengyuAmount();
+
+		long baojiadongjie = new Double(commodityZongJiage * Const.BAOZHANGJIN).longValue();
+
+		if (shengyuAmount < baojiadongjie) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chongfubaojia.getMessage());
+		}
+
+		OrderCommonOffer offer = new OrderCommonOffer();
+		offer.setCommodityZongJiage(commodityZongJiage);
+		offer.setSaleUserId(userId);
+		offer.setOrderFormId(id);
+		String createTime = DateTimeUtil.dateToAll();
+		offer.setCreateTime(createTime);
+		offer.setUpdateTime(createTime);
+		offer.setCommodStatus(0);
+		RealName realName = realNameMapper.getRealName(userId);
+		offer.setContact(realName.getContact());
+		offer.setConsigneeName(realName.getCompanyName());
+		offer.setSaleUserAddressDetailed(realName.getAddressDetailed());
+
+		int re = orderCommonOfferMapper.creoffer(offer);
+		if (re > 0) {
+			// 更新余额
+			OrderUser orderUser1 = new OrderUser();
+			orderUser1.setId(orderUser.getId());
+			orderUser1.setShengyuAmount(shengyuAmount - baojiadongjie);
+			orderUser1.setDongjieAmount(baojiadongjie + orderUser.getDongjieAmount());
+			orderUser1.setUpdateTime(createTime);
+			re = orderUserMapper.upyue(orderUser1);
+			if (re > 0) {
+				Liushui liushui = new Liushui();
+				liushui.setUserId(userId);
+				liushui.setReceivablesUserId(0);
+				liushui.setAmount(baojiadongjie);
+				liushui.setPayment("冻结");
+				liushui.setTransactionType("质保金");
+				liushui.setReceiptsAndPayments("余额");
+				liushui.setAccountNo("系统冻结");
+				liushui.setCreateTime(createTime);
+				liushui.setUpdateTime(createTime);
+				liushui.setDingdanId(id);
+				liushui.setLiushuiStatus(3);
+
+				re = liushuiMapper.create_liushui(liushui);
+				if (re == 0) {
+					orderUser.setUpdateTime(createTime);
+					re = orderUserMapper.upyue(orderUser);
+					long idorderCommonOfferMapper = orderCommonOfferMapper.getId(offer);
+
+					orderCommonOfferMapper.uptateGuanDanById(idorderCommonOfferMapper, createTime);
+					return ServerResponse.createByErrorMessage(ResponseMessage.qiandangshibai.getMessage());
+				}
+				orderUser1.setDongjieAmount(new Double(orderUser1.getShengyuAmount() / 100).longValue());
+				orderUser1.setDongjieAmount(new Double(baojiadongjie / 100).longValue());
+				return ServerResponse.createBySuccess(orderUser1);
+			} else {
+				orderUser.setUpdateTime(createTime);
+				re = orderUserMapper.upyue(orderUser);
+			}
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.qiandangshibai.getMessage());
+	}
+
+	/* _______________________________接单结束___________________________ */
 }

@@ -322,7 +322,24 @@ public class ToExamineServiceImpl implements ToExamineService {
 			Map<String, Object> map = (Map<String, Object>) serverResponse.getData();
 			map.put("authentiCationStatus", 1);
 			map.put("welfareStatus", 4);
+			String availableAmount = params.get("availableAmount").toString().trim();
+			if (availableAmount == null || availableAmount.equals("")) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinbunnegnull.getMessage());
+			}
+			long availableAmountLong = Long.valueOf(availableAmount) * 100;
+
+			if (availableAmountLong < 30000) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinxioyue.getMessage());
+			}
+			map.put("amount", availableAmountLong);
+			map.put("shengyuAmount", availableAmountLong);
+			map.put("dongjieAmount", 0);
+
+			
 			OrderUser orderUser = (OrderUser) BeanMapConvertUtil.convertMap(OrderUser.class, map);
+			
+			
+			
 			// {result=true, message=验证通过} 返回结果
 			Map<String, Object> checknullMap = AnnotationDealUtil.validate(orderUser);
 			if ((boolean) checknullMap.get("result") == true && ((String) checknullMap.get("message")).equals("验证通过")) {
@@ -333,7 +350,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 				String bankCard = params.get("bankCard").toString().trim();
 				String alipay = params.get("alipay").toString().trim();
 
-				String availableAmount = params.get("availableAmount").toString().trim();
+				
 
 				if ((bankCard == null || bankCard.equals("")) && (alipay == null || alipay.equals(""))) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.tuizhibaojinkaxinx.getMessage());
@@ -342,15 +359,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 				if (accountName == null || accountName.equals("")) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.zhanghuxingmingnull.getMessage());
 				}
-
-				if (availableAmount == null || availableAmount.equals("")) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinbunnegnull.getMessage());
-				}
-				long availableAmountLong = Long.valueOf(availableAmount) * 100;
-
-				if (availableAmountLong < 30000) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.zhibaojinxioyue.getMessage());
-				}
+			
 				userAccount.put("availableAmount", availableAmountLong);
 				userAccount.put("balance", availableAmountLong);
 				userAccount.put("consigneeName", accountName);
@@ -388,6 +397,7 @@ public class ToExamineServiceImpl implements ToExamineService {
 
 				OrderUser OrderUser1 = orderUserMapper.getOrderUserById(userId);
 				if (OrderUser1 == null) {
+					//创建接单用户
 					int count = orderUserMapper.admin_create_orderUser(orderUser);
 					if (count == 0) {
 						return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());

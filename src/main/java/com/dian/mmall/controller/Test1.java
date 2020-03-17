@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.javassist.expr.NewArray;
 import org.json.JSONObject;
 
+import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.util.JsonUtil;
@@ -28,6 +29,9 @@ import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer.FromDecim
 
 public class Test1 {
 	public static void main(String[] args) {
+		
+		
+		System.out.println(new Double(10*100*0.1).longValue());
 		Float float1= (float) 12;
 		
 		

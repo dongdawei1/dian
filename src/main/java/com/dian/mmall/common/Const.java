@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
  * Created by geely
  */
 public class Const {
+	public static final float BAOZHANGJIN=0.1F;
+	
 	public static final int SHUCAIP=4;
 	public static final int LIANGYOUP=5;
 	public static final int TIAOLIAO=6;

@@ -4,24 +4,24 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dian.mmall.dao.OrderUserMapper">
 
-
-
 	<!--创建用户成功返回非0 -->
 	<insert id="admin_create_orderUser">
 	insert into t_orderuser (
 	userId,realnameId,contact,consigneeName,companyName,addressDetailed,
 	detailed ,delivery
 	,urgentContact,urgentName,licenseUrl,licenseEndTime,healthyEndTime,
-	userType,contractNo,createTime,authentiCationStatus,updateTime,examineTime,examineName,branch
+	userType,contractNo,createTime,authentiCationStatus,updateTime,examineTime,examineName,branch,
+	amount,dongjieAmount,shengyuAmount
 	) values (
 	#{userId},#{realnameId},#{contact},#{consigneeName},#{companyName},#{addressDetailed},
 	#{detailed},#{delivery},#{urgentContact},#{urgentName},#{licenseUrl},#{licenseEndTime},#{healthyEndTime},
-	#{userType},#{contractNo},#{createTime},#{authentiCationStatus},#{updateTime},#{examineTime},#{examineName},#{branch}
+	#{userType},#{contractNo},#{createTime},#{authentiCationStatus},#{updateTime},#{examineTime},#{examineName},#{branch},
+	#{amount},#{dongjieAmount},#{shengyuAmount}
 	)
 	</insert>
 
 	<select id="getOrderUserById"  resultType="com.dian.mmall.pojo.user.OrderUser">
-		select authentiCationStatus from t_orderuser where userId=#{userId}
+		select id,authentiCationStatus , amount,dongjieAmount,shengyuAmount from t_orderuser where userId=#{userId}
 	</select>
 	
 	     <update id="updateOrderUser" >
@@ -33,6 +33,15 @@
        userType=#{userType}  ,contractNo=#{contractNo},updateTime=#{createTime},
        examineTime=#{examineTime}  ,examineName=#{examineName}
         where  userId=#{userId}
+    </update>
+
+<!-- 接单后更新冻结金额 -->
+     <update id="upyue" >
+       update t_orderuser set  
+       shengyuAmount=#{shengyuAmount} 
+        ,dongjieAmount=#{dongjieAmount},
+       updateTime=#{updateTime} 
+        where  id=#{id}
     </update>
 
 

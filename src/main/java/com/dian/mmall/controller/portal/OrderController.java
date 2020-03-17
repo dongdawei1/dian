@@ -168,9 +168,6 @@ public class OrderController {
 		if (user.getRole() != 1 && user.getRole() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
 		}
-   
-     
-     
 		return orderService.get_pay_order_byOrderId(user.getId(), orderId,httpServletRequest.getHeader("appid"));
 
 	}
@@ -232,6 +229,25 @@ public class OrderController {
 			return ServerResponse.createByErrorMessage(ResponseMessage.jiedaunyonghuocaikeyikan.getMessage());
 		}
 		return orderService.mySaleOrder(user.getId(), params);
+
+	}
+
+
+
+	/**
+	 * 创建接单
+	 */
+	@RequestMapping(value = "createjiedan", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> createjiedan(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
+		//检查实名
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		
+		return orderService.createjiedan(user.getId(), params);
 
 	}
 }

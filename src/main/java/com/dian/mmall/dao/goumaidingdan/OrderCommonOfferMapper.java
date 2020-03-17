@@ -24,5 +24,13 @@ public interface OrderCommonOfferMapper {
 
 	void uptateGuanDan(long orderFormId, long saleUserId, String updateTime);
 
+	int getmybaojia(long orderFormId, long saleUserId, int commodStatus);
+
+	int creoffer(OrderCommonOffer offer);
+
+	void uptateGuanDanById(long id, String updateTime);
+
+	long getId(OrderCommonOffer offer);
+
 
 }
