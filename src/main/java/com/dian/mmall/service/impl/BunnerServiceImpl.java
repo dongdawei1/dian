@@ -18,23 +18,15 @@ import com.dian.mmall.dao.CityMapper;
 import com.dian.mmall.dao.OrderExampleTimerMapper;
 import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.RealNameMapper;
-import com.dian.mmall.dao.releaseDao.MenuAndRenovationAndPestControlMapper;
 import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.WholesaleCommodity;
 import com.dian.mmall.pojo.banner.DibuBunner;
-import com.dian.mmall.pojo.chuzufang.Rent;
-import com.dian.mmall.pojo.gongfu.DepartmentStore;
-import com.dian.mmall.pojo.jiushui.WineAndTableware;
-import com.dian.mmall.pojo.meichongguanggao.MenuAndRenovationAndPestControl;
-import com.dian.mmall.pojo.shichang.FoodAndGrain;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.User;
-import com.dian.mmall.pojo.weixiuAnddianqi.Equipment;
 import com.dian.mmall.pojo.zhiwei.ReleaseWelfare;
 import com.dian.mmall.pojo.zhiwei.Resume;
 import com.dian.mmall.service.BunnerService;
 import com.dian.mmall.service.IUserService;
-import com.dian.mmall.service.impl.releaseimpl.MenuAndRenovationAndPestControlServiceImpl;
 import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.FileControl;
@@ -59,9 +51,6 @@ public class BunnerServiceImpl implements BunnerService {
 
 	@Autowired
 	private IUserService iUserService;
-
-	@Autowired
-	private MenuAndRenovationAndPestControlMapper menuAndRenovationAndPestControlMapper;
 
 	@Override
 	public ServerResponse<Object> getBunnerList(Integer role, Integer permissionid, Integer bunnerType, long userId) {

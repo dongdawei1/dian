@@ -20,7 +20,6 @@ import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.GetPublishingsService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.service.release.ResumeService;
-import com.dian.mmall.util.CheckLand;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;

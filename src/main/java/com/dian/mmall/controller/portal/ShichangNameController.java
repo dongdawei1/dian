@@ -16,7 +16,6 @@ import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.WholesaleService;
-import com.dian.mmall.util.CheckLand;
 
 @Controller
 @RequestMapping(Const.PCAPI+"wholesale/")

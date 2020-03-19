@@ -9,7 +9,7 @@ import com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer;
 @Mapper
 public interface OrderCommonOfferMapper {
 
-	List<OrderCommonOffer> getInitial(long orderFormId);
+	List<OrderCommonOffer> getInitial(long orderFormId, int type);
 
 	OrderCommonOffer getSuccess(long orderFormId, long saleUserId);
 	int operation_purchase_evaluate_all(long orderFormId, String updateTime);
@@ -31,6 +31,8 @@ public interface OrderCommonOfferMapper {
 	void uptateGuanDanById(long id, String updateTime);
 
 	long getId(OrderCommonOffer offer);
+
+	OrderCommonOffer getbysucc(long id, int commodStatus);
 
 
 }

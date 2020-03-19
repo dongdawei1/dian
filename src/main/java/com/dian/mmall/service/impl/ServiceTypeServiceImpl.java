@@ -16,7 +16,6 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.ServiceTypeMapper;
 import com.dian.mmall.pojo.ServiceType;
-import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.ServiceTypeService;

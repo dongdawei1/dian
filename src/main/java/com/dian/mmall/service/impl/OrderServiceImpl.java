@@ -1,5 +1,6 @@
 package com.dian.mmall.service.impl;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 import com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer;
 import com.dian.mmall.pojo.goumaidingdan.OrderCommonOfferEvaluateVo;
 import com.dian.mmall.pojo.goumaidingdan.PurchaseSeeOrderVo;
-import com.dian.mmall.pojo.jiushui.WineAndTableware;
 import com.dian.mmall.pojo.pingjia.Evaluate;
 import com.dian.mmall.pojo.tupian.Picture;
 import com.dian.mmall.pojo.user.OrderUser;
@@ -40,7 +40,6 @@ import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.OrderService;
 import com.dian.mmall.service.PurchaseCreateOrderVoService;
-import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
@@ -59,8 +58,6 @@ public class OrderServiceImpl implements OrderService {
 	private OrderMapper orderMapper;
 	@Autowired
 	private RealNameMapper realNameMapper;
-	@Autowired
-	private WholesaleCommodityService wholesaleCommodityService;
 	@Autowired
 	private PurchaseCreateOrderVoService purchaseCreateOrderVoService;
 	@Autowired
@@ -82,36 +79,6 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public synchronized ServerResponse<String> create_wholesaleCommodity_order(long userId,
 			Map<String, Object> params) {
-		// 暂时不做 批发订单
-//    	commoditySurplusNo &lt;  #{commodityReserveNo} and
-//    	startTime &lt;   #{updateTime} and
-//    	endTime   &gt;   #{updateTime} 
-//    	params.put("commodityJiage", (int)params.get("commodityJiage")*100);
-//    	params.put("updateTime", DateTimeUtil.dateToAll());
-//    	WholesaleCommodity wholesaleCommodity=(WholesaleCommodity) BeanMapConvertUtil
-//				.convertMap(WholesaleCommodity.class, params);
-//    	
-//    	ServerResponse<Object> serverResponse=wholesaleCommodityService.getWholesaleCommodityBoolean(wholesaleCommodity);
-//    	
-//    	if(serverResponse.getStatus()==0) {
-//    		long zongJiage=wholesaleCommodity.getCommodityJiage()*wholesaleCommodity.getCommodityReserveNo();
-//    		Order order=new Order();
-//    		order.setSaleUserId(wholesaleCommodity.getUserId());
-//    		order.setPurchaseUserId(userId);
-//    		order.setWholesaleCommodityId(wholesaleCommodity.getId());
-//    		order.setEvaluateid(wholesaleCommodity.getEvaluateid());
-//    		order.setCommodityJiage(wholesaleCommodity.getCommodityJiage());
-//    		order.setCommodityCountNo(wholesaleCommodity.getCommodityReserveNo());
-//    		order.setCommodityZongJiage(zongJiage);
-//    		order.setReserve(2);
-//    		order.setDeliveryType(1);
-//    		order.setDeliveryCollect(0);
-//    		
-//    	
-//    	}
-
-		// 上边是批发订单
-
 		return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshangpinshibai.getMessage());
 	}
 
@@ -264,43 +231,11 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
-	 * 用户手动改变, 倒计时结束改变 （倒计时结束改变后端没有校验） 改变订单状态
-	 */
-
-	@Override
-	public synchronized ServerResponse<String> operation_purchase_order(User user, Map<String, Object> params) {
-		// 先去redis中找 ，
-//		String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + "*";
-//		Set<String> keySet = RedisPoolUtil.keys(keyString);
-
-		// boolean isredis = false;
-		// orderCommonOfferId 选中的销售商id ，id 订单id ,commodityZongJiage 选中的报价元
-		// saleUserIdDeng 登陆的userId
-		int type = Integer.parseInt(params.get("type").toString().trim());
-		long id = Long.parseLong(params.get("id").toString().trim());
-		Order order = orderMapper.getOrderById(id, user.getId());
-
-		if (order != null) {
-			// 这里处理
-			ServerResponse<String> serverResponseImpl = operation_purchase_order_impl(type, order, params);
-			if (serverResponseImpl.getStatus() == 0) {
-				return ServerResponse.createBySuccess();
-			} else {
-				return serverResponseImpl;
-			}
-
-		} else {
-			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
-		}
-
-	}
-
-	/**
 	 * 计算平均价格
 	 */
 	public int create_order_average(WholesaleCommodity wholesaleCommodity) {
 		int commodityJiage = 0;
-		List<Integer> commodityJiage_list = wholesaleCommodityService.getCommodityJiage(wholesaleCommodity);
+		List<Integer> commodityJiage_list =null;// wholesaleCommodityService.getCommodityJiage(wholesaleCommodity);
 		int length = commodityJiage_list.size();
 		for (int a = 0; a < length; a++) {
 			commodityJiage += commodityJiage_list.get(a);
@@ -314,7 +249,7 @@ public class OrderServiceImpl implements OrderService {
 	private List<OrderCommonOfferEvaluateVo> guanShanReason1(long orderId, int type) {
 		List<OrderCommonOfferEvaluateVo> listOrderCommonOfferEvaluateVo = new ArrayList<OrderCommonOfferEvaluateVo>();
 		// guanShanReason 把报价的集合放到这个字段中 ，要处理状态 commodStatus ==0 的 预创建的多个
-		List<OrderCommonOffer> orderCommonOffer_list = orderCommonOfferMapper.getInitial(orderId);
+		List<OrderCommonOffer> orderCommonOffer_list = orderCommonOfferMapper.getInitial(orderId, 3);
 		int leng = orderCommonOffer_list.size();
 		if (leng > 0) {
 			for (int a = 0; a < leng; a++) {
@@ -416,8 +351,7 @@ public class OrderServiceImpl implements OrderService {
 					// 有报价更新为 orderStatus==18
 					order.setOrderStatus(18);
 					order.setUpdateTime(updateTime);
-					String confirmTime = DateTimeUtil.dateTimeToDateString(
-							(new Date()).getTime() + 15 * 60 * 100);
+					String confirmTime = DateTimeUtil.dateTimeToDateString((new Date()).getTime() + 15 * 60 * 1000);
 					order.setConfirmTime(confirmTime);
 
 					tongbu_gengxin_uporder(order);
@@ -451,7 +385,8 @@ public class OrderServiceImpl implements OrderService {
 
 			} else {
 				// 小于30分钟
-				String confirmTime=	DateTimeUtil.dateTimeToDateString(DateTimeUtil.strToDate(order.getCreateTime()).getTime()+30*60*100);
+				String confirmTime = DateTimeUtil
+						.dateTimeToDateString(DateTimeUtil.strToDate(order.getCreateTime()).getTime() + 30 * 60 * 1000);
 				order.setConfirmTime(confirmTime);
 				purchaseSeeOrderVo_sub.setOrderStatu11(true);
 				purchaseSeeOrderVo_sub.setVoSocket(0);
@@ -470,11 +405,11 @@ public class OrderServiceImpl implements OrderService {
 			long oUpDateLong = DateTimeUtil.strToDate(order.getUpdateTime()).getTime();
 			if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
 				order.setUpdateTime(updateTime);
-				order.setOrderStatus(20);
+				order.setOrderStatus(3);
 				tongbu_gengxin_uporder(order);
 				tongbu_jiedong_baozhengjin(order.getId(), 3);
-				purchaseSeeOrderVo_sub.setOrderStatuName("未支付质保金");
-				purchaseSeeOrderVo_sub.setOrderStatu20(true);
+				purchaseSeeOrderVo_sub.setOrderStatuName("未支付定金关单");
+				purchaseSeeOrderVo_sub.setOrderStatu3(true);
 
 			} else {
 				purchaseSeeOrderVo_sub.setVoSocket(0);
@@ -484,21 +419,26 @@ public class OrderServiceImpl implements OrderService {
 			}
 			purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
 		} else if (orderStatus == 12) {
-			long oUpDateLong = DateTimeUtil.strToDate(order.getUpdateTime()).getTime();
+			long oUpDateLong = (DateTimeUtil.strToDate(order.getUpdateTime())).getTime();
+			System.out.println(oUpDateLong);
+			System.out.println(nowDateLong);
+			System.out.println(nowDateLong - oUpDateLong);
+			System.out.println(15 * 60 * 1000);
 			if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
 				order.setUpdateTime(updateTime);
 				order.setOrderStatus(19);
 				tongbu_gengxin_uporder(order);
-				tongbu_jiedong_baozhengjin(order.getId(), 3);
+				tongbu_jiedong_baozhengjin(order.getId(), 2);
 				purchaseSeeOrderVo_sub.setOrderStatuName("未支付质保金关单");
 
 			} else {
 				purchaseSeeOrderVo_sub.setOrderStatuName("待支付定金(报价的6%)");
 				purchaseSeeOrderVo_sub.setOrderStatu12(true);
 				order.setCommodityZongJiage(order.getCommodityZongJiage() / 100);
-				String confirmTime=	DateTimeUtil.dateTimeToDateString(DateTimeUtil.strToDate(order.getUpdateTime()).getTime()+15*60*100);
+				String confirmTime = DateTimeUtil
+						.dateTimeToDateString(DateTimeUtil.strToDate(order.getUpdateTime()).getTime() + 15 * 60 * 1000);
 				order.setConfirmTime(confirmTime);
-				
+
 				purchaseSeeOrderVo_sub
 						.setListOrderCommonOfferEvaluateVo(getOrderCommonOffer(order.getId(), order.getSaleUserId()));
 			}
@@ -511,10 +451,6 @@ public class OrderServiceImpl implements OrderService {
 			} else if (orderStatus == 17) {
 				purchaseSeeOrderVo_sub.setOrderStatuName("无销售商接单关单");
 				purchaseSeeOrderVo_sub.setOrderStatu17(true);
-				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
-			} else if (orderStatus == 20) {
-				purchaseSeeOrderVo_sub.setOrderStatuName("未支付质保金关单");
-				purchaseSeeOrderVo_sub.setOrderStatu20(true);
 				purchaseSeeOrderVo_sub.setListOrderCommonOfferEvaluateVo(rderCommonOfferEvaluateVo);
 			} else if (orderStatus == 19) {
 				purchaseSeeOrderVo_sub.setOrderStatuName("未支付定金关单");
@@ -554,26 +490,25 @@ public class OrderServiceImpl implements OrderService {
 	private synchronized void tongbu_jiedong_baozhengjin(long orderId, int type) {
 		// 3是关单全部退
 		// 1 初始，2 失败，3成功,4投诉不解冻，5无投诉解冻成功，6抢单失败退款
-		if (type == 3) {
-			List<OrderCommonOffer> ol = orderCommonOfferMapper.getInitial(orderId);
-			List<Liushui> liushui = liushuiMapper.getjinxingliushui(orderId, 3);
-			for (int a = 0; a < ol.size(); a++) {
-				OrderCommonOffer orderCommonOffer = ol.get(a);
-				for (int liu = 0; liu < liushui.size(); liu++) {
-					Liushui liushui2 = liushui.get(liu);
-					if (orderCommonOffer.getSaleUserId() == liushui2.getUserId()) {
-						tongbu_jiedong_gengxin_yue(liushui2);
-						continue;
-					}
+
+		List<OrderCommonOffer> ol = orderCommonOfferMapper.getInitial(orderId, type);
+		List<Liushui> liushui = liushuiMapper.getjinxingliushui(orderId, 3);
+		for (int a = 0; a < ol.size(); a++) {
+			OrderCommonOffer orderCommonOffer = ol.get(a);
+			for (int liu = 0; liu < liushui.size(); liu++) {
+				Liushui liushui2 = liushui.get(liu);
+				if (orderCommonOffer.getSaleUserId() == liushui2.getUserId()) {
+					tongbu_jiedong_gengxin_yue(liushui2);
+					continue;
 				}
 			}
 		}
+
 	}
 
 	// 解冻和退款
 	private synchronized void tongbu_jiedong_gengxin_yue(Liushui liushui2) {
-		liushui2.setLiushuiStatus(6);
-		liushui2.setPayment("解冻");
+
 		OrderUser orderUser = orderUserMapper.getOrderUserById(liushui2.getUserId());
 		orderUser.setShengyuAmount(orderUser.getShengyuAmount() + liushui2.getAmount());
 		orderUser.setDongjieAmount(orderUser.getDongjieAmount() - liushui2.getAmount());
@@ -614,148 +549,82 @@ public class OrderServiceImpl implements OrderService {
 	/** _______________根据时间处理订单结束__________________ */
 
 	/**
-	 * 实现用户（抢单人员，购买商，定时任务） 操作和定时任务操作， 改变订单状态 operation_purchase_order
+	 * 用户手动改变, 改变订单状态
 	 */
-	private ServerResponse<String> operation_purchase_order_impl(int type, Order order, Map<String, Object> params) {
-		// 更新数据库，订单表，抢单表，找到了操作 更新数据库，订单表，抢单表， 发通知给抢单人员
-//		状态 =11 时 显示关单键  和 确认键  关单后端 传 3，确认传13 -->
-//
-//		关单后状态==3或者17 （超时无人接单）  显示开启键   
-		// 开启后端 传 11，
-//		确认后状态==13  显示待确认总价 按键  置灰    销售商点击确认价格
-//      
-//		支付成功状态==4  显示 待收货 不可点击   送货者状态4时显示 已送到 传 operationRow(scope.row,16)  点击后状态变成16-->
-//      送货者再次确认  13-->转为12待支付           显示 支付键    支付后端  传 4  ， 和 显示关单键 -->
-//		状态==16 显示确认收货   向后端传 5  状态更新为5--->
-//
-//		状态==5 显示待评价      向后端传 6  订单更新为 6 完成评价
-		String updateTime = DateTimeUtil.dateToAll();
-		long id = order.getId();
-		order.setUpdateTime(updateTime);
-		List<OrderCommonOffer> list_evaluates = orderCommonOfferMapper.getInitial(order.getId());
 
-		try {
+	@Override
+	public synchronized ServerResponse<String> operation_purchase_order(User user, Map<String, Object> params) {
+		int type = Integer.parseInt(params.get("type").toString().trim());
+		long id = Long.parseLong(params.get("id").toString().trim());
+		Order order = orderMapper.getOrderById(id, user.getId());
+		if (order != null) {
+			String updateTime = DateTimeUtil.dateToAll();
+			order.setUpdateTime(updateTime);
+			// 更新数据库，订单表，抢单表，找到了操作 更新数据库，订单表，抢单表， 发通知给抢单人员
+//			状态 =11 时 显示关单键  和 确认键  关单后端 传 3，确认传12 -->
+			//
+//			关单后状态==3或者17 （超时无人接单）  显示开启键   
+			// 开启后端 传 11，
+//			确认后状态==12  显示待确认总价 按键  置灰    销售商点击确认价格
+//	      
+//			支付成功状态==4  显示 待收货 不可点击   送货者状态4时显示 已送到 传 operationRow(scope.row,16)  点击后状态变成16-->
+//	      送货者再次确认  13-->转为12待支付           显示 支付键    支付后端  传 4  ， 和 显示关单键 -->
+//			状态==16 显示确认收货   向后端传 5  状态更新为5--->
+			//
+//			状态==5 显示待评价      向后端传 6  订单更新为 6 完成评价
+			System.out.println(88888);
+			System.out.println(type);
+			System.out.println(order.getOrderStatus());
 			if (type == 3) {
 				if (order.getOrderStatus() == 11 || order.getOrderStatus() == 18) {
 					// 关单 关单状态只能 是11 时 12 （），21时18时才能关
 					order.setOrderStatus(type);
-					orderMapper.operation_purchase_order(order);
-					if (list_evaluates.size() > 0) {
-						// TODO 去发送通知全部 接单失败
-						// 全部更新抢单
-						orderCommonOfferMapper.operation_purchase_evaluate_all(order.getId(), updateTime);
-					}
+					tongbu_gengxin_uporder(order);
+					tongbu_jiedong_baozhengjin(order.getId(), 3);
 				} else if (order.getOrderStatus() == 12 || order.getOrderStatus() == 21) {
-					// TODO 通知接单成功的用户，关单了 order.getSaleUserId()发给这个user id
-
+					System.out.println("OrderServiceImpl.operation_purchase_order()");
 					order.setOrderStatus(type);
-					// 更新订单表
-					orderMapper.operation_purchase_order(order);
+					tongbu_gengxin_uporder(order);
 					// 更新抢单表
-					orderCommonOfferMapper.operation_purchase_evaluate_id(order.getId(), updateTime,
-							order.getSaleUserId());
-					// 检查有无待支付的订单 删除
+					System.out.println("OrderServiceImpl.operation_purchase_order()");
+					tongbu_jiedong_baozhengjin(order.getId(), 2);
 
 				}
 			} else if (type == 11) {
-				// 重新开启订单 只有3和17,19,20的才能重新开启
+				// 重新开启订单 只有3和17,19,的才能重新开启
 				order.setOrderStatus(type);
-				orderMapper.operation_purchase_order(order);
-				if (list_evaluates.size() > 0) {
-					// 全部更新
-					orderCommonOfferMapper.operation_purchase_evaluate_all(order.getId(), updateTime);
-				}
-				// TODO 通知给抢单人员
-			} else if (type == 13) {
-				// 确认订单
-				long order_commodityZongJiage = Long.parseLong(params.get("commodityZongJiage").toString().trim());
-				long orderCommonOfferId = Long.parseLong(params.get("orderCommonOfferId").toString().trim());
-				if (list_evaluates.size() > 0) {
-					boolean b = false;
-					for (int a = 0; a < list_evaluates.size(); a++) {
-						OrderCommonOffer orderCommonOffer = list_evaluates.get(a);
-						if (orderCommonOffer.getId() == orderCommonOfferId) {
-							b = true;
-
-							long commodityZongJiage = orderCommonOffer.getCommodityZongJiage() / 100;
-
-							if (commodityZongJiage == order_commodityZongJiage) {
-								// 选中的更新 为成功
-								long saleUserId = orderCommonOffer.getSaleUserId();
-								orderCommonOfferMapper.operation_purchase_evaluate_selected(order.getId(), updateTime,
-										saleUserId, orderCommonOffer.getId());
-								// 更新订单 为抢单成功 和其他信息 报价金额，抢单用户id
-								if (order.getOrderStatus() == 11) {
-									order.setSaleUserId(saleUserId);
-									order.setCommodityZongJiage(orderCommonOffer.getCommodityZongJiage());
-									order.setOrderStatus(type);
-									orderMapper.operation_purchase_order(order);
-									// TODO 通知给抢单成功人员 userID
-								} else {
-									return ServerResponse
-											.createByErrorMessage(ResponseMessage.dingdanzhuangtaicuowu.getMessage());
-								}
-
-							} else {
-								return ServerResponse
-										.createByErrorMessage(ResponseMessage.baojiajinebuyizhi.getMessage());
-							}
-						}
-					}
-					if (!b) {
-						return ServerResponse
-								.createByErrorMessage(ResponseMessage.baojiashanghuchaxunshibai.getMessage());
-					}
-
-					// 未选中全部更新为失败
-					orderCommonOfferMapper.operation_purchase_evaluate_noSelected(order.getId(), updateTime);
-
-				} else {
-					return ServerResponse.createByErrorMessage(ResponseMessage.baojiashanghuchaxunshibai.getMessage());
-				}
+				tongbu_gengxin_uporder(order);
 
 			} else if (type == 12) {
-				// 抢单人员操作
-				long saleUserIdDeng = Long.parseLong(params.get("saleUserIdDeng").toString().trim());
-				if (saleUserIdDeng != order.getSaleUserId()) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
-				}
-				order.setOrderStatus(type);
-				orderMapper.operation_purchase_order(order);
-				// TODO 通知给商户 ，抢单人员已经确认过价格
+				// 支付
+				long order_commodityZongJiage = Long.parseLong(params.get("commodityZongJiage").toString().trim());
+				long orderCommonOfferId = Long.parseLong(params.get("orderCommonOfferId").toString().trim());
+				OrderCommonOffer orderCommonOffer = orderCommonOfferMapper.getbysucc(orderCommonOfferId, 0);
+				long commodityZongJiage = orderCommonOffer.getCommodityZongJiage() / 100;
+				if (commodityZongJiage == order_commodityZongJiage) {
+					// 选中的更新 为成功
+					long saleUserId = orderCommonOffer.getSaleUserId();
+					if (order.getOrderStatus() == 11 || order.getOrderStatus() == 18) {
+						orderCommonOfferMapper.operation_purchase_evaluate_selected(order.getId(), updateTime,
+								saleUserId, orderCommonOffer.getId());
+						// 更新订单 为抢单成功 和其他信息 报价金额，抢单用户id
 
-			} else if (type == 19) {
-				// 判断是否在支付中 0表示未支付，1表示已经支付，2支付失败关单，3支付金额与实际金额不一致，4超时关单
-				List<PayOrder> pcAadAppAll = payOrderMapper.pcAadAppAll(order.getId(), 9);
-
-				if (pcAadAppAll.size() == 0) {
-					order.setUpdateTime(updateTime);
-					order.setOrderStatus(type);
-					orderMapper.operation_purchase_order(order);
-				} else {
-					for (int a = 0; a < pcAadAppAll.size(); a++) {
-						PayOrder payOrder = pcAadAppAll.get(a);
-						if (payOrder.getState() == 0) {
-							order.setUpdateTime(updateTime);
-							order.setOrderStatus(19);
-							orderMapper.operation_purchase_order(order);
-							// 更新抢单表
-							orderCommonOfferMapper.uptateGuanDan(order.getId(), order.getSaleUserId(), updateTime);
-							// 调微信 关单去,并更新支付表
-							closeorderWX(payOrder);
-							// TODO 发消息给这个销售商,购买者未支付定金关单
-
-						} else if (payOrder.getState() == 1 || payOrder.getState() == 3) {
-							ServerResponse<Object> serverResponse = orderqueryWX(payOrder);
-							if (serverResponse.getStatus() == 0) {
-								timerSelsetPayOrderImpl((Map<String, String>) serverResponse.getData(), payOrder);
-							}
-						}
+						order.setSaleUserId(saleUserId);
+						order.setCommodityZongJiage(orderCommonOffer.getCommodityZongJiage());
+						order.setOrderStatus(type);
+						tongbu_gengxin_uporder(order);
+					} else {
+						return ServerResponse.createByErrorMessage(ResponseMessage.dingdanzhuangtaicuowu.getMessage());
 					}
-				}
-			}
 
-			else if (type == 16) {
+				} else {
+					return ServerResponse.createByErrorMessage(ResponseMessage.baojiajinebuyizhi.getMessage());
+				}
+
+				// 未选中全部更新为失败
+				tongbu_jiedong_baozhengjin(order.getId(), 3);
+
+			} else if (type == 16) {
 				// 抢单人员操作
 				long saleUserIdDeng = Long.parseLong(params.get("saleUserIdDeng").toString().trim());
 				if (saleUserIdDeng != order.getSaleUserId()) {
@@ -768,16 +637,6 @@ public class OrderServiceImpl implements OrderService {
 				order.setOrderStatus(type);
 				orderMapper.operation_purchase_order(order);
 				// TODO 通知给抢单成功人员 userID 用户已经收货，订单完成
-			} else if (type == 20) {
-				// 签单者没有支付质保金 只有13 才能操作
-				order.setOrderStatus(type);
-				int r = orderMapper.operation_purchase_order(order);
-				// TODO 通知抢单人员，
-
-				if (r > 0) {
-					// 调用退款接口
-				}
-
 			}
 
 			else {
@@ -785,13 +644,15 @@ public class OrderServiceImpl implements OrderService {
 			}
 
 			return ServerResponse.createBySuccess();
-		} catch (Exception e) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.XiTongYiChang.getMessage());
+
+		} else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
 		}
+
 	}
 
 	/**
-	 * 改变 订单状态是11（下单）,12（待支付定金）,13（销售商支付质保金）,18（有人接单多+15分钟）,21(支付失败)状态的定时任务
+	 * 定时任务改变 订单状态是11（下单）,12（待支付定金）,13（销售商支付质保金）,18（有人接单多+15分钟）,21(支付失败)状态的定时任务
 	 */
 	@Override
 	public void timerOrderStatus() {
@@ -831,41 +692,45 @@ public class OrderServiceImpl implements OrderService {
 						// 有报价才会是18直接去退保证金
 						tongbu_jiedong_baozhengjin(o.getId(), 3);
 					}
-				} else if (orderStatus == 12 ) {
-					// 判断是否在支付中 0表示未支付，1表示已经支付，2支付失败关单，3支付金额与实际金额不一致，4超时关单
-					List<PayOrder> pcAadAppAll = payOrderMapper.pcAadAppAll(o.getId(), 9);
+				} else if (orderStatus == 12) {
+					long updateTimeLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
+					if ((nowDateLong - updateTimeLong) >= 15 * 60 * 1000) {
 
-					if (pcAadAppAll.size() == 0) {
-						o.setUpdateTime(updateTime);
-						o.setOrderStatus(19);
-						tongbu_gengxin_uporder(o);
-						tongbu_jiedong_baozhengjin(o.getId(), 3);
-					} else {
-						for (int a = 0; a < pcAadAppAll.size(); a++) {
-							PayOrder payOrder = pcAadAppAll.get(a);
-							if (payOrder.getState() == 0) {
-								// 购买者未支付定金 19，最后一次更新时间+15分钟 用 updateTime
-								long oUpDateLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
-								if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
-									o.setUpdateTime(updateTime);
-									o.setOrderStatus(19);
-									tongbu_gengxin_uporder(o);
-									tongbu_jiedong_baozhengjin(o.getId(), 3);
-									// 调用微信关单
-									closeorderWX(payOrder);
-								}
-							} else if (payOrder.getState() == 1 || payOrder.getState() == 3) {
-								// 先去查询一下支付结果再根据支付结果处理
-								ServerResponse<Object> serverResponse = orderqueryWX(payOrder);
-								if (serverResponse.getStatus() == 0) {
-									timerSelsetPayOrderImpl((Map<String, String>) serverResponse.getData(), payOrder);
+						// 判断是否在支付中 0表示未支付，1表示已经支付，2支付失败关单，3支付金额与实际金额不一致，4超时关单
+						List<PayOrder> pcAadAppAll = payOrderMapper.pcAadAppAll(o.getId(), 9);
+
+						if (pcAadAppAll.size() == 0) {
+							o.setUpdateTime(updateTime);
+							o.setOrderStatus(19);
+							tongbu_gengxin_uporder(o);
+							tongbu_jiedong_baozhengjin(o.getId(), 2);
+						} else {
+							for (int a = 0; a < pcAadAppAll.size(); a++) {
+								PayOrder payOrder = pcAadAppAll.get(a);
+								if (payOrder.getState() == 0) {
+									// 购买者未支付定金 19，最后一次更新时间+15分钟 用 updateTime
+									long oUpDateLong = DateTimeUtil.strToDate(o.getUpdateTime()).getTime();
+									if ((nowDateLong - oUpDateLong) >= 15 * 60 * 1000) {
+										o.setUpdateTime(updateTime);
+										o.setOrderStatus(19);
+										tongbu_gengxin_uporder(o);
+										tongbu_jiedong_baozhengjin(o.getId(), 2);
+										// 调用微信关单
+										closeorderWX(payOrder);
+									}
+								} else if (payOrder.getState() == 1 || payOrder.getState() == 3) {
+									// 先去查询一下支付结果再根据支付结果处理
+									ServerResponse<Object> serverResponse = orderqueryWX(payOrder);
+									if (serverResponse.getStatus() == 0) {
+										timerSelsetPayOrderImpl((Map<String, String>) serverResponse.getData(),
+												payOrder);
+									}
 								}
 							}
 						}
+
 					}
-
 				}
-
 			}
 		}
 	}
@@ -877,17 +742,17 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void timerSelsetPayOrder() {
-		String createTime = DateTimeUtil.dateTimeToDateString(new Date().getTime() - 10 * 60 * 1000);
-		List<PayOrder> payOrders = payOrderMapper.timerSelsetPayOrder(createTime, 0, 0);
-		if (payOrders.size() > 0) {
-			for (PayOrder pay : payOrders) {
-				ServerResponse<Object> serverResponse = orderqueryWX(pay);
-				if (serverResponse.getStatus() == 0) {
-					timerSelsetPayOrderImpl((Map<String, String>) serverResponse.getData(), pay);
-				}
-			}
-
-		}
+//		String createTime = DateTimeUtil.dateTimeToDateString(new Date().getTime() - 10 * 60 * 1000);
+//		List<PayOrder> payOrders = payOrderMapper.timerSelsetPayOrder(createTime, 0, 0);
+//		if (payOrders.size() > 0) {
+//			for (PayOrder pay : payOrders) {
+//				ServerResponse<Object> serverResponse = orderqueryWX(pay);
+//				if (serverResponse.getStatus() == 0) {
+//					timerSelsetPayOrderImpl((Map<String, String>) serverResponse.getData(), pay);
+//				}
+//			}
+//
+//		}
 
 	}
 
@@ -1592,8 +1457,8 @@ public class OrderServiceImpl implements OrderService {
 		for (int i = 0; i < orderList.size(); i++) {
 			Order o = orderList.get(i);
 //			购买者下单,2批发者确认，3用户关单，4取/送货 ，5待评价，6评价完成 
-//			，11发布采购订单 ，12待支付， 13发布者确认 ，16 确认收货，17超时无人接单关单，
-//			18 三十分钟已过有人接单 确认期，19 超时未支付，20接单者未支付定金，21支付失败
+//			，11发布采购订单 ，12待支付， ，16 确认收货，17超时无人接单关单，
+//			18 三十分钟已过有人接单 确认期，19 超时未支付，，21支付失败
 			if (o.getReleaseType() == 4) {
 				o.setPaymentTime("实时采购信息");
 			}
@@ -1695,8 +1560,8 @@ public class OrderServiceImpl implements OrderService {
 		for (int i = 0; i < orderList.size(); i++) {
 			Order o = orderList.get(i);
 //			购买者下单,2批发者确认，3用户关单，4取/送货 ，5待评价，6评价完成 
-//			，11发布采购订单 ，12待支付， 13发布者确认 ，16 确认收货，17超时无人接单关单，
-//			18 三十分钟已过有人接单 确认期，19 超时未支付，20接单者未支付定金，21支付失败
+//			，11发布采购订单 ，12待支付，  ，16 确认收货，17超时无人接单关单，
+//			18 三十分钟已过有人接单 确认期，19 超时未支付，，21支付失败
 			if (o.getReleaseType() == 4) {
 				o.setPaymentTime("实时采购信息");
 			}
@@ -1814,5 +1679,13 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createByErrorMessage(ResponseMessage.qiandangshibai.getMessage());
 	}
 
-	/* _______________________________接单结束___________________________ */
+	@Override
+	public ServerResponse<Object> getjiedanlist(long id) {
+		RealName realName=realNameMapper.getRealName(id);
+		String detailed=realName.getDetailed();
+		List<Order> listo=orderMapper.jiedanos(detailed);
+		
+		return null;
+	}
+
 }

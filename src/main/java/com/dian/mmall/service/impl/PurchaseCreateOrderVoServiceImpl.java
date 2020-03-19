@@ -17,7 +17,6 @@ import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.PurchaseCreateOrderVoService;
 import com.dian.mmall.service.RealNameService;
-import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
@@ -30,8 +29,7 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 	private CommonMenuMapper commonMenuMapper;
 	@Autowired
 	private RealNameService realNameService;
-	@Autowired
-	private WholesaleCommodityService wholesaleCommodityService;
+
 
 	@Override
 	public ServerResponse<Object> getPurchaseCreateOrderVo(User user) {
@@ -90,8 +88,8 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 			// 查询该城市下全部菜单,如果空返回北京%110000, 110100%'
 			String selectedOptions = "%110000, 110100%";
 			// TODO selectedOptions此字段没有用目前是在 jerdis中写死的 全部查询北京
-			ServerResponse<Object> onbResponse = wholesaleCommodityService.getWholesalecommodity(selectedOptions,
-					releaseType);
+			ServerResponse<Object> onbResponse =null;//    wholesaleCommodityService.getWholesalecommodity(selectedOptions,
+				//	releaseType);
 
 			allCommonMenu = new ArrayList<CommonMenuWholesalecommodity>();
 

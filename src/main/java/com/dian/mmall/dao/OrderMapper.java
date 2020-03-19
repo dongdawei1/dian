@@ -45,4 +45,6 @@ public interface OrderMapper {
 
 	Order getOrderByIdyichang(long orderId);
 
+	List<Order> jiedanos(String detailed);
+
 }

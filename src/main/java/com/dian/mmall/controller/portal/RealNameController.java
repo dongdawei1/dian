@@ -25,7 +25,6 @@ import com.dian.mmall.dao.UserMapper;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.IUserService;
 import com.dian.mmall.service.RealNameService;
-import com.dian.mmall.util.CheckLand;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LogUtil;

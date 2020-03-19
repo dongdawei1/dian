@@ -68,7 +68,7 @@
 			<if test=" orderStatus==11">, createTime=#{updateTime},commodityZongJiage=0</if>
 		</if>
 
-		<if test="orderStatus==13">, saleUserId=#{saleUserId}
+		<if test="orderStatus==12">, saleUserId=#{saleUserId}
 			,commodityZongJiage=#{commodityZongJiage}
 		</if>
 		<if test="orderStatus==4">, guaranteeMoney=#{guaranteeMoney}
@@ -76,9 +76,8 @@
 		</if>
 		where id=#{id}
 		<if test="orderStatus==3 "> and orderStatus in(12,11,18,21)</if>
-		<if test="orderStatus==11 "> and orderStatus in(3,17,19,20)</if>
-		<if test="orderStatus==13 "> and orderStatus in(11,18) </if>
-		<if test="orderStatus==12 or orderStatus==20 "> and orderStatus =13</if>
+		<if test="orderStatus==11 "> and orderStatus in(3,17,19)</if>
+		<if test="orderStatus==12  "> and orderStatus in(11,18)</if>
 		<if test="orderStatus==4 or orderStatus==19"> and orderStatus in(12,21)</if>
 		<if test="orderStatus==16 "> and orderStatus =4</if>
 		<if test="orderStatus==18 or orderStatus==17  "> and orderStatus =11</if>

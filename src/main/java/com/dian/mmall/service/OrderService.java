@@ -27,6 +27,7 @@ public interface OrderService {
 	ServerResponse<Object> native_pay_order_app(User user, String spbillCreateIp, long id);
 	
 	ServerResponse<Object> createjiedan(long id, Map<String, Object> params);
+	ServerResponse<Object> getjiedanlist(long id);
 	
 	
 }

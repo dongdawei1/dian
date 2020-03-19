@@ -12,22 +12,26 @@
 		select * from order_common_offer
 		where
 		orderFormId=#{orderFormId}
-		and commodStatus=0
+		<if test="type==3  "> and commodStatus=0</if>
+		<if test="type==2  "> and commodStatus=1</if>
 	</select>
 
-	<!--  -->
-	<select id="getInitialCount"  resultType="int">
-		select count(*) from order_common_offer
+	<!-- -->
+	<select id="getInitialCount" resultType="int">
+		select count(*) from
+		order_common_offer
 		where
 		orderFormId=#{orderFormId}
 		and commodStatus=0
 	</select>
-   <!--查询此订单改接单用户是否已经报价  -->
-	<select id="getmybaojia"  resultType="int">
-		select count(*) from order_common_offer
+	<!--查询此订单改接单用户是否已经报价 -->
+	<select id="getmybaojia" resultType="int">
+		select count(*) from
+		order_common_offer
 		where
 		orderFormId=#{orderFormId}
-		and commodStatus=#{commodStatus}  and saleUserId=#{saleUserId}
+		and
+		commodStatus=#{commodStatus} and saleUserId=#{saleUserId}
 	</select>
 
 
@@ -36,76 +40,95 @@
 		resultType="com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer">
 		select * from order_common_offer
 		where
-		 orderFormId=#{orderFormId}
+		orderFormId=#{orderFormId}
 		and saleUserId=#{saleUserId}
-		and commodStatus=1
+		and
+		commodStatus=1
 	</select>
-   
-   	<!-- 用户操作 全部失败 -->
+	<select id="getbysucc"
+		resultType="com.dian.mmall.pojo.goumaidingdan.OrderCommonOffer">
+		select * from order_common_offer
+		where
+		id=#{id}
+		and
+		commodStatus=#{commodStatus}
+	</select>
+
+	<!-- 用户操作 全部失败 -->
 	<update id="operation_purchase_evaluate_all">
 		update order_common_offer set
-		updateTime=#{updateTime},commodStatus=2 
-		where orderFormId=#{orderFormId}
+		updateTime=#{updateTime},commodStatus=2
+		where
+		orderFormId=#{orderFormId}
 	</update>
 
-		<!-- 用户操作 确认过订单后支付前关单 -->
+	<!-- 用户操作 确认过订单后支付前关单 -->
 	<update id="operation_purchase_evaluate_id">
 		update order_common_offer set
-		updateTime=#{updateTime},commodStatus=2 
-		where orderFormId=#{orderFormId}  and commodStatus=1  and saleUserId=#{saleUserId}
+		updateTime=#{updateTime},commodStatus=2
+		where
+		orderFormId=#{orderFormId} and commodStatus=1 and
+		saleUserId=#{saleUserId}
 	</update>
-	
 
-   	<!-- 用户操作 更新成功的 -->
+
+	<!-- 用户操作 更新成功的 -->
 	<update id="operation_purchase_evaluate_selected">
 		update order_common_offer set
 		updateTime=#{updateTime},commodStatus=1
-		where orderFormId=#{orderFormId} and commodStatus=0 
-		and saleUserId=#{saleUserId} and id=#{id}
+		where
+		orderFormId=#{orderFormId} and commodStatus=0
+		and
+		saleUserId=#{saleUserId} and id=#{id}
 	</update>
 
-	   	<!-- 用户操作 全部失败 -->
+	<!-- 用户操作 全部失败 -->
 	<update id="operation_purchase_evaluate_noSelected">
 		update order_common_offer set
 		updateTime=#{updateTime},commodStatus=2
-		where orderFormId=#{orderFormId} and commodStatus=0
+		where
+		orderFormId=#{orderFormId} and commodStatus=0
 	</update>
-	
-		   	<!-- 定时任务更新，销售商，购买方未支付 质保金/定金 -->
+
+	<!-- 定时任务更新，销售商，购买方未支付 质保金/定金 -->
 	<update id="uptateGuanDan">
 		update order_common_offer set
 		updateTime=#{updateTime},commodStatus=2
-		where orderFormId=#{orderFormId} and saleUserId=#{saleUserId}
+		where
+		orderFormId=#{orderFormId} and saleUserId=#{saleUserId}
 	</update>
-	
+
 	<update id="uptateGuanDanById">
 		update order_common_offer set
 		updateTime=#{updateTime},commodStatus=2
 		where id=#{id}
 	</update>
-	
-	 <insert id="createCommonMenu"> insert into order_common_offer ( 
+
+	<insert id="createCommonMenu"> insert into order_common_offer (
 		commodityZongJiage,saleUserId ,orderFormId,createTime,
 		updateTime,commodStatus,contact,consigneeName,saleUserAddressDetailed
-		) 
-		
+		)
+
 		values (
-		 #{commodityZongJiage},#{saleUserId} ,#{orderFormId},#{createTime},
-		 #{updateTime},#{commodStatus},#{contact},#{consigneeName},#{saleUserAddressDetailed}
-		 ) </insert>
-		
-		
-		<select id="getId"
-		resultType="long">
+		#{commodityZongJiage},#{saleUserId}
+		,#{orderFormId},#{createTime},
+		#{updateTime},#{commodStatus},#{contact},#{consigneeName},#{saleUserAddressDetailed}
+		)
+	</insert>
+
+
+	<select id="getId" resultType="long">
 		select id from order_common_offer
 		where
-		 orderFormId=#{orderFormId}
+		orderFormId=#{orderFormId}
 		and saleUserId=#{saleUserId}
-		and createTime=#{createTime}
-		and commodStatus=#{commodStatus}
+		and
+		createTime=#{createTime}
+		and
+		commodStatus=#{commodStatus}
 	</select>
-		
-		
+
+
 	<!--创建用户成功返回非0 <insert id="createCommonMenu"> insert into common_menu ( 
 		userId,servicetypeId ) values ( #{userId},#{servicetypeId} ) </insert> <update 
 		id="updateCommonMenu"> update common_menu set servicetypeId=#{servicetypeId} 

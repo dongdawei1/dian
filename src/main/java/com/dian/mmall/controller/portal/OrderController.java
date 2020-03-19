@@ -232,6 +232,23 @@ public class OrderController {
 
 	}
 
+	
+	/**
+	 * 根据orderId查询支付状态
+	 */
+	@RequestMapping(value = "getjiedanlist", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getjiedanlist(HttpServletRequest httpServletRequest,
+			 @RequestParam String uuid) {
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
+		// 检查权限
+
+		if (user.getRole() != 1 && user.getRole() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		return orderService.getjiedanlist(user.getId());
+
+	}
 
 
 	/**
