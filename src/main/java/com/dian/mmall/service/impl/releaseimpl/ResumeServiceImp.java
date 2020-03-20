@@ -426,7 +426,7 @@ public class ResumeServiceImp implements ResumeService {
 			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
 		}
 
-		String userName = null;// params.get("userName").toString().trim();
+		String userName = params.get("userName").toString().trim();
 		String contact = params.get("contact").toString().trim();
 
 		if (contact.length() != 11 && contact != null && !contact.equals("")) {

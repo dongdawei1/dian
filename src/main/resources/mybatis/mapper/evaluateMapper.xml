@@ -21,6 +21,12 @@
          and permissionid=-1
          and releaseid=-1
     </select>
+    <!--查询id -->
+     <select id="getid" resultType="long">
+        select id from evaluate where
+         userId=#{userId}   
+         and permissionid=#{permissionid}
+    </select>
     
     
     <insert id="adminAddOrderCreateEvaluate">

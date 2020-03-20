@@ -16,6 +16,8 @@ public interface EvaluateMapper {
    
 	void adminAddOrderCreateEvaluate(Evaluate evaluate);
 
+	long getid(Evaluate evaluate);
+
 
 	
 }
