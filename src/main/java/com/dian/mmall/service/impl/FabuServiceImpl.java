@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dian.mmall.common.Const;
-import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.dao.CityMapper;
@@ -356,6 +355,10 @@ public class FabuServiceImpl implements FabuService {
 				if (result == 0) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.caozuoshibai.getMessage());
 				}
+				if(type == 5) {
+					evaluateMapper.delEv(userId,id);
+				}
+				
 			} else if (type == 6) {
 				ServerResponse<String> response = editfabu(user, params);
 				if (response.getStatus() != 0) {
@@ -716,12 +719,17 @@ public class FabuServiceImpl implements FabuService {
 		if(evaluate!=null) {
 			evaluate.setUserId(0);
 		}
-		
-		
+				
 		Map<String, Object> map=new  HashMap<String, Object>();
 		map.put("fabu", fanHui);
 		map.put("evaluate", evaluate);
 		return ServerResponse.createBySuccess(map);
+	}
+
+	@Override
+	public List<FanHui> adminGetWcall(long userId) {
+		
+		return fabuMapper.adminGetWcall(userId);
 	}
 
 }

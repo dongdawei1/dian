@@ -29,6 +29,7 @@ import com.dian.mmall.service.BunnerService;
 import com.dian.mmall.service.IUserService;
 import com.dian.mmall.service.release.ResumeService;
 import com.dian.mmall.util.DateTimeUtil;
+import com.dian.mmall.util.FabuUtil;
 import com.dian.mmall.util.FileControl;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.Strin;
@@ -301,6 +302,7 @@ public class BunnerServiceImpl implements BunnerService {
 			} else {
 				return ServerResponse.createByErrorMessage("图片不能为空");
 			}
+			//类型== 其他表的releaseType 
 			int permissionid = Integer.parseInt(params.get("permissionid").toString().trim());
 
 			// private String createTime; //活动创建时间
@@ -310,19 +312,9 @@ public class BunnerServiceImpl implements BunnerService {
 			if (tablenameid == 1) {
 				dibuBunner.setReleaseType("职位信息");
 			} else if (tablenameid == 2) {
-				dibuBunner.setReleaseType("出租信息");
+				dibuBunner.setReleaseType(FabuUtil.releaseTypeString(permissionid));
 			} else if (tablenameid == 3) {
 				dibuBunner.setReleaseType("简历信息");
-			} else if (tablenameid == 4) {
-				dibuBunner.setReleaseType("零售信息");
-			} else if (tablenameid == 5) {
-				dibuBunner.setReleaseType("百货信息");
-			} else if (tablenameid == 6) {
-				dibuBunner.setReleaseType("酒水饮料消毒餐具");
-			} else if (tablenameid == 7) {
-				dibuBunner.setReleaseType("新旧电器维修");
-			} else if (tablenameid == 8) {
-				dibuBunner.setReleaseType("装修灭虫广告牌");
 			} else if (tablenameid == 9) {
 				dibuBunner.setReleaseType("批发信息");
 			}

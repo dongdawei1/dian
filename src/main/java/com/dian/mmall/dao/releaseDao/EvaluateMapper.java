@@ -18,6 +18,8 @@ public interface EvaluateMapper {
 
 	long getid(Evaluate evaluate);
 
+	void delEv(long userId, long id);
+
 
 
 	

@@ -16,9 +16,9 @@ public class OrderExampleTimerServiceImpl implements OrderExampleTimerService{
 	@Autowired
 	private OrderExampleTimerMapper omap;
 	
-	public List<Long> getall(int a, String dateString) {
-		return omap.getall( a,dateString);
-	}
+//	public List<Long> getall(int a, String dateString) {
+//		return omap.getall( a,dateString);
+//	}
 
 	@Override
 	public void upall(int a, String dateString) {

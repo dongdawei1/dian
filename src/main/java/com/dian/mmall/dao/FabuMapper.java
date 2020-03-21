@@ -46,4 +46,6 @@ public interface FabuMapper {
 
 	FanHui getfabubyid(long id);
 
+	List<FanHui> adminGetWcall(long userId);
+
 }

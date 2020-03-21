@@ -207,21 +207,21 @@ public class ToExamineController {
 //		return toExamineService.getAccurateressDetailed(params);
 //	}
 //
-//	// 创建培训地址
-//	@RequestMapping(value = "createAddressDetailed", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<String> createAddressDetailed(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//
-//		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		// 检查是否有管理员权限
-//		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//
-//		User user = (User) serverResponse.getData();
-//		return toExamineService.createAddressDetailed(user.getUsername(), params);
-//
-//	}
+	// 创建培训地址
+	@RequestMapping(value = "createAddressDetailed", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> createAddressDetailed(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		// 检查是否有管理员权限
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+
+		User user = (User) serverResponse.getData();
+		return toExamineService.createAddressDetailed(user.getUsername(), params);
+
+	}
 //
 	// 创建服务名称
 	@RequestMapping(value = "admin_create_serviceType", method = RequestMethod.POST)
@@ -263,178 +263,177 @@ public class ToExamineController {
 //
 //	}
 //
-//	// 获取待提交接单人员名单
-//	@RequestMapping(value = "admin_select_addOrder", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<Object> admin_select_addOrder(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//		// TODO只有管理员才能调用
-//		if (!LegalCheck.checke_role(httpServletRequest)) {
-//			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
-//		}
-//		return realNameService.admin_select_addOrder(params);
+	// 获取待提交接单人员名单
+	@RequestMapping(value = "admin_select_addOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> admin_select_addOrder(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		// TODO只有管理员才能调用
+		if (!LegalCheck.checke_role(httpServletRequest)) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		return realNameService.admin_select_addOrder(params);
+
+	}
 //
-//	}
+	// 获取待签约接单人员名单
+	@RequestMapping(value = "admin_select_signingOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> admin_select_signingOrder(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		// TODO只有管理员才能调用
+		if (!LegalCheck.checke_role(httpServletRequest)) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		return realNameService.admin_select_signingOrder(params);
+
+	}
 //
-//	// 获取待签约接单人员名单
-//	@RequestMapping(value = "admin_select_signingOrder", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<Object> admin_select_signingOrder(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//		// TODO只有管理员才能调用
-//		if (!LegalCheck.checke_role(httpServletRequest)) {
-//			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
-//		}
-//		return realNameService.admin_select_signingOrder(params);
+	// 获取待签约接单人员名单根据id
+	@RequestMapping(value = "admin_select_signingOrderById", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> admin_select_signingOrderById(HttpServletRequest httpServletRequest,
+			@RequestParam long id) {
+		// TODO只有管理员才能调用
+		if (!LegalCheck.checke_role(httpServletRequest)) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (id < 0) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shimingidbunengweikong.getMessage());
+		}
+
+		return realNameService.admin_select_signingOrderById(id);
+
+	}
 //
-//	}
+	// 更新待提交接单人员名单状态
+	@RequestMapping(value = "admin_update_addOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> admin_update_addOrder(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		// TODO只有管理员才能调用
+		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+
+		User user = (User) serverResponse.getData();
+		return realNameService.admin_update_addOrder(user.getUsername(), params);
+
+	}
 //
-//	// 获取待签约接单人员名单根据id
-//	@RequestMapping(value = "admin_select_signingOrderById", method = RequestMethod.GET)
-//	@ResponseBody
-//	public ServerResponse<Object> admin_select_signingOrderById(HttpServletRequest httpServletRequest,
-//			@RequestParam long id) {
-//		// TODO只有管理员才能调用
-//		if (!LegalCheck.checke_role(httpServletRequest)) {
-//			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
-//		}
-//		if (id < 0) {
-//			return ServerResponse.createByErrorMessage(ResponseMessage.shimingidbunengweikong.getMessage());
-//		}
+	// 更新待提交接单人员名单状态,创建接单人员
+	@RequestMapping(value = "admin_create_orderUser", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> admin_create_orderUser(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		// TODO只有管理员才能调用
+		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+
+		User user = (User) serverResponse.getData();
+		return toExamineService.admin_create_orderUser(user.getUsername(), params);
+
+	}
 //
-//		return realNameService.admin_select_signingOrderById(id);
+	// 创建广告前查询实名信息
+	@RequestMapping(value = "admin_guangggao_realName", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> admin_guangggao_realName(HttpServletRequest httpServletRequest,
+			@RequestParam String userName) {
+		// TODO只有管理员才能调用
+		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		serverResponse = realNameService.admin_guangggao_realName(userName.trim());
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		RealName realName = (RealName) serverResponse.getData();
+
+		serverResponse = iUserService.selectUserById(realName.getUserId());
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		User user = (User) serverResponse.getData();
+		serverResponse = toExamineService.getUserCreate(user);
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		List<CreateGanggaoVo> vos = (List<CreateGanggaoVo>) serverResponse.getData();
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		map.put("realName", realName);
+		map.put("user", user);
+		map.put("vos", vos);
+		return ServerResponse.createBySuccess(map);
+
+	}
 //
-//	}
-//
-//	// 更新待提交接单人员名单状态
-//	@RequestMapping(value = "admin_update_addOrder", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<String> admin_update_addOrder(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//		// TODO只有管理员才能调用
-//		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//
-//		User user = (User) serverResponse.getData();
-//		return realNameService.admin_update_addOrder(user.getUsername(), params);
-//
-//	}
-//
-//	// 更新待提交接单人员名单状态
-//	@RequestMapping(value = "admin_create_orderUser", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<String> admin_create_orderUser(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//		// TODO只有管理员才能调用
-//		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//
-//		User user = (User) serverResponse.getData();
-//		return toExamineService.admin_create_orderUser(user.getUsername(), params);
-//
-//	}
-//
-//	// 创建广告前查询实名信息
-//	@RequestMapping(value = "admin_guangggao_realName", method = RequestMethod.GET)
-//	@ResponseBody
-//	public ServerResponse<Object> admin_guangggao_realName(HttpServletRequest httpServletRequest,
-//			@RequestParam String userName) {
-//		// TODO只有管理员才能调用
-//		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//		serverResponse = realNameService.admin_guangggao_realName(userName.trim());
-//		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//		RealName realName = (RealName) serverResponse.getData();
-//
-//		serverResponse = iUserService.selectUserById(realName.getUserId());
-//		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//		User user = (User) serverResponse.getData();
-//		serverResponse = toExamineService.getUserCreate(user);
-//		System.out.println(serverResponse);
-//		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//		List<CreateGanggaoVo> vos = (List<CreateGanggaoVo>) serverResponse.getData();
-//		Map<String, Object> map = new HashMap<String, Object>();
-//
-//		map.put("realName", realName);
-//		map.put("user", user);
-//		map.put("vos", vos);
-//		return ServerResponse.createBySuccess(map);
-//
-//	}
-//
-//	// 管理删除 发布
-//	@RequestMapping(value = "adminupall", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<String> adminupall(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//		// TODO只有管理员才能调用
-//		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//		User user = (User) serverResponse.getData();
-//		ServerResponse<String> serverResponse1 = toExamineService.adminupall(user.getUsername(), params);
-//		if (serverResponse1.getStatus() == 0) {
-//			return ServerResponse.createBySuccessMessage(serverResponse1.getMsg());
-//		}
-//		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
-//
-//	}
-//	// 创建广告前查询实名信息
-//	@RequestMapping(value = "isguanggao", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<Object> isguanggao(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//		if (!LegalCheck.checke_role(httpServletRequest)) {
-//			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
-//		}
-//		return bunnerService.isguanggao(params);
-//
-//	}
-//	
-//	// 创建广告
-//		@RequestMapping(value = "crguanggao", method = RequestMethod.POST)
-//		@ResponseBody
-//		public ServerResponse<String> crguanggao(HttpServletRequest httpServletRequest,
-//				@RequestBody Map<String, Object> params) {
-//			ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);			if (serverResponse.getStatus() != 0) {
-//				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//			}
-//			User user = (User) serverResponse.getData();
-//			return bunnerService.crguanggao(user,params);
-//
-//		}
+	// 管理删除 发布
+	@RequestMapping(value = "adminupall", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> adminupall(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		// TODO只有管理员才能调用
+		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+		User user = (User) serverResponse.getData();
+		ServerResponse<String> serverResponse1 = toExamineService.adminupall(user.getUsername(), params);
+		if (serverResponse1.getStatus() == 0) {
+			return ServerResponse.createBySuccessMessage(serverResponse1.getMsg());
+		}
+		return ServerResponse.createByErrorMessage(serverResponse1.getMsg());
+
+	}
+	// 创建广告前查询实名信息
+	@RequestMapping(value = "isguanggao", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> isguanggao(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		if (!LegalCheck.checke_role(httpServletRequest)) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		return bunnerService.isguanggao(params);
+
+	}
+
+	// 创建广告
+		@RequestMapping(value = "crguanggao", method = RequestMethod.POST)
+		@ResponseBody
+		public ServerResponse<String> crguanggao(HttpServletRequest httpServletRequest,
+				@RequestBody Map<String, Object> params) {
+			ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);			if (serverResponse.getStatus() != 0) {
+				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+			}
+			User user = (User) serverResponse.getData();
+			return bunnerService.crguanggao(user,params);
+
+		}
 //		
-//		// 获取全部广告
-//		@RequestMapping(value = "agetguangaoAll", method = RequestMethod.POST)
-//		@ResponseBody
-//		public ServerResponse<Object> agetguangaoAll(HttpServletRequest httpServletRequest,
-//				@RequestBody Map<String, Object> params) {
-//			if (!LegalCheck.checke_role(httpServletRequest)) {
-//				return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
-//			}
-//			return bunnerService.agetguangaoAll(params);
-//
-//		}
-//		// 获取全部广告
-//		@RequestMapping(value = "aupguangao", method = RequestMethod.POST)
-//		@ResponseBody
-//		public ServerResponse<String> aupguangao(HttpServletRequest httpServletRequest,
-//				@RequestBody Map<String, Object> params) {
-//			ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);
-//			if (serverResponse.getStatus() != 0) {
-//				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//			}
-//			User user = (User) serverResponse.getData();
-//			return bunnerService.aupguangao(user,params);
-//
-//		}
+		// 获取全部广告
+		@RequestMapping(value = "agetguangaoAll", method = RequestMethod.POST)
+		@ResponseBody
+		public ServerResponse<Object> agetguangaoAll(HttpServletRequest httpServletRequest,
+				@RequestBody Map<String, Object> params) {
+			if (!LegalCheck.checke_role(httpServletRequest)) {
+				return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+			}
+			return bunnerService.agetguangaoAll(params);
+
+		}
+		// 更新全部广告
+		@RequestMapping(value = "aupguangao", method = RequestMethod.POST)
+		@ResponseBody
+		public ServerResponse<String> aupguangao(HttpServletRequest httpServletRequest,
+				@RequestBody Map<String, Object> params) {
+			ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);
+			if (serverResponse.getStatus() != 0) {
+				return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+			}
+			User user = (User) serverResponse.getData();
+			return bunnerService.aupguangao(user,params);
+
+		}
 }

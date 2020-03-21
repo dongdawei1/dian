@@ -103,6 +103,8 @@ public class FabuUtil {
 
 	}
 
+	
+
 	public static String releaseTypeString(int releaseType) {
 		String releaseTypeString = null;
 		if (releaseType == 4) {
@@ -135,7 +137,7 @@ public class FabuUtil {
 			releaseTypeString = "二手电器/设备出售";
 		} else if (releaseType == 18) {
 			releaseTypeString = "维修电器/设备";
-		} else if (releaseType == 14) {
+		}else if (releaseType == 14) {
 			releaseTypeString = "店面/窗口出租";
 		} else if (releaseType == 15) {
 			releaseTypeString = "摊位出租转让";

@@ -251,6 +251,14 @@
 		where id=#{id}
 	</select>
 	
-	
+		<!-- 详情 -->
+	<select id="adminGetWcall" resultType="com.dian.mmall.pojo.fabu.FanHui">
+		select
+		id,evaluateid,releaseType,releaseTitle,serviceType,serviceAndprice,
+		serviceIntroduction,remarks,pictureUrl,serviceDetailed,mianjia,
+		consigneeName,createTime,userId,termOfValidity
+		from fabu
+		where userId=#{userId} and welfareStatus=1
+	</select>
 	
 </mapper>

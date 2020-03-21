@@ -13,10 +13,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Evaluate {
 	private long id;
-	@IsEmptyAnnotation(message="菜单id不能为空") //13和17和19 的综合评价  ,接单固定评价 菜单-1
+	@IsEmptyAnnotation(message="发布id不能为空") //发布的id，接单固定评价 固定-1
+	
 	private long permissionid;
 	private long userId; 
-	@IsEmptyAnnotation(message="发布id不能为空") //发布的id，接单固定评价 固定-1
+	@IsEmptyAnnotation(message="菜单id不能为空") //13和17和19 的综合评价  ,接单固定评价 菜单-1
 	private Integer releaseid;
 	//灭虫，装修，菜谱，广告
 	private Integer	fuwutaiduhao=0;

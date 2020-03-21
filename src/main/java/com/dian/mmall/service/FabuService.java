@@ -1,8 +1,10 @@
 package com.dian.mmall.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.pojo.fabu.FanHui;
 import com.dian.mmall.pojo.user.User;
 
 public interface FabuService {
@@ -29,5 +31,8 @@ public interface FabuService {
 
 
 	ServerResponse<Object> getfabubyid(long id);
+
+
+	List<FanHui> adminGetWcall(long userId);
 
 }

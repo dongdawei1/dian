@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface OrderExampleTimerService {
 
-	List<Long> getall(int a, String dateString);
+//	List<Long> getall(int a, String dateString);
 
 	void upall(int a, String dateString);
 

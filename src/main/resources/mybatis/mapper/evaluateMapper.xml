@@ -43,5 +43,8 @@
 		#{shouhoucha},#{zhilianghao},#{zhiliangyiban},#{zhiliangcha}
 		)
 	</insert>
+    <delete id="delEv">
+    delete from evaluate where userId=#{userId} and permissionid=#{id}
+    </delete>
     
 </mapper>

@@ -5,7 +5,7 @@
 <mapper namespace="com.dian.mmall.dao.OrderExampleTimerMapper">
 
 
-	<!--根据id查 -->
+	<!--根据id查 
 	<select id="getall" resultType="long">
 		select id from
 		<if test="a ==1"> wineandtableware    </if>
@@ -17,24 +17,20 @@
 		where authentiCationStatus=2 and welfareStatus=1
 		and termOfValidity
 		&lt; #{dateString}
-	</select>
+	</select>-->
 
 	<!-- 管理删除操作 -->
 	<update id="adminupall">
 		update
 		<if test="tablenameid ==1"> release_welfare   </if>
+		<if test="tablenameid==2"> fabu    </if>
+		<if test="tablenameid==3"> resume    </if>		
 		<if test="tablenameid ==9"> shichang_wholesalecommodity   </if>
-		<if test="tablenameid ==5"> departmentstore  </if>
-		<if test="tablenameid==7 or tablenameid==4"> equipment    </if>
-		<if test="tablenameid==2"> rent    </if>
-		<if test="tablenameid==8"> menuandrenovationandpestcontrol    </if>
-		<if test="tablenameid==3"> resume    </if>
-		<if test="tablenameid ==6"> wineandtableware  </if>
 		set
 		updateTime=#{updateTime}, examineName=#{username}, welfareStatus=3
 		where id=#{id}
 	</update>
-
+   <!-- 创建广告时查询失效时间 -->
 	<select id="getcoutn" resultType="String">
 		select 
 		 <if test="tablenameid ==9"> endTime  </if>    
@@ -42,12 +38,8 @@
 		  from
 		<if test="tablenameid ==1"> release_welfare   </if>
 		<if test="tablenameid ==9"> shichang_wholesalecommodity   </if>
-		<if test="tablenameid ==5"> departmentstore  </if>
-		<if test="tablenameid==7 or tablenameid==4"> equipment    </if>
-		<if test="tablenameid==2"> rent    </if>
-		<if test="tablenameid==8"> menuandrenovationandpestcontrol    </if>
+		<if test="tablenameid==2"> fabu    </if>
 		<if test="tablenameid==3"> resume    </if>
-		<if test="tablenameid ==6"> wineandtableware  </if>
 		where authentiCationStatus=2 and welfareStatus=1 and userId=#{userId}
 		and  id=#{tableId}
 	</select>
@@ -57,12 +49,9 @@
 	<!-- 定时任务更新 为失效 -->
 	<update id="upall">
 		update
-		<if test="a ==1"> wineandtableware    </if>
-		<if test="a==2"> equipment    </if>
-		<if test="a==3"> rent    </if>
-		<if test="a==4"> menuandrenovationandpestcontrol    </if>
-		<if test="a==5"> resume    </if>
-		<if test="a==6"> departmentstore    </if>
+		<if test="a ==1"> release_welfare    </if>
+		<if test="a==2"> fabu    </if>
+		<if test="a==3"> resume    </if>
 		set
 		updateTime=#{dateString}, examineName='过期定',welfareStatus=5
 		where
@@ -72,14 +61,13 @@
 		#{dateString}
 	</update>
 	<!-- 定时任务更新 为删除 -->
+	
+	
 	<update id="delall">
 		update
-		<if test="a ==1"> wineandtableware    </if>
-		<if test="a==2"> equipment    </if>
-		<if test="a==3"> rent    </if>
-		<if test="a==4"> menuandrenovationandpestcontrol    </if>
-		<if test="a==5"> resume    </if>
-		<if test="a==6"> departmentstore    </if>
+		<if test="a ==1"> release_welfare    </if>
+		<if test="a==2"> fabu    </if>
+		<if test="a==3"> resume    </if>
 		set
 		updateTime=#{dateString}, examineName='删除定',welfareStatus=3
 		where

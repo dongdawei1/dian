@@ -54,8 +54,7 @@ public class FanHui {
     private String realNameId;//备用
 	private String detailed;  //备用
 	private String contact;//备用
-    
-
+	private String termOfValidity;
 
 
 }
