@@ -95,40 +95,44 @@ public class FaBuController {
 	}
 
 //
-////根据类型获取全部标题
+//根据类型获取全部标题
+
+	@RequestMapping(value = "getfabutiao", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> getfabutiao(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+
+		return fabuService.getfabutiao(params);
+	}
 //
-//	@RequestMapping(value = "getFoodAndGrainTitleList", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<Object> getFoodAndGrainTitleList(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//
-//		User user = (User) httpServletRequest.getAttribute("user");
-//		int role = user.getRole();
-//		if (role != 1 && role != 4) {
-//			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouciquanxian.getMessage());
-//		}
-//
-//		return foodAndGrainService.getFoodAndGrainTitleList(params);
-//
-//	}
-//
-//	// 公开列表
-//
-//	@RequestMapping(value = "getFoodAndGrainPublicList", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<Object> getFoodAndGrainPublicList(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {	
-//
-//		return foodAndGrainService.getFoodAndGrainPublicList(params);
-//
-//	}
-//	// 公开获取id
-//
-//	@RequestMapping(value = "getFoodAndGrainDetails", method = RequestMethod.GET)
-//	@ResponseBody
-//	public ServerResponse<Object> getFoodAndGrainDetails(HttpServletRequest httpServletRequest, @RequestParam long id) {
-//
-//		return foodAndGrainService.getFoodAndGrainDetails(id);
-//
-//	}
+	// 公开列表
+
+	@RequestMapping(value = "getfabulist", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> getfabulist(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {	
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		return fabuService.getfabulist(params);
+
+	}
+	// 公开获取id
+
+	@RequestMapping(value = "getfabubyid", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getfabubyid(HttpServletRequest httpServletRequest, @RequestParam long id) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		return fabuService.getfabubyid(id);
+
+	}
 }

@@ -21,4 +21,13 @@ public interface FabuService {
 
 	ServerResponse<Object> getmyfabubyid(long userId, long id);
 
+
+	ServerResponse<Object> getfabulist(Map<String, Object> params);
+
+
+	ServerResponse<Object> getfabutiao(Map<String, Object> params);
+
+
+	ServerResponse<Object> getfabubyid(long id);
+
 }

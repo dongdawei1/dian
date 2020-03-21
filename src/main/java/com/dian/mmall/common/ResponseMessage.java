@@ -82,6 +82,7 @@ public enum ResponseMessage {
 	huoquxinxishibai("获取用户信息失败"),
 	caozuoleixincuowu("操作类型错误"),
 	caozuoshibai("操作失败"),
+	fabulleixbunneg("发布类型有误"),
 	caozuochenggong("操作成功"),
 	shifougongkaidianhualeixingcuowu("是否公开电话类型错误"),
 	gongkaidianhuahuozheshuruyouxiang("公开电话或者输入邮箱"),

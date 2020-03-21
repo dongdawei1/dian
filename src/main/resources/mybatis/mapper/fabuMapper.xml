@@ -109,6 +109,9 @@
 		<if test="type==3"> and welfareStatus=1</if>
 	</update>
 
+
+
+
 	<!--用户查询分页总条数 -->
 	<select id="getmyfabuno" resultType="long">
 		select count(*) from fabu where welfareStatus!=3 and
@@ -147,4 +150,107 @@
 		welfareStatus!=3 and id=#{id} and
 		userId=#{userId}
 	</select>
+
+	<update id="editfabu">
+		update fabu set
+		updateTime=#{updateTime},pictureUrl=#{pictureUrl},mianjia=#{mianjia},
+		consigneeName=#{consigneeName},serviceDetailed=#{serviceDetailed},
+		remarks=#{remarks},serviceIntroduction=#{serviceIntroduction},
+		releaseTitle=#{releaseTitle},authentiCationStatus=#{authentiCationStatus},
+		welfareStatus=#{welfareStatus},serviceAndprice=#{serviceAndprice},
+		serviceType=#{serviceType}
+		where
+		welfareStatus!=3 and id=#{id} and
+		userId=#{userId} and
+	</update>
+
+
+	<!-- 公开列表 -->
+	<select id="getfabulistno" resultType="long">
+		select count(*)
+		from fabu
+		where
+		welfareStatus=1 and
+		releaseType=#{releaseType}
+		and userId in (select
+		userId from
+		t_user_realname where detailed like
+		#{detailed})
+
+		<if test="releaseType ==14 or releaseType ==15 ">
+			<if test="fouseSizeGreater!=null and fouseSizeLess!=null">and mianjia between #{fouseSizeGreater} and
+				#{fouseSizeLess}
+			</if>
+			<if test="fouseSizeGreater!=null and fouseSizeLess==null">and mianjia &gt; #{fouseSizeGreater}</if>
+			<if test="fouseSizeGreater==null and fouseSizeLess!=null">and mianjia &lt; #{fouseSizeLess}</if>
+		</if>
+		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
+		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
+	</select>
+	<select id="getfabulist"
+		resultType="com.dian.mmall.pojo.fabu.FabuList">
+		select id,mianjia,pictureUrl,
+		<if test="releaseType ==14 or releaseType ==15 ">
+		CONCAT(SUBSTRING(serviceDetailed, 1, 12),'..')serviceDetailed,
+		serviceDetailed,
+		</if>
+		<if test="releaseType !=14 and releaseType !=15 ">
+		serviceDetailed,
+		</if>
+		releaseTitle,serviceType,releaseType
+		from fabu
+		where
+		welfareStatus=1 and releaseType=#{releaseType}
+		and userId in (select
+		userId from
+		t_user_realname where detailed like
+		#{detailed})
+		<if test="releaseType ==14 or releaseType ==15 ">
+			<if test="fouseSizeGreater!=null and fouseSizeLess!=null">and mianjia between #{fouseSizeGreater} and
+				#{fouseSizeLess}
+			</if>
+			<if test="fouseSizeGreater!=null and fouseSizeLess==null">and mianjia &gt; #{fouseSizeGreater}</if>
+			<if test="fouseSizeGreater==null and fouseSizeLess!=null">and mianjia &lt; #{fouseSizeLess}</if>
+		</if>
+		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
+		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+	<!-- 查看该实名城市下发布过服务的标题 -->
+	<select id="getfabutiao" resultType="String">
+		select
+		<if test="type==1 "> DISTINCT releaseTitle </if>
+		<if test="type==2 "> DISTINCT serviceType </if>
+		from fabu where welfareStatus=1
+		and userId in (select userId
+		from
+		t_user_realname where detailed like
+		#{detailed})
+		and
+		releaseType=#{releaseType}
+		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
+		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
+		<if test="releaseType ==14 or releaseType ==15 ">
+			<if test="fouseSizeGreater!=null and fouseSizeLess!=null">and mianjia between #{fouseSizeGreater} and
+				#{fouseSizeLess}
+			</if>
+			<if test="fouseSizeGreater!=null and fouseSizeLess==null">and mianjia &gt; #{fouseSizeGreater}</if>
+			<if test="fouseSizeGreater==null and fouseSizeLess!=null">and mianjia &lt; #{fouseSizeLess}</if>
+		</if>
+	</select>
+	
+	<!-- 详情 -->
+	<select id="getfabubyid" resultType="com.dian.mmall.pojo.fabu.FanHui">
+		select
+		id,evaluateid,releaseType,releaseTitle,serviceType,serviceAndprice,
+		serviceIntroduction,remarks,pictureUrl,serviceDetailed,mianjia,
+		consigneeName,createTime,userId
+		from fabu
+		where id=#{id}
+	</select>
+	
+	
+	
 </mapper>

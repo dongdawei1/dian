@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.dian.mmall.pojo.fabu.Fabu;
+import com.dian.mmall.pojo.fabu.FabuList;
+import com.dian.mmall.pojo.fabu.FanHui;
 
 @Mapper
 public interface FabuMapper {
@@ -30,5 +32,18 @@ public interface FabuMapper {
 	int upfabu(long userId, long id, int type, String timeString, String termOfValidity);
 
 	Fabu getmyfabubyid(long userId, long id);
+
+	int editfabu(Fabu fabu);
+
+	long getfabulistno(Integer releaseType, String detailed, String releaseTitle, String serviceType,
+			Integer fouseSizeGreater, Integer fouseSizeLess);
+
+	List<FabuList> getfabulist(int pageLength, int pageSize, Integer releaseType, String detailed, String releaseTitle,
+			String serviceType, Integer fouseSizeGreater, Integer fouseSizeLess);
+
+	List<String> getfabutiao(Integer releaseType, String detailed, String releaseTitle, String serviceType,
+			Integer fouseSizeGreater, Integer fouseSizeLess, Integer type);
+
+	FanHui getfabubyid(long id);
 
 }

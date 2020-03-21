@@ -117,11 +117,6 @@ public class ToExamineServiceImpl implements ToExamineService {
 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 		}
 
-//		 authentiCationStatus: '',
-//         authentiCationFailure: '', //失败原因
-//         tabuleType: '', //维修，电器，二手
-//         isServiceType: '',
-//         serviceTypeId: ''
 		// tabuleType=30招聘 31简历 批发 35，发布18（有这个字段服务id serviceTypeId,菜单id caidanid ），
 		int tabuleType = Integer.valueOf(tabuleTypeString);
 		params.remove("tabuleType");
