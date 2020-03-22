@@ -24,13 +24,12 @@ public class FaBuController {
 	@Autowired
 	private FabuService fabuService;
 
-	
 	@RequestMapping(value = "createfabu", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<String> createfabu(HttpServletRequest httpServletRequest,
 			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
-		
+
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
@@ -38,11 +37,6 @@ public class FaBuController {
 
 	}
 
-	
-	
-	
-	
-	
 //	
 //	
 	// 商户获取获取自己发布的除删除外的全部信息
@@ -53,8 +47,7 @@ public class FaBuController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		
-		
+
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
@@ -71,7 +64,7 @@ public class FaBuController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
-		
+
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
@@ -84,8 +77,7 @@ public class FaBuController {
 
 	@RequestMapping(value = "getmyfabubyid", method = RequestMethod.GET)
 	@ResponseBody
-	public ServerResponse<Object> getmyfabubyid(HttpServletRequest httpServletRequest,
-			@RequestParam long id) {
+	public ServerResponse<Object> getmyfabubyid(HttpServletRequest httpServletRequest, @RequestParam long id) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
@@ -115,7 +107,7 @@ public class FaBuController {
 	@RequestMapping(value = "getfabulist", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<Object> getfabulist(HttpServletRequest httpServletRequest,
-			@RequestBody Map<String, Object> params) {	
+			@RequestBody Map<String, Object> params) {
 		User user = (User) httpServletRequest.getAttribute("user");
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
@@ -135,4 +127,17 @@ public class FaBuController {
 		return fabuService.getfabubyid(id);
 
 	}
+
+	// 获取服务城区
+	@RequestMapping(value = "getquxian", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getquxian(HttpServletRequest httpServletRequest) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		return fabuService.getquxian(user.getId());
+
+	}
+
 }

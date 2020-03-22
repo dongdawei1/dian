@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dian.mmall.common.PictureNum;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.common.fabu.QuXian;
 import com.dian.mmall.dao.PictureMapper;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.pojo.tupian.Picture;
@@ -48,28 +49,49 @@ public class FabuUtil {
 			}
 			map.put("userType", serverResponse.getMsg());
 			map.put("releaseType", releaseType);
-			if (!EncrypDES.encryptPhone(contact).equals(realName.getContact())) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
-			}
-		}else {
-			if (!contact.equals(realName.getContact())) {
-				return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
-			}
+			
+		} 
+		if (!EncrypDES.encryptPhone(contact).equals(realName.getContact())) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shimingxinxibuyizhi.getMessage());
 		}
 		map.put("createTime", createTime);
 		map.put("updateTime", createTime);
 
-		
-
 		map.put("consigneeName", params.get("consigneeName").toString().trim());
 
 		String serviceDetailed = params.get("serviceDetailed").toString().trim();
-
 		if (releaseType != 15 && releaseType != 14) {
-			if (!serviceDetailed.equals("全市") && !serviceDetailed.equals("来电确认")) {
+			QuXian[] quXians = QuXian.values();
+
+			ArrayList<String> respList = null;
+			for (int i = 0; i < quXians.length; i++) {
+				if (quXians[i].getCityDistrictCountyId() == Integer.parseInt(realName.getCityId()+"")  ) {
+					respList = quXians[i].getDistrictCountyNames();
+					break;
+				}
+			}
+			
+			if(respList==null) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.fuwuchengshicuowu.getMessage());
 			}
-			map.put("serviceDetailed", serviceDetailed);
+			String s=serviceDetailed.substring(1, serviceDetailed.length()-1);
+	    	String[] serviceDetailedlList= s.split(",");
+			StringBuffer stringBuffer = new StringBuffer();
+			if (serviceDetailedlList.length > 0) {
+				for (int i = 0; i < serviceDetailedlList.length; i++) {
+					for (int a = 0; a < respList.size(); a++) {
+						if (respList.get(a).equals(serviceDetailedlList[i].trim())) {
+							stringBuffer.append(serviceDetailedlList[i] + "/");
+							break;
+						}
+					}
+				}
+
+			} else {
+				return ServerResponse.createByErrorMessage(ResponseMessage.fuwuchengshicuowu.getMessage());
+			}
+
+			map.put("serviceDetailed", stringBuffer.toString());
 		} else {
 			map.put("serviceDetailed", serviceDetailed);
 		}
@@ -103,8 +125,6 @@ public class FabuUtil {
 
 	}
 
-	
-
 	public static String releaseTypeString(int releaseType) {
 		String releaseTypeString = null;
 		if (releaseType == 4) {
@@ -137,7 +157,7 @@ public class FabuUtil {
 			releaseTypeString = "二手电器/设备出售";
 		} else if (releaseType == 18) {
 			releaseTypeString = "维修电器/设备";
-		}else if (releaseType == 14) {
+		} else if (releaseType == 14) {
 			releaseTypeString = "店面/窗口出租";
 		} else if (releaseType == 15) {
 			releaseTypeString = "摊位出租转让";

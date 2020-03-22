@@ -134,6 +134,22 @@ public class JsonUtil {
 
     public static void main(String[] args) {
 
+    	if(3==3) {
+    		System.out.println("JsonUtil.main()");
+    	}
+    	
+    	String string="[黄浦区, 杨浦区, 奉贤区, 全市, 电话确认]";
+    	
+    	String s=string.substring(1, string.length()-1);
+    	System.out.println(s);
+    	String[] strArr= s.split(",");
+    	System.out.println(strArr[1]);
+    	
+    	
+    	JsonUtil.string2Obj(string, String[].class);
+    	
+    	System.out.println(JsonUtil.string2Obj(string, String[].class));
+    	
         User user = new User();
         user.setId(2);
    

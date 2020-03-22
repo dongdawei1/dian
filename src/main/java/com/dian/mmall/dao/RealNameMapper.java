@@ -83,4 +83,10 @@ public interface RealNameMapper {
 
 	RealName admin_select_realNameByUsername(String userName);
 
+
+	String getdetailed(long userid);
+
+
+	int getcityId(long userId);
+
 }

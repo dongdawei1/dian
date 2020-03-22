@@ -161,7 +161,7 @@
 		serviceType=#{serviceType}
 		where
 		welfareStatus!=3 and id=#{id} and
-		userId=#{userId} and
+		userId=#{userId} 
 	</update>
 
 

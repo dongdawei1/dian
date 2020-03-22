@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.dian.mmall.common.Const;
 import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
+import com.dian.mmall.common.fabu.QuXian;
 import com.dian.mmall.dao.CityMapper;
 import com.dian.mmall.dao.FabuMapper;
 import com.dian.mmall.dao.PictureMapper;
@@ -397,8 +398,7 @@ public class FabuServiceImpl implements FabuService {
 		}
 
 		// 判断实名信息是否正确
-		RealName realName = new RealName();
-		realName.setContact(seleFabu.getContact());
+		RealName realName =realNameMapper.getRealName(user.getId());
 		// 输入合法检查，必填，有非法字符等
 		ServerResponse<String> response = LegalCheck.legalCheckFrom(params);
 		if (response.getStatus() != 0) {
@@ -730,6 +730,20 @@ public class FabuServiceImpl implements FabuService {
 	public List<FanHui> adminGetWcall(long userId) {
 		
 		return fabuMapper.adminGetWcall(userId);
+	}
+
+	@Override
+	public ServerResponse<Object> getquxian(long userId) {
+		int cityId=realNameMapper.getcityId(userId);
+		QuXian[] quXians=QuXian.values();
+		List<String> respList=null;
+		for (int i = 0; i < quXians.length; i++) {
+			if (quXians[i].getCityDistrictCountyId() == cityId) {
+				respList=quXians[i].getDistrictCountyNames();
+				break;
+			}
+		}
+		return ServerResponse.createBySuccess(respList);
 	}
 
 }

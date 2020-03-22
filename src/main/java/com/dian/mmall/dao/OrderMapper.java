@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.dian.mmall.pojo.Order;
+import com.dian.mmall.pojo.OrderFanhui;
 import com.dian.mmall.pojo.user.OrderUser;
 
 @Mapper
@@ -45,6 +46,8 @@ public interface OrderMapper {
 
 	Order getOrderByIdyichang(long orderId);
 
-	List<Order> jiedanos(String detailed);
+
+
+	List<OrderFanhui> getdaibaojia(long userid, String detailed, int releaseType);
 
 }

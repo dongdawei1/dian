@@ -233,23 +233,18 @@ public class OrderController {
 	}
 
 	
+
 	/**
-	 * 根据orderId查询支付状态
+	 * app获取待报价订单
 	 */
-	@RequestMapping(value = "getjiedanlist", method = RequestMethod.GET)
+	@RequestMapping(value = "getdaibaojia", method = RequestMethod.GET)
 	@ResponseBody
-	public ServerResponse<Object> getjiedanlist(HttpServletRequest httpServletRequest,
-			 @RequestParam String uuid) {
+	public ServerResponse<Object> getdaibaojia(HttpServletRequest httpServletRequest,
+			 @RequestParam String uuid,@RequestParam int   releaseType) {
     	User user =	(User) httpServletRequest.getAttribute("user"); 
-		// 检查权限
-
-		if (user.getRole() != 1 && user.getRole() != 2) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
-		}
-		return orderService.getjiedanlist(user.getId());
-
+		
+		return orderService.getdaibaojia(user.getId(),releaseType);
 	}
-
 
 	/**
 	 * 创建接单

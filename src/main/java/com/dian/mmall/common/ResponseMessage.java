@@ -98,6 +98,7 @@ public enum ResponseMessage {
 	fabuleixingkong("发布类型不能为空"),
 	chaoguofabuzongshu("此类型信息每位商户只能发布5条"),
 	fuwuchengshicuowu("服务城区输入错误"),
+	
 	qibujiagebuhefa("起步价格只能是整数数字"),
 	qibujiagebuhekong("起步价格不能为空"),
 	shangchuanshibai("上传失败,请稍后重试"),

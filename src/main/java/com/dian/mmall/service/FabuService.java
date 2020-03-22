@@ -35,4 +35,7 @@ public interface FabuService {
 
 	List<FanHui> adminGetWcall(long userId);
 
+
+	ServerResponse<Object> getquxian(long id);
+
 }

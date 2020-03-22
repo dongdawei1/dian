@@ -26,6 +26,7 @@ import com.dian.mmall.dao.goumaidingdan.OrderCommonOfferMapper;
 import com.dian.mmall.dao.releaseDao.EvaluateMapper;
 import com.dian.mmall.pojo.Liushui;
 import com.dian.mmall.pojo.Order;
+import com.dian.mmall.pojo.OrderFanhui;
 import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.PayOrder;
 import com.dian.mmall.pojo.WholesaleCommodity;
@@ -1397,7 +1398,6 @@ public class OrderServiceImpl implements OrderService {
 			orderList.set(i, o);
 		}
 		order_pagePage.setDatas(orderList);
-		System.out.println(realName.toString());
 		if (realName.getIsReceipt() == 2) {
 			// 接单用户开启轮询
 			return ServerResponse.createBySuccess("YES", order_pagePage);
@@ -1684,13 +1684,18 @@ public class OrderServiceImpl implements OrderService {
 		return ServerResponse.createByErrorMessage(ResponseMessage.qiandangshibai.getMessage());
 	}
 
+	
+
 	@Override
-	public ServerResponse<Object> getjiedanlist(long id) {
-		RealName realName=realNameMapper.getRealName(id);
-		String detailed=realName.getDetailed();
-		List<Order> listo=orderMapper.jiedanos(detailed);
+	public ServerResponse<Object> getdaibaojia(long userid,int releaseType) {
+		// TODO Auto-generated method stub
+		String detailed=realNameMapper.getdetailed(userid);
 		
-		return null;
+		
+		List<OrderFanhui> ofanhuiList=orderMapper.getdaibaojia(userid,detailed,releaseType);
+		return ServerResponse.createBySuccess(ofanhuiList);
+		
+		
 	}
 
 }

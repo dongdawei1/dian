@@ -209,4 +209,20 @@
 		
 	</select>
 
+	<!-- app接单企业首页 抢单中的全部订单,除已报价的 -->
+	
+	<select id="getdaibaojia"
+		resultType="com.dian.mmall.pojo.OrderFanhui">
+		select
+		o.id,o.giveTakeTime,o.remarks,o.createTime  ,o.collectTime,
+		o.orderStatus,o.commoditySnapshot,t.addressDetailed
+		from orderform o, t_user_realname t
+		where 
+		releaseType=#{releaseType} and o.orderStatus=11
+		 and  purchaseUserId in (select userId from
+		t_user_realname where detailed=#{detailed})
+		and o.purchaseUserId=t.userId
+		and o.id not in( select orderFormId from order_common_offer where saleUserId=#{userid})
+	</select>
+	
 </mapper>
