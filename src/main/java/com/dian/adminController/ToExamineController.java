@@ -32,6 +32,7 @@ import com.dian.mmall.service.ServiceTypeService;
 import com.dian.mmall.service.ToExamineService;
 import com.dian.mmall.service.release.ReleaseWelfareService;
 import com.dian.mmall.service.release.ResumeService;
+import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.CookieUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.LegalCheck;
@@ -52,6 +53,8 @@ public class ToExamineController {
 	private IUserService iUserService;
 	@Autowired
 	private BunnerService bunnerService;
+	@Autowired
+	private WholesaleCommodityService wholesaleCommodityService;
 	// 获取待实名
 	@RequestMapping(value = "getRealNameAll", method = RequestMethod.POST)
 	@ResponseBody
@@ -167,19 +170,19 @@ public class ToExamineController {
 //	@Autowired
 //	private WholesaleCommodityService wholesaleCommodityService;
 //
-//	// 获取待审核米菜 批发
-//	@RequestMapping(value = "adminWholesaleCommodity", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<Object> adminWholesaleCommodity(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//
-//		if (!LegalCheck.checke_role(httpServletRequest)) {
-//			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
-//		}
-//
-//		return wholesaleCommodityService.adminWholesaleCommodity(params);
-//
-//	}
+	// 获取待审核米菜 批发
+	@RequestMapping(value = "adminWholesaleCommodity", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> adminWholesaleCommodity(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+
+		if (!LegalCheck.checke_role(httpServletRequest)) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+
+		return wholesaleCommodityService.adminWholesaleCommodity(params);
+
+	}
 //
 
 //
@@ -244,24 +247,24 @@ public class ToExamineController {
 	}
 //
 //	// 创建批发市场
-//	@RequestMapping(value = "admin_create_wholesale", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<String> admin_create_wholesale(HttpServletRequest httpServletRequest,
-//			@RequestBody Map<String, Object> params) {
-//		// TODO只有管理员才能调用
-//		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//
-//		User user = (User) serverResponse.getData();
-//		// 检查是否有管理员权限
-//		if (serverResponse.getStatus() != 0) {
-//			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
-//		}
-//
-//		return serviceTypeService.admin_create_serviceType(user, params);
-//
-//	}
+	@RequestMapping(value = "admin_create_wholesale", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<String> admin_create_wholesale(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		// TODO只有管理员才能调用
+		ServerResponse<Object> serverResponse = LegalCheck.checke_guanli_user(httpServletRequest);		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+
+		User user = (User) serverResponse.getData();
+		// 检查是否有管理员权限
+		if (serverResponse.getStatus() != 0) {
+			return ServerResponse.createByErrorMessage(serverResponse.getMsg());
+		}
+
+		return serviceTypeService.admin_create_serviceType(user, params);
+
+	}
 //
 	// 获取待提交接单人员名单
 	@RequestMapping(value = "admin_select_addOrder", method = RequestMethod.POST)

@@ -85,10 +85,10 @@ public class OrderExampleTimer {
 	}
 
 	// 每天00点30分01秒时执行
-	@Scheduled(cron = "01 30 00 * * ?")
-	public void timerShanchu() {
-		System.out.println("current time : " + dateFormat.format(new Date()));
-	}
+//	@Scheduled(cron = "01 30 00 * * ?")
+//	public void timerShanchu() {
+//		System.out.println("current time : " + dateFormat.format(new Date()));
+//	}
 //       //第一次延迟1秒执行，当执行完后2秒再执行
 //       @Scheduled(initialDelay = 1000, fixedDelay = 2000)
 //       public void timerInit() {

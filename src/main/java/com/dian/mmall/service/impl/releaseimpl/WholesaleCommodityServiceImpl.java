@@ -129,7 +129,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (type == 1) { // TODO新建时才检查总数
 			// 判断是否超过可以发布的总数
 			count = wholesaleCommodityMapper.countNum(releaseType, userId);
-			if (count > 50) {
+			if (count > 70) {
 				return ServerResponse.createByErrorMessage(ResponseMessage.chaoguofabuzongshu.getMessage());
 			}
 			map.put("createTime", createTime);
@@ -536,7 +536,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
 		
-
+      
+            
 		String welfareStatusString = params.get("welfareStatus").toString().trim();
 		// 发布状态
 		int welfareStatus = 0;
@@ -1211,6 +1212,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 	@Override
 	public ServerResponse<Object> getWholesalecommodity(String selectedOptions, int releaseType) {
+		
+		
 		List<WholesaleCommodity> allCommonMenu = wholesaleCommodityMapper.getWholesalecommodity(selectedOptions,
 				releaseType);
 		return ServerResponse.createBySuccess(allCommonMenu);

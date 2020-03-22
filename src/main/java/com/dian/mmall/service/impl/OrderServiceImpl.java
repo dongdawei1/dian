@@ -40,6 +40,7 @@ import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.OrderService;
 import com.dian.mmall.service.PurchaseCreateOrderVoService;
+import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.BeanMapConvertUtil;
 import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.EncrypDES;
@@ -75,7 +76,8 @@ public class OrderServiceImpl implements OrderService {
 
 	@Autowired
 	private LiushuiMapper liushuiMapper;
-
+	@Autowired
+	private WholesaleCommodityService wholesaleCommodityService;
 	@Override
 	public synchronized ServerResponse<String> create_wholesaleCommodity_order(long userId,
 			Map<String, Object> params) {
@@ -235,10 +237,13 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	public int create_order_average(WholesaleCommodity wholesaleCommodity) {
 		int commodityJiage = 0;
-		List<Integer> commodityJiage_list =null;// wholesaleCommodityService.getCommodityJiage(wholesaleCommodity);
+		List<Integer> commodityJiage_list =wholesaleCommodityService.getCommodityJiage(wholesaleCommodity);
 		int length = commodityJiage_list.size();
 		for (int a = 0; a < length; a++) {
 			commodityJiage += commodityJiage_list.get(a);
+		}
+		if(length==0) {
+			return 0;
 		}
 		return (int) commodityJiage / length;
 	}

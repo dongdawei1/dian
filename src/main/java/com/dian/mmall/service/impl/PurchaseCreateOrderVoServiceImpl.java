@@ -17,6 +17,7 @@ import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.PurchaseCreateOrderVoService;
 import com.dian.mmall.service.RealNameService;
+import com.dian.mmall.service.release.WholesaleCommodityService;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 
@@ -29,12 +30,13 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 	private CommonMenuMapper commonMenuMapper;
 	@Autowired
 	private RealNameService realNameService;
-
+	@Autowired
+	private WholesaleCommodityService wholesaleCommodityService;
 
 	@Override
 	public ServerResponse<Object> getPurchaseCreateOrderVo(User user) {
-		int releaseType = 4;
-		String keyString = Const.MY_C0MMONMENU + "_" + user.getUsername()+ "_"+ user.getId() ;
+		int releaseType = 401;
+		String keyString = Const.MY_C0MMONMENU + "_" + user.getUsername() + "_" + user.getId();
 		String myCommonMenuJsonStr = RedisShardedPoolUtil.get(keyString);
 		List<CommonMenuWholesalecommodity> myCommonMenu_list = null;
 
@@ -78,18 +80,22 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 		List<CommonMenuWholesalecommodity> allCommonMenu = null;
 		// 查找redis中有没有
 		String redis_all_commonMenu = RedisShardedPoolUtil.get(provinces_city);
+
+		System.out.println("PurchaseCreateOrderVo4444444()" + redis_all_commonMenu);
 		if (redis_all_commonMenu != null) {
 			// redis中有，转为list
 			allCommonMenu = JsonUtil.string2Obj(redis_all_commonMenu, List.class, CommonMenuWholesalecommodity.class);
 
-		} else {
+		}
+
+		if (allCommonMenu.size() == 0) {
 			// redis中没有，数据库查找，并存到redis中
 
-			// 查询该城市下全部菜单,如果空返回北京%110000, 110100%'
+			// 查询该城市下全部菜单,如果空返回北京%110000, 110100%' ,暂时把城市
 			String selectedOptions = "%110000, 110100%";
 			// TODO selectedOptions此字段没有用目前是在 jerdis中写死的 全部查询北京
-			ServerResponse<Object> onbResponse =null;//    wholesaleCommodityService.getWholesalecommodity(selectedOptions,
-				//	releaseType);
+			ServerResponse<Object> onbResponse = wholesaleCommodityService.getWholesalecommodity(selectedOptions,
+					releaseType);
 
 			allCommonMenu = new ArrayList<CommonMenuWholesalecommodity>();
 
@@ -138,6 +144,7 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 			// 存改城市下的全部
 
 		}
+
 		purchaseCreateOrderVo.setAllCommonMenu(allCommonMenu);
 		return ServerResponse.createBySuccess(purchaseCreateOrderVo);
 	}
@@ -146,7 +153,7 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 	@Override
 	public void createMyCommonMenu(User user, List<CommonMenuWholesalecommodity> listObj4, int isCommonMenu) {
 		// TODO Auto-generated method stub 0是redis中没有 1是有
-		String keyString = Const.MY_C0MMONMENU + "_" + user.getUsername()+ "_"+ user.getId() ;
+		String keyString = Const.MY_C0MMONMENU + "_" + user.getUsername() + "_" + user.getId();
 		CommonMenu commonMenu = new CommonMenu();
 		commonMenu.setUserId(user.getId());
 		String servicetypeId = null;
