@@ -51,6 +51,8 @@ import com.dian.mmall.util.MD5Util;
 import com.dian.mmall.util.RedisPoolUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 import com.dian.mmall.util.WXPayUtil;
+import com.dian.websockert.WebsockertService;
+import com.jhlabs.image.WoodFilter;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,7 +73,10 @@ public class OrderServiceImpl implements OrderService {
 	private WeChatConfig weChatConfig; // 读取配置文件中配置微信的字段
 	@Autowired
 	private PayOrderMapper payOrderMapper;
-
+  @Autowired
+  private WebsockertService websockertService;
+	
+	
 	@Autowired
 	private OrderUserMapper orderUserMapper;
 
@@ -134,7 +139,11 @@ public class OrderServiceImpl implements OrderService {
 						order.setCommodityCountNo(1);
 						order.setReserve(3);
 						order.setDeliveryType(2);
-						order.setAddressDetailed(params.get("addressDetailed").toString().trim());
+						if(!realName.getAddressDetailed().equals(params.get("addressDetailed").toString().trim())) {
+							return ServerResponse.createByErrorMessage(ResponseMessage.dizhixiangqcuowu.getMessage());
+						}
+						
+						order.setAddressDetailed(realName.getAddressDetailed());
 						order.setGiveTakeTime(giveTakeTime);
 						order.setRemarks(params.get("remarks").toString().trim());
 						order.setCreateTime(newdateString);
@@ -159,18 +168,30 @@ public class OrderServiceImpl implements OrderService {
 							return ServerResponse
 									.createByErrorMessage(ResponseMessage.chuangjiandingdanshibai.getMessage());
 						}
-
+				
 						long id = orderMapper.getId(order);
+						
+						
+						
+						order.setAddressDetailed(realName.getUserName());
 						order.setId(id);
-						order.setCommodityJiage(commodityJiage_int);
+//						
+                       //调用push给接单人员或者 管理
+						if(websockertService.fadingdan(realName.getDetailed(), order).equals("false")) {
+							websockertService.fadingdan(realName.getDetailed(), order);
+						}
+						
+
+//						order.setId(id);
+//						order.setCommodityJiage(commodityJiage_int);
 						// 把订单存放在redis中
 //						String keyString = Const.ORDER_REDIS + "_" + user.getId() + "_" + user.getUsername() + "_" + id;
 //
 //						RedisShardedPoolUtil.setEx(keyString, JsonUtil.obj2StringPretty(order),
 //								Const.RedisCacheExtime.REDIS_ORDER_TIME);
 
-						// TODO 成功 调用push接口发送站内信
-
+					
+						
 						// 调vo接口创建 /更新 redis的常用菜单
 						int isCommonMenu = Integer.parseInt(params.get("isCommonMenu").toString().trim());
 						purchaseCreateOrderVoService.createMyCommonMenu(user, listObj4, isCommonMenu);
@@ -560,6 +581,8 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public synchronized ServerResponse<String> operation_purchase_order(User user, Map<String, Object> params) {
+		// 判断实名信息是否正确
+				RealName realName = realNameMapper.getRealName(user.getId());
 		int type = Integer.parseInt(params.get("type").toString().trim());
 		long id = Long.parseLong(params.get("id").toString().trim());
 		Order order = orderMapper.getOrderById(id, user.getId());
@@ -600,6 +623,12 @@ public class OrderServiceImpl implements OrderService {
 				// 重新开启订单 只有3和17,19,的才能重新开启
 				order.setOrderStatus(type);
 				tongbu_gengxin_uporder(order);
+				//realName.getUserName() 是商户街道名后期优化
+				order.setAddressDetailed(realName.getUserName());
+				 //调用push给接单人员或者 管理
+				if(websockertService.fadingdan(realName.getDetailed(), order).equals("false")) {
+					websockertService.fadingdan(realName.getDetailed(), order);
+				}
 
 			} else if (type == 12) {
 				// 支付
@@ -1687,12 +1716,11 @@ public class OrderServiceImpl implements OrderService {
 	
 
 	@Override
-	public ServerResponse<Object> getdaibaojia(long userid,int releaseType) {
-		// TODO Auto-generated method stub
-		String detailed=realNameMapper.getdetailed(userid);
+	public ServerResponse<Object> getdaibaojia(User user,int releaseType) {
+	
 		
 		
-		List<OrderFanhui> ofanhuiList=orderMapper.getdaibaojia(userid,detailed,releaseType);
+		List<OrderFanhui> ofanhuiList=orderMapper.getdaibaojia(user.getId(),user.getDetailed(),releaseType);
 		return ServerResponse.createBySuccess(ofanhuiList);
 		
 		

@@ -34,6 +34,7 @@
 		and createTime=#{createTime}
 		and
 		orderStatus=#{orderStatus}
+		limit 1
 	</select>
 
 	<select id="get_shut_orders"
@@ -210,12 +211,12 @@
 	</select>
 
 	<!-- app接单企业首页 抢单中的全部订单,除已报价的 -->
-	
 	<select id="getdaibaojia"
 		resultType="com.dian.mmall.pojo.OrderFanhui">
 		select
 		o.id,o.giveTakeTime,o.remarks,o.createTime  ,o.collectTime,
-		o.orderStatus,o.commoditySnapshot,t.addressDetailed
+		o.orderStatus,o.commoditySnapshot,
+		t.addressDetailed,t.detailed  paymentTime
 		from orderform o, t_user_realname t
 		where 
 		releaseType=#{releaseType} and o.orderStatus=11

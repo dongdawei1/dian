@@ -27,7 +27,10 @@ public class LogUtil {
 				CookieUtil.writeLoginToken(httpServletResponse, tockenString);
 				// 把用户session当做key存到数据库中，
 				RedisShardedPoolUtil.setEx(tockenString, userString, Const.RedisCacheExtime.REDIS_SESSION_EXTIME);
-				return ServerResponse.createBySuccess(user);
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("dian_token", tockenString);
+				map.put("user", user);
+				return ServerResponse.createBySuccess(map);
 			} else if (appId.equals(Const.APPAPPIDA)) {
 				if(type==1) {
 				RedisPoolUtil.delectKeyA(user);

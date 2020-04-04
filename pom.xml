@@ -153,11 +153,12 @@
 			<scope>test</scope>
 		</dependency>
 
-      <!--springBoot 定时任务 -->
+      <!--springBoot 长连接任务 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
+		
 <!--springBoot 热部署 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

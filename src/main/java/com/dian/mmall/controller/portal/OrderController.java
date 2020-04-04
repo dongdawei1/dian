@@ -243,7 +243,7 @@ public class OrderController {
 			 @RequestParam String uuid,@RequestParam int   releaseType) {
     	User user =	(User) httpServletRequest.getAttribute("user"); 
 		
-		return orderService.getdaibaojia(user.getId(),releaseType);
+		return orderService.getdaibaojia(user,releaseType);
 	}
 
 	/**

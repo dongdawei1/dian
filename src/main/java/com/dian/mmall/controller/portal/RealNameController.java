@@ -114,4 +114,12 @@ public class RealNameController {
 		return realNameService.addOrder(user, params);
 	}
 
+	
+	
+	
+//	public  String getDetailed(	User user) {
+//		
+//		return realNameService.getDetailed(user.getId());
+//	}
+
 }

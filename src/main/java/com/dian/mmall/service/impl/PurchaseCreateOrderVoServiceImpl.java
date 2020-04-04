@@ -88,7 +88,7 @@ public class PurchaseCreateOrderVoServiceImpl implements PurchaseCreateOrderVoSe
 
 		}
 
-		if (allCommonMenu.size() == 0) {
+		if (allCommonMenu== null) {
 			// redis中没有，数据库查找，并存到redis中
 
 			// 查询该城市下全部菜单,如果空返回北京%110000, 110100%' ,暂时把城市

@@ -17,7 +17,7 @@
     </select>
     
     <select id="checkUsername" resultType="com.dian.mmall.pojo.user.User" parameterType="string" >
-        select id,username, password,role,isAuthentication,mobilePhone,createTime from t_user
+        select id,username, password,role,isAuthentication,mobilePhone,createTime,detailed from t_user
         where username = #{username}
     </select>
     
@@ -27,7 +27,7 @@
     </select>
     
     <select id="selectUsername" resultType="com.dian.mmall.pojo.user.User" parameterType="string" >
-        select id,username,role,isAuthentication,mobilePhone from t_user
+        select id,username,role,isAuthentication,mobilePhone,detailed from t_user
         where username = #{username}
     </select>	
     
@@ -50,6 +50,9 @@
     </update>
      <!--修改用户实名状态  -->   
     <update id="update_newRealName" >
-       update t_user set  isAuthentication=#{isAuthentication} where id=#{id}
+       update t_user set  
+       isAuthentication=#{isAuthentication},
+       <if test="detailed!=null"> detailed=#{detailed}    </if>
+        where id=#{id}
     </update>
 </mapper>

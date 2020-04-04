@@ -141,6 +141,7 @@ public enum ResponseMessage {
 	lianxiren("联系人不能为空"),
 	lianrxrengeshicuowo("联系人输入有误"),
 	dizhixiangq("地址详情不能为空"),
+	dizhixiangqcuowu("地址详情和实名信息不一致"),
 	shangpinmingkong("商品名不能为空"),
 	shangpinchaxunshibai("商品名查询失败"),
 	baozhuangfangshikong("包装方式不能为空"),

@@ -15,4 +15,6 @@ public interface OrderUserMapper {
 
 	int upyue(OrderUser orderUser);
 
+	int getisjiedan(long userId);
+
 }

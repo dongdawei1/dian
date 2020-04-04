@@ -28,7 +28,7 @@
 		id, userId,
 		IFNULL(CONCAT(addressDetailed,addressDianming),addressDetailed)addressDetailed,
 		contact
-		,consigneeName,
+		,consigneeName,addressDetailed userName,
 		email,detailed,eag,gender,companyName,provincesId,
 		cityId,districtCountyId,isReceipt,authentiCationStatus,authentiCationFailure
 		from t_user_realname where userId=#{userId}

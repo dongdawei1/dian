@@ -198,6 +198,7 @@ public class RealNameServiceImpl implements RealNameService {
 					return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
 				}
 				user.setIsAuthentication(1);
+				user.setDetailed(city);
 				resultCount = userMapper.update_newRealName(user);
 				if (resultCount == 0) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage());
@@ -258,6 +259,7 @@ public class RealNameServiceImpl implements RealNameService {
 					return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
 				}
 				user.setIsAuthentication(1);
+				user.setDetailed(city);
 				resultCount = userMapper.update_newRealName(user);
 				if (resultCount == 0) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage());
@@ -315,6 +317,7 @@ public class RealNameServiceImpl implements RealNameService {
 					return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
 				}
 				user.setIsAuthentication(1);
+				user.setDetailed(city);
 				resultCount = userMapper.update_newRealName(user);
 				if (resultCount == 0) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage());
@@ -493,6 +496,7 @@ public class RealNameServiceImpl implements RealNameService {
 					return ServerResponse.createByErrorMessage(ResponseMessage.huoqushimingxinxishibai.getMessage());
 				}
 				user.setIsAuthentication(1);
+				user.setDetailed(city);
 				resultCount = userMapper.update_newRealName(user);
 				if (resultCount == 0) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage());
@@ -545,6 +549,7 @@ public class RealNameServiceImpl implements RealNameService {
 				}
 
 				user.setIsAuthentication(1);
+				user.setDetailed(city);
 				resultCount = userMapper.update_newRealName(user);
 				if (resultCount == 0) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage());
@@ -610,6 +615,7 @@ public class RealNameServiceImpl implements RealNameService {
 				}
 
 				user.setIsAuthentication(1);
+				user.setDetailed(city);
 				resultCount = userMapper.update_newRealName(user);
 				if (resultCount == 0) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.GengXinYongHuXinXiShiBai.getMessage());
@@ -890,6 +896,7 @@ public class RealNameServiceImpl implements RealNameService {
 						return ServerResponse.createByErrorMessage(ResponseMessage.LuoKuShiBai.getMessage());
 					}
 					user2.setIsAuthentication(2);
+					user2.setDetailed(city);
 					resultCount = userMapper.update_newRealName(user2);
 					if (resultCount == 0) {
 						return ServerResponse
@@ -1269,6 +1276,11 @@ public class RealNameServiceImpl implements RealNameService {
 			return ServerResponse.createBySuccess(realName);
 		}
 		return ServerResponse.createByErrorMessage(ResponseMessage.weichadaojieguo.getMessage());
+	}
+
+	@Override
+	public String getDetailed(long id) {		
+		return realNameMapper.getDetailed(id);
 	}
 
 }

@@ -39,4 +39,6 @@ public interface RealNameService {
 
 	ServerResponse<Object> admin_guangggao_realName(String userName);
 
+	String getDetailed(long id);
+
 }

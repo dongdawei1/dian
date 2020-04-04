@@ -39,7 +39,9 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginController {
 	@Autowired
 	private IUserService iUserService;
-
+//	 public static final String PCAPPID = "DIANTOP";
+//	    public static final String APPAPPID = "DIANTOA";
+ //TODO 获取 登陆 key   return appid+MD5EncodeUtf8(19841001+id+createTime).toUpperCase().substring(0,28);
 	// 用户登录
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody

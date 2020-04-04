@@ -34,8 +34,10 @@ public interface UserMapper {
    //修改用户基本信息
    int update_information(User new_User);
    //修改用户实名状态
-   int update_newRealName(User user);
-//
+  int update_newRealName(User user);
+
+   
+   //
 //    int checkEmail(String email);
 //
 //    User selectLogin(@Param("username") String username, @Param("password")String password);

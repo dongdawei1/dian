@@ -4,6 +4,8 @@ import java.security.MessageDigest;
 import java.util.Date;
 import java.util.UUID;
 
+import com.dian.websockert.WebSocketServer;
+
 /**
  * Created by geely
  */
@@ -94,12 +96,15 @@ public class MD5Util {
    
     
     public static String setTocken(long id,String createTime,String appid) {
-    	long l=new Date().getTime()+id;  	
-    	return appid+MD5EncodeUtf8(l+createTime).toUpperCase().substring(0,28);
+    		
+    	return appid+MD5EncodeUtf8(19841001+id+createTime).toUpperCase().substring(0,28);
     }
     
     
     public static void main(String[] args) {
+    	System.out.println("MD5Util.main()");
+    	//System.out.println(WebSocketServer.sendMessage("www","DIANTOP908468FCE8E7D066CB059F0B3FD3"));
     	
+    //	DIANTOP908468FCE8E7D066CB059F0B3FD3
 	}
 }
