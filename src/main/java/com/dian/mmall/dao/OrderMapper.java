@@ -50,4 +50,6 @@ public interface OrderMapper {
 
 	List<OrderFanhui> getdaibaojia(long userid, String detailed, int releaseType);
 
+	List<OrderFanhui> getbaojiazhong(long userid, int releaseType);
+
 }

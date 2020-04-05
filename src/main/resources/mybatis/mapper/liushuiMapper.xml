@@ -9,23 +9,31 @@
 	<insert id="create_liushui">
 		insert into liushui (
 		userId,receivablesUserId,amount,payment,transactionType,
-		receiptsAndPayments,accountNo,liushuiStatus,createTime) values (
+		receiptsAndPayments,accountNo,liushuiStatus,createTime ,dingdanId)
+		values (
 		#{userId},#{receivablesUserId},#{amount},#{payment},#{transactionType},
-		#{receiptsAndPayments},#{accountNo},#{liushuiStatus},#{createTime})
+		#{receiptsAndPayments},#{accountNo},#{liushuiStatus},#{createTime},#{dingdanId})
 	</insert>
 
 	<select id="getjinxingliushui"
 		resultType="com.dian.mmall.pojo.Liushui">
-		select id,userId,amount from liushui
-		where liushuiStatus=#{liushuiStatus} and dingdanId=#{dingdanId} and receivablesUserId=0
+		select id,userId,amount,dingdanId from liushui
+		where
+		liushuiStatus=#{liushuiStatus} and dingdanId=#{dingdanId} and
+		receivablesUserId=0
 	</select>
 
-<!-- 解冻 -->
+	<select id="getAmount" resultType="long">
+		select amount from liushui
+		where liushuiStatus=#{liushuiStatus} and dingdanId=#{dingdanId}
+		and receivablesUserId=#{receivablesUserId} and userId=#{userId}
+	</select>
+	<!-- 解冻 -->
 	<update id="tongbu_jiedong">
 		update liushui set
 		updateTime=#{updateTime},payment=#{payment},
 		liushuiStatus=#{liushuiStatus}
-		
+
 		where id=#{id}
 		<if test="liushuiStatus ==6 or liushuiStatus ==7"> and liushuiStatus = 3 </if>
 	</update>

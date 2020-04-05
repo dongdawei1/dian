@@ -51,6 +51,7 @@
 				#{item}
 			</foreach>
 		</if>
+		order by updateTime desc
 	</select>
 
 	<select id="getOrderById" resultType="com.dian.mmall.pojo.Order">
@@ -203,7 +204,7 @@
 		resultType="com.dian.mmall.pojo.Order">
 		select
 		id,giveTakeTime,createTime,releaseType,commoditySnapshot,commodityZongJiage,
-		orderStatus,saleUserId,collectTime,balanceMoney,payStatus
+		orderStatus,saleUserId,collectTime,balanceMoney,payStatus,purchaseUserId
 		from orderform
 		where
 		id=#{orderId} 
@@ -223,7 +224,22 @@
 		 and  purchaseUserId in (select userId from
 		t_user_realname where detailed=#{detailed})
 		and o.purchaseUserId=t.userId
-		and o.id not in( select orderFormId from order_common_offer where saleUserId=#{userid})
+		and o.id not in( select orderFormId from order_common_offer where saleUserId=#{userid} and commodStatus!=2)
+	</select>
+	<!-- app报价企业报价中的订单 -->
+	<select id="getbaojiazhong"
+		resultType="com.dian.mmall.pojo.OrderFanhui">
+		select
+		o.id,o.giveTakeTime,o.remarks,o.createTime  ,o.collectTime,
+		o.orderStatus,o.commoditySnapshot,
+		t.addressDetailed,t.detailed  paymentTime
+		from orderform o, t_user_realname t
+		where 
+		 o.id  in( select orderFormId from order_common_offer where saleUserId=#{userid} and commodStatus=0)
+		and releaseType=#{releaseType}
+		and o.orderStatus in(11,18)
+		and o.purchaseUserId=t.userId
+		
 	</select>
 	
 </mapper>

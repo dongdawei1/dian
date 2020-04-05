@@ -240,10 +240,10 @@ public class OrderController {
 	@RequestMapping(value = "getdaibaojia", method = RequestMethod.GET)
 	@ResponseBody
 	public ServerResponse<Object> getdaibaojia(HttpServletRequest httpServletRequest,
-			 @RequestParam String uuid,@RequestParam int   releaseType) {
+			 @RequestParam String uuid,@RequestParam int   releaseType ,@RequestParam int    orderStatus) {
     	User user =	(User) httpServletRequest.getAttribute("user"); 
 		
-		return orderService.getdaibaojia(user,releaseType);
+		return orderService.getdaibaojia(user,releaseType,orderStatus);
 	}
 
 	/**

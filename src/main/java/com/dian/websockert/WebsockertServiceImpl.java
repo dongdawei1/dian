@@ -1,6 +1,7 @@
 package com.dian.websockert;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dian.dingshi.OrderExampleTimerServiceImpl;
+import com.dian.mmall.common.Const;
 import com.dian.mmall.dao.OrderUserMapper;
 import com.dian.mmall.dao.RealNameMapper;
+import com.dian.mmall.pojo.Liushui;
 import com.dian.mmall.pojo.Order;
 import com.dian.mmall.pojo.OrderFanhui;
 import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 import com.dian.mmall.pojo.user.User;
+import com.dian.mmall.util.DateTimeUtil;
 import com.dian.mmall.util.JsonUtil;
 import com.dian.mmall.util.RedisShardedPoolUtil;
 import com.dian.mmall.util.checknullandmax.IsEmptyAnnotation;
@@ -65,12 +69,17 @@ public class WebsockertServiceImpl implements WebsockertService {
 		OrderFanhui orderFanhui=new OrderFanhui();
 		orderFanhui.setId(order.getId());
 		orderFanhui.setOrderStatus(order.getOrderStatus());
-		orderFanhui.setCommoditySnapshot(order.getCommoditySnapshot());
+		
+		List<CommonMenuWholesalecommodity> listObj4 = JsonUtil.string2Obj(order.getCommoditySnapshot(), List.class,
+		CommonMenuWholesalecommodity.class);
+		
+		orderFanhui.setCommoditySnapshot(listObj4);
 		orderFanhui.setRemarks(order.getRemarks());
 		orderFanhui.setGiveTakeTime(order.getGiveTakeTime());
 		orderFanhui.setCreateTime(order.getCreateTime());
 		orderFanhui.setAddressDetailed(order.getAddressDetailed());
-		orderFanhui.setPaymentTime(detailed);
+		orderFanhui.setPaymentTime(detailed);	
+		orderFanhui.setGuanShanTime(DateTimeUtil.dateTimeToDateString((DateTimeUtil.strToDate(order.getCreateTime()).getTime())+30*60*1000));
 		map.put("getjinxin", orderFanhui);
 		map.put("type", 2); // 2为新建订单
 		return fasong(detailed, map);
@@ -123,6 +132,19 @@ public class WebsockertServiceImpl implements WebsockertService {
 
 		return "false";
 
+	}
+
+	@Override
+	public void fayourenjiedan(long purchaseUserId) {
+		WebSocketServer.fayourenjiedan("", purchaseUserId);
+	}
+
+	@Override
+	public void fajiedong(Liushui liushui2) {
+		liushui2.setAmount(liushui2.getAmount()/100);
+		//// TODO 通知解冻情况  userId,amount,dingdanId   liushui2.getAmount()/100
+		// websockertService.fajiedong(liushui2);
+		
 	}
 
 }

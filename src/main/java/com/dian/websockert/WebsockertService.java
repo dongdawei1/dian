@@ -2,6 +2,7 @@ package com.dian.websockert;
 
 import java.util.Map;
 
+import com.dian.mmall.pojo.Liushui;
 import com.dian.mmall.pojo.Order;
 
 public interface WebsockertService {
@@ -10,6 +11,10 @@ public interface WebsockertService {
 	void remote1(String string, Object object);
 	
 	String fadingdan(String detailed,Order order);
+
+	void fayourenjiedan(long purchaseUserId);
+
+	void fajiedong(Liushui liushui2);
 
 	
 	

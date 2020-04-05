@@ -28,7 +28,7 @@ public interface OrderService {
 	
 	ServerResponse<Object> createjiedan(long id, Map<String, Object> params);
 
-	ServerResponse<Object> getdaibaojia(User user, int releaseType);
+	ServerResponse<Object> getdaibaojia(User user, int releaseType, int orderStatus);
 	
 	
 }

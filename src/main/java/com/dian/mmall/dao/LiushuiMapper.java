@@ -15,4 +15,6 @@ public interface LiushuiMapper {
 
 	void tongbu_jiedong(Liushui liushui);
 
+	long getAmount(long userId, long dingdanId, int liushuiStatus, int receivablesUserId);
+
 }

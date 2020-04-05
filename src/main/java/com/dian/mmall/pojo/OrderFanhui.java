@@ -41,7 +41,7 @@ public class OrderFanhui {
 	//16 确认收货，17超时无人接单关单，18 三十分钟已过有人接单 确认期，19 超时未支付，20接单者未支付定金，21支付失败
 	
 	@IsEmptyAnnotation(message="商品快照不能为空")
-	private String commoditySnapshot;   //下单时的商品详情除地址
+	private Object commoditySnapshot;   //下单时的商品详情除地址
 	
 	private String  guaranteeMoney;//保障金
 	private Integer  yesGuaranteeMoney;//是否支付了保证金 0未支付，1已支付
