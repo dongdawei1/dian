@@ -150,6 +150,7 @@ public class OrderServiceImpl implements OrderService {
 						order.setGiveTakeTime(giveTakeTime);
 						order.setRemarks(params.get("remarks").toString().trim());
 						order.setCreateTime(newdateString);
+						order.setUpdateTime(newdateString);
 						order.setOrderStatus(11);
 						order.setPayStatus(0);
 						order.setReleaseType(4);
@@ -610,9 +611,7 @@ public class OrderServiceImpl implements OrderService {
 					tongbu_gengxin_uporder(order);
 					// 更新抢单表
 					tongbu_jiedong_baozhengjin(order.getId(), 2);
-
 				}
-
 			} else if (type == 11) {
 				// 送货时间不能小于3小时后
 				if ((new Date().getTime() + 3 * 1000 * 60 * 60) > (DateTimeUtil.strToDate(order.getGiveTakeTime())
@@ -634,6 +633,7 @@ public class OrderServiceImpl implements OrderService {
 			} else if (type == 12) {
 				// 支付
 				long order_commodityZongJiage = Long.parseLong(params.get("commodityZongJiage").toString().trim());
+				//报价表id
 				long orderCommonOfferId = Long.parseLong(params.get("orderCommonOfferId").toString().trim());
 				OrderCommonOffer orderCommonOffer = orderCommonOfferMapper.getbysucc(orderCommonOfferId, 0);
 				long commodityZongJiage = orderCommonOffer.getCommodityZongJiage() / 100;
@@ -643,12 +643,16 @@ public class OrderServiceImpl implements OrderService {
 					if (order.getOrderStatus() == 11 || order.getOrderStatus() == 18) {
 						orderCommonOfferMapper.operation_purchase_evaluate_selected(order.getId(), updateTime,
 								saleUserId, orderCommonOffer.getId());
+						
+						
 						// 更新订单 为抢单成功 和其他信息 报价金额，抢单用户id
-
 						order.setSaleUserId(saleUserId);
 						order.setCommodityZongJiage(orderCommonOffer.getCommodityZongJiage());
 						order.setOrderStatus(type);
 						tongbu_gengxin_uporder(order);
+						
+						// push 信息 报价已经被选中
+						websockertService.faxuanzhong(order);
 					} else {
 						return ServerResponse.createByErrorMessage(ResponseMessage.dingdanzhuangtaicuowu.getMessage());
 					}
@@ -660,19 +664,11 @@ public class OrderServiceImpl implements OrderService {
 				// 未选中全部更新为失败
 				tongbu_jiedong_baozhengjin(order.getId(), 3);
 
-			} else if (type == 16) {
-				// 抢单人员操作
-				long saleUserIdDeng = Long.parseLong(params.get("saleUserIdDeng").toString().trim());
-				if (saleUserIdDeng != order.getSaleUserId()) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
-				}
-				order.setOrderStatus(type);
-				orderMapper.operation_purchase_order(order);
-				// TODO 通知给商户 ，抢单人员已经送货到了
 			} else if (type == 5) {
 				order.setOrderStatus(type);
 				orderMapper.operation_purchase_order(order);
-				// TODO 通知给抢单成功人员 userID 用户已经收货，订单完成
+				//  通知给抢单成功人员 userID 用户已经收货，订单完成
+				websockertService.fayourenjiedan(5 ,order.getPurchaseUserId());
 			}
 
 			else {
@@ -708,7 +704,7 @@ public class OrderServiceImpl implements OrderService {
 						// 已经到报价时间
 						int initialCount = orderCommonOfferMapper.getInitialCount(o.getId());
 						if (initialCount > 0) {
-							// 有报价更新为 orderStatus==18
+							// 有报价更新为 orderStatus==18,延迟15分钟
 							o.setOrderStatus(18);
 							o.setUpdateTime(updateTime);
 							tongbu_gengxin_uporder(o);
@@ -853,7 +849,6 @@ public class OrderServiceImpl implements OrderService {
 						order.setOrderStatus(4);
 						order.setGuaranteeMoney(total_fee + "");
 						callbackUpDateOrder(order);
-						// TODO 通知接单者 已支付完成
 					}
 				} else if (!"USERPAYING".equals(trade_state)) {
 					// 支付超时关单,关单成功更新数据库
@@ -867,7 +862,6 @@ public class OrderServiceImpl implements OrderService {
 						order.setOrderStatus(19);
 						order.setPayStatus(0);
 						callbackUpDateOrder(order);
-						// TODO 通知接单者 关单了
 					}
 				}
 			}
@@ -1173,7 +1167,7 @@ public class OrderServiceImpl implements OrderService {
 					order.setOrderStatus(4);
 					order.setGuaranteeMoney(total_fee + "");
 					callbackUpDateOrder(order);
-					// TODO 通知接单者 已支付完成
+					
 					return ServerResponse.createBySuccess();
 				}
 				// 支付金额为0返回错误
@@ -1216,6 +1210,10 @@ public class OrderServiceImpl implements OrderService {
 			order.setBalanceMoney(
 					Float.parseFloat(selectOrder.getCommodityZongJiage() + "") / 100 - guaranteeMoney + "");
 			orderMapper.callbackUpDateOrder(order);
+			// 通知发单者 已支付完成
+			websockertService.fayourenjiedan(12 ,order.getPurchaseUserId());
+			// 通知发单者 已支付完成
+			websockertService.fayourenjiedan(5 ,order.getSaleUserId());
 			return null;
 		}
 		orderMapper.callbackUpDateOrder(order);
@@ -1710,7 +1708,7 @@ public class OrderServiceImpl implements OrderService {
 				orderUser1.setShengyuAmount(new Double(orderUser1.getShengyuAmount() / 100).longValue());
 				orderUser1.setDongjieAmount(new Double(baojiadongjie / 100).longValue());
 				// 通知 发布商户push
-				websockertService.fayourenjiedan(order.getPurchaseUserId());
+				websockertService.fayourenjiedan(12,order.getPurchaseUserId());
 				return ServerResponse.createBySuccess(orderUser1);
 			} else {
 				orderUser.setUpdateTime(createTime);
@@ -1743,14 +1741,14 @@ public class OrderServiceImpl implements OrderService {
 				orderFanhui.setCommoditySnapshot(listObj4);
 				ofanhuiList.set(a, orderFanhui);
 			}
+			return ServerResponse.createBySuccess(ofanhuiList);
 		}else if (orderStatus == 12) {
+			Map<String, List<OrderFanhui>> map =new HashMap<String, List<OrderFanhui>>();
+			
 			// 待报价
 			ofanhuiList = orderMapper.getbaojiazhong(user.getId(),  releaseType);
 			for (int a = 0; a < ofanhuiList.size(); a++) {
-				
-				
 				OrderFanhui orderFanhui = ofanhuiList.get(a);
-				
 				orderFanhui.setGuanShanTime(DateTimeUtil.dateTimeToDateString(
 						(DateTimeUtil.strToDate(orderFanhui.getCreateTime()).getTime()) + 45 * 60 * 1000));
 				List<CommonMenuWholesalecommodity> listObj4 = JsonUtil.string2Obj(
@@ -1760,9 +1758,51 @@ public class OrderServiceImpl implements OrderService {
 				orderFanhui.setCommodityZongJiage(liushuiMapper.getAmount(user.getId(),orderFanhui.getId(),3,0)/100);
 				ofanhuiList.set(a, orderFanhui);
 			}
+			
+			map.put("baojia", ofanhuiList);
+			String between = DateTimeUtil.betweenAnd(1);
+			String and = DateTimeUtil.betweenAnd(2);
+			ofanhuiList = orderMapper.getsonghuo(user.getId(),between,and,  releaseType);
+			for (int a = 0; a < ofanhuiList.size(); a++) {
+				OrderFanhui orderFanhui = ofanhuiList.get(a);
+        
+				RealName realName=realNameMapper.getRealName(orderFanhui.getPurchaseUserId());
+				
+				List<CommonMenuWholesalecommodity> listObj4 = JsonUtil.string2Obj(
+						(String) orderFanhui.getCommoditySnapshot(), List.class, CommonMenuWholesalecommodity.class);
+
+				orderFanhui.setCommoditySnapshot(listObj4);
+				orderFanhui.setPaymentTime(realName.getConsigneeName());
+				orderFanhui.setGuanShanTime(EncrypDES.decryptPhone(realName.getContact()));
+				orderFanhui.setGuanShanReason(realName.getCompanyName());
+				
+				orderFanhui.setYesGuaranteeMoney(liushuiMapper.getAmount(user.getId(),orderFanhui.getId(),3,0)/100);
+				ofanhuiList.set(a, orderFanhui);
+			}
+			map.put("songhuo", ofanhuiList);
+			return ServerResponse.createBySuccess(map);
 		}
 		return ServerResponse.createBySuccess(ofanhuiList);
 
 	}
+	
+	
 
+
+
+  //请求收货
+	@Override
+	public ServerResponse<String> shouhuo(long userId, long id, int orderStatus,int releaseType) {
+		Order order = orderMapper.getShouhuo(id, userId,orderStatus,releaseType);
+		
+		if(order!=null) {
+			order.setOrderStatus(orderStatus);
+			order.setUpdateTime(DateTimeUtil.dateToAll());
+			orderMapper.operation_purchase_order(order);
+			// 通知 发布商户push
+			websockertService.fayourenjiedan(12 ,order.getPurchaseUserId());
+			return ServerResponse.createBySuccess(ResponseMessage.caozuochenggong.getMessage());
+		}
+		return ServerResponse.createByErrorMessage(ResponseMessage.dingdanchaxunshibai.getMessage());
+	} 
 }

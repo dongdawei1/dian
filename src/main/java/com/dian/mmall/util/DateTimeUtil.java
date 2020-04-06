@@ -89,7 +89,7 @@ public class DateTimeUtil {
 	public static String betweenAnd(int type) {
 
 		if (type == 1) {
-			DateTime dateTime = new DateTime(strToDate(a_few_days_later(-2)));
+			DateTime dateTime = new DateTime(strToDate(a_few_days_later(-3)));
 			return dateTime.toString(STANDARD_DATA) + " 00:00:00";
 		}
 		DateTime dateTime = new DateTime(new Date());

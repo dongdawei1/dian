@@ -12,9 +12,12 @@ public interface WebsockertService {
 	
 	String fadingdan(String detailed,Order order);
 
-	void fayourenjiedan(long purchaseUserId);
+	void fayourenjiedan(int type ,long purchaseUserId);
 
 	void fajiedong(Liushui liushui2);
+
+
+	void faxuanzhong(Order order);
 
 	
 	

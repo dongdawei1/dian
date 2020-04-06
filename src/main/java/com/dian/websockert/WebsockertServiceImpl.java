@@ -135,15 +135,20 @@ public class WebsockertServiceImpl implements WebsockertService {
 	}
 
 	@Override
-	public void fayourenjiedan(long purchaseUserId) {
-		WebSocketServer.fayourenjiedan("", purchaseUserId);
+	public void fayourenjiedan(int type, long purchaseUserId) {
+		WebSocketServer.fayourenjiedan(type, purchaseUserId);
 	}
 
 	@Override
 	public void fajiedong(Liushui liushui2) {
 		liushui2.setAmount(liushui2.getAmount()/100);
-		//// TODO 通知解冻情况  userId,amount,dingdanId   liushui2.getAmount()/100
-		// websockertService.fajiedong(liushui2);
+		WebSocketServer.fajiedong(liushui2);
+		
+	}
+
+	@Override
+	public void faxuanzhong(Order order) {
+		WebSocketServer.faxuanzhong(order);
 		
 	}
 

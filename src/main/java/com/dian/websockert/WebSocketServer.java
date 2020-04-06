@@ -8,6 +8,8 @@ import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.controller.portal.RealNameController;
 import com.dian.mmall.dao.RealNameMapper;
 import com.dian.mmall.pojo.Liushui;
+import com.dian.mmall.pojo.Order;
+import com.dian.mmall.pojo.OrderFanhui;
 import com.dian.mmall.pojo.user.RealName;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.util.CookieUtil;
@@ -139,12 +141,12 @@ public class WebSocketServer {
 	}
 
 	//有用户接单给 发布商家app发送没有就不发
-	public static String fayourenjiedan(String message, long id) {
+	public static String fayourenjiedan(int type, long id) {
 		boolean success = false;
 		for (WebSocketServer server : sWebSocketServers) {
 			if (((User)JsonUtil.string2Obj(RedisShardedPoolUtil.get(server.mVmcNo), User.class)).getId()==id && server.mVmcNo.indexOf(Const.APPAPPID) == 0) {
 				Map<String, Integer> map = new HashMap<String, Integer>();
-				map.put("type", 12); // 其他业务type等于别的
+				map.put("type",type ); // 12有人接单 其他业务type等于别的 ,5支付完成
 				map.put("msg", 1);
 				success = server.sendMessage(JsonUtil.obj2String(map));
 				break;
@@ -158,7 +160,6 @@ public class WebSocketServer {
 	}
    //发送接单是的退款
 	public static void fajiedong(Liushui liushui2) {
-		// TODO Auto-generated method stub
 		for (WebSocketServer server : sWebSocketServers) {
 			if (((User)JsonUtil.string2Obj(RedisShardedPoolUtil.get(server.mVmcNo), User.class)).getId()==liushui2.getUserId() && server.mVmcNo.indexOf(Const.APPAPPID) == 0) {
 				Map<String, Object> map = new HashMap<String, Object>();
@@ -168,6 +169,19 @@ public class WebSocketServer {
 				
 			}
 		}
+	}
+//通知给接单成功人员
+	public static void faxuanzhong(Order order) {
+		for (WebSocketServer server : sWebSocketServers) {
+			if (((User)JsonUtil.string2Obj(RedisShardedPoolUtil.get(server.mVmcNo), User.class)).getId()==order.getSaleUserId() && server.mVmcNo.indexOf(Const.APPAPPID) == 0) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("type", 4); // 其他业务type等于别的
+				map.put("xuanzhong", order.getId());
+			 server.sendMessage(JsonUtil.obj2String(map));
+				
+			}
+		}
+		
 	}
 
 }

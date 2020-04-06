@@ -19,13 +19,13 @@
 		commodityZongJiage ,reserve
 		,deliveryType,deliveryCollect,addressDetailed,giveTakeTime,remarks,
 		createTime,confirmTime,paymentTime,guanShanTime,guanShanReason,collectTime,orderStatus,payStatus,
-		commoditySnapshot,releaseType,permissionId,guaranteeMoney,yesGuaranteeMoney,balanceMoney
+		commoditySnapshot,releaseType,permissionId,guaranteeMoney,yesGuaranteeMoney,balanceMoney,updateTime
 		) values (
 		#{purchaseUserId},#{saleUserId},#{wholesaleCommodityId},#{evaluateid},#{commodityJiage},#{commodityCountNo},
 		#{commodityZongJiage},#{reserve},
 		#{deliveryType},#{deliveryCollect},#{addressDetailed},#{giveTakeTime},#{remarks},
 		#{createTime},#{confirmTime},#{paymentTime},#{guanShanTime},#{guanShanReason},#{collectTime},#{orderStatus},#{payStatus},
-		#{commoditySnapshot},#{releaseType},#{permissionId},#{guaranteeMoney},#{yesGuaranteeMoney},#{balanceMoney}
+		#{commoditySnapshot},#{releaseType},#{permissionId},#{guaranteeMoney},#{yesGuaranteeMoney},#{balanceMoney},#{updateTime}
 		)
 	</insert>
 	<select id="getId" resultType="long">
@@ -129,7 +129,7 @@
 	<select id="peceiptGetPendingOrders"
 		resultType="com.dian.mmall.pojo.Order">
 		select
-		id,purchaseUserId,giveTakeTime,remarks,createTime,releaseType,commoditySnapshot
+		id,purchaseUserId,updateTime,giveTakeTime,remarks,createTime,releaseType,commoditySnapshot
 		from orderform
 		where orderStatus=11
 		and
@@ -159,7 +159,7 @@
 		resultType="com.dian.mmall.pojo.Order">
 		select
 		id,purchaseUserId,giveTakeTime,remarks,createTime,releaseType,commoditySnapshot,commodityZongJiage,
-		orderStatus,saleUserId,collectTime
+		orderStatus,saleUserId,collectTime,updateTime
 		from orderform
 		where
 		releaseType=#{releaseType} and purchaseUserId=#{userId}
@@ -180,11 +180,10 @@
 		<if test="orderStatus==9">and orderStatus in(4,16,5,6)   </if>
 	</select>
 
-	<select id="mySaleOrder"
-		resultType="com.dian.mmall.pojo.Order">
+	<select id="mySaleOrder" resultType="com.dian.mmall.pojo.Order">
 		select
 		id,giveTakeTime,createTime,releaseType,commoditySnapshot,commodityZongJiage,
-		orderStatus,saleUserId,collectTime,balanceMoney
+		orderStatus,saleUserId,collectTime,balanceMoney,updateTime
 		from orderform
 		where
 		releaseType=#{releaseType} and
@@ -198,8 +197,8 @@
 	</select>
 
 	<!-- 接单企业首页除抢单中的全部订单结束 -->
-	
-	
+
+
 	<select id="getOrderByIdyichang"
 		resultType="com.dian.mmall.pojo.Order">
 		select
@@ -207,39 +206,74 @@
 		orderStatus,saleUserId,collectTime,balanceMoney,payStatus,purchaseUserId
 		from orderform
 		where
-		id=#{orderId} 
-		
+		id=#{orderId}
+
 	</select>
 
 	<!-- app接单企业首页 抢单中的全部订单,除已报价的 -->
 	<select id="getdaibaojia"
 		resultType="com.dian.mmall.pojo.OrderFanhui">
 		select
-		o.id,o.giveTakeTime,o.remarks,o.createTime  ,o.collectTime,
+		o.id,o.giveTakeTime,o.remarks,o.createTime
+		,o.collectTime,o.updateTime,
 		o.orderStatus,o.commoditySnapshot,
-		t.addressDetailed,t.detailed  paymentTime
-		from orderform o, t_user_realname t
-		where 
+		t.addressDetailed,t.detailed paymentTime
+		from orderform o,
+		t_user_realname t
+		where
 		releaseType=#{releaseType} and o.orderStatus=11
-		 and  purchaseUserId in (select userId from
-		t_user_realname where detailed=#{detailed})
+		and purchaseUserId in (select userId from
+		t_user_realname where
+		detailed=#{detailed})
 		and o.purchaseUserId=t.userId
-		and o.id not in( select orderFormId from order_common_offer where saleUserId=#{userid} and commodStatus!=2)
+		and o.id not in(
+		select orderFormId from order_common_offer where saleUserId=#{userid}
+		and commodStatus!=2)
+		order by o.updateTime desc
 	</select>
 	<!-- app报价企业报价中的订单 -->
 	<select id="getbaojiazhong"
 		resultType="com.dian.mmall.pojo.OrderFanhui">
 		select
-		o.id,o.giveTakeTime,o.remarks,o.createTime  ,o.collectTime,
+		o.id,o.giveTakeTime,o.remarks,o.createTime
+		,o.collectTime,o.updateTime,
 		o.orderStatus,o.commoditySnapshot,
-		t.addressDetailed,t.detailed  paymentTime
-		from orderform o, t_user_realname t
-		where 
-		 o.id  in( select orderFormId from order_common_offer where saleUserId=#{userid} and commodStatus=0)
-		and releaseType=#{releaseType}
-		and o.orderStatus in(11,18)
-		and o.purchaseUserId=t.userId
-		
+		t.addressDetailed,t.detailed paymentTime
+		from orderform o,
+		t_user_realname t
+		where
+		o.id in( select orderFormId from order_common_offer where
+		saleUserId=#{userid} and commodStatus in (0,1))
+		and
+		releaseType=#{releaseType}
+		and o.orderStatus in(11,12,18)
+		and
+		o.purchaseUserId=t.userId
+		order by o.updateTime desc
 	</select>
-	
+
+	<!-- app报价企业报价中的订单 -->
+	<select id="getsonghuo"
+		resultType="com.dian.mmall.pojo.OrderFanhui">
+		select
+		id,giveTakeTime,remarks,createTime ,collectTime,
+		orderStatus,commoditySnapshot,updateTime,
+		addressDetailed,commodityZongJiage,purchaseUserId,
+		guaranteeMoney,yesGuaranteeMoney,balanceMoney
+		from orderform
+		where saleUserId=#{userid} and releaseType=#{releaseType}
+		and orderStatus in(4,5,16)
+		and createTime between #{between} and #{and}
+		order by updateTime desc
+	</select>
+	<!-- 请求收货前查询 -->
+	<select id="getShouhuo"
+		resultType="com.dian.mmall.pojo.Order">
+		select
+		id,giveTakeTime
+		from orderform
+		where saleUserId=#{saleUserId} and id=#{id} and releaseType=#{releaseType}
+		<if test="orderStatus==16">and orderStatus=4   </if>
+	</select>
+
 </mapper>

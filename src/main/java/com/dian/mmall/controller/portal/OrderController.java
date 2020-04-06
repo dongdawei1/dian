@@ -262,4 +262,23 @@ public class OrderController {
 		return orderService.createjiedan(user.getId(), params);
 
 	}
+	
+	
+	/**
+	 * 创建接单
+	 */
+	@RequestMapping(value = "shouhuo", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<String> shouhuo(HttpServletRequest httpServletRequest,
+			 @RequestParam String uuid,@RequestParam long   id ,@RequestParam int    orderStatus 
+			 ,@RequestParam int releaseType) {
+    	User user =	(User) httpServletRequest.getAttribute("user"); 
+		//检查实名
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		
+		return orderService.shouhuo(user.getId(), id,orderStatus,releaseType);
+
+	}
 }

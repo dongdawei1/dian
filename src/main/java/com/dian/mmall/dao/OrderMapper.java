@@ -52,4 +52,10 @@ public interface OrderMapper {
 
 	List<OrderFanhui> getbaojiazhong(long userid, int releaseType);
 
+
+	List<OrderFanhui> getsonghuo(long userid, String between, String and, int releaseType);
+
+	Order getShouhuo(long id, long saleUserId, int orderStatus, int releaseType);
+
+
 }
