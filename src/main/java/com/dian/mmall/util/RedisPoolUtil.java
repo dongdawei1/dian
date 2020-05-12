@@ -276,9 +276,15 @@ public class RedisPoolUtil {
 
 		Set<String> keyes = jedis.keys("*");
 		for (String key : keyes) {
-			System.out.println(key + "<--ddd");
-			String userJsonStr = RedisShardedPoolUtil.get(key);
-			System.out.println("userJsonStr-->" + userJsonStr);
+			//System.out.println(key + "<--ddd");
+			
+			if(key.indexOf("mutual_push_")==0) {
+				System.out.println(key + "<--ddd");
+				jedis.del(key);
+				
+			}
+//			String userJsonStr = RedisShardedPoolUtil.get(key);
+//			System.out.println("userJsonStr-->" + userJsonStr);
 			// System.out.println( "jedis.pttl(key)-->"+ jedis.pttl(key));
 		}
 

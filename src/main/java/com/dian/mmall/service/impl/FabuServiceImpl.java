@@ -746,4 +746,105 @@ public class FabuServiceImpl implements FabuService {
 		return ServerResponse.createBySuccess(respList);
 	}
 
+	//app查询除简历出租的全部发布
+	@Override
+	public ServerResponse<Object> getfabulista(Map<String, Object> params) {		
+		//		currentPage: 0
+//		pageSize: 12
+//		serviceType: ""
+		String currentPage_string = params.get("currentPage").toString().trim();
+		String pageSize_string = params.get("pageSize").toString().trim();
+		int currentPage = 0;
+		int pageSize = 0;
+
+		if (currentPage_string != null && !currentPage_string.equals("")) {
+			currentPage = Integer.parseInt(currentPage_string);
+			if (currentPage <= 0) {
+				return ServerResponse.createByErrorMessage("页数不能小于0");
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入页数");
+		}
+
+		if (pageSize_string != null && !pageSize_string.equals("")) {
+			pageSize = Integer.parseInt(pageSize_string);
+			if (pageSize <= 0) {
+				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+			}
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		}
+
+		
+		
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		Integer releaseType = null;
+		if (releaseTypeString != null && !releaseTypeString.equals("")) {
+			releaseType = Integer.valueOf(releaseTypeString);		
+		}else {
+			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
+		}
+		
+		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
+				List.class);
+		
+		Integer provincesId=0;
+		Integer cityId =0;
+		Integer districtCountyId = 0;
+		if(selectedOptions_list.size() ==3) {
+			provincesId = selectedOptions_list.get(0);
+		    cityId = selectedOptions_list.get(1);
+			districtCountyId = selectedOptions_list.get(2);
+		}else {
+			RealName realName=realNameMapper.getUserRealName((long) params.get("userId"));
+			provincesId = realName.getProvincesId();
+		    cityId = realName.getCityId();
+			districtCountyId = realName.getDistrictCountyId();
+		}
+		
+		
+			
+			// 判断省市区id是否正确
+			String detailed = "%" + cityMapper.checkeCity(provincesId, cityId, districtCountyId) + "%";
+			
+			String serviceType = params.get("serviceType").toString().trim();
+			if (serviceType != null && !serviceType.equals("")) {
+				serviceType = "%" + serviceType + "%";
+			}
+			Page<FabuList> equipment_pagePage = new Page<FabuList>();
+			long zongtiaoshu = fabuMapper.getfabulistano(releaseType, detailed, 
+					serviceType);
+
+			if (zongtiaoshu == 0) {
+				detailed = "%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%";
+				zongtiaoshu = fabuMapper.getfabulistano(releaseType, detailed, 
+						serviceType);
+
+			}
+		//	getfabulist
+			equipment_pagePage.setTotalno(zongtiaoshu);
+			equipment_pagePage.setPageSize(pageSize);
+			equipment_pagePage.setCurrentPage(currentPage); // 当前页
+			if (zongtiaoshu == 0) {
+				equipment_pagePage.setDatas(null);
+				return ServerResponse.createBySuccess(equipment_pagePage);
+
+			}
+			// 查询list
+			List<FabuList> fabulist = fabuMapper.getfabulista(
+					(currentPage - 1) * pageSize,  pageSize, releaseType, detailed, serviceType);
+		
+			for (int i = 0; i < fabulist.size(); i++) {
+				FabuList fa = fabulist.get(i);
+				System.out.println(fa);
+				List<Picture> listObj3 = JsonUtil.string2Obj(fa.getPictureUrl(), List.class, Picture.class);
+				Picture picture = listObj3.get(0);
+				fa.setPictureUrl(picture.getPictureUrl());
+				fabulist.set(i, fa);
+			}
+			equipment_pagePage.setDatas(fabulist);
+			return ServerResponse.createBySuccess(equipment_pagePage);
+	}
+
 }

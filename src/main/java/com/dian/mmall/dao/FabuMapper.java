@@ -48,4 +48,8 @@ public interface FabuMapper {
 
 	List<FanHui> adminGetWcall(long userId);
 
+	long getfabulistano(Integer releaseType, String detailed, String serviceType);
+
+	List<FabuList> getfabulista(int pageLength, int pageSize, Integer releaseType, String detailed, String serviceType);
+
 }

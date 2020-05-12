@@ -102,7 +102,7 @@ public class FaBuController {
 		return fabuService.getfabutiao(params);
 	}
 //
-	// 公开列表
+	// 公开列表pc
 
 	@RequestMapping(value = "getfabulist", method = RequestMethod.POST)
 	@ResponseBody
@@ -115,6 +115,22 @@ public class FaBuController {
 		return fabuService.getfabulist(params);
 
 	}
+	
+	// 公开列表app
+
+	@RequestMapping(value = "getfabulista", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> getfabulista(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		params.put("userId", user.getId());
+		return fabuService.getfabulista(params);
+
+	}
+	
 	// 公开获取id
 
 	@RequestMapping(value = "getfabubyid", method = RequestMethod.GET)

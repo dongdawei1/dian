@@ -187,6 +187,27 @@
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
 	</select>
+	
+	<!-- 公开列表app 总数-->
+	<select id="getfabulistano" resultType="long">
+		select count(*)
+		from fabu
+		where
+		welfareStatus=1 and
+		releaseType=#{releaseType}
+		
+		and userId in (select
+		userId from
+		t_user_realname where detailed like
+		#{detailed}) 
+		
+		<if test="serviceType!=null and serviceType.trim()!=''">
+		and id in(
+		select id from  fabu  where  releaseTitle LIKE  #{serviceType}   OR  serviceType  LIKE  #{serviceType}     group by id
+		)
+		</if>
+	</select>
+	
 	<select id="getfabulist"
 		resultType="com.dian.mmall.pojo.fabu.FabuList">
 		select id,mianjia,pictureUrl,
@@ -214,6 +235,25 @@
 		</if>
 		<if test="releaseTitle!=null and releaseTitle.trim()!=''">and releaseTitle like #{releaseTitle}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+     <!-- 公开列表app -->
+	<select id="getfabulista"
+		resultType="com.dian.mmall.pojo.fabu.FabuList">
+		select id,mianjia,pictureUrl,
+		releaseTitle,serviceType,releaseType
+		from fabu
+		where
+		welfareStatus=1 and releaseType=#{releaseType}
+		and userId in (select
+		userId from
+		t_user_realname where detailed like
+		#{detailed})
+		<if test="serviceType!=null and serviceType.trim()!=''">and id in(
+		select id from  fabu  where  releaseTitle LIKE  #{serviceType}   OR  serviceType  LIKE  #{serviceType}     group by id
+		)  </if>
 		order by updateTime desc
 		limit #{pageLength}, #{pageSize}
 	</select>

@@ -38,4 +38,7 @@ public interface FabuService {
 
 	ServerResponse<Object> getquxian(long id);
 
+
+	ServerResponse<Object> getfabulista(Map<String, Object> params);
+
 }

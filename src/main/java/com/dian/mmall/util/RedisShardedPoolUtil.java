@@ -168,6 +168,13 @@ public class RedisShardedPoolUtil {
     
     
     public static void main(String[] args) {
+    	
+    	
+    	
+    	
+    	
+    	
+    	
     	del("75A4B3AFF24694E7CC25164D15A57DE2");
 //        ShardedJedis jedis = RedisShardedPool.getJedis();
 //
