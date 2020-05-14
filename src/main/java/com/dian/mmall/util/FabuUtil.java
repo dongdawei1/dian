@@ -81,7 +81,7 @@ public class FabuUtil {
 				for (int i = 0; i < serviceDetailedlList.length; i++) {
 					for (int a = 0; a < respList.size(); a++) {
 						if (respList.get(a).equals(serviceDetailedlList[i].trim())) {
-							stringBuffer.append(serviceDetailedlList[i] + "/");
+							stringBuffer.append(serviceDetailedlList[i].trim() + "/");
 							break;
 						}
 					}

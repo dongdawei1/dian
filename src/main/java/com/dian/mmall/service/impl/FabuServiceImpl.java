@@ -612,6 +612,9 @@ public class FabuServiceImpl implements FabuService {
 				List<Picture> listObj3 = JsonUtil.string2Obj(fa.getPictureUrl(), List.class, Picture.class);
 				Picture picture = listObj3.get(0);
 				fa.setPictureUrl(picture.getPictureUrl());
+				if(fa.getServiceDetailed().length()>13) {
+					fa.setServiceDetailed(fa.getServiceDetailed().substring(0, 12)+"..");
+				}
 				fabulist.set(i, fa);
 			}
 
@@ -837,10 +840,12 @@ public class FabuServiceImpl implements FabuService {
 		
 			for (int i = 0; i < fabulist.size(); i++) {
 				FabuList fa = fabulist.get(i);
-				System.out.println(fa);
 				List<Picture> listObj3 = JsonUtil.string2Obj(fa.getPictureUrl(), List.class, Picture.class);
 				Picture picture = listObj3.get(0);
 				fa.setPictureUrl(picture.getPictureUrl());
+				if(fa.getServiceDetailed().length()>19) {
+					fa.setServiceDetailed(fa.getServiceDetailed().substring(0, 18)+"..");
+				}
 				fabulist.set(i, fa);
 			}
 			equipment_pagePage.setDatas(fabulist);

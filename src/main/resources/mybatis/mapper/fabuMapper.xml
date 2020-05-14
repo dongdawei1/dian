@@ -211,13 +211,10 @@
 	<select id="getfabulist"
 		resultType="com.dian.mmall.pojo.fabu.FabuList">
 		select id,mianjia,pictureUrl,
-		<if test="releaseType ==14 or releaseType ==15 ">
-		CONCAT(SUBSTRING(serviceDetailed, 1, 12),'..')serviceDetailed,
+		
 		serviceDetailed,
-		</if>
-		<if test="releaseType !=14 and releaseType !=15 ">
-		serviceDetailed,
-		</if>
+		
+		
 		releaseTitle,serviceType,releaseType
 		from fabu
 		where
@@ -243,7 +240,7 @@
 	<select id="getfabulista"
 		resultType="com.dian.mmall.pojo.fabu.FabuList">
 		select id,mianjia,pictureUrl,
-		releaseTitle,serviceType,releaseType
+		releaseTitle,serviceType,serviceDetailed,releaseType
 		from fabu
 		where
 		welfareStatus=1 and releaseType=#{releaseType}
