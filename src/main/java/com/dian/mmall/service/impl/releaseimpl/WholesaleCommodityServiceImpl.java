@@ -1092,7 +1092,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 	// 公开列表
 	@Override
-	public ServerResponse<Object> getWholesaleCommodityPublicList(Map<String, Object> params) {
+	public ServerResponse<Object> getWholesaleCommodityPublicList(User user,Map<String, Object> params) {
 		String currentPage_string = params.get("currentPage").toString().trim();
 		String pageSize_string = params.get("pageSize").toString().trim();
 		int currentPage = 0;
@@ -1135,6 +1135,12 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			Integer districtCountyId = selectedOptions_list.get(2);
 			// 判断省市区id是否正确
 
+			selectedOptions = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+		}else {
+			RealName realName=realNameMapper.getUserRealName(user.getId());
+			Integer provincesId = realName.getProvincesId();
+			Integer cityId = realName.getCityId();
+			Integer districtCountyId = realName.getDistrictCountyId();
 			selectedOptions = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
 		}
 

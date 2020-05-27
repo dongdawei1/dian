@@ -687,7 +687,6 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 
 		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
 				List.class);
-
 		String provinces_id = null;
 		String city_id = null;
 		String district_county_id = null;
@@ -696,6 +695,11 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 			city_id = selectedOptions_list.get(1) + "";
 			district_county_id = selectedOptions_list.get(2) + "";
 			// 判断省市区id是否正确
+		}else {
+			RealName realName=realNameMapper.getUserRealName(user.getId());
+			provinces_id = realName.getProvincesId()+ "";
+			city_id = realName.getCityId()+ "";
+			district_county_id = realName.getDistrictCountyId()+ "";
 		}
 
 		String detailed = "%" + getPublishingsService.ctiy(provinces_id, city_id, district_county_id) + "%";
@@ -709,7 +713,12 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 		releaseWelfare_pagePage.setTotalno(count);
 		releaseWelfare_pagePage.setPageSize(pageSize);
 		releaseWelfare_pagePage.setCurrentPage(currentPage); // 当前页
-
+       if(count == 0) {
+    	   releaseWelfare_pagePage.setDatas(new ArrayList<ReleaseWelfare>() );
+   		return ServerResponse.createBySuccess(releaseWelfare_pagePage);
+       }
+       
+       
 		List<ReleaseWelfare> list_releaseWelfareall = releaseWelfareMapper
 				.getUserReleaseWelfareList((currentPage - 1) * pageSize, pageSize, detailed, position);
 		if (list_releaseWelfareall.size() > 0) {

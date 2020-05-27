@@ -70,7 +70,7 @@ public class ReleaseWelfareController {
 
 	}
 
-	// 职位分页
+	// 职位分页pc
 
 	@RequestMapping(value = "get_position_all", method = RequestMethod.POST)
 	@ResponseBody
@@ -139,5 +139,36 @@ public class ReleaseWelfareController {
 		return ServerResponse.createBySuccess(list);
 
 	}
+	// 获取职位类型根据 前端传入参数
 
+	@RequestMapping(value = "get_position_bytype", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<Object> getPositionBytype(HttpServletRequest httpServletRequest,int role) {
+
+		
+		List<String> list = new ArrayList<String>();
+
+		Position[] positions = Position.values();
+
+		if (role == 2) {
+			for (int i = 0; i < positions.length; i++) {
+				if (positions[i].getRoleId() == 2) {
+					list.add(positions[i].getPositionType());
+				}
+			}
+		} 
+		 else if (role == 1){
+			for (int i = 0; i < positions.length; i++) {
+				list.add(positions[i].getPositionType());
+			}
+		}else  {  //暂时未做
+			for (int i = 0; i < positions.length; i++) {
+				if (positions[i].getRoleId() == 3) {
+					list.add(positions[i].getPositionType());
+				}
+			}
+		}
+		return ServerResponse.createBySuccess(list);
+
+	}
 }

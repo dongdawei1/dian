@@ -73,7 +73,7 @@
 		resultType="com.dian.mmall.pojo.zhiwei.ReleaseWelfare">
 		select id, userId,position
 		,number,welfare,salary,education,experience,describeOne,introductoryAward,gender,age,isPublishContact,
-		createTime,updateTime,
+		createTime,updateTime,consigneeName,
 		workingAddress,termOfValidity from
 		release_welfare where welfareStatus=1
 		<if test="position!=null and position.trim()!=''">and position=#{position}   </if>

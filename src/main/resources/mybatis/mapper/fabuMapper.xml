@@ -208,13 +208,40 @@
 		</if>
 	</select>
 	
+	<!-- 公开列表出租 app面积总条数 -->
+	<select id="getfabulistano_chuzu" resultType="long">
+		select count(*)
+		from fabu
+		where
+		welfareStatus=1 and
+		releaseType=#{releaseType}
+		and userId in (select
+		userId from
+		t_user_realname where detailed like
+		#{detailed}) 
+		and mianjia between #{mianjia}-50 and
+				#{mianjia}+50
+	</select>
+	
+	<!-- 公开列表出租 app地址总条数 -->
+	<select id="getfabulistano_dizhi" resultType="long">
+		select count(*)
+		from fabu
+		where
+		welfareStatus=1 and
+		releaseType=#{releaseType}
+		and userId in (select
+		userId from
+		t_user_realname where detailed like
+		#{detailed}) 
+		and serviceDetailed like #{serviceDetailed}
+	</select>
+	
+	
 	<select id="getfabulist"
 		resultType="com.dian.mmall.pojo.fabu.FabuList">
 		select id,mianjia,pictureUrl,
-		
 		serviceDetailed,
-		
-		
 		releaseTitle,serviceType,releaseType
 		from fabu
 		where
@@ -254,6 +281,44 @@
 		order by updateTime desc
 		limit #{pageLength}, #{pageSize}
 	</select>
+
+ <!-- 公开列表出租面积 -->
+	<select id="getfabulista_chuzu"
+		resultType="com.dian.mmall.pojo.fabu.FabuList">
+		select id,mianjia,pictureUrl,
+		releaseTitle,serviceType,serviceDetailed,releaseType
+		from fabu
+		where
+		welfareStatus=1 and releaseType=#{releaseType}
+		and userId in (select
+		userId from
+		t_user_realname where detailed like
+		#{detailed})
+		and mianjia between #{mianjia}-50 and
+				#{mianjia}+50
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+ <!-- 公开列表出租地址-->
+	<select id="getfabulista_dizhi"
+		resultType="com.dian.mmall.pojo.fabu.FabuList">
+		select id,mianjia,pictureUrl,
+		releaseTitle,serviceType,serviceDetailed,releaseType
+		from fabu
+		where
+		welfareStatus=1 and releaseType=#{releaseType}
+		and userId in (select
+		userId from
+		t_user_realname where detailed like
+		#{detailed})
+		and serviceDetailed like #{serviceDetailed}
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+
+
+
 
 	<!-- 查看该实名城市下发布过服务的标题 -->
 	<select id="getfabutiao" resultType="String">

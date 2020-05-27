@@ -55,6 +55,7 @@ public class FabuServiceImpl implements FabuService {
 	private BunnerService bunnerService;
 	@Autowired
 	private CityMapper cityMapper;
+
 	@Override
 	public ServerResponse<String> createfabu(User user, Map<String, Object> params) {
 
@@ -356,10 +357,10 @@ public class FabuServiceImpl implements FabuService {
 				if (result == 0) {
 					return ServerResponse.createByErrorMessage(ResponseMessage.caozuoshibai.getMessage());
 				}
-				if(type == 5) {
-					evaluateMapper.delEv(userId,id);
+				if (type == 5) {
+					evaluateMapper.delEv(userId, id);
 				}
-				
+
 			} else if (type == 6) {
 				ServerResponse<String> response = editfabu(user, params);
 				if (response.getStatus() != 0) {
@@ -398,7 +399,7 @@ public class FabuServiceImpl implements FabuService {
 		}
 
 		// 判断实名信息是否正确
-		RealName realName =realNameMapper.getRealName(user.getId());
+		RealName realName = realNameMapper.getRealName(user.getId());
 		// 输入合法检查，必填，有非法字符等
 		ServerResponse<String> response = LegalCheck.legalCheckFrom(params);
 		if (response.getStatus() != 0) {
@@ -510,7 +511,8 @@ public class FabuServiceImpl implements FabuService {
 		fa.setUserType(realName.getCompanyName());
 		return ServerResponse.createBySuccess(fa);
 	}
-    //公开列表
+
+	// 公开列表
 	@Override
 	public ServerResponse<Object> getfabulist(Map<String, Object> params) {
 
@@ -542,8 +544,8 @@ public class FabuServiceImpl implements FabuService {
 //	      releaseType: '',
 		Integer releaseType = null;
 		if (releaseTypeString != null && !releaseTypeString.equals("")) {
-			releaseType = Integer.valueOf(releaseTypeString);		
-		}else {
+			releaseType = Integer.valueOf(releaseTypeString);
+		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
 		}
 
@@ -566,54 +568,52 @@ public class FabuServiceImpl implements FabuService {
 			if (serviceType != null && !serviceType.equals("")) {
 				serviceType = "%" + serviceType + "%";
 			}
-			
-			//	      fouseSizeGreater: '',
+
+			// fouseSizeGreater: '',
 //	      fouseSizeLess: '',//面积小于
 			String fouseSizeGreaterString = params.get("fouseSizeGreater").toString().trim();
 			String fouseSizeLessString = params.get("fouseSizeLess").toString().trim();
 			Integer fouseSizeGreater = null;
 			Integer fouseSizeLess = null;
-			if(releaseType==14 || releaseType==15) {
-			if (fouseSizeGreaterString != null && !fouseSizeGreaterString.equals("")) {
-				fouseSizeGreater = Integer.valueOf(fouseSizeGreaterString);
-			}
-			if (fouseSizeLessString != null && !fouseSizeLessString.equals("")) {
-				fouseSizeLess = Integer.valueOf(fouseSizeLessString);
-			}
-			if (fouseSizeLess != null && fouseSizeGreater != null) {
-				if (fouseSizeGreater > fouseSizeLess) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.mianjicuowu.getMessage());
+			if (releaseType == 14 || releaseType == 15) {
+				if (fouseSizeGreaterString != null && !fouseSizeGreaterString.equals("")) {
+					fouseSizeGreater = Integer.valueOf(fouseSizeGreaterString);
+				}
+				if (fouseSizeLessString != null && !fouseSizeLessString.equals("")) {
+					fouseSizeLess = Integer.valueOf(fouseSizeLessString);
+				}
+				if (fouseSizeLess != null && fouseSizeGreater != null) {
+					if (fouseSizeGreater > fouseSizeLess) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.mianjicuowu.getMessage());
+					}
 				}
 			}
-			}
-			
-			
+
 			Page<FabuList> equipment_pagePage = new Page<FabuList>();
 
-			long zongtiaoshu = fabuMapper.getfabulistno(releaseType, detailed, releaseTitle,
-					serviceType,fouseSizeGreater,fouseSizeLess);
+			long zongtiaoshu = fabuMapper.getfabulistno(releaseType, detailed, releaseTitle, serviceType,
+					fouseSizeGreater, fouseSizeLess);
 
 			if (zongtiaoshu == 0) {
 				detailed = "%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%";
-				zongtiaoshu = fabuMapper.getfabulistno(releaseType, detailed, releaseTitle,
-						serviceType,fouseSizeGreater,fouseSizeLess);
+				zongtiaoshu = fabuMapper.getfabulistno(releaseType, detailed, releaseTitle, serviceType,
+						fouseSizeGreater, fouseSizeLess);
 			}
-		//	getfabulist
+			// getfabulist
 			equipment_pagePage.setTotalno(zongtiaoshu);
 			equipment_pagePage.setPageSize(pageSize);
 			equipment_pagePage.setCurrentPage(currentPage); // 当前页
 			// 查询list
-			List<FabuList> fabulist = fabuMapper.getfabulist(
-					(currentPage - 1) * pageSize,  pageSize, releaseType, detailed, releaseTitle,
-					serviceType,fouseSizeGreater,fouseSizeLess);
+			List<FabuList> fabulist = fabuMapper.getfabulist((currentPage - 1) * pageSize, pageSize, releaseType,
+					detailed, releaseTitle, serviceType, fouseSizeGreater, fouseSizeLess);
 
 			for (int i = 0; i < fabulist.size(); i++) {
 				FabuList fa = fabulist.get(i);
 				List<Picture> listObj3 = JsonUtil.string2Obj(fa.getPictureUrl(), List.class, Picture.class);
 				Picture picture = listObj3.get(0);
 				fa.setPictureUrl(picture.getPictureUrl());
-				if(fa.getServiceDetailed().length()>13) {
-					fa.setServiceDetailed(fa.getServiceDetailed().substring(0, 12)+"..");
+				if (fa.getServiceDetailed().length() > 13) {
+					fa.setServiceDetailed(fa.getServiceDetailed().substring(0, 12) + "..");
 				}
 				fabulist.set(i, fa);
 			}
@@ -627,16 +627,16 @@ public class FabuServiceImpl implements FabuService {
 
 	@Override
 	public ServerResponse<Object> getfabutiao(Map<String, Object> params) {
-	
+
 		String releaseTypeString = params.get("releaseType").toString().trim();
 //	      releaseType: '',
 		Integer releaseType = null;
 		if (releaseTypeString != null && !releaseTypeString.equals("")) {
-			releaseType = Integer.valueOf(releaseTypeString);		
-		}else {
+			releaseType = Integer.valueOf(releaseTypeString);
+		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
 		}
-		
+
 		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
 				List.class);
 		if (selectedOptions_list.size() == 3) {
@@ -646,7 +646,6 @@ public class FabuServiceImpl implements FabuService {
 			// 判断省市区id是否正确
 			String detailed = "%" + cityMapper.checkeCity(provincesId, cityId, districtCountyId) + "%";
 
-			
 			String releaseTitle = params.get("releaseTitle").toString().trim();
 
 			if (releaseTitle != null && !releaseTitle.equals("")) {
@@ -662,20 +661,19 @@ public class FabuServiceImpl implements FabuService {
 			String fouseSizeLessString = params.get("fouseSizeLess").toString().trim();
 			Integer fouseSizeGreater = null;
 			Integer fouseSizeLess = null;
-			if(releaseType==14 || releaseType==15) {
-			if (fouseSizeGreaterString != null && !fouseSizeGreaterString.equals("")) {
-				fouseSizeGreater = Integer.valueOf(fouseSizeGreaterString);
-			}
-			if (fouseSizeLessString != null && !fouseSizeLessString.equals("")) {
-				fouseSizeLess = Integer.valueOf(fouseSizeLessString);
-			}
-			if (fouseSizeLess != null && fouseSizeGreater != null) {
-				if (fouseSizeGreater > fouseSizeLess) {
-					return ServerResponse.createByErrorMessage(ResponseMessage.mianjicuowu.getMessage());
+			if (releaseType == 14 || releaseType == 15) {
+				if (fouseSizeGreaterString != null && !fouseSizeGreaterString.equals("")) {
+					fouseSizeGreater = Integer.valueOf(fouseSizeGreaterString);
+				}
+				if (fouseSizeLessString != null && !fouseSizeLessString.equals("")) {
+					fouseSizeLess = Integer.valueOf(fouseSizeLessString);
+				}
+				if (fouseSizeLess != null && fouseSizeGreater != null) {
+					if (fouseSizeGreater > fouseSizeLess) {
+						return ServerResponse.createByErrorMessage(ResponseMessage.mianjicuowu.getMessage());
+					}
 				}
 			}
-			}
-			
 
 			String typeString = params.get("type").toString().trim();
 			Integer type = null;
@@ -688,12 +686,12 @@ public class FabuServiceImpl implements FabuService {
 				return ServerResponse.createByErrorMessage(ResponseMessage.shangpinfuwuleixingidnull.getMessage());
 			}
 
-			List<String> fabutiaoList = fabuMapper.getfabutiao(releaseType, detailed, releaseTitle,
-					serviceType,fouseSizeGreater,fouseSizeLess, type);
+			List<String> fabutiaoList = fabuMapper.getfabutiao(releaseType, detailed, releaseTitle, serviceType,
+					fouseSizeGreater, fouseSizeLess, type);
 			if (fabutiaoList.size() == 0) {
 				detailed = "%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%";
-				fabutiaoList = fabuMapper.getfabutiao(releaseType, detailed, releaseTitle,
-						serviceType,fouseSizeGreater,fouseSizeLess, type);
+				fabutiaoList = fabuMapper.getfabutiao(releaseType, detailed, releaseTitle, serviceType,
+						fouseSizeGreater, fouseSizeLess, type);
 			}
 
 			return ServerResponse.createBySuccess(fabutiaoList);
@@ -705,11 +703,11 @@ public class FabuServiceImpl implements FabuService {
 
 	@Override
 	public ServerResponse<Object> getfabubyid(long id) {
-		FanHui fanHui=fabuMapper.getfabubyid( id);
-		if(fanHui==null) {
+		FanHui fanHui = fabuMapper.getfabubyid(id);
+		if (fanHui == null) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunshibai.getMessage());
 		}
-		
+
 		RealName realName = realNameMapper.getRealName(fanHui.getUserId());
 		fanHui.setContact(EncrypDES.decryptPhone(realName.getContact()));
 		fanHui.setDetailed(realName.getDetailed());
@@ -717,13 +715,13 @@ public class FabuServiceImpl implements FabuService {
 		fanHui.setUpdateTime(realName.getCompanyName());
 		fanHui.setUserId(0);
 		fanHui.setUserType(FabuUtil.releaseTypeString(fanHui.getReleaseType()));
-		
-		Evaluate evaluate =evaluateMapper.selectEvvaluateById(fanHui.getEvaluateid());
-		if(evaluate!=null) {
+
+		Evaluate evaluate = evaluateMapper.selectEvvaluateById(fanHui.getEvaluateid());
+		if (evaluate != null) {
 			evaluate.setUserId(0);
 		}
-				
-		Map<String, Object> map=new  HashMap<String, Object>();
+
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("fabu", fanHui);
 		map.put("evaluate", evaluate);
 		return ServerResponse.createBySuccess(map);
@@ -731,28 +729,28 @@ public class FabuServiceImpl implements FabuService {
 
 	@Override
 	public List<FanHui> adminGetWcall(long userId) {
-		
+
 		return fabuMapper.adminGetWcall(userId);
 	}
 
 	@Override
 	public ServerResponse<Object> getquxian(long userId) {
-		int cityId=realNameMapper.getcityId(userId);
-		QuXian[] quXians=QuXian.values();
-		List<String> respList=null;
+		int cityId = realNameMapper.getcityId(userId);
+		QuXian[] quXians = QuXian.values();
+		List<String> respList = null;
 		for (int i = 0; i < quXians.length; i++) {
 			if (quXians[i].getCityDistrictCountyId() == cityId) {
-				respList=quXians[i].getDistrictCountyNames();
+				respList = quXians[i].getDistrictCountyNames();
 				break;
 			}
 		}
 		return ServerResponse.createBySuccess(respList);
 	}
 
-	//app查询除简历出租的全部发布
+	// app查询除简历的全部发布
 	@Override
-	public ServerResponse<Object> getfabulista(Map<String, Object> params) {		
-		//		currentPage: 0
+	public ServerResponse<Object> getfabulista(Map<String, Object> params) {
+		// currentPage: 0
 //		pageSize: 12
 //		serviceType: ""
 		String currentPage_string = params.get("currentPage").toString().trim();
@@ -779,77 +777,118 @@ public class FabuServiceImpl implements FabuService {
 			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
 		}
 
-		
-		
 		String releaseTypeString = params.get("releaseType").toString().trim();
 		Integer releaseType = null;
 		if (releaseTypeString != null && !releaseTypeString.equals("")) {
-			releaseType = Integer.valueOf(releaseTypeString);		
-		}else {
+			releaseType = Integer.valueOf(releaseTypeString);
+		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
 		}
-		
+
 		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
 				List.class);
-		
-		Integer provincesId=0;
-		Integer cityId =0;
+
+		Integer provincesId = 0;
+		Integer cityId = 0;
 		Integer districtCountyId = 0;
-		if(selectedOptions_list.size() ==3) {
+		if (selectedOptions_list.size() == 3) {
 			provincesId = selectedOptions_list.get(0);
-		    cityId = selectedOptions_list.get(1);
+			cityId = selectedOptions_list.get(1);
 			districtCountyId = selectedOptions_list.get(2);
-		}else {
-			RealName realName=realNameMapper.getUserRealName((long) params.get("userId"));
+		} else {
+			RealName realName = realNameMapper.getUserRealName((long) params.get("userId"));
 			provincesId = realName.getProvincesId();
-		    cityId = realName.getCityId();
+			cityId = realName.getCityId();
 			districtCountyId = realName.getDistrictCountyId();
 		}
-		
-		
-			
-			// 判断省市区id是否正确
-			String detailed = "%" + cityMapper.checkeCity(provincesId, cityId, districtCountyId) + "%";
-			
-			String serviceType = params.get("serviceType").toString().trim();
+
+		// 判断省市区id是否正确
+		String detailed = "%" + cityMapper.checkeCity(provincesId, cityId, districtCountyId) + "%";
+
+		String serviceType = params.get("serviceType").toString().trim();
+
+		Page<FabuList> equipment_pagePage = new Page<FabuList>();
+		equipment_pagePage.setPageSize(pageSize);
+		equipment_pagePage.setCurrentPage(currentPage); // 当前页
+
+		long zongtiaoshu = 0;
+		List<FabuList> fabulist = null;
+
+		if ((releaseType == 14 || releaseType == 15) && serviceType != null && !serviceType.equals("")) {
+			try {
+				//根据面积筛选
+				int mianjia = Integer.parseInt(serviceType);
+				zongtiaoshu = fabuMapper.getfabulistano_chuzu(releaseType, detailed, mianjia);
+
+				if (zongtiaoshu == 0) {
+					detailed = "%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%";
+					zongtiaoshu = fabuMapper.getfabulistano_chuzu(releaseType, detailed, mianjia);
+				}
+				// getfabulist
+				equipment_pagePage.setTotalno(zongtiaoshu);
+
+				if (zongtiaoshu == 0) {
+					equipment_pagePage.setDatas(null);
+					return ServerResponse.createBySuccess(equipment_pagePage);
+				}
+				// 查询list
+				fabulist = fabuMapper.getfabulista_chuzu((currentPage - 1) * pageSize, pageSize, releaseType, detailed,
+						mianjia);
+			} catch (Exception e) {
+				//根据地址筛选
+				serviceType = "%" + serviceType + "%";
+				zongtiaoshu = fabuMapper.getfabulistano_dizhi(releaseType, detailed, serviceType);
+				if (zongtiaoshu == 0) {
+					detailed = "%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%";
+					zongtiaoshu = fabuMapper.getfabulistano_dizhi(releaseType, detailed, serviceType);
+				}
+				// getfabulist
+				equipment_pagePage.setTotalno(zongtiaoshu);
+				if (zongtiaoshu == 0) {
+					equipment_pagePage.setDatas(null);
+					return ServerResponse.createBySuccess(equipment_pagePage);
+				}
+				// 查询list
+				fabulist = fabuMapper.getfabulista_dizhi((currentPage - 1) * pageSize, pageSize, releaseType, detailed,
+						serviceType);
+			}
+
+		} else {
+
 			if (serviceType != null && !serviceType.equals("")) {
 				serviceType = "%" + serviceType + "%";
 			}
-			Page<FabuList> equipment_pagePage = new Page<FabuList>();
-			long zongtiaoshu = fabuMapper.getfabulistano(releaseType, detailed, 
-					serviceType);
+			zongtiaoshu = fabuMapper.getfabulistano(releaseType, detailed, serviceType);
 
 			if (zongtiaoshu == 0) {
 				detailed = "%" + cityMapper.checkeCityTuo(provincesId, cityId) + "%";
-				zongtiaoshu = fabuMapper.getfabulistano(releaseType, detailed, 
-						serviceType);
-
+				zongtiaoshu = fabuMapper.getfabulistano(releaseType, detailed, serviceType);
 			}
-		//	getfabulist
+			// getfabulist
 			equipment_pagePage.setTotalno(zongtiaoshu);
-			equipment_pagePage.setPageSize(pageSize);
-			equipment_pagePage.setCurrentPage(currentPage); // 当前页
+
 			if (zongtiaoshu == 0) {
 				equipment_pagePage.setDatas(null);
 				return ServerResponse.createBySuccess(equipment_pagePage);
-
 			}
 			// 查询list
-			List<FabuList> fabulist = fabuMapper.getfabulista(
-					(currentPage - 1) * pageSize,  pageSize, releaseType, detailed, serviceType);
-		
-			for (int i = 0; i < fabulist.size(); i++) {
-				FabuList fa = fabulist.get(i);
-				List<Picture> listObj3 = JsonUtil.string2Obj(fa.getPictureUrl(), List.class, Picture.class);
-				Picture picture = listObj3.get(0);
-				fa.setPictureUrl(picture.getPictureUrl());
-				if(fa.getServiceDetailed().length()>19) {
-					fa.setServiceDetailed(fa.getServiceDetailed().substring(0, 18)+"..");
-				}
-				fabulist.set(i, fa);
+			fabulist = fabuMapper.getfabulista((currentPage - 1) * pageSize, pageSize, releaseType, detailed,
+					serviceType);
+
+		}
+
+		for (int i = 0; i < fabulist.size(); i++) {
+			FabuList fa = fabulist.get(i);
+			List<Picture> listObj3 = JsonUtil.string2Obj(fa.getPictureUrl(), List.class, Picture.class);
+			Picture picture = listObj3.get(0);
+			fa.setPictureUrl(picture.getPictureUrl());
+			if (fa.getServiceDetailed().length() > 19) {
+				fa.setServiceDetailed(fa.getServiceDetailed().substring(0, 18) + "..");
 			}
-			equipment_pagePage.setDatas(fabulist);
-			return ServerResponse.createBySuccess(equipment_pagePage);
+			fabulist.set(i, fa);
+		}
+		equipment_pagePage.setDatas(fabulist);
+		return ServerResponse.createBySuccess(equipment_pagePage);
 	}
 
 }

@@ -498,6 +498,11 @@ public class ResumeServiceImp implements ResumeService {
 			city_id = selectedOptions_list.get(1) + "";
 			district_county_id = selectedOptions_list.get(2) + "";
 			// 判断省市区id是否正确
+		}else {
+			RealName realName=realNameMapper.getUserRealName(user.getId());
+			provinces_id = realName.getProvincesId()+ "";
+			city_id = realName.getCityId()+ "";
+			district_county_id = realName.getDistrictCountyId()+ "";
 		}
 
 		String detailed = "%" + getPublishingsService.ctiy(provinces_id, city_id, district_county_id) + "%";

@@ -137,7 +137,7 @@ public class WholesaleCommodityController {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
 
-		return wholesaleCommodityService.getWholesaleCommodityPublicList(params);
+		return wholesaleCommodityService.getWholesaleCommodityPublicList(user ,params);
 
 	}
 	// 公开展示灭虫装修等列表

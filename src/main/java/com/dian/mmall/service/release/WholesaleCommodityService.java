@@ -34,7 +34,7 @@ public interface WholesaleCommodityService {
 	ServerResponse<Object> wholesaleCommodity_serviceType( Map<String, Object> params);
 
 
-	ServerResponse<Object> getWholesaleCommodityPublicList(Map<String, Object> params);
+	ServerResponse<Object> getWholesaleCommodityPublicList(User user, Map<String, Object> params);
 
 
 	ServerResponse<Object> getWholesaleCommodityPublicId(long id);

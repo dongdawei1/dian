@@ -52,4 +52,12 @@ public interface FabuMapper {
 
 	List<FabuList> getfabulista(int pageLength, int pageSize, Integer releaseType, String detailed, String serviceType);
 
+	long getfabulistano_chuzu(Integer releaseType, String detailed, int mianjia);
+
+	List<FabuList> getfabulista_chuzu(int pageLength, int pageSize, Integer releaseType, String detailed, int mianjia);
+
+	long getfabulistano_dizhi(Integer releaseType, String detailed, String serviceDetailed);
+
+	List<FabuList> getfabulista_dizhi(int pageLength, int pageSize, Integer releaseType, String detailed, String serviceDetailed);
+
 }
