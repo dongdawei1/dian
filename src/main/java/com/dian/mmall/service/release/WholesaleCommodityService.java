@@ -49,5 +49,8 @@ public interface WholesaleCommodityService {
 	List<WholesaleCommodity> adminGetWcall(long userId);
 
 
+	ServerResponse<Object> getWholesaleCommodityPublicListAp(User user, Map<String, Object> params);
+
+
 	
 }

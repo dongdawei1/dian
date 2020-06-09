@@ -31,53 +31,58 @@ public class Test1 {
 	public static void main(String[] args) {
 		
 		
-		System.out.println(new Double(10*100*0.1).longValue());
-		Float float1= (float) 12;
+		System.out.println((double) (Math.round(10)/100.0));
 		
 		
-		System.out.println(float1/4);
-		System.out.println(new Double(10*0.06).intValue());
-    StringBuffer serviceDetailed = new StringBuffer("北京市/市辖区/东城区");
+		
+		
+//		System.out.println(new Double(10*100*0.1).longValue());
+//		Float float1= (float) 12;
+		
+//		
+//		System.out.println(float1/4);
+//		System.out.println(new Double(10*0.06).intValue());
+//    StringBuffer serviceDetailed = new StringBuffer("北京市/市辖区/东城区");
    
     
   //  /details
-    String string = "/details/wineAndTablewareDetails/10/8";
-    
-System.out.println(Strin.setTocken(string, 2).getMsg());  //北京市/市辖区
-
-System.out.println(Strin.setTockenapp(string, 2).getMsg());     
+//    String string = "/details/wineAndTablewareDetails/10/8";
+//    
+//System.out.println(Strin.setTocken(string, 2).getMsg());  //北京市/市辖区
+//
+//System.out.println(Strin.setTockenapp(string, 2).getMsg());     
 
 
     //这里是获取"/"符号的位置
-    Matcher slashMatcher = Pattern.compile("/").matcher(string);
-    int mIdx = 0;
-
-    while(slashMatcher.find()) {
-        System.out.println(slashMatcher.group());
-        mIdx++;
-        //当"/"符号第三次出现的位置
-        if(mIdx == 2){
-            break;
-        }
-    }
-    
+//    Matcher slashMatcher = Pattern.compile("/").matcher(string);
+//    int mIdx = 0;
+//
+//    while(slashMatcher.find()) {
+//        System.out.println(slashMatcher.group());
+//        mIdx++;
+//        //当"/"符号第三次出现的位置
+//        if(mIdx == 2){
+//            break;
+//        }
+//    }
+//    
     
     
    // %北京市/市辖区/东城区%  北京市/市辖区%
-    System.out.println(string.substring(0, slashMatcher.start())+"%");
+   // System.out.println(string.substring(0, slashMatcher.start())+"%");
  
     
-    int a=1;
-    
-    a+=3;
-    
-    System.out.println(a);
-    a+=2;
-    System.out.println(a);
-    a+=3;
-    System.out.println(a);
-    
-    System.out.println(1220/100);
+//    int a=1;
+//    
+//    a+=3;
+//    
+//    System.out.println(a);
+//    a+=2;
+//    System.out.println(a);
+//    a+=3;
+//    System.out.println(a);
+//    
+//    System.out.println(1220/100);
     
 	}
 

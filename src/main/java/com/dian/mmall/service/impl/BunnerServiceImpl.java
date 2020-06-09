@@ -186,12 +186,16 @@ public class BunnerServiceImpl implements BunnerService {
 		// id=683, userName=20200307210743204.jpeg, userId=1}],
 		// value1=[2020-03-13 00:00:00, 2020-03-14 00:00:00], tablenameid=4}
 		List<String> value1_list = JsonUtil.list2Obj((List<String>) params.get("value1"), List.class, String.class);
+		
+		System.out.println(value1_list.size() );
 		if (value1_list.size() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.fabushijiancuowu.getMessage());
 		}
 		String startTime = value1_list.get(0);
 		String endTime = value1_list.get(1);
-
+		
+		
+		System.out.println(value1_list.size() );
 		// 判断时间是否小于当前时间
 		ServerResponse<Object> serverResponseObject = DateTimeUtil.isPastDate(startTime, 1);
 		if (serverResponseObject.getStatus() == 0) {

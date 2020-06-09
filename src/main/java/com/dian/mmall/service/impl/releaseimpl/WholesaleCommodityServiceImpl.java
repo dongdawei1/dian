@@ -25,6 +25,7 @@ import com.dian.mmall.dao.releaseDao.WholesaleCommodityMapper;
 import com.dian.mmall.pojo.Page;
 import com.dian.mmall.pojo.ServiceType;
 import com.dian.mmall.pojo.WholesaleCommodity;
+import com.dian.mmall.pojo.WholesaleCommodityFanhui;
 import com.dian.mmall.pojo.gongyong.IsButten;
 import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
 import com.dian.mmall.pojo.pingjia.Evaluate;
@@ -67,7 +68,6 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 	@Autowired
 	private OrderService orderService;
 
-	
 	@Autowired
 	private BunnerService bunnerService;
 
@@ -117,12 +117,11 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (releaseTypeString == null || releaseTypeString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
 		}
-		//批发 401菜 ，405粮油出售，406调料/副食出售,429水产/禽蛋出售,409清洁用品
+		// 批发 401菜 ，405粮油出售，406调料/副食出售,429水产/禽蛋出售,409清洁用品
 
 		int releaseType = Integer.valueOf(releaseTypeString);
-		if (releaseType != Const.PCAIP && releaseType != Const.PYOUP
-				&& releaseType != Const.PTIAOLIAOP && releaseType != Const.PSHUICHANP
-				&& releaseType != Const.PQINGJIEP) {
+		if (releaseType != Const.PCAIP && releaseType != Const.PYOUP && releaseType != Const.PTIAOLIAOP
+				&& releaseType != Const.PSHUICHANP && releaseType != Const.PQINGJIEP) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.CaiDanBuCunZai.getMessage());
 		}
 		int count = 0;
@@ -193,12 +192,11 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		if (serviceType == null || serviceType.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.shangpinmingkong.getMessage());
 		}
-	
-		int che=0;
+
+		int che = 0;
 		if (releaseType == 401) {
 			che = 4;
-		}
-		else if (releaseType == 405) {
+		} else if (releaseType == 405) {
 			che = 5;
 		} else if (releaseType == 406) {
 			che = 6;
@@ -439,7 +437,6 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
-		
 
 		String welfareStatusString = params.get("welfareStatus").toString().trim();
 		// 发布状态
@@ -491,7 +488,6 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
-	
 
 		String selectedOptions = null;
 
@@ -507,7 +503,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		Integer districtCountyId = selectedOptions_list.get(2);
 		// 判断省市区id是否正确
 		selectedOptions = "%" + cityMapper.checkeCity(provincesId, cityId, districtCountyId) + "%";
-		System.out.println("444444"+selectedOptions);
+		System.out.println("444444" + selectedOptions);
 		// 商品名
 		String serviceType = params.get("serviceType").toString().trim();
 		if (serviceType != null && !serviceType.equals("")) {
@@ -535,9 +531,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
-		
-      
-            
+
 		String welfareStatusString = params.get("welfareStatus").toString().trim();
 		// 发布状态
 		int welfareStatus = 0;
@@ -840,7 +834,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		Integer releaseType = null;
 		if (releaseTypeString != null && !releaseTypeString.equals("")) {
 			releaseType = Integer.valueOf(releaseTypeString);
-			
+
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());
 		}
@@ -869,8 +863,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		long zongtiaoshu = 0;
 		List<WholesaleCommodity> list_equipmentall = null;
 
-		if ((contact == null || contact.equals("")  ) && (detailed == null || detailed.equals(""))
-				&& (companyName == null || companyName.equals("") )) {
+		if ((contact == null || contact.equals("")) && (detailed == null || detailed.equals(""))
+				&& (companyName == null || companyName.equals(""))) {
 			zongtiaoshu = wholesaleCommodityMapper.adminWholesaleCommodity_no(0, releaseType);
 			list_equipmentall = wholesaleCommodityMapper.adminWholesaleCommodity((currentPage - 1) * pageSize, pageSize,
 					0, releaseType);
@@ -889,8 +883,9 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 	}
 
 	public int getreleaseType(long id) {
-		return wholesaleCommodityMapper.getreleaseType( id);
+		return wholesaleCommodityMapper.getreleaseType(id);
 	}
+
 	@Override
 	public ServerResponse<String> operation_userWholesaleCommodity(long userId, Map<String, Object> params) {
 		String type = params.get("type").toString().trim();
@@ -1092,7 +1087,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 	// 公开列表
 	@Override
-	public ServerResponse<Object> getWholesaleCommodityPublicList(User user,Map<String, Object> params) {
+	public ServerResponse<Object> getWholesaleCommodityPublicList(User user, Map<String, Object> params) {
 		String currentPage_string = params.get("currentPage").toString().trim();
 		String pageSize_string = params.get("pageSize").toString().trim();
 		int currentPage = 0;
@@ -1123,7 +1118,6 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		}
 		// 类型
 		int releaseType = Integer.valueOf(releaseTypeString);
-		
 
 		String selectedOptions = null;
 
@@ -1136,8 +1130,8 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			// 判断省市区id是否正确
 
 			selectedOptions = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
-		}else {
-			RealName realName=realNameMapper.getUserRealName(user.getId());
+		} else {
+			RealName realName = realNameMapper.getUserRealName(user.getId());
 			Integer provincesId = realName.getProvincesId();
 			Integer cityId = realName.getCityId();
 			Integer districtCountyId = realName.getDistrictCountyId();
@@ -1156,7 +1150,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		String companyName = params.get("companyName").toString().trim();
 		String createTime = DateTimeUtil.dateToAll();
 
-		Page<WholesaleCommodity> equipment_pagePage = new Page<WholesaleCommodity>();
+		Page<WholesaleCommodityFanhui> equipment_pagePage = new Page<WholesaleCommodityFanhui>();
 
 		long zongtiaoshu = wholesaleCommodityMapper.getWholesaleCommodityPublicListNo(releaseType, selectedOptions,
 				serviceType, companyName, createTime);
@@ -1165,15 +1159,130 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 		equipment_pagePage.setPageSize(pageSize);
 		equipment_pagePage.setCurrentPage(currentPage); // 当前页
 
-		List<WholesaleCommodity> list_equipmentall = wholesaleCommodityMapper.getWholesaleCommodityPublicList(
+		List<WholesaleCommodityFanhui> list_equipmentall = wholesaleCommodityMapper.getWholesaleCommodityPublicList(
 				(currentPage - 1) * pageSize, pageSize, releaseType, selectedOptions, serviceType, companyName,
 				createTime);
 
 		for (int i = 0; i < list_equipmentall.size(); i++) {
-			WholesaleCommodity equipment = list_equipmentall.get(i);
+			WholesaleCommodityFanhui equipment = list_equipmentall.get(i);
 			List<Picture> listObj3 = JsonUtil.string2Obj(equipment.getPictureUrl(), List.class, Picture.class);
 			Picture picture = listObj3.get(0);
 			equipment.setPictureUrl(picture.getPictureUrl());
+			list_equipmentall.set(i, equipment);
+		}
+		equipment_pagePage.setDatas(list_equipmentall);
+		return ServerResponse.createBySuccess(equipment_pagePage);
+	}
+
+	// 公开列表app
+	@Override
+	public ServerResponse<Object> getWholesaleCommodityPublicListAp(User user, Map<String, Object> params) {
+		String currentPage_string = params.get("currentPage").toString().trim();
+		String pageSize_string = params.get("pageSize").toString().trim();
+		int currentPage = 0;
+		int pageSize = 0;
+
+		if (currentPage_string != null && !currentPage_string.equals("")) {
+			currentPage = Integer.parseInt(currentPage_string);
+			if (currentPage <= 0) {
+				return ServerResponse.createByErrorMessage("页数不能小于0");
+			}
+
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入页数");
+		}
+
+		if (pageSize_string != null && !pageSize_string.equals("")) {
+			pageSize = Integer.parseInt(pageSize_string);
+			if (pageSize <= 0) {
+				return ServerResponse.createByErrorMessage("每页展示条数不能小于0");
+			}
+		} else {
+			return ServerResponse.createByErrorMessage("请正确输入每页展示条数");
+		}
+
+		String releaseTypeString = params.get("releaseType").toString().trim();
+		if (releaseTypeString == null || releaseTypeString.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.fabuleixingkong.getMessage());
+		}
+		// 类型
+		int releaseType = Integer.valueOf(releaseTypeString);
+
+		String selectedOptions = null;
+
+		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
+				List.class);
+		if (selectedOptions_list.size() == 3) {
+			Integer provincesId = selectedOptions_list.get(0);
+			Integer cityId = selectedOptions_list.get(1);
+			Integer districtCountyId = selectedOptions_list.get(2);
+			// 判断省市区id是否正确
+
+			selectedOptions = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+		} else {
+			RealName realName = realNameMapper.getUserRealName(user.getId());
+			Integer provincesId = realName.getProvincesId();
+			Integer cityId = realName.getCityId();
+			Integer districtCountyId = realName.getDistrictCountyId();
+			selectedOptions = cityMapper.checkeCity(provincesId, cityId, districtCountyId);
+		}
+
+		if (selectedOptions == null || selectedOptions.equals("")) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.shichangsuozaichengqukong.getMessage());
+		}
+		// 商品名
+		String serviceType = params.get("serviceType").toString().trim();
+		if (serviceType != null && !serviceType.equals("")) {
+			serviceType = "%" + serviceType + "%";
+		}
+
+		String createTime = DateTimeUtil.dateToAll();
+
+		Page<WholesaleCommodityFanhui> equipment_pagePage = new Page<WholesaleCommodityFanhui>();
+
+		long zongtiaoshu = wholesaleCommodityMapper.getWholesaleCommodityPublicListNoAp(releaseType, selectedOptions,
+				serviceType, createTime);
+
+		equipment_pagePage.setTotalno(zongtiaoshu);
+		equipment_pagePage.setPageSize(pageSize);
+		equipment_pagePage.setCurrentPage(currentPage); // 当前页
+
+		List<WholesaleCommodityFanhui> list_equipmentall = wholesaleCommodityMapper.getWholesaleCommodityPublicListAp(
+				(currentPage - 1) * pageSize, pageSize, releaseType, selectedOptions, serviceType, createTime);
+
+		for (int i = 0; i < list_equipmentall.size(); i++) {
+			WholesaleCommodityFanhui equipment = list_equipmentall.get(i);
+			List<Picture> listObj3 = JsonUtil.string2Obj(equipment.getPictureUrl(), List.class, Picture.class);
+			Picture picture = listObj3.get(0);
+			equipment.setPictureUrl(picture.getPictureUrl());
+
+			int commodityPacking = equipment.getCommodityPacking();
+			int specifi = equipment.getSpecifi();
+
+			if (commodityPacking == 1) {
+				equipment.setAddressDetailed("散/袋装");
+				equipment.setCations("称重(kg)");
+			} else if (commodityPacking == 2) {
+				equipment.setAddressDetailed("袋装");
+				if (specifi == 1) {
+					equipment.setCations(specifi + " g/袋");
+				} else if (specifi == 2) {
+					equipment.setCations(specifi + " kg/袋");
+				}
+			} else if (commodityPacking == 3) {
+				equipment.setAddressDetailed("瓶/桶装");
+				if (specifi == 3) {
+					equipment.setCations(specifi + " ML/瓶/桶");
+				} else if (specifi == 4) {
+					equipment.setCations(specifi + " L/瓶/桶");
+				}
+
+			}
+
+			equipment.setJage((double) (Math.round(equipment.getCommodityJiage())/100.0));
+			
+			equipment.setCommodityJiage(0);
+			
 			list_equipmentall.set(i, equipment);
 		}
 		equipment_pagePage.setDatas(list_equipmentall);
@@ -1218,8 +1327,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 	@Override
 	public ServerResponse<Object> getWholesalecommodity(String selectedOptions, int releaseType) {
-		
-		
+
 		List<WholesaleCommodity> allCommonMenu = wholesaleCommodityMapper.getWholesalecommodity(selectedOptions,
 				releaseType);
 		return ServerResponse.createBySuccess(allCommonMenu);
@@ -1254,7 +1362,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 
 	@Override
 	public List<WholesaleCommodity> adminGetWcall(long userId) {
-		return wholesaleCommodityMapper.adminGetWcall( userId);
+		return wholesaleCommodityMapper.adminGetWcall(userId);
 	}
 
 }

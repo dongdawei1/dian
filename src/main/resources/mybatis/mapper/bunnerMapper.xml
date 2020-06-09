@@ -291,7 +291,7 @@
 	<!-- 管理查询广告 -->
 	<select id="getisguanggao"
 		resultType="com.dian.mmall.pojo.banner.DibuBunner">
-		select id, startTime,endTime,userId,examineName,moren,detailed,
+		select id, startTime,endTime,userId,examineName,moren,detailed,tableId,
 		bunnerStatus ,bunnerType ,releaseType,fanwei from dibubunner
 		where
 		bunnerType=#{bunnerType} and bunnerStatus in(0,1) and
@@ -351,7 +351,7 @@
 	<select id="agetguanggao"
 		resultType="com.dian.mmall.pojo.banner.DibuBunner">
 		select id ,bunnerType,permissionid,tablenameid,imgUrl,
-		tableId,detailed,startTime,endTime,fanwei,moren
+		tableId,detailed,startTime,endTime,fanwei,moren,releaseType
 		from
 		dibubunner
 		where
@@ -362,7 +362,7 @@
 	<!-- 根据id查询 -->
 	<select id="getpguang"
 		resultType="com.dian.mmall.pojo.banner.DibuBunner">
-		select id ,bunnerType,permissionid,url,imgUrl,
+		select id ,bunnerType,permissionid,url,imgUrl,tableId,releaseType,
 		dibuBunnerbiaoti
 		from
 		dibubunner

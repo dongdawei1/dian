@@ -37,9 +37,7 @@ public class WholesaleCommodityController {
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
-
 		return wholesaleCommodityService.create_wholesaleCommodity(user, params);
-
 	}
 
 	// 获取商品名
@@ -105,7 +103,7 @@ public class WholesaleCommodityController {
 		return wholesaleCommodityService.operation_userWholesaleCommodity(user.getId(), params);
 	}
 
-//商户根据id获取详请编辑
+    //商户根据id获取详请编辑
 
 	@RequestMapping(value = "get_userWholesaleCommodity_id", method = RequestMethod.GET)
 	@ResponseBody
@@ -124,7 +122,6 @@ public class WholesaleCommodityController {
 	}
 
 	// 公开列表
-
 	@RequestMapping(value = "getWholesaleCommodityPublicList", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<Object> getWholesaleCommodityPublicList(HttpServletRequest httpServletRequest,
@@ -136,12 +133,24 @@ public class WholesaleCommodityController {
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
-
 		return wholesaleCommodityService.getWholesaleCommodityPublicList(user ,params);
-
 	}
-	// 公开展示灭虫装修等列表
-
+	
+	// 公开列表
+	@RequestMapping(value = "getWholesaleCommodityPublicListAp", method = RequestMethod.POST)
+	@ResponseBody
+	public ServerResponse<Object> getWholesaleCommodityPublicListAp(HttpServletRequest httpServletRequest,
+			@RequestBody Map<String, Object> params) {
+		User user = (User) httpServletRequest.getAttribute("user");
+		if (user.getRole() == 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());
+		}
+		if (user.getIsAuthentication() != 2) {
+			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
+		}
+		return wholesaleCommodityService.getWholesaleCommodityPublicListAp(user ,params);
+	}
+	// 公开展示根据id查找
 	@RequestMapping(value = "getWholesaleCommodityPublicId", method = RequestMethod.GET)
 	@ResponseBody
 	public ServerResponse<Object> getWholesaleCommodityPublicId(HttpServletRequest httpServletRequest,

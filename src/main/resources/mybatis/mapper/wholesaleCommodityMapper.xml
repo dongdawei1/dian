@@ -315,11 +315,41 @@
 		</if>
 	</select>
 
+
+	<!-- 公开列表 总数app -->
+
+	<select id="getWholesaleCommodityPublicListNoAp" resultType="long">
+		select count(*)
+		from shichang_wholesaleCommodity
+
+		where
+
+		releaseType=#{releaseType}
+		and userId in (select userId
+		from
+		t_user_realname where detailed=#{selectedOptions} )
+		and
+		welfareStatus=1
+		and startTime
+		&lt; #{createTime} and endTime &gt;
+		#{createTime}
+		<if test="serviceType!=null and serviceType.trim()!=''">
+		and id in(
+		select id from  shichang_wholesaleCommodity  where  serviceType like #{serviceType}   or releaseTitle like #{serviceType}  OR  userId in(
+			select userId from t_user_realname where
+			authentiCationStatus=2 and
+			companyName like  #{serviceType}
+			)     group by id
+		)
+		</if>
+	</select>
+
+
 	<select id="getWholesaleCommodityPublicList"
-		resultType="com.dian.mmall.pojo.WholesaleCommodity">
+		resultType="com.dian.mmall.pojo.WholesaleCommodityFanhui">
 		select id,releaseType,serviceType,
 		releaseTitle,commodityPacking,commodityJiage,commoditySurplusNo,
-		reserve,specifi,cations,pictureUrl
+		reserve,specifi,cations,pictureUrl,addressDetailed
 		from shichang_wholesaleCommodity
 		where
 		releaseType=#{releaseType}
@@ -344,6 +374,39 @@
 		limit #{pageLength}, #{pageSize}
 	</select>
 	<!-- 公开列表 结束 -->
+
+<!-- 公开列表 app -->
+	<select id="getWholesaleCommodityPublicListAp"
+		resultType="com.dian.mmall.pojo.WholesaleCommodityFanhui">
+		select id,releaseType,serviceType,
+		releaseTitle,commodityPacking,commodityJiage,commoditySurplusNo,
+		reserve,specifi,cations,pictureUrl,addressDetailed
+		from shichang_wholesaleCommodity
+		where
+		releaseType=#{releaseType}
+
+		and userId in (select userId
+		from t_user_realname where
+		detailed=#{selectedOptions} )
+
+		and
+		welfareStatus=1 and startTime
+		&lt; #{createTime} and endTime &gt;
+		#{createTime}
+		<if test="serviceType!=null and serviceType.trim()!=''">
+		and id in(
+		select id from  shichang_wholesaleCommodity  where  serviceType like #{serviceType}  or releaseTitle like #{serviceType} OR  userId in(
+			select userId from t_user_realname where
+			authentiCationStatus=2 and
+			companyName like  #{serviceType}
+			)     group by id
+		)
+		</if>
+		order by updateTime desc
+		limit #{pageLength}, #{pageSize}
+	</select>
+	<!-- 公开列表 结束 -->
+
 
 	<select id="getWholesaleCommodityPublicId"
 		resultType="com.dian.mmall.pojo.WholesaleCommodity">

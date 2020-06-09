@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.dian.mmall.pojo.WholesaleCommodity;
-import com.dian.mmall.pojo.goumaidingdan.CommonMenuWholesalecommodity;
+import com.dian.mmall.pojo.WholesaleCommodityFanhui;
 
 @Mapper
 public interface WholesaleCommodityMapper {
@@ -50,7 +50,7 @@ public interface WholesaleCommodityMapper {
 	long getWholesaleCommodityPublicListNo(int releaseType, String selectedOptions, String serviceType,
 			String companyName, String createTime);
 
-	List<WholesaleCommodity> getWholesaleCommodityPublicList(int pageLength, int pageSize, int releaseType,
+	List<WholesaleCommodityFanhui> getWholesaleCommodityPublicList(int pageLength, int pageSize, int releaseType,
 			String selectedOptions, String serviceType, String companyName, String createTime);
 
 	WholesaleCommodity getWholesaleCommodityPublicId(long id);
@@ -64,5 +64,11 @@ public interface WholesaleCommodityMapper {
 	int getreleaseType(long id);
 
 	List<WholesaleCommodity> adminGetWcall(long userId);
+
+	long getWholesaleCommodityPublicListNoAp(int releaseType, String selectedOptions, String serviceType,
+			String createTime);
+
+	List<WholesaleCommodityFanhui> getWholesaleCommodityPublicListAp(int pageLength, int pageSize, int releaseType,
+			String selectedOptions, String serviceType, String createTime);
 
 }

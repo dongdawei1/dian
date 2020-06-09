@@ -128,25 +128,25 @@ public class FabuUtil {
 	public static String releaseTypeString(int releaseType) {
 		String releaseTypeString = null;
 		if (releaseType == 4) {
-			releaseTypeString = "蔬菜";
+			releaseTypeString = "蔬菜零售";
 		} else if (releaseType == 5) {
-			releaseTypeString = "粮油";
+			releaseTypeString = "粮油零售";
 		} else if (releaseType == 6) {
-			releaseTypeString = "副食/调料";
+			releaseTypeString = "副食/调料零售";
 		} else if (releaseType == 29) {
-			releaseTypeString = "水产/禽蛋";
+			releaseTypeString = "水产/禽蛋零售";
 		} else if (releaseType == 9) {
-			releaseTypeString = "清洁用品";
+			releaseTypeString = "清洁用品零售";
 		} else if (releaseType == 11) {
 			releaseTypeString = "桌椅餐具";
 		} else if (releaseType == 101) {
-			releaseTypeString = "工服";
+			releaseTypeString = "工服制作";
 		} else if (releaseType == 102) {
-			releaseTypeString = "百货";
+			releaseTypeString = "百货零售";
 		} else if (releaseType == 103) {
-			releaseTypeString = "绿植";
+			releaseTypeString = "绿植零售";
 		} else if (releaseType == 104) {
-			releaseTypeString = "装饰用品";
+			releaseTypeString = "装饰用品零售";
 		} else if (releaseType == 7) {
 			releaseTypeString = "酒水饮料";
 		} else if (releaseType == 8) {
@@ -162,11 +162,11 @@ public class FabuUtil {
 		} else if (releaseType == 15) {
 			releaseTypeString = "摊位出租转让";
 		} else if (releaseType == 13) {
-			releaseTypeString = "菜谱/广告";
+			releaseTypeString = "菜谱/广告制作";
 		} else if (releaseType == 17) {
-			releaseTypeString = "装修";
+			releaseTypeString = "装修服务";
 		} else if (releaseType == 19) {
-			releaseTypeString = "灭虫";
+			releaseTypeString = "灭虫服务";
 		}
 		return releaseTypeString;
 	}
