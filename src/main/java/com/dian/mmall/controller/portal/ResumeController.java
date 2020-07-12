@@ -52,7 +52,6 @@ public class ResumeController {
 		if (user.getIsAuthentication() != 2) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.yonghuweishiming.getMessage());
 		}
-
 		return resumeService.select_resume_by_id(user.getId());
 
 	}

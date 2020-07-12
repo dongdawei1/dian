@@ -13,7 +13,8 @@ public class MyBatisConfig {
 
             @Override
             public void customize(Configuration configuration) {
-                configuration.setMapUnderscoreToCamelCase(true);
+               //支持驼峰命名
+            	configuration.setMapUnderscoreToCamelCase(true);
             }
         };
     }

@@ -1,5 +1,6 @@
 package com.dian.mmall.service.impl.releaseimpl;
 
+import java.io.Console;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -109,12 +110,10 @@ public class ResumeServiceImp implements ResumeService {
 
 //各种校验
 	public ServerResponse<Object> check_position(User currentUser, Map<String, Object> params, int type) {
-
+log.info(currentUser.toString());
+		System.out.println(currentUser);
 		// 判断用户id与 tocken是否一致
-		long userId = Long.valueOf(params.get("userId").toString().trim());
-		if (userId != currentUser.getId()) {
-			return ServerResponse.createByErrorMessage(ResponseMessage.YongHuMinghuoidbuyizhi.getMessage());
-		}
+		long userId = currentUser.getId();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("userId", userId);
 		map.put("termOfValidity", DateTimeUtil.a_few_days_later0(90));

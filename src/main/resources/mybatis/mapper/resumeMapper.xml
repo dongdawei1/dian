@@ -13,6 +13,9 @@
 		gender,age,termOfValidity
 		from resume
 		where welfareStatus!=3 and userId=#{userId}
+		order by updateTime desc
+		limit 1
+		
 	</select>
 
 <!--可见全部条数 -->
