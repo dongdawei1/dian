@@ -139,13 +139,15 @@
 			<if test="welfareStatus==0  and commodityType==0"> and welfareStatus in(1,2,4,5) </if>
 			<if test="commodityType==1">and welfareStatus in(1,2) and startTime &lt;
 				#{dateString} and endTime &gt; #{dateString} </if>
-			<if test="commodityType==2">and (welfareStatus =5 or endTime &lt; #{dateString} )
+			<if test="commodityType==2">and (welfareStatus =5 or ( endTime &lt; #{dateString} and welfareStatus!=3 ))
 			</if>
 			<if test="commodityType==3">and welfareStatus in(1,2) and startTime &gt;
 				#{dateString}
 			</if>
 			<if test="welfareStatus!=0">and welfareStatus= #{welfareStatus}   </if>
 		</if>
+		
+		
 		<if test="type==1">and welfareStatus = 1 and startTime &lt; #{dateString} and
 			endTime &gt; #{dateString}   </if>
 		<if test="serviceType!=null and serviceType.trim()!=''">and serviceType like #{serviceType}   </if>

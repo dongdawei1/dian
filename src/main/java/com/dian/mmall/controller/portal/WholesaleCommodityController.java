@@ -17,7 +17,10 @@ import com.dian.mmall.common.ResponseMessage;
 import com.dian.mmall.common.ServerResponse;
 import com.dian.mmall.pojo.user.User;
 import com.dian.mmall.service.release.WholesaleCommodityService;
+import com.dian.mmall.util.LegalCheck;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Controller
 @RequestMapping(Const.PCAPI + "wholesaleCommodity/")
 public class WholesaleCommodityController {
@@ -75,6 +78,7 @@ public class WholesaleCommodityController {
 			@RequestBody Map<String, Object> params) {
 
 		User user = (User) httpServletRequest.getAttribute("user");
+		log.info("user--",user.getRole());
 		// 检查权限
 		if (user.getRole() != 1 && user.getRole() != 13) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.meiyouquanxian.getMessage());

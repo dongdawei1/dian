@@ -18,6 +18,7 @@ public class Order {
 	private long id;
 
 	private long saleUserId; //销售商户ID
+	private String saleUserName; //销售商户ID
 
 	private long purchaseUserId; //购买商户ID
 	

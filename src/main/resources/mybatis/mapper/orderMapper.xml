@@ -71,7 +71,7 @@
 		</if>
 
 		<if test="orderStatus==12">, saleUserId=#{saleUserId}
-			,commodityZongJiage=#{commodityZongJiage}
+			,commodityZongJiage=#{commodityZongJiage},saleUserName=#{saleUserName}
 		</if>
 		<if test="orderStatus==4">, guaranteeMoney=#{guaranteeMoney}
 			,balanceMoney=#{balanceMoney} ,yesGuaranteeMoney=1
@@ -159,7 +159,7 @@
 		resultType="com.dian.mmall.pojo.Order">
 		select
 		id,purchaseUserId,giveTakeTime,remarks,createTime,releaseType,commoditySnapshot,commodityZongJiage,
-		orderStatus,saleUserId,collectTime,updateTime
+		orderStatus,saleUserId,collectTime,updateTime,saleUserName
 		from orderform
 		where
 		releaseType=#{releaseType} and purchaseUserId=#{userId}

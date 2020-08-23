@@ -110,8 +110,6 @@ public class ResumeServiceImp implements ResumeService {
 
 //各种校验
 	public ServerResponse<Object> check_position(User currentUser, Map<String, Object> params, int type) {
-log.info(currentUser.toString());
-		System.out.println(currentUser);
 		// 判断用户id与 tocken是否一致
 		long userId = currentUser.getId();
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -289,6 +287,7 @@ log.info(currentUser.toString());
 		}
 		map.put("userType", serverResponse.getMsg());
 
+		
 		List<Integer> selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions").toString().trim(),
 				List.class);
 		if (selectedOptions_list.size() == 3) {
@@ -296,12 +295,10 @@ log.info(currentUser.toString());
 			Integer cityId = selectedOptions_list.get(1);
 			Integer districtCountyId = selectedOptions_list.get(2);
 			// 判断省市区id是否正确
-
 			map.put("detailed", cityMapper.checkeCity(provincesId, cityId, districtCountyId));
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		}
-
 		selectedOptions_list = JsonUtil.string2Obj(params.get("selectedOptions1").toString().trim(), List.class);
 		if (selectedOptions_list.size() == 3) {
 			Integer provincesId = selectedOptions_list.get(0);
@@ -310,6 +307,10 @@ log.info(currentUser.toString());
 			// 判断省市区id是否正确
 
 			map.put("addressDetailed", cityMapper.checkeCity(provincesId, cityId, districtCountyId));
+	
+		
+		
+		
 		} else {
 			return ServerResponse.createByErrorMessage(ResponseMessage.ChengShiBuHeFa.getMessage());
 		}

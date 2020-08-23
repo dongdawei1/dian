@@ -164,7 +164,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 	public ServerResponse<Object> check_position(User currentUser, Map<String, Object> params) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 判断用户id与 tocken是否一致
-		long userId = Long.valueOf(params.get("userId").toString().trim());
+		long userId = currentUser.getId();
 		map.put("userId", userId);
 		map.put("termOfValidity", DateTimeUtil.a_few_days_later0(30));
 		// 判断是否超过可以发布的总数
@@ -525,6 +525,7 @@ public class ReleaseWelfareServiceImpl implements ReleaseWelfareService {
 					return ServerResponse.createByErrorMessage(serverResponse.getMsg());
 				}
 				ReleaseWelfare releaseWelfare = new ReleaseWelfare();
+				releaseWelfare.setTermOfValidity(DateTimeUtil.a_few_days_later0(30));
 				// 判断是否公开电话
 				String isPublishContactString = params.get("isPublishContact").toString().trim();
 				if (isPublishContactString == null || isPublishContactString.equals("") ) {

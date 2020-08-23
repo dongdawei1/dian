@@ -557,7 +557,7 @@ public class WholesaleCommodityServiceImpl implements WholesaleCommodityService 
 			}
 		}
 
-		// 1公开，2自己发布过的
+		// 1公开列表，2自己发布过的
 		String typeString = params.get("type").toString().trim();
 		if (typeString == null || typeString.equals("")) {
 			return ServerResponse.createByErrorMessage(ResponseMessage.chaxunleixingbunnegweikong.getMessage());

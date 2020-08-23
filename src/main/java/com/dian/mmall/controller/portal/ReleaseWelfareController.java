@@ -29,7 +29,6 @@ import com.dian.mmall.service.release.ReleaseWelfareService;
 @Controller
 @RequestMapping(Const.PCAPI + "releaseWelfare/")
 public class ReleaseWelfareController {
-	private String recruitWorkers = "/home/recruitWorkers";
 
 	@Autowired
 	private ReleaseWelfareService releaseWelfareService;

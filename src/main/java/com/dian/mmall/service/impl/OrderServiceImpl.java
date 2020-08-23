@@ -649,6 +649,7 @@ public class OrderServiceImpl implements OrderService {
 						order.setSaleUserId(saleUserId);
 						order.setCommodityZongJiage(orderCommonOffer.getCommodityZongJiage());
 						order.setOrderStatus(type);
+						order.setSaleUserName(orderCommonOffer.getSaleCompanyName());
 						tongbu_gengxin_uporder(order);
 						
 						// push 信息 报价已经被选中
@@ -1491,24 +1492,28 @@ public class OrderServiceImpl implements OrderService {
 			Order o = orderList.get(i);
 //			购买者下单,2批发者确认，3用户关单，4取/送货 ，5待评价，6评价完成 
 //			，11发布采购订单 ，12待支付， ，16 确认收货，17超时无人接单关单，
-//			18 三十分钟已过有人接单 确认期，19 超时未支付，，21支付失败
+//			18 三十分钟已过有人接单 确认期，19 超时未支付，20待支付定金，21支付失败
 			if (o.getReleaseType() == 4) {
 				o.setPaymentTime("实时采购信息");
 			}
 
-			if (o.getOrderStatus() == 5 || o.getOrderStatus() == 6) {
+			int orderStatus=o.getOrderStatus();
+			if (orderStatus == 5 || orderStatus == 6) {
 
-				RealName realName = realNameMapper.getRealNameByuserId(o.getSaleUserId());
-				o.setAddressDetailed(realName.getCompanyName());
 				o.setGuanShanTime(o.getCommodityZongJiage() / 100 + "");
 				o.setGuanShanReason("已完成");
-			} else {
-				o.setAddressDetailed("--");
+			} else if(orderStatus == 4 || orderStatus == 16 ) {
+				o.setGuanShanTime(o.getCommodityZongJiage() / 100 + "");
+				o.setGuanShanReason("进行中");
+				o.setCollectTime("--");
+			}else {
+				o.setSaleUserName("--");
 				o.setGuanShanTime("--");
 				o.setCollectTime("--");
-				if (o.getOrderStatus() == 17 || o.getOrderStatus() == 19 || o.getOrderStatus() == 10
-						|| o.getOrderStatus() == 21) {
+				if (orderStatus == 3 ||orderStatus == 17 || orderStatus == 19 || orderStatus == 20
+						|| orderStatus == 21) {
 					o.setGuanShanReason("关单");
+					
 				} else {
 					o.setGuanShanReason("进行中");
 				}
@@ -1670,7 +1675,7 @@ public class OrderServiceImpl implements OrderService {
 		RealName realName = realNameMapper.getRealName(userId);
 		offer.setSaleCompanyName(realName.getCompanyName());
 		offer.setContact(realName.getContact());
-		offer.setConsigneeName(realName.getCompanyName());
+		offer.setConsigneeName(realName.getConsigneeName());
 		offer.setSaleUserAddressDetailed(realName.getAddressDetailed());
 
 		int re = orderCommonOfferMapper.creoffer(offer);
